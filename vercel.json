@@ -1,0 +1,11 @@
+﻿{
+  "functions": {
+    "api/setup.js": {
+      "runtime": "edge"
+    }
+  },
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/setup" }
+  ]
+}

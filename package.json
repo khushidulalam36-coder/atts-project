@@ -1,0 +1,18 @@
+﻿{
+  "name": "atts-project",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "deploy": "echo 'Deploy to Vercel'"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "bcryptjs": "^2.4.3",
+    "canvas-confetti": "^1.9.0",
+    "chart.js": "^4.4.0",
+    "google-auth-library": "^9.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "uuid": "^9.0.0"
+  }
+}
