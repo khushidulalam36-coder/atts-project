@@ -179,6 +179,15 @@ export default async function handler(req) {
   const path = url.pathname.replace('/api/setup', '');
 
   try {
+    // অস্থায়ী ডাটাবেস টেস্ট
+if (path === '/test-db' && req.method === 'GET') {
+  try {
+    const result = await sql`SELECT 1 AS test`;
+    return json({ db: 'connected', result });
+  } catch (e) {
+    return json({ db: 'error', message: e.message }, 500);
+  }
+}
     // ---------------- DB Init & Seed ----------------
     if (path === '/init-db' && req.method === 'POST') {
       const { admin_secret } = await req.json();
@@ -824,5 +833,14 @@ export default async function handler(req) {
   } catch (error) {
     console.error(error);
     return json({ error: error.message }, 500);
+  }
+}
+// file: api/setup.js - handler function-এর ভিতরে, path check-এর আগে
+if (path === '/test-db' && req.method === 'GET') {
+  try {
+    const result = await sql`SELECT 1 AS test`;
+    return json({ db: 'connected', result });
+  } catch (e) {
+    return json({ db: 'error', message: e.message }, 500);
   }
 }
