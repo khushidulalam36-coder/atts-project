@@ -4,8 +4,18 @@
       "runtime": "edge"
     }
   },
-  "outputDirectory": ".",
   "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
     { "source": "/api/(.*)", "destination": "/api/setup" }
+  ],
+  "crons": [
+    {
+      "path": "/api/setup/cron/streak-freeze-check",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/setup/cron/morning-reminder",
+      "schedule": "0 6 * * *"
+    }
   ]
 }

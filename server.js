@@ -12,7 +12,6 @@ const mimeTypes = {
   '.css': 'text/css',
   '.json': 'application/json',
   '.png': 'image/png',
-  '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
 };
 
@@ -61,17 +60,11 @@ const server = createServer(async (req, res) => {
         if (webRes.body) {
           const reader = webRes.body.getReader();
           const pump = () => reader.read().then(({ done, value }) => {
-            if (done) {
-              res.end();
-            } else {
-              res.write(value);
-              pump();
-            }
+            if (done) res.end();
+            else { res.write(value); pump(); }
           });
           pump();
-        } else {
-          res.end();
-        }
+        } else res.end();
       } catch (err) {
         console.error(err);
         res.writeHead(500);
@@ -85,5 +78,5 @@ const server = createServer(async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log('Server running at http://localhost:' + PORT);
 });

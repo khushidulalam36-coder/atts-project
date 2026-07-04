@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨ â€“ AlamQuant ATTS</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .verify-container {
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    .verify-container h2 { color: var(--gold-bright); }
+  </style>
+</head>
+<body>
+  <div class="glass verify-container">
+    <h2>ðŸ” à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨</h2>
+    <input type="text" id="verify-input" placeholder="à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨ à¦•à§‹à¦¡ à¦²à¦¿à¦–à§à¦¨">
+    <button class="btn" onclick="verify()">à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§à¦¨</button>
+    <div id="result" style="margin-top:20px;"></div>
+  </div>
+  <script>
+    async function verify() {
+      const code = document.getElementById('verify-input').value.trim();
+      if (!code) return;
+      const res = await fetch(`/api/setup/verify/${code}`).then(r => r.json());
+      const resultDiv = document.getElementById('result');
+      if (res.valid) {
+        resultDiv.innerHTML = `
+          <div style="color: var(--success);">
+            <p style="font-size:3rem;">âœ…</p>
+            <h3>à¦¬à§ˆà¦§ à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ</h3>
+            <p><strong>à¦¨à¦¾à¦®:</strong> ${res.display_name || res.user}</p>
+            <p><strong>à¦‡à¦¸à§à¦¯à§à¦° à¦¤à¦¾à¦°à¦¿à¦–:</strong> ${new Date(res.issued_at).toLocaleDateString('bn-BD')}</p>
+            <p><strong>à¦•à§‹à¦¡:</strong> ${res.verification_code}</p>
+          </div>`;
+      } else {
+        resultDiv.innerHTML = `
+          <div style="color: var(--danger);">
+            <p style="font-size:3rem;">âŒ</p>
+            <h3>à¦…à¦¬à§ˆà¦§ à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ</h3>
+            <p>à¦à¦‡ à¦•à§‹à¦¡à¦Ÿà¦¿ à¦¸à¦¿à¦¸à§à¦Ÿà§‡à¦®à§‡ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤</p>
+          </div>`;
+      }
+    }
+  </script>
+</body>
+</html>

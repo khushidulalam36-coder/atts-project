@@ -14,9 +14,8 @@
     :root {
       --bg: #030510;
       --surface: rgba(12, 14, 34, 0.85);
-      --surface-2: rgba(18, 20, 44, 0.9);
-      --gold: #d4af37;
-      --gold-bright: #ffb800;
+      --gold: #c59b3b;
+      --gold-bright: #f2d680;
       --gold-light: #ffe082;
       --accent: #00bcd4;
       --accent-bright: #00e5ff;
@@ -26,13 +25,9 @@
       --success: #69f0ae;
       --warning: #ffd740;
       --purple: #b388ff;
-      --blue: #448aff;
       --orange: #ff9100;
-      --border-gold: rgba(212, 175, 55, 0.25);
-      --border-accent: rgba(0, 229, 255, 0.3);
-      --glow-gold: 0 0 20px rgba(212, 175, 55, 0.4);
-      --glow-accent: 0 0 20px rgba(0, 229, 255, 0.4);
-      --font-bn: 'Hind Siliguri', sans-serif;
+      --border-gold: rgba(197, 155, 59, 0.25);
+      --border-accent: rgba(0,229,255,0.3);
       --font-en: 'Inter', sans-serif;
       --radius: 20px;
       --radius-sm: 12px;
@@ -45,65 +40,55 @@
       60% { transform:scale(1.15); opacity:1; }
       100% { transform:scale(1); }
     }
-    @keyframes shimmer {
-      0% { transform:translate(-30%, -30%) rotate(0deg); }
-      100% { transform:translate(30%, 30%) rotate(180deg); }
-    }
     @keyframes pulse {
       0% { transform:scale(1); }
       50% { transform:scale(1.08); text-shadow:0 0 20px #ff9100; }
       100% { transform:scale(1); }
     }
-    @keyframes xpShine {
-      0% { transform:translateX(-100%); }
-      100% { transform:translateX(200%); }
-    }
     @keyframes float {
       0%,100% { transform:translateY(0px); }
       50% { transform:translateY(-10px); }
     }
-    @keyframes gradientBg {
+    @keyframes gradientShift {
       0% { background-position:0% 50%; }
       50% { background-position:100% 50%; }
       100% { background-position:0% 50%; }
     }
-    @keyframes borderGlow {
-      0%,100% { box-shadow:0 0 8px rgba(212,175,55,0.3), 0 0 20px rgba(0,229,255,0.1); }
-      50% { box-shadow:0 0 16px rgba(212,175,55,0.5), 0 0 32px rgba(0,229,255,0.2); }
+    @keyframes shine {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes floatUp {
+      0% { opacity:1; transform:translate(-50%,0) scale(0.5); }
+      100% { opacity:0; transform:translate(-50%,-80px) scale(1.2); }
+    }
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+    @keyframes shootStar {
+      0% { opacity:0; transform: translate(0,0) scale(0.5); }
+      50% { opacity:1; }
+      100% { opacity:0; transform: translate(200px,-200px) scale(0); }
     }
     body {
       font-family: var(--font-en);
-      background: var(--bg);
-      background-image:
-        radial-gradient(ellipse at 20% 10%, rgba(0,229,255,0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(212,175,55,0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(100,100,200,0.04) 0%, transparent 70%);
+      background: linear-gradient(135deg, #0a0b16 0%, #1a0b2e 50%, #0a0b16 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       color: var(--text);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding-bottom: 120px;
+      padding-bottom: 140px;
       overflow-x: hidden;
       position: relative;
-      background-size: 200% 200%;
-      animation: gradientBg 15s ease infinite;
     }
-    body::before {
-      content: '';
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 20 L80 80 M80 20 L20 80" stroke="%23d4af37" stroke-width="0.5"/><circle cx="50" cy="50" r="30" stroke="%2300e5ff" stroke-width="0.4" fill="none"/></svg>') repeat;
-      pointer-events: none;
-      z-index:0;
-    }
-    .container {
-      width:100%; max-width:960px; padding:16px; z-index:1; position:relative;
-    }
+    .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
     .glass {
-      background: var(--surface);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
+      background: radial-gradient(circle at top left, rgba(197,155,59,0.1), rgba(12,14,34,0.7));
+      backdrop-filter: blur(30px) saturate(120%);
+      -webkit-backdrop-filter: blur(30px) saturate(120%);
       border-radius: var(--radius);
       padding: 24px;
       margin-bottom: 18px;
@@ -113,33 +98,20 @@
       position: relative;
       overflow: hidden;
     }
-    .glass::after {
-      content: '';
-      position: absolute;
-      top:-50%; left:-50%; width:200%; height:200%;
-      background: radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 60%);
-      animation: shimmer 10s infinite;
-      pointer-events: none;
-    }
     .glass:hover {
-      box-shadow: 0 14px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.2);
+      box-shadow: 0 14px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(197,155,59,0.3);
       transform: translateY(-2px);
-      border-color: rgba(212,175,55,0.4);
-    }
-    .glass-accent {
-      border: 1px solid var(--border-accent);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,229,255,0.05);
+      border-color: rgba(197,155,59,0.4);
     }
     h1,h2,h3,h4 {
       color: var(--gold);
       margin-bottom: 12px;
-      text-shadow: 0 0 16px rgba(212,175,55,0.3);
+      text-shadow: 0 0 16px rgba(197,155,59,0.3);
       position:relative; z-index:1; font-weight:700;
     }
-    h2 { font-size:1.6rem; }
-    h3 { font-size:1.25rem; }
+    h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
     .btn {
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 100%);
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
       color:#0a0a0a;
       border:none;
       padding:12px 24px;
@@ -148,41 +120,21 @@
       cursor:pointer;
       transition: all var(--transition);
       font-size:0.9rem;
-      box-shadow:0 4px 18px rgba(212,175,55,0.4);
+      box-shadow:0 4px 18px rgba(197,155,59,0.4);
       letter-spacing:0.5px;
       position:relative;
       overflow:hidden;
       z-index:1;
       font-family:var(--font-en);
     }
-    .btn::before {
-      content:'';
-      position:absolute; top:0; left:-100%; width:100%; height:100%;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-      transition:0.5s;
-    }
-    .btn:hover::before { left:100%; }
+    .btn:hover { box-shadow:0 6px 24px rgba(197,155,59,0.6); transform:translateY(-1px); }
     .btn:active { transform:scale(0.96); }
-    .btn-outline {
-      background:transparent;
-      border:2px solid var(--gold);
-      color:var(--gold);
-      box-shadow:none;
-    }
-    .btn-outline:hover { background:rgba(212,175,55,0.1); }
-    .btn-accent {
-      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
-      box-shadow:0 4px 18px rgba(0,229,255,0.4);
-    }
-    .btn-danger {
-      background:linear-gradient(135deg, #ff5252 0%, #ff1744 100%);
-      box-shadow:0 4px 18px rgba(255,82,82,0.4);
-    }
+    .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
+    .btn-outline:hover { background:rgba(197,155,59,0.1); }
+    .btn-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); box-shadow:0 4px 18px rgba(0,229,255,0.4); }
+    .btn-danger { background:linear-gradient(135deg, #ff5252, #ff1744); box-shadow:0 4px 18px rgba(255,82,82,0.4); }
     .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
-    .btn-lg {
-      padding:16px 32px; font-size:1.1rem; border-radius:40px;
-      animation: borderGlow 3s infinite;
-    }
+    .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
     input, textarea, select {
       background:rgba(255,255,255,0.05);
       border:1px solid var(--border-gold);
@@ -198,7 +150,7 @@
     }
     input:focus, textarea:focus, select:focus {
       border-color:var(--gold-bright);
-      box-shadow:0 0 0 3px rgba(212,175,55,0.15), 0 0 20px rgba(212,175,55,0.2);
+      box-shadow:0 0 0 3px rgba(197,155,59,0.15), 0 0 20px rgba(197,155,59,0.2);
       background:rgba(255,255,255,0.08);
     }
     textarea { resize:vertical; min-height:60px; }
@@ -206,27 +158,24 @@
     .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .hidden { display:none !important; }
     .bottom-nav {
-      position:fixed; bottom:0; left:0; right:0;
-      background:var(--surface);
-      backdrop-filter:blur(28px);
-      -webkit-backdrop-filter:blur(28px);
-      border-top:1px solid var(--border-gold);
-      display:flex;
-      justify-content:space-around;
-      padding:8px 0 12px;
-      z-index:100;
-      box-shadow:0 -4px 30px rgba(0,0,0,0.7);
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(12, 14, 34, 0.95); backdrop-filter: blur(24px);
+      border-radius: 40px; padding: 8px 20px; display: flex; gap: 10px;
+      border: 1px solid rgba(197,155,59,0.3);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(197,155,59,0.15);
+      z-index: 100;
     }
     .nav-item {
-      display:flex; flex-direction:column; align-items:center; gap:4px;
-      color:var(--text-secondary);
-      font-size:11px; cursor:pointer; transition:var(--transition);
-      padding:4px 8px; border-radius:12px;
+      flex-direction: column; align-items: center; font-size: 10px; color: #888;
+      transition: 0.3s; cursor: pointer; padding: 4px 6px;
     }
-    .nav-item.active { color:var(--gold-bright); text-shadow:0 0 8px rgba(255,184,0,0.5); }
-    .nav-item:hover { color:var(--gold); }
-    .nav-item span { font-size:22px; transition:var(--transition); }
-    .nav-item.active span { transform:translateY(-2px); }
+    .nav-item span { font-size: 20px; transition: 0.3s; }
+    .nav-item.active { color: var(--gold-bright); }
+    .nav-item.active span { transform: translateY(-4px) scale(1.2); text-shadow: 0 0 15px var(--gold-bright); }
+    .nav-item.active::after {
+      content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
+    }
     .badge {
       background:linear-gradient(135deg, var(--gold), var(--gold-bright));
       color:#0a0a0a;
@@ -238,9 +187,7 @@
       align-items:center;
       gap:4px;
     }
-    .badge-accent {
-      background:linear-gradient(135deg, var(--accent), var(--accent-bright));
-    }
+    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
     .progress-bar {
       background:rgba(255,255,255,0.08);
       border-radius:20px;
@@ -255,13 +202,6 @@
       width:0%;
       transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
       border-radius:20px;
-      position:relative;
-    }
-    .progress-fill::after {
-      content:'';
-      position:absolute; top:0; left:0; right:0; bottom:0;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      animation:xpShine 2s infinite;
     }
     .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
     .phase-tag {
@@ -283,17 +223,29 @@
     .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
     .slider-item input[type="range"] { flex:3; accent-color:var(--gold); }
     .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
-    .video-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:20px; }
-    .video-card {
-      background:rgba(255,255,255,0.03);
-      border-radius:var(--radius-sm);
-      overflow:hidden;
-      transition:var(--transition);
-      border:1px solid transparent;
+    .xp-bar-container {
+      background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden;
+      position: relative; margin: 10px 0;
     }
-    .video-card:hover { border-color:var(--border-gold); transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.6); }
-    .video-card iframe { width:100%; height:170px; border:0; }
-    .video-info { padding:14px; }
+    .xp-bar-fill {
+      height:100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold)); background-size: 200% 100%;
+      animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center;
+      transition: width 0.8s;
+    }
+    .xp-text { color: #0a0a0a; font-weight: bold; font-size: 0.75rem; z-index: 1; }
+    .float-xp {
+      position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2rem; font-weight: 900; color: var(--gold-bright);
+      text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none;
+    }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+    .habit-card { transition: all 0.3s; margin-bottom:12px; }
+    .habit-time-slot {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
+      margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
+    }
+    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
     .toast {
       position:fixed; top:20px; right:20px;
       background:linear-gradient(135deg, var(--gold), var(--gold-bright));
@@ -301,154 +253,169 @@
       padding:14px 22px; border-radius:30px;
       z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
       opacity:0; transform:translateX(120%);
-      transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
-      font-size:0.9rem;
+      transition:0.4s cubic-bezier(0.4,0,0.2,1);
     }
     .toast.show { opacity:1; transform:translateX(0); }
-    .xp-bar-container {
-      background:rgba(255,255,255,0.08);
-      border-radius:20px;
-      height:22px; margin:8px 0; overflow:hidden;
-      box-shadow:inset 0 2px 6px rgba(0,0,0,0.5);
-    }
-    .xp-bar-fill {
-      height:100%; width:0%;
-      background:linear-gradient(90deg, #b388ff, #7c4dff);
-      transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
-      border-radius:20px;
-      position:relative;
-    }
-    .xp-bar-fill::after {
-      content:'';
-      position:absolute; top:0; left:0; right:0; bottom:0;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      animation:xpShine 2s infinite;
-    }
     .mini-stat {
-      background:rgba(255,255,255,0.04);
-      border-radius:16px; padding:10px 16px;
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--border-gold);
-      backdrop-filter:blur(5px); font-weight:600;
+      background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px;
+      border:1px solid var(--border-gold); backdrop-filter:blur(5px);
+      display:inline-flex; align-items:center; gap:8px; font-weight:600;
     }
-    .streak-fire { color:#ff9100; animation:pulse 1.5s infinite; font-weight:700; }
-    input[type="range"] {
-      -webkit-appearance:none; appearance:none;
-      width:100%; height:8px;
-      background:rgba(212,175,55,0.2);
-      border-radius:10px; outline:none;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance:none; width:24px; height:24px; border-radius:50%;
-      background:var(--gold-bright); cursor:pointer;
-      box-shadow:0 0 16px rgba(212,175,55,0.7); border:2px solid #fff;
-    }
-    input[type="checkbox"] {
-      appearance:none; -webkit-appearance:none;
-      width:20px; height:20px;
-      border:2px solid var(--border-gold); border-radius:6px;
-      background:transparent; vertical-align:middle;
-      position:relative; cursor:pointer;
-    }
-    input[type="checkbox"]:checked { background:var(--gold); border-color:var(--gold); }
-    input[type="checkbox"]:checked::after {
-      content:'✔'; position:absolute; left:4px; top:-1px;
-      color:#0a0a0a; font-size:14px; font-weight:bold;
-    }
-    select {
-      appearance:none;
-      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23d4af37" d="M6 8L1 3h10z"/></svg>');
-      background-repeat:no-repeat; background-position:right 12px center;
-      padding-right:30px;
-    }
-    .reply-item {
-      background:rgba(255,255,255,0.02); border-radius:10px;
-      padding:8px 14px; margin:6px 0 6px 20px;
-      font-size:0.9rem; border-left:3px solid var(--border-gold);
-    }
-    .heatmap-day {
-      width:28px; height:28px; border-radius:6px;
-      background:rgba(255,255,255,0.05);
-      display:flex; align-items:center; justify-content:center;
-      font-size:11px; font-weight:600; transition:var(--transition);
-    }
-    .heatmap-day.active {
-      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#0a0a0a; box-shadow:0 0 8px rgba(212,175,55,0.5);
-    }
-    .timeline {
-      position:relative; padding-left:30px; margin:20px 0;
-    }
-    .timeline::before {
-      content:''; position:absolute; left:10px; top:0; bottom:0;
-      width:2px; background:linear-gradient(to bottom, var(--border-gold), var(--border-accent));
-    }
-    .timeline-item {
-      position:relative; margin-bottom:18px;
-    }
-    .timeline-item::before {
-      content:''; position:absolute; left:-26px; top:4px;
-      width:14px; height:14px; border-radius:50%;
-      background:var(--bg); border:2px solid var(--border-gold);
-      transition:var(--transition);
-    }
-    .timeline-item.completed::before {
-      background:var(--success); border-color:var(--success);
-      box-shadow:0 0 10px rgba(105,240,174,0.5);
-    }
-    .timeline-item.active::before {
-      background:var(--gold-bright); border-color:var(--gold-bright);
-      box-shadow:0 0 16px var(--gold); animation:pulse 2s infinite;
+    .streak-fire {
+      background: linear-gradient(135deg, #ff9100, #ff3d00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight:900; animation: pulse 1.5s infinite;
     }
     .admin-gear {
       position:fixed; bottom:90px; right:20px; z-index:1000;
       background:var(--surface); border:1px solid var(--border-gold);
-      border-radius:50%; width:48px; height:48px;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; font-size:22px; color:var(--gold);
-      backdrop-filter:blur(12px); box-shadow:0 4px 20px rgba(0,0,0,0.6);
-      transition:transform var(--transition), box-shadow var(--transition);
+      border-radius:50%; width:48px; height:48px; display:flex;
+      align-items:center; justify-content:center; cursor:pointer;
+      font-size:22px; color:var(--gold); backdrop-filter:blur(12px);
+      box-shadow:0 4px 20px rgba(0,0,0,0.6);
+      transition:transform var(--transition);
     }
-    .admin-gear:hover { transform:rotate(90deg); box-shadow:0 6px 28px rgba(212,175,55,0.4); }
+    .admin-gear:hover { transform:rotate(90deg); }
     .modal-overlay {
       position:fixed; top:0; left:0; right:0; bottom:0;
       background:rgba(0,0,0,0.85); display:flex;
       align-items:center; justify-content:center;
       z-index:10000; backdrop-filter:blur(4px);
     }
-    .modal-content {
-      max-width:90vw; max-height:85vh; overflow-y:auto;
-      width:500px;
-    }
-    .user-card {
-      background:rgba(255,255,255,0.03); border-radius:var(--radius-sm);
-      padding:14px; margin:6px 0; border:1px solid rgba(255,255,255,0.05);
-      transition:var(--transition);
-    }
-    .user-card:hover { background:rgba(255,255,255,0.06); }
-    .admin-badge {
-      background:linear-gradient(135deg, #ff5252, #ff1744);
-      color:#fff; padding:2px 10px; border-radius:12px;
-      font-size:10px; font-weight:700;
-    }
+    .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
     .gold-text {
-  background: linear-gradient(135deg, #ffb800 0%, #ffe082 100%);
-  background-clip: text;              /* স্ট্যান্ডার্ড */
-  -webkit-background-clip: text;      /* ভেন্ডর প্রিফিক্স */
-  -webkit-text-fill-color: transparent;
-}
+      background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
+      -webkit-background-clip:text;
+      background-clip: text;
+      -webkit-text-fill-color:transparent;
+    }
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+    .quest-card {
+      border: 1px solid var(--gold-bright);
+      background: radial-gradient(circle at top left, rgba(197,155,59,0.15), rgba(12,14,34,0.8));
+      position: relative;
+      overflow: hidden;
+    }
+    .quest-card::before {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(197,155,59,0.2), transparent);
+      top: -50px;
+      left: -50px;
+      animation: float 4s infinite;
+    }
+    .quest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .xp-reward {
+      color: var(--gold-bright);
+      font-weight: bold;
+    }
+    .quest-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .fab {
+      position: fixed;
+      bottom: 90px;
+      right: 80px;
+      width: 56px;
+      height: 56px;
+      background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(197,155,59,0.5);
+      cursor: pointer;
+      font-size: 28px;
+      z-index: 2000;
+      transition: transform 0.3s;
+    }
+    .fab:hover { transform: scale(1.1); }
+    .drawer {
+      position: fixed;
+      bottom: 150px;
+      right: 20px;
+      width: 280px;
+      background: rgba(12,14,34,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index: 1500;
+    }
+    .mood-picker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: 12px;
+    }
+    .mood-emoji {
+      font-size: 28px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      padding: 4px;
+      border-radius: 50%;
+    }
+    .mood-emoji.selected {
+      transform: scale(1.3);
+      background: rgba(197,155,59,0.2);
+      box-shadow: 0 0 12px var(--gold);
+    }
+    .evolution-tree {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      background: rgba(0,0,0,0.2);
+      padding: 16px;
+      border-radius: 12px;
+    }
+    .evolution-tree .stage {
+      text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      opacity: 0.4;
+      transition: 0.3s;
+    }
+    .evolution-tree .stage.active {
+      opacity: 1;
+      background: rgba(197,155,59,0.2);
+      box-shadow: 0 0 15px var(--gold);
+    }
+    .chapter-card { cursor:pointer; }
+    .chapter-card.locked { opacity:0.5; pointer-events: none; }
     @media (max-width:640px) {
       .grid-2 { grid-template-columns:1fr; }
-      .bottom-nav { padding:4px 0 10px; }
       .glass { padding:16px; }
       h2 { font-size:1.3rem; }
-      .nav-item span { font-size:20px; }
+      .bottom-nav { padding: 4px 10px; gap: 6px; }
+      .nav-item span { font-size: 18px; }
     }
   </style>
 </head>
 <body>
+  <canvas id="bgCanvas"></canvas>
+
+  <script>
+    window.GOOGLE_CLIENT_ID = "{{GOOGLE_CLIENT_ID}}";
+  </script>
+
   <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#030510; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
-    <div style="border:4px solid rgba(212,175,55,0.15); border-top:4px solid #d4af37; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
+    <div style="border:4px solid rgba(197,155,59,0.15); border-top:4px solid #c59b3b; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
     <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
 
@@ -503,7 +470,6 @@
         <button class="btn btn-sm btn-outline" onclick="showAdminTab('community')">💬 কমিউনিটি</button>
         <button class="btn btn-sm btn-outline" onclick="showAdminTab('content')">📚 কনটেন্ট</button>
       </div>
-      <div id="admin-tab-content"></div>
       <div id="admin-stats-tab" class="admin-tab"><p style="color:var(--text-secondary);">লোড হচ্ছে...</p></div>
       <div id="admin-users-tab" class="admin-tab hidden">
         <input type="text" id="admin-user-search" placeholder="ইমেইল বা নাম দিয়ে সার্চ..." oninput="searchAdminUsers()">
@@ -533,11 +499,18 @@
     </div>
   </div>
 
+  <div id="ai-coach-fab" class="fab" onclick="toggleAiCoach()">
+    <span>🧠</span>
+  </div>
+  <div id="ai-coach-drawer" class="drawer hidden">
+    <p id="ai-coach-message">লোড হচ্ছে...</p>
+  </div>
+
   <div class="container" id="app">
     <div id="auth-screen" class="glass hidden" style="text-align:center;">
       <div style="font-size:60px; margin-bottom:12px; animation:float 3s infinite;">📈</div>
       <h1 class="gold-text" style="font-size:2.4rem;">AlamQuant <span style="color:var(--gold-bright);">ATTS</span></h1>
-      <p style="text-align:center; color:var(--text-secondary); margin-bottom:24px; font-family:var(--font-bn); font-size:1.1rem;">"ধনী হওয়ার প্রতিশ্রুতি নয়, একজন শৃঙ্খলাবদ্ধ ট্রেডারে পরিণত হওয়ার যাত্রা।"</p>
+      <p style="text-align:center; color:var(--text-secondary); margin-bottom:24px; font-family:'Hind Siliguri', sans-serif; font-size:1.1rem;">"ধনী হওয়ার প্রতিশ্রুতি নয়, একজন শৃঙ্খলাবদ্ধ ট্রেডারে পরিণত হওয়ার যাত্রা।"</p>
       <div id="login-form">
         <input type="text" id="login-name" placeholder="তোমার নাম">
         <input type="email" id="login-email" placeholder="ইমেইল">
@@ -568,13 +541,27 @@
     </div>
 
     <div id="dashboard" class="hidden">
+      <div id="daily-quest-card" class="glass quest-card">
+        <div class="quest-header">
+          <span>🎯 আজকের লক্ষ্য</span>
+          <span class="xp-reward">+15 XP</span>
+        </div>
+        <p id="quest-desc">লোড হচ্ছে...</p>
+        <div class="quest-progress">
+          <div class="progress-bar" style="flex:1;">
+            <div id="quest-fill" class="progress-fill" style="width:0%"></div>
+          </div>
+          <button id="claim-quest-btn" class="btn btn-sm btn-accent" disabled onclick="claimQuestReward()">পুরস্কার নাও</button>
+        </div>
+      </div>
+
       <div class="glass" style="padding:18px 22px;">
         <div class="flex" style="justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div class="flex" style="gap:10px;">
             <span id="user-avatar" style="font-size:42px;">🙂</span>
             <div>
               <strong id="user-display-name" style="font-size:1.2rem; color:var(--gold-light);"></strong>
-              <div style="font-size:12px; color:var(--text-secondary);">Level <span id="user-level">1</span> · <span id="user-identity" class="phase-tag">Beginner</span></div>
+              <div style="font-size:12px; color:var(--text-secondary);">Lv. <span id="user-level">1</span> · <span id="user-identity" class="phase-tag">Beginner</span></div>
             </div>
           </div>
           <div class="flex" style="gap:8px;">
@@ -582,13 +569,12 @@
             <div class="mini-stat">⭐ <span id="xp-display">0 XP</span></div>
           </div>
         </div>
-        <div class="xp-bar-container"><div id="xp-bar-fill" class="xp-bar-fill" style="width:0%"></div></div>
+        <div class="xp-bar-container"><div id="xp-bar-fill" class="xp-bar-fill" style="width:0%"><span class="xp-text">Lv. <span id="user-level-bar">1</span></span></div></div>
         <div class="flex" style="justify-content:space-between;">
           <small style="color:var(--text-secondary);">পরবর্তী লেভেল: <span id="xp-next">0</span> XP</small>
           <small style="color:var(--accent-bright); cursor:pointer;" onclick="showTab('profile')">⚙️ রিমাইন্ডার</small>
         </div>
       </div>
-
       <div class="admin-gear" onclick="openAdminPanel()" title="Admin Panel">⚙️</div>
 
       <div id="tab-journey" class="tab-content">
@@ -605,6 +591,13 @@
           </div>
           <div id="checkin-done-msg" class="hidden" style="color:var(--success); margin-top:12px; font-weight:600;">✅ চেক-ইন সম্পন্ন। এখন ইভ্যালুয়েশন করো।</div>
           <div id="evaluation-section" class="hidden">
+            <div id="mood-picker" class="mood-picker">
+              <span>আজকের ট্রেডিং মুড:</span>
+              <span class="mood-emoji" data-mood="happy">😊</span>
+              <span class="mood-emoji" data-mood="neutral">😐</span>
+              <span class="mood-emoji" data-mood="stressed">😰</span>
+              <span class="mood-emoji" data-mood="angry">😡</span>
+            </div>
             <hr style="border-color:var(--border-gold); margin:20px 0; opacity:0.5;">
             <h4>📊 ট্রেডিং সেশন ইভ্যালুয়েশন (১০-প্রশ্ন, ১০০)</h4>
             <div id="score-sliders"></div>
@@ -637,6 +630,60 @@
             <button class="btn btn-sm btn-accent" onclick="submitQuiz()">উত্তর দিন</button>
             <div id="quiz-done" class="hidden" style="color:var(--success); margin-top:8px; font-weight:600;">✅ আজকের কুইজ সম্পন্ন হয়েছে</div>
           </div>
+        </div>
+      </div>
+
+      <div id="tab-habits" class="tab-content hidden">
+        <div class="glass" style="text-align:right; margin-bottom:12px;">
+          <button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ নতুন অভ্যাস</button>
+        </div>
+        <div id="habits-list"></div>
+        <div id="add-habit-modal" class="modal-overlay hidden">
+          <div class="glass modal-content">
+            <h3>নতুন অভ্যাস যোগ করো</h3>
+            <input type="text" id="new-habit-title" placeholder="অভ্যাসের নাম (যেমন: মেডিটেশন, ব্যায়াম)">
+            <div class="flex" style="gap:8px;">
+              <label>আইকন:</label>
+              <select id="new-habit-icon">
+                <option value="🧘">🧘 ধ্যান</option>
+                <option value="🏃">🏃 দৌড়ানো</option>
+                <option value="📖">📖 পড়া</option>
+                <option value="💧">💧 পানি</option>
+                <option value="✍️">✍️ জার্নাল</option>
+                <option value="🍎">🍎 স্বাস্থ্যকর</option>
+                <option value="💪">💪 ব্যায়াম</option>
+              </select>
+              <label>রঙ:</label>
+              <input type="color" id="new-habit-color" value="#c59b3b" style="width:50px;">
+            </div>
+            <label>রিমাইন্ডার সময় (কমা দিয়ে, যেমন: 06:00,12:00,20:00)</label>
+            <input type="text" id="new-habit-times" placeholder="06:00,12:00,20:00">
+            <button class="btn btn-lg" onclick="saveHabit()">সংরক্ষণ</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('add-habit-modal').classList.add('hidden')">বাতিল</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== ট্রেনিং ট্যাব ========== -->
+      <div id="tab-training" class="tab-content hidden">
+        <div class="glass" style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>⚡ এনার্জি</span>
+            <span><strong id="energy-current">50</strong>/<span id="energy-max">50</span></span>
+          </div>
+          <div class="progress-bar" style="height:12px;">
+            <div id="energy-fill" class="progress-fill" style="width:100%; background:linear-gradient(90deg, #00e5ff, #006064);"></div>
+          </div>
+        </div>
+        <div class="glass">
+          <h2>📚 ট্রেডার ট্রেনিং একাডেমি</h2>
+          <p style="color:var(--text-secondary); margin-bottom:16px;">প্রতিটি চ্যাপ্টার সম্পূর্ণ করে কুইজে ৯০%+ স্কোর করে পরবর্তী ধাপে যান</p>
+          <div id="chapter-list" class="grid-2"></div>
+        </div>
+        <div id="final-exam-section" class="glass hidden" style="text-align:center; margin-top:16px;">
+          <h3>🏆 ফাইনাল পরীক্ষা</h3>
+          <p style="color:var(--text-secondary);">আপনি সব চ্যাপ্টার সম্পূর্ণ করেছেন! এখন ফাইনাল পরীক্ষা দিন।</p>
+          <button class="btn btn-accent btn-lg" onclick="startFinalExam()">ফাইনাল পরীক্ষা শুরু</button>
         </div>
       </div>
 
@@ -720,37 +767,87 @@
             </select>
             <button class="btn btn-sm" onclick="changeAvatar()">আপডেট</button>
           </div>
+          <h4>🌱 অ্যাভাটার ইভোলিউশন</h4>
+          <div id="avatar-evolution" class="evolution-tree">
+            <div class="stage" data-phase="Awareness">🌱 Awareness</div>
+            <div class="stage" data-phase="Discipline">🌿 Discipline</div>
+            <div class="stage" data-phase="Consistency">🌳 Consistency</div>
+            <div class="stage" data-phase="Psychology">🧠 Psychology</div>
+            <div class="stage" data-phase="Professional">💼 Pro</div>
+            <div class="stage" data-phase="Institutional">🏛️ Institutional</div>
+          </div>
           <h4>🏅 ব্যাজ</h4>
           <div id="profile-badges" class="flex" style="gap:6px;"></div>
           <hr style="border-color:var(--border-gold); margin:20px 0; opacity:0.5;">
           <h4>⏰ রিমাইন্ডার সেটিংস</h4>
-          <p style="color:var(--text-secondary); font-size:0.85rem;">তুমি কখন প্রতিদিনের চেক-ইন শুরু করতে চাও?</p>
-          <div class="flex" style="gap:8px;">
-            <input type="time" id="reminder-time" value="08:00" style="flex:1;">
-            <button class="btn btn-sm btn-accent" onclick="saveReminderTime()">সেভ</button>
-          </div>
-          <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:4px;">এই সময়ে তুমি নোটিফিকেশন পাবে</p>
-          <h4 style="margin-top:16px;">⚙️ নোটিফিকেশন সেটিংস</h4>
-          <label class="flex"><input type="checkbox" id="notif-email" checked> ইমেইল রিমাইন্ডার</label>
+          <p style="color:var(--text-secondary); font-size:0.85rem;">প্রতিদিনের চেক-ইন রিমাইন্ডার</p>
+          <input type="time" id="reminder-time" value="08:00" style="flex:1;">
+          <button class="btn btn-sm btn-accent" onclick="saveReminderTime()">সেভ</button>
+          <h4 style="margin-top:16px;">⚙️ নোটিফিকেশন</h4>
+          <label class="flex"><input type="checkbox" id="notif-email" checked> ইমেইল</label>
           <label class="flex"><input type="checkbox" id="notif-push" checked> পুশ নোটিফিকেশন</label>
-          <label class="flex"><input type="checkbox" id="bg-music-toggle"> 🎵 ব্যাকগ্রাউন্ড মিউজিক</label>
           <button class="btn btn-sm" onclick="updateNotifSettings()">সেভ</button>
           <button class="btn btn-outline btn-sm" style="margin-top:20px; width:100%;" onclick="logout()">লগআউট</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="bottom-nav">
-      <div class="nav-item active" data-tab="journey"><span>🏠</span>জার্নি</div>
-      <div class="nav-item" data-tab="progress"><span>📈</span>অগ্রগতি</div>
-      <div class="nav-item" data-tab="insights"><span>📊</span>ইনসাইট</div>
-      <div class="nav-item" data-tab="lessons"><span>📚</span>লেসন</div>
-      <div class="nav-item" data-tab="community"><span>🌍</span>কমিউনিটি</div>
-      <div class="nav-item" data-tab="profile"><span>👤</span>প্রোফাইল</div>
+  <!-- চ্যাপ্টার ভিউ মোডাল -->
+  <div id="chapter-modal" class="modal-overlay hidden">
+    <div class="glass modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto; width:95%;">
+      <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button>
+      <h2 id="chapter-modal-title"></h2>
+      <img id="chapter-modal-image" style="max-width:100%; border-radius:12px; margin:16px 0; display:none;" />
+      <div id="chapter-modal-video-container" style="display:none; margin:16px 0;">
+        <iframe id="chapter-modal-video" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div id="chapter-modal-content" style="color:var(--text); line-height:1.8; font-size:1rem;"></div>
+      <hr style="border-color:var(--border-gold); margin:24px 0;">
+      <h3>🧪 কুইজ</h3>
+      <div id="quiz-container"></div>
+      <div id="quiz-result" class="hidden"></div>
+      <button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()" style="margin-top:16px;">উত্তর জমা দিন</button>
+      <button class="btn btn-outline" id="retry-chapter-btn" onclick="closeChapterModal()" style="margin-top:8px; display:none;">পুনরায় পড়ুন</button>
     </div>
   </div>
 
+  <!-- ফাইনাল এক্সাম মোডাল -->
+  <div id="final-exam-modal" class="modal-overlay hidden">
+    <div class="glass modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto; width:95%;">
+      <h2>🏆 ফাইনাল পরীক্ষা</h2>
+      <p style="color:var(--text-secondary);">সময়সীমা: ৪৫ মিনিট | পাসিং স্কোর: ৮০%</p>
+      <div id="final-exam-questions"></div>
+      <button class="btn btn-accent btn-lg" onclick="submitFinalExam()" style="margin-top:16px;">জমা দিন</button>
+      <div id="final-exam-result" class="hidden"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav hidden">
+    <div class="nav-item" data-tab="journey"><span>📅</span> যাত্রা</div>
+    <div class="nav-item" data-tab="habits"><span>✅</span> অভ্যাস</div>
+    <div class="nav-item" data-tab="training"><span>📚</span> প্রশিক্ষণ</div>
+    <div class="nav-item" data-tab="progress"><span>📈</span> অগ্রগতি</div>
+    <div class="nav-item" data-tab="community"><span>🌍</span> কমিউনিটি</div>
+    <div class="nav-item" data-tab="profile"><span>👤</span> প্রোফাইল</div>
+  </div>
+
+  <!-- Google Translate Widget -->
+  <div id="google_translate_element" style="position:fixed; top:80px; right:20px; z-index:10000; opacity:0.8;"></div>
+  <script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'bn',
+      includedLanguages: 'bn,en,hi,ar,ur',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <script>
+    // ==================== Global Config ====================
     const API = '/api/setup';
     let token = localStorage.getItem('token');
     let chart = null, radarChart = null;
@@ -758,59 +855,16 @@
     let quizData = null;
     let currentUser = null;
     let previousLevel = null;
-    let audioCtx = null;
-    let ambientMusic = null;
+    let habitDefinitions = [];
+    let todayLogs = [];
+    let activeReminders = [];
+    let selectedMood = null;
+    let currentChapterId = null;
+    let currentChapterQuestions = [];
 
     function escapeHtml(text) {
       if (!text) return '';
       return String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-
-    function getAudioCtx() {
-      if (!audioCtx) {
-        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
-      }
-      return audioCtx;
-    }
-
-    function playTone(freq, dur, type = 'sine') {
-      try {
-        const ctx = getAudioCtx();
-        if (!ctx) return;
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = type; o.frequency.value = freq;
-        g.gain.setValueAtTime(0.3, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(); o.stop(ctx.currentTime + dur);
-      } catch(e){}
-    }
-
-    function playSuccessSound() { playTone(800, 0.3); }
-    function playBadgeSound() { playTone(1200, 0.4, 'triangle'); }
-
-    function startAmbientMusic() {
-      if (ambientMusic) return;
-      try {
-        const ctx = getAudioCtx();
-        if (!ctx || ctx.state === 'closed') return;
-        const gain = ctx.createGain(); gain.gain.value = 0.04;
-        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 220;
-        const lfo = ctx.createOscillator(); lfo.frequency.value = 0.15;
-        const lfoGain = ctx.createGain(); lfoGain.gain.value = 18;
-        lfo.connect(lfoGain); lfoGain.connect(osc.frequency);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(); lfo.start();
-        ambientMusic = { ctx, osc, lfo, gain };
-      } catch(e){}
-    }
-
-    function stopAmbientMusic() {
-      if (ambientMusic) {
-        ambientMusic.osc.stop(); ambientMusic.lfo.stop();
-        ambientMusic = null;
-      }
     }
 
     function showToast(msg, dur=3000) {
@@ -820,17 +874,8 @@
     }
 
     function celebrate(msg) {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#d4af37','#ffb800','#00e5ff','#ff5252'] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#c59b3b','#f2d680','#00e5ff','#ff5252'] });
       showToast(msg || '🎉');
-    }
-
-    function showRegister() {
-      document.getElementById('register-form').classList.remove('hidden');
-      document.getElementById('login-form').classList.add('hidden');
-    }
-    function showLogin() {
-      document.getElementById('register-form').classList.add('hidden');
-      document.getElementById('login-form').classList.remove('hidden');
     }
 
     async function apiCall(method, path, body) {
@@ -843,25 +888,181 @@
       } catch(e) { return { error: 'Network error' }; }
     }
 
-    function initGoogleSignIn() {
-      if (typeof google === 'undefined' || !google.accounts) return;
-      google.accounts.id.initialize({
-        client_id: '',
-        callback: handleGoogleCredential,
-      });
-      google.accounts.id.renderButton(
-        document.getElementById('google-signin-btn'),
-        { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' }
-      );
+    // ==================== Starfield ====================
+    (function(){
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let stars = [], shootingStars = [];
+      function resizeBg() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      function createStars(count) {
+        stars = [];
+        for(let i=0;i<count;i++) stars.push({
+          x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+          r: Math.random()*1.5+0.5, o: Math.random()*0.6+0.2, speed: 0.02+Math.random()*0.08
+        });
+      }
+      function animateStars() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        const grd = ctx.createRadialGradient(canvas.width*0.2, canvas.height*0.3, 0, canvas.width*0.5, canvas.height*0.5, canvas.width);
+        grd.addColorStop(0, 'rgba(100, 0, 150, 0.05)');
+        grd.addColorStop(0.5, 'rgba(0, 100, 200, 0.03)');
+        grd.addColorStop(1, 'transparent');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        stars.forEach(s => {
+          ctx.fillStyle = `rgba(255,255,255,${s.o})`;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+          s.y -= s.speed;
+          if(s.y < -5) { s.y = canvas.height+5; s.x = Math.random()*canvas.width; }
+        });
+        if (Math.random() < 0.02) {
+          const sx = Math.random()*canvas.width, sy = Math.random()*canvas.height*0.5;
+          shootingStars.push({ x: sx, y: sy, life: 1.0 });
+        }
+        shootingStars.forEach((s, idx) => {
+          ctx.strokeStyle = `rgba(255,255,255,${s.life})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(s.x+80, s.y-50);
+          ctx.stroke();
+          s.life -= 0.02;
+          s.x += 4;
+          s.y -= 2.5;
+          if (s.life <= 0) shootingStars.splice(idx,1);
+        });
+        requestAnimationFrame(animateStars);
+      }
+      window.addEventListener('resize', ()=>{ resizeBg(); createStars(150); });
+      resizeBg(); createStars(150); animateStars();
+    })();
+
+    // ==================== Ripple effect ====================
+    function createRipple(e, el) {
+      const circle = document.createElement('span');
+      const d = Math.max(el.clientWidth, el.clientHeight);
+      const r = d/2;
+      const rect = el.getBoundingClientRect();
+      circle.style.width = circle.style.height = d+'px';
+      circle.style.left = (e.clientX - rect.left - r)+'px';
+      circle.style.top = (e.clientY - rect.top - r)+'px';
+      circle.classList.add('ripple');
+      el.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
     }
-    async function handleGoogleCredential(response) {
-      const credential = response.credential;
-      const data = await apiCall('POST', '/auth/google', { credential });
-      if (data?.token) {
-        token = data.token;
-        localStorage.setItem('token', token);
-        initDashboard(data.user);
-      } else showToast('Google login failed');
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.btn');
+      if (btn) createRipple(e, btn);
+    });
+
+    function showFloatingXp(amount) {
+      const el = document.createElement('div');
+      el.className = 'float-xp';
+      el.textContent = `+${amount} XP`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }
+
+    // ==================== Mood Picker ====================
+    document.querySelectorAll('.mood-emoji').forEach(emoji => {
+      emoji.addEventListener('click', function() {
+        document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedMood = this.dataset.mood;
+      });
+    });
+
+    // ==================== Habit Reminders ====================
+    function scheduleHabitReminder(habitId, time, title) {
+      const [h,m] = time.split(':');
+      const now = new Date();
+      const target = new Date(); target.setHours(h,m,0,0);
+      if (target <= now) target.setDate(target.getDate()+1);
+      const ms = target - now;
+      const timerId = setTimeout(() => {
+        if (Notification.permission === 'granted') {
+          new Notification(`🧩 ${title}`, { body: `এখন ${time} টায় অভ্যাস করার সময়`, icon: '/icon-72.png' });
+        }
+        scheduleHabitReminder(habitId, time, title);
+      }, ms);
+      activeReminders.push({ habitId, time, timerId });
+    }
+    function clearAllReminders() {
+      activeReminders.forEach(r => clearTimeout(r.timerId));
+      activeReminders = [];
+    }
+    function scheduleAllReminders(defs) {
+      clearAllReminders();
+      defs.forEach(habit => {
+        if (habit.reminder_times) {
+          habit.reminder_times.forEach(time => scheduleHabitReminder(habit.id, time, habit.title));
+        }
+      });
+    }
+
+    // ==================== Habit management ====================
+    async function loadHabits() {
+      const date = new Date().toLocaleDateString('en-CA');
+      const defRes = await fetch(`${API}/habits/definitions`, {headers: {'Authorization':`Bearer ${token}`}});
+      habitDefinitions = await defRes.json();
+      const logRes = await fetch(`${API}/habits/logs?date=${date}`, {headers: {'Authorization':`Bearer ${token}`}});
+      const logs = await logRes.json();
+      todayLogs = logs;
+      renderHabits(habitDefinitions, logs);
+      scheduleAllReminders(habitDefinitions);
+    }
+
+    function renderHabits(habits, logs) {
+      const container = document.getElementById('habits-list');
+      container.innerHTML = habits.map(h => {
+        const log = logs.find(l => l.habit_id === h.id);
+        const times = (h.reminder_times || []);
+        const timesHtml = times.map(t => `<div class="habit-time-slot ${log?.completed_times?.[t] ? 'done' : ''}" onclick="toggleHabitTime('${h.id}','${t}')">${t} ${log?.completed_times?.[t]?'✅':'⏳'}</div>`).join('');
+        return `<div class="glass habit-card" style="border-left:4px solid ${h.color};">
+          <div class="flex" style="justify-content:space-between; align-items:center;">
+            <span style="font-size:24px;">${h.icon}</span> <strong>${escapeHtml(h.title)}</strong>
+            <span class="badge" style="background:${h.color};">${times.every(t=>log?.completed_times?.[t]) ? '✓' : '○'}</span>
+          </div>
+          <div class="habit-times-grid">${timesHtml}</div>
+        </div>`;
+      }).join('');
+    }
+
+    async function toggleHabitTime(habitId, time) {
+      const date = new Date().toLocaleDateString('en-CA');
+      const log = todayLogs.find(l => l.habit_id === habitId);
+      const completed = !(log?.completed_times?.[time] ?? false);
+      await fetch(`${API}/habits/logs`, {
+        method:'POST',
+        headers:{'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'},
+        body:JSON.stringify({habit_id:habitId, date, time, completed})
+      });
+      loadHabits();
+      if(completed) showFloatingXp(3);
+    }
+
+    function showAddHabitForm() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
+    async function saveHabit() {
+      const title = document.getElementById('new-habit-title').value.trim();
+      const icon = document.getElementById('new-habit-icon').value;
+      const color = document.getElementById('new-habit-color').value;
+      const timesRaw = document.getElementById('new-habit-times').value;
+      const reminder_times = timesRaw.split(',').map(t=>t.trim()).filter(t=>t);
+      if(!title) return showToast('নাম দিন');
+      await apiCall('POST', '/habits/definitions', { title, icon, color, reminder_times });
+      document.getElementById('add-habit-modal').classList.add('hidden');
+      loadHabits();
+      showToast('হ্যাবিট যোগ হয়েছে');
+    }
+
+    // ==================== Auth & Init ====================
+    function showRegister() {
+      document.getElementById('register-form').classList.remove('hidden');
+      document.getElementById('login-form').classList.add('hidden');
+    }
+    function showLogin() {
+      document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('login-form').classList.remove('hidden');
     }
 
     async function login() {
@@ -899,13 +1100,13 @@
       document.getElementById('dashboard').classList.add('hidden');
       document.querySelector('.bottom-nav').classList.add('hidden');
       document.querySelector('.admin-gear').classList.add('hidden');
-      stopAmbientMusic();
+      clearAllReminders();
     }
 
     function updateXpBar(xp, level) {
       const xpForCurrent = (level-1)*75;
-      const progress = ((xp - xpForCurrent) / 75) * 100;
-      document.getElementById('xp-bar-fill').style.width = Math.min(100, Math.max(0, progress)) + '%';
+      const progress = Math.min(100, Math.max(0, ((xp - xpForCurrent) / 75) * 100));
+      document.getElementById('xp-bar-fill').style.width = progress + '%';
       document.getElementById('xp-next').textContent = (level*75) - xp;
     }
 
@@ -915,46 +1116,73 @@
       document.getElementById('level-up-title').innerHTML = `লেভেল ${newLevel}!`;
       document.getElementById('level-up-text').textContent = titleText || `তুমি এখন লেভেল ${newLevel} এ পৌঁছে গেছো!`;
       document.getElementById('level-up-modal').classList.remove('hidden');
-      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#d4af37','#ffb800','#00e5ff','#b388ff'] });
-      playBadgeSound();
+      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#c59b3b','#f2d680','#00e5ff','#b388ff'] });
     }
 
     async function checkStreakMilestone(streak) {
       if (streak === 7) {
         document.getElementById('streak-modal-title').textContent = '7 Day Streak!';
-        document.getElementById('streak-modal-text').textContent = 'অভূতপূর্ব ধারাবাহিকতা! 50 XP বোনাস পেয়েছো!';
+        document.getElementById('streak-modal-text').textContent = 'অভূতপূর্ব ধারাবাহিকতা! 50 XP বোনাস!';
         document.getElementById('streak-modal').classList.remove('hidden');
         confetti({ particleCount:250 });
-        playBadgeSound();
       } else if (streak === 14) {
         document.getElementById('streak-modal-title').textContent = '14 Day Streak!';
         document.getElementById('streak-modal-text').textContent = 'তুমি এখন অপ্রতিরোধ্য! 100 XP বোনাস!';
         document.getElementById('streak-modal').classList.remove('hidden');
         confetti({ particleCount:350 });
-        playBadgeSound();
       } else if (streak === 21) {
         document.getElementById('streak-modal-title').textContent = '21 Day Streak!';
         document.getElementById('streak-modal-text').textContent = 'কিংবদন্তি! 150 XP বোনাস ও বিশেষ ব্যাজ!';
         document.getElementById('streak-modal').classList.remove('hidden');
         confetti({ particleCount:500, spread:150 });
-        playBadgeSound();
       } else if (streak === 30) {
         document.getElementById('streak-modal-title').textContent = '30 Day Master!';
         document.getElementById('streak-modal-text').textContent = 'তুমি এখন ইনস্টিটিউশনাল লেজেন্ড! 300 XP!';
         document.getElementById('streak-modal').classList.remove('hidden');
-        confetti({ particleCount:800, spread:180, colors:['#d4af37','#ffb800','#00e5ff','#b388ff','#ff5252'] });
-        playBadgeSound();
+        confetti({ particleCount:800, spread:180 });
       }
     }
 
     function showMysteryBox() { document.getElementById('mystery-box-modal').classList.remove('hidden'); }
-
     async function openMysteryBox() {
       const res = await apiCall('POST', '/open-box');
       document.getElementById('mystery-box-modal').classList.add('hidden');
-      if (res?.reward) { celebrate(`🎁 ${res.reward} পেয়েছ!`); playBadgeSound(); }
+      if (res?.reward) { celebrate(`🎁 ${res.reward} পেয়েছ!`); }
       else showToast(res?.message || 'বক্স খালি!');
       loadProfile();
+    }
+
+    async function toggleAiCoach() {
+      const drawer = document.getElementById('ai-coach-drawer');
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) {
+        const feedbackRes = await fetch(`${API}/latest-feedback`, {headers:{'Authorization':`Bearer ${token}`}});
+        const data = await feedbackRes.json();
+        document.getElementById('ai-coach-message').textContent = data?.feedback || 'এখনো কোনো ফিডব্যাক নেই।';
+      }
+    }
+
+    async function loadDailyQuest() {
+      const quest = await apiCall('GET', '/daily-quest');
+      if (!quest) return;
+      const descMap = {
+        'no_revenge': 'আজ রিভেঞ্জ ট্রেড থেকে বিরত থাকো',
+        'no_fomo': 'আজ FOMO এন্ট্রি করো না',
+        'q6_8plus': 'আজ Q6 (শৃঙ্খলা) স্কোর ৮ বা তার উপরে রাখো',
+        'mindfulness': 'মাইন্ডফুলনেস অনুশীলন করো',
+        'habit_complete': 'আজ একটি হ্যাবিট সম্পন্ন করো'
+      };
+      document.getElementById('quest-desc').textContent = descMap[quest.quest_type] || 'আজকের মিশন';
+      document.getElementById('quest-fill').style.width = (quest.completed ? 100 : (quest.progress/quest.target)*100) + '%';
+      const claimBtn = document.getElementById('claim-quest-btn');
+      if (quest.completed && !quest.claimed) claimBtn.disabled = false;
+      else { claimBtn.disabled = true; if (quest.claimed) claimBtn.textContent = 'দাবি করা হয়েছে'; }
+    }
+
+    async function claimQuestReward() {
+      const res = await apiCall('POST', '/claim-quest-reward');
+      if (res?.success) { celebrate('+15 XP!'); showFloatingXp(15); loadDailyQuest(); loadProfile(); }
+      else showToast(res?.error || 'দাবি করতে ব্যর্থ');
     }
 
     function showAdminTab(tab) {
@@ -967,6 +1195,7 @@
     }
 
     async function openAdminPanel() { document.getElementById('admin-modal').classList.remove('hidden'); showAdminTab('stats'); }
+    // ... (admin functions are same as before, omitted for brevity but present in final file)
     async function loadAdminStats() {
       const res = await apiCall('GET', '/admin?admin_secret=admin123');
       document.getElementById('admin-stats-tab').innerHTML = res && !res.error ? `
@@ -1019,8 +1248,8 @@
     function setupContentForm() {
       const type = document.getElementById('content-type-select').value;
       const fields = document.getElementById('content-form-fields');
-      if (type==='lesson') fields.innerHTML = `<input id="content-day" type="number" placeholder="Day number" min="1" max="30"><input id="content-phase" placeholder="Phase name"><input id="content-title" placeholder="Title"><textarea id="content-body" placeholder="Content"></textarea>`;
-      else if (type==='quiz') fields.innerHTML = `<input id="content-question" placeholder="Question"><input id="content-options" placeholder="Options (JSON array)"><input id="content-correct" type="number" placeholder="Correct index" min="0">`;
+      if (type==='lesson') fields.innerHTML = `<input id="content-day" type="number" placeholder="Day number"><input id="content-phase" placeholder="Phase"><input id="content-title" placeholder="Title"><textarea id="content-body" placeholder="Content"></textarea>`;
+      else if (type==='quiz') fields.innerHTML = `<input id="content-question" placeholder="Question"><input id="content-options" placeholder="Options (JSON)"><input id="content-correct" type="number" placeholder="Correct index">`;
       else if (type==='video') fields.innerHTML = `<input id="content-vtitle" placeholder="Video Title"><textarea id="content-vdesc" placeholder="Description"></textarea><input id="content-ytid" placeholder="YouTube ID"><input id="content-duration" placeholder="Duration"><input id="content-category" placeholder="Category">`;
     }
     async function addContent() {
@@ -1048,10 +1277,10 @@
         document.getElementById('user-identity').textContent = userData.identity_level;
         document.getElementById('xp-display').textContent = `⭐ ${userData.xp||0} XP`;
         document.getElementById('user-level').textContent = userData.level||1;
+        document.getElementById('user-level-bar').textContent = userData.level||1;
         document.getElementById('streak-count').textContent = '0';
-        document.getElementById('profile-name').textContent = userData.display_name||'';
-        document.getElementById('profile-email').textContent = userData.email;
         updateXpBar(userData.xp, userData.level);
+        updateEvolutionTree(userData.identity_level);
         if (!localStorage.getItem('welcome_shown')) {
           document.getElementById('welcome-modal').classList.remove('hidden');
           document.getElementById('welcome-name').textContent = userData.display_name||userData.email.split('@')[0];
@@ -1060,6 +1289,7 @@
       await loadProfile();
       await loadQuiz();
       await loadWeeklyChallenge();
+      await loadDailyQuest();
       renderSliders();
       showTab('journey');
       setTimeout(() => claimDailyBonus(), 1500);
@@ -1068,15 +1298,34 @@
 
     function closeWelcome() { localStorage.setItem('welcome_shown','1'); document.getElementById('welcome-modal').classList.add('hidden'); }
 
+    function updateEvolutionTree(currentPhase) {
+      const stages = document.querySelectorAll('.evolution-tree .stage');
+      const phaseMap = { 'Awareness':0, 'Discipline':1, 'Consistency':2, 'Psychology':3, 'Professional':4, 'Institutional':5 };
+      const idx = phaseMap[currentPhase] ?? 0;
+      stages.forEach((s, i) => s.classList.toggle('active', i === idx));
+    }
+
     function renderSliders() {
       const container = document.getElementById('score-sliders');
       const questions = [
-        { id:'q1', label:'1. Plan Adherence' },{ id:'q2', label:'2. Setup Selection' },{ id:'q3', label:'3. Risk Management' },
-        { id:'q4', label:'4. Execution Quality' },{ id:'q5', label:'5. Disciplined Exit' },{ id:'q6', label:'6. Discipline Compliance' },
-        { id:'q7', label:'7. Emotional Control' },{ id:'q8', label:'8. Patience & Focus' },{ id:'q9', label:'9. Review & Learning' },
-        { id:'q10', label:'10. Improvement Mindset' }
+        { id:'q1', short:'পরিকল্পনা অনুসরণ', full:'আজ আমি কি আমার পূর্বনির্ধারিত Trading Plan শতভাগ অনুসরণ করেছি?' },
+        { id:'q2', short:'উচ্চ-মানের সেটআপ', full:'আজ আমি কি শুধুমাত্র A+ Quality Setup-এ ট্রেড নিয়েছি?' },
+        { id:'q3', short:'ঝুঁকি ব্যবস্থাপনা', full:'আমার নির্ধারিত Risk Limit, Lot Size সঠিকভাবে অনুসরণ করেছি?' },
+        { id:'q4', short:'এক্সিকিউশন মান', full:'সঠিক Confirmation পেয়ে সঠিক সময়ে Entry নিয়েছি?' },
+        { id:'q5', short:'শৃঙ্খলাপূর্ণ এক্সিট', full:'Take Profit, Stop Loss অনুযায়ী ট্রেড বন্ধ করেছি?' },
+        { id:'q6', short:'শৃঙ্খলা ও নিয়ম', full:'কোনো Trading Rule ভঙ্গ না করে শৃঙ্খলা বজায় রেখেছি?' },
+        { id:'q7', short:'আবেগ নিয়ন্ত্রণ', full:'Fear, Greed, FOMO নিয়ন্ত্রণে রেখেছি?' },
+        { id:'q8', short:'ধৈর্য ও মনোযোগ', full:'ধৈর্য ধরে সঠিক সুযোগের অপেক্ষা করেছি?' },
+        { id:'q9', short:'দৈনিক পর্যালোচনা', full:'প্রতিটি ট্রেড বিশ্লেষণ করে ভুল থেকে শিক্ষা নিয়েছি?' },
+        { id:'q10', short:'ধারাবাহিক উন্নতি', full:'গতকালের ভুল পুনরাবৃত্তি না করে নিজেকে উন্নত করেছি?' }
       ];
-      container.innerHTML = questions.map(q => `<div class="slider-item"><label>${q.label}</label><input type="range" min="0" max="10" step="2" value="8" data-q="${q.id}"><span>8</span></div>`).join('');
+      container.innerHTML = questions.map(q => `
+        <div class="slider-item">
+          <label><strong>${q.short}</strong></label>
+          <input type="range" min="0" max="10" step="1" value="8" data-q="${q.id}">
+          <span>8</span>
+        </div>
+      `).join('');
       container.querySelectorAll('input[type="range"]').forEach(inp => inp.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value));
     }
 
@@ -1088,6 +1337,7 @@
       const navItem = document.querySelector(`.nav-item[data-tab="${tab}"]`);
       if (navItem) navItem.classList.add('active');
       currentTab = tab;
+      if (tab==='habits') loadHabits();
       if (tab==='progress') loadProgress();
       if (tab==='lessons') loadLessons();
       if (tab==='videos') loadVideos();
@@ -1095,6 +1345,7 @@
       if (tab==='leaderboard') loadLeaderboard();
       if (tab==='profile') loadProfilePage();
       if (tab==='insights') loadInsights();
+      if (tab==='training') loadTrainingTab();
     }
 
     async function loadProfile() {
@@ -1109,7 +1360,9 @@
       document.getElementById('streak-count').textContent = streak;
       document.getElementById('xp-display').textContent = `⭐ ${user.xp} XP`;
       document.getElementById('user-level').textContent = user.level;
+      document.getElementById('user-level-bar').textContent = user.level;
       updateXpBar(user.xp, user.level);
+      updateEvolutionTree(user.identity_level);
       if (user.level > previousLevel) showLevelUp(user.level, previousLevel);
       previousLevel = user.level;
       await checkStreakMilestone(streak);
@@ -1130,8 +1383,7 @@
         document.getElementById('feedback-area').classList.add('hidden');
       }
       updateReflectionPrompts();
-      document.getElementById('profile-name').textContent = user.display_name||'';
-      document.getElementById('profile-email').textContent = user.email;
+      loadDailyQuest();
     }
 
     function updateReflectionPrompts() {
@@ -1143,16 +1395,19 @@
       if (!document.getElementById('mindfulness-done').checked) return showToast('Mindfulness সম্পন্ন করো');
       const commitment = document.getElementById('commitment').value.trim();
       if (!commitment) return showToast('প্রতিজ্ঞা লেখো');
-      await apiCall('POST', '/checkin', { mindfulness_done:true, commitment });
+      const localDate = new Date().toLocaleDateString('en-CA');
+      await apiCall('POST', '/checkin', { mindfulness_done:true, commitment, date:localDate });
       document.getElementById('morning-section').classList.add('hidden');
       document.getElementById('checkin-done-msg').classList.remove('hidden');
       setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); updateReflectionPrompts(); }, 1000);
-      showToast('✅ চেক-ইন সফল!'); playSuccessSound();
+      showToast('✅ চেক-ইন সফল!');
     }
 
     async function submitEvaluation() {
+      if (!selectedMood) return showToast('একটি মুড নির্বাচন করো');
       const scores = {};
       document.querySelectorAll('#score-sliders input[type="range"]').forEach(inp => scores[inp.dataset.q] = parseInt(inp.value));
+      const localDate = new Date().toLocaleDateString('en-CA');
       const body = {
         trades_count: parseInt(document.getElementById('trades-count').value),
         stop_loss_moved: document.getElementById('stop-loss-moved').value==='true',
@@ -1162,16 +1417,19 @@
         overtrading: document.getElementById('overtrading').value==='true',
         rule_followed: document.getElementById('rule-followed').value==='true',
         scores, evaluation_notes: document.getElementById('evaluation-notes').value,
-        reflection: document.getElementById('reflection').value
+        reflection: document.getElementById('reflection').value,
+        mood: selectedMood,
+        date: localDate
       };
       const data = await apiCall('POST', '/evaluation', body);
       if (data && !data.error) {
         document.getElementById('evaluation-section').classList.add('hidden');
         showFeedback(data);
-        if (data.badges?.length) { celebrate(`🏅 ${data.badges.join(', ')} অর্জিত!`); playBadgeSound(); }
-        else playSuccessSound();
+        if (data.badges?.length) { celebrate(`🏅 ${data.badges.join(', ')} অর্জিত!`); }
         showToast(`+${data.xpGain} XP ${data.bonus?'(+'+data.bonus+' XP Streak Bonus!)':''}`);
         document.getElementById('mystery-box-btn').classList.toggle('hidden', !data.box_available);
+        selectedMood = null;
+        document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected'));
         await loadProfile();
         if (currentTab==='progress') loadProgress();
       } else showToast(data?.error||'Error');
@@ -1184,6 +1442,7 @@
       document.getElementById('feedback-area').classList.remove('hidden');
     }
 
+    // ==================== Progress, Insights, Lessons, Videos, Community (same as before) ====================
     async function loadProgress() {
       const data = await apiCall('GET', '/progress');
       if (!data) return;
@@ -1203,7 +1462,7 @@
         let status = 'upcoming';
         if (data.totalDays >= p.max) status = 'completed';
         else if (data.totalDays >= p.min) status = 'active';
-        return `<div class="timeline-item ${status==='completed'?'completed':''} ${status==='active'?'active':''}"><strong>${p.icon} ${p.name}</strong> <span style="color:var(--text-secondary);">${p.min+1}-${p.max} দিন</span></div>`;
+        return `<div class="timeline-item ${status}"><strong>${p.icon} ${p.name}</strong></div>`;
       }).join('');
       const heatmap = document.getElementById('heatmap');
       const today = new Date(); const daysArr = [];
@@ -1214,38 +1473,34 @@
       if (radarChart) radarChart.destroy();
       if (data.radar_today) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(212,175,55,0.25)', borderColor:'#d4af37' }] }, options:{ scales:{ r:{ min:0, max:20, ticks:{ color:'#aaa' }, grid:{ color:'#333' } } } } });
+        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(197,155,59,0.25)', borderColor:'#c59b3b' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
       }
       if (chart) chart.destroy();
       const ctx2 = document.getElementById('scoresChart').getContext('2d');
-      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#d4af37' }] }, options:{ scales:{ y:{ min:0, max:10 } } } });
+      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#c59b3b' }] } });
       document.getElementById('certificate-btn').classList.toggle('hidden', data.totalDays<30);
       document.getElementById('share-certificate-btn').classList.toggle('hidden', data.totalDays<30);
     }
-
     async function loadInsights() {
       const res = await apiCall('GET', '/insights');
       document.getElementById('insights-content').innerHTML = res ? `
         <p>📊 মোট জার্নাল: ${res.totalJournals}</p><p>🔥 বর্তমান স্ট্রিক: ${res.currentStreak}</p>
         <p>⚠️ সবচেয়ে ঘনঘন ভুল: ${res.topMistake}</p><p>📈 গড় ডিসিপ্লিন: ${res.avgDiscipline?.toFixed(1)||'N/A'}</p>` : 'ইনসাইট লোড করতে সমস্যা';
     }
-
     async function loadLessons() {
       const lessons = await apiCall('GET', '/lessons');
       document.getElementById('lessons-list').innerHTML = lessons.map(l => `
         <div style="display:flex; justify-content:space-between; padding:14px; background:rgba(255,255,255,0.03); border-radius:14px; margin-bottom:8px;">
-          <div><strong>${escapeHtml(l.title)}</strong><span class="badge">${escapeHtml(l.phase)}</span><p style="font-size:0.9rem;">${escapeHtml(l.content)}</p></div>
+          <div><strong>${escapeHtml(l.title)}</strong><span class="badge">${escapeHtml(l.phase)}</span><p>${escapeHtml(l.content)}</p></div>
           <button class="btn btn-sm" ${l.completed_at?'disabled':''} onclick="completeLesson(${l.id})">${l.completed_at?'✅':'সম্পন্ন'}</button></div>`).join('');
     }
-    async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); loadProfile(); showToast('+3 XP!'); playSuccessSound(); }
-
+    async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); loadProfile(); showToast('+3 XP!'); }
     async function loadVideos() {
       const videos = await apiCall('GET', '/videos');
       document.getElementById('video-grid').innerHTML = videos.map(v => `
         <div class="video-card">${(v.youtube_id.startsWith('PLACEHOLDER')||v.youtube_id.startsWith('YOUR')) ? '<div style="height:170px; display:flex; align-items:center; justify-content:center; background:#111;">📺 শীঘ্রই আসছে</div>' : `<iframe src="https://www.youtube.com/embed/${v.youtube_id}" allowfullscreen></iframe>`}
         <div class="video-info"><h4 style="color:var(--gold);">${escapeHtml(v.title)}</h4><p>${escapeHtml(v.description)}</p><small>${v.duration}</small></div></div>`).join('');
     }
-
     async function loadCommunity() {
       const posts = await apiCall('GET', '/community');
       document.getElementById('posts-container').innerHTML = posts.map(p => `
@@ -1286,7 +1541,6 @@
       await apiCall('POST', '/reply-post', { post_id:postId, content });
       input.value = ''; loadReplies(postId); showToast('উত্তর দেওয়া হয়েছে!');
     }
-
     async function loadLeaderboard() {
       const data = await apiCall('GET', '/leaderboard');
       document.getElementById('leaderboard-list').innerHTML = data.map((u,i) => `
@@ -1298,7 +1552,6 @@
         document.getElementById('my-rank').textContent = myIndex>=0 ? `আপনার অবস্থান: #${myIndex+1}` : 'লিডারবোর্ডে নেই';
       }
     }
-
     async function loadQuiz() {
       const data = await apiCall('GET', '/quiz');
       if (data?.question) {
@@ -1309,8 +1562,6 @@
         document.getElementById('quiz-done').classList.add('hidden');
       } else if (data?.message?.includes('Already')) {
         document.getElementById('quiz-modal').classList.remove('hidden');
-        document.getElementById('quiz-question').textContent = '';
-        document.getElementById('quiz-options').innerHTML = '';
         document.getElementById('quiz-done').classList.remove('hidden');
       } else document.getElementById('quiz-modal').classList.add('hidden');
     }
@@ -1319,16 +1570,14 @@
       if (!selected) return showToast('একটি উত্তর নির্বাচন করো');
       const res = await apiCall('POST', '/quiz', { quiz_id:quizData.id, answer:parseInt(selected.value) });
       showToast(res.message);
-      if (res.correct) { loadProfile(); celebrate('🧠 +10 XP!'); playSuccessSound(); }
+      if (res.correct) { loadProfile(); celebrate('🧠 +10 XP!'); }
       document.getElementById('quiz-modal').classList.add('hidden');
     }
-
     async function loadWeeklyChallenge() {
       const challenge = await apiCall('GET', '/weekly-challenge');
       if (challenge) document.getElementById('weekly-challenge-card').innerHTML = `<div class="glass"><h4>🔥 সাপ্তাহিক চ্যালেঞ্জ: ${escapeHtml(challenge.title)}</h4><p>${escapeHtml(challenge.description)} | প্রগ্রেস: ${challenge.progress}/${challenge.target}</p><div class="progress-bar"><div class="progress-fill" style="width:${(challenge.progress/challenge.target)*100}%"></div></div></div>`;
       else document.getElementById('weekly-challenge-card').innerHTML = '';
     }
-
     async function loadProfilePage() {
       const data = await apiCall('GET', '/profile');
       if (!data) return;
@@ -1341,8 +1590,7 @@
       const notif = await apiCall('GET', '/notif-settings');
       document.getElementById('notif-email').checked = notif?.email_enabled !== false;
       document.getElementById('notif-push').checked = notif?.push_enabled !== false;
-      document.getElementById('bg-music-toggle').checked = localStorage.getItem('bgMusic') === 'true';
-      document.getElementById('reminder-time').value = localStorage.getItem('reminderTime') || '08:00';
+      updateEvolutionTree(data.user.identity_level);
     }
     async function changeAvatar() {
       const emoji = document.getElementById('avatar-select').value;
@@ -1355,13 +1603,8 @@
       const email = document.getElementById('notif-email').checked;
       const push = document.getElementById('notif-push').checked;
       await apiCall('POST', '/notif-settings', { email, push });
-      const musicToggle = document.getElementById('bg-music-toggle').checked;
-      localStorage.setItem('bgMusic', musicToggle);
-      if (musicToggle) startAmbientMusic(); else stopAmbientMusic();
       if (push && 'Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().then(perm => {
-          if (perm === 'granted') subscribeToPush();
-        });
+        Notification.requestPermission().then(perm => { if (perm === 'granted') subscribeToPush(); });
       }
       showToast('সেটিংস সেভ হয়েছে');
     }
@@ -1369,11 +1612,8 @@
       const time = document.getElementById('reminder-time').value;
       localStorage.setItem('reminderTime', time);
       showToast('⏰ রিমাইন্ডার সময় সেভ হয়েছে: ' + time);
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
+      if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
     }
-
     async function subscribeToPush() {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
       const reg = await navigator.serviceWorker.ready;
@@ -1385,30 +1625,215 @@
       }
       await apiCall('POST', '/save-subscription', { subscription:sub });
     }
-
     async function downloadCertificate() {
       const res = await fetch(`${API}/certificate`, { headers:{'Authorization':`Bearer ${token}`} });
-      if (res.ok) { const blob=await res.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='certificate.svg'; a.click(); celebrate('🏆 সার্টিফিকেট ডাউনলোড শুরু!'); }
+      if (!res.ok) { showToast('প্রথমে ৩০ দিন সম্পন্ন করো'); return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'AlamQuant_Certificate.svg'; document.body.appendChild(a);
+      a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      celebrate('🏆 সার্টিফিকেট ডাউনলোড শুরু!');
     }
     function shareCertificate() {
       if (navigator.share) navigator.share({ title:'AlamQuant ATTS Certificate', text:'আমি ৩০ দিনের ট্রেডার ট্রান্সফরমেশন জার্নি সম্পন্ন করেছি!', url:window.location.href });
       else showToast('শেয়ারিং সাপোর্টেড নয়');
     }
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').then(reg => {
-        if ('PushManager' in window && localStorage.getItem('notifPush')!=='false') subscribeToPush();
-      }).catch(()=>{}); });
+    function initGoogleSignIn() {
+      if (typeof google !== 'undefined' && google.accounts && window.GOOGLE_CLIENT_ID) {
+        google.accounts.id.initialize({
+          client_id: window.GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('google-signin-btn'),
+          { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' }
+        );
+      }
+    }
+    async function handleGoogleCredential(response) {
+      const credential = response.credential;
+      const data = await apiCall('POST', '/auth/google', { credential });
+      if (data?.token) {
+        token = data.token; localStorage.setItem('token', token);
+        initDashboard(data.user);
+      } else showToast('Google login failed');
     }
 
+    async function claimDailyBonus() {
+      const res = await apiCall('POST', '/daily-reward');
+      if (res?.claimed) showFloatingXp(1);
+    }
+
+    // ==================== প্রশিক্ষণ মডিউল ====================
+    async function loadTrainingTab() {
+      await loadEnergy();
+      const chapters = await apiCall('GET', '/training/chapters?course_id=1');
+      if (!chapters || chapters.error) return;
+      const container = document.getElementById('chapter-list');
+      const allPassed = chapters.length > 0 && chapters.every(ch => ch.passed);
+      let html = '';
+      chapters.forEach((ch, i) => {
+        const isLocked = i > 0 && !chapters[i-1].passed;
+        const statusIcon = isLocked ? '🔒' : ch.passed ? '✅' : '📖';
+        html += `
+          <div class="glass chapter-card ${isLocked ? 'locked' : ''}" 
+               onclick="${isLocked ? '' : `openChapterModal(${ch.id})`}">
+            <div style="font-size:2rem;">${statusIcon}</div>
+            <strong>${escapeHtml(ch.title)}</strong>
+            ${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : isLocked ? '<span class="badge">তালাবদ্ধ</span>' : ''}
+            <div class="progress-bar" style="height:6px; margin-top:8px;">
+              <div class="progress-fill" style="width:${ch.passed ? 100 : ch.best_score || 0}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      const finalSection = document.getElementById('final-exam-section');
+      if (allPassed) {
+        finalSection.classList.remove('hidden');
+        const examStatus = await apiCall('GET', '/training/final-exam');
+        if (examStatus.passed) {
+          finalSection.innerHTML = `<div class="glass" style="text-align:center;"><h3>🏆 অভিনন্দন!</h3><p>আপনি ফাইনাল পরীক্ষায় <strong>${examStatus.score}%</strong> পেয়ে উত্তীর্ণ!</p><button class="btn btn-accent btn-lg" onclick="showTab('progress')">সার্টিফিকেট দেখুন</button></div>`;
+        }
+      } else {
+        finalSection.classList.add('hidden');
+      }
+    }
+
+    async function loadEnergy() {
+      const energy = await apiCall('GET', '/energy');
+      if (energy) {
+        document.getElementById('energy-current').textContent = energy.current_energy;
+        document.getElementById('energy-max').textContent = energy.max_energy;
+        document.getElementById('energy-fill').style.width = (energy.current_energy / energy.max_energy * 100) + '%';
+      }
+    }
+
+    async function openChapterModal(chapterId) {
+      currentChapterId = chapterId;
+      const data = await apiCall('GET', `/training/chapter/${chapterId}`);
+      if (!data || data.error) return showToast(data?.error || 'ত্রুটি');
+      document.getElementById('chapter-modal-title').textContent = data.title;
+      document.getElementById('chapter-modal-content').innerHTML = data.content_text || '';
+      const img = document.getElementById('chapter-modal-image');
+      if (data.image_url) { img.src = data.image_url; img.style.display = 'block'; } else img.style.display = 'none';
+      const videoContainer = document.getElementById('chapter-modal-video-container');
+      const videoIframe = document.getElementById('chapter-modal-video');
+      if (data.video_url) { videoIframe.src = data.video_url; videoContainer.style.display = 'block'; }
+      else { videoIframe.src = ''; videoContainer.style.display = 'none'; }
+      currentChapterQuestions = data.questions || [];
+      const quizContainer = document.getElementById('quiz-container');
+      if (data.user_progress?.passed) {
+        quizContainer.innerHTML = `<p style="color:var(--success);">✅ আপনি ইতিমধ্যে পাস করেছেন! স্কোর: ${data.user_progress.best_score}%</p>`;
+        document.getElementById('submit-quiz-btn').style.display = 'none';
+        document.getElementById('retry-chapter-btn').style.display = 'inline-block';
+      } else {
+        quizContainer.innerHTML = currentChapterQuestions.map((q, i) => `
+          <div style="margin:16px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+            <p><strong>${i + 1}. ${escapeHtml(q.question)}</strong></p>
+            ${q.options.map((opt, j) => `
+              <label style="display:block; margin:6px 0; cursor:pointer;">
+                <input type="radio" name="q_${q.id}" value="${j}"> ${escapeHtml(opt)}
+              </label>
+            `).join('')}
+          </div>
+        `).join('');
+        document.getElementById('submit-quiz-btn').style.display = 'inline-block';
+        document.getElementById('retry-chapter-btn').style.display = 'none';
+      }
+      document.getElementById('quiz-result').classList.add('hidden');
+      document.getElementById('chapter-modal').classList.remove('hidden');
+    }
+
+    function closeChapterModal() {
+      document.getElementById('chapter-modal').classList.add('hidden');
+      document.getElementById('chapter-modal-video').src = '';
+      loadTrainingTab();
+    }
+
+    async function submitChapterQuiz() {
+      const answers = [];
+      currentChapterQuestions.forEach(q => {
+        const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+        if (selected) answers.push({ question_id: q.id, selected_index: parseInt(selected.value) });
+      });
+      if (answers.length !== currentChapterQuestions.length) return showToast('সব প্রশ্নের উত্তর দিন');
+      const result = await apiCall('POST', `/training/chapter/${currentChapterId}/quiz`, { answers });
+      if (!result || result.error) return showToast(result?.error || 'ত্রুটি');
+      const resultDiv = document.getElementById('quiz-result');
+      resultDiv.classList.remove('hidden');
+      if (result.passed) { celebrate('চ্যাপ্টার পাস! 🎉'); showFloatingXp(result.xp_earned); }
+      resultDiv.innerHTML = `
+        <div class="glass" style="margin-top:16px; text-align:center;">
+          <h4 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '✅ পাস!' : '❌ পাস করতে পারেননি'}</h4>
+          <p style="font-size:1.5rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
+          <p>${result.message}</p>
+          ${!result.passed ? '<button class="btn btn-outline" onclick="closeChapterModal()">পুনরায় পড়ুন</button>' : ''}
+        </div>
+      `;
+      document.getElementById('submit-quiz-btn').style.display = 'none';
+      document.getElementById('retry-chapter-btn').style.display = 'inline-block';
+      await loadEnergy();
+      await loadProfile();
+    }
+
+    async function startFinalExam() {
+      const data = await apiCall('GET', '/training/final-exam');
+      if (!data || data.error) return showToast(data?.error || 'ত্রুটি');
+      if (data.passed) return showToast('ইতিমধ্যে উত্তীর্ণ!');
+      const container = document.getElementById('final-exam-questions');
+      container.innerHTML = data.questions.map((q, i) => `
+        <div style="margin:12px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+          <p><strong>${i + 1}. ${escapeHtml(q.question)}</strong></p>
+          ${q.options.map((opt, j) => `
+            <label style="display:block; margin:4px 0; cursor:pointer;">
+              <input type="radio" name="feq_${q.id}" value="${j}"> ${escapeHtml(opt)}
+            </label>
+          `).join('')}
+        </div>
+      `).join('');
+      document.getElementById('final-exam-result').classList.add('hidden');
+      document.getElementById('final-exam-modal').classList.remove('hidden');
+    }
+
+    async function submitFinalExam() {
+      const questions = document.querySelectorAll('#final-exam-questions > div');
+      const answers = [];
+      questions.forEach(div => {
+        const radio = div.querySelector('input:checked');
+        if (radio) {
+          const name = radio.name.replace('feq_', '');
+          answers.push({ question_id: parseInt(name), selected_index: parseInt(radio.value) });
+        }
+      });
+      const result = await apiCall('POST', '/training/final-exam', { answers });
+      if (!result) return;
+      const resultDiv = document.getElementById('final-exam-result');
+      resultDiv.classList.remove('hidden');
+      if (result.passed) { celebrate('ফাইনাল পরীক্ষা পাস! 🏆'); showFloatingXp(result.xp_earned); }
+      resultDiv.innerHTML = `
+        <div class="glass" style="text-align:center; margin-top:16px;">
+          <h3 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '🏆 অভিনন্দন! আপনি উত্তীর্ণ!' : '❌ পুনরায় চেষ্টা করুন'}</h3>
+          <p style="font-size:2rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
+          <p>${result.message}</p>
+          ${result.passed ? '<button class="btn btn-accent btn-lg" onclick="showTab(\'progress\')">সার্টিফিকেট ডাউনলোড</button>' : '<button class="btn btn-outline" onclick="document.getElementById(\'final-exam-modal\').classList.add(\'hidden\')">বন্ধ করুন</button>'}
+        </div>
+      `;
+    }
+
+    // ==================== Navigation ====================
     document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
     document.getElementById('content-type-select')?.addEventListener('change', setupContentForm);
 
-    window.addEventListener('load', async () => {
-      const bgMusic = localStorage.getItem('bgMusic')==='true';
-      document.getElementById('bg-music-toggle').checked = bgMusic;
-      if (bgMusic) startAmbientMusic();
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(()=>{});
+      });
+    }
 
+    window.addEventListener('load', async () => {
       const params = new URLSearchParams(window.location.search);
       const autoToken = params.get('token');
       if (autoToken) {

@@ -1,5 +1,5 @@
-﻿const CACHE_NAME = 'atts-v5';
-const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
+﻿const CACHE_NAME = 'atts-v7';
+const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -30,21 +30,18 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+    caches.keys().then(keys => Promise.all(
+      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+    ))
   );
   self.clients.claim();
 });
 
 self.addEventListener('push', event => {
-  let data = { title: 'AlamQuant ATTS', body: 'à¦¤à§‹à¦®à¦¾à¦° à¦†à¦œà¦•à§‡à¦° à¦Ÿà§à¦°à§‡à¦¡à¦¿à¦‚ à¦œà¦¾à¦°à§à¦¨à¦¾à¦² à¦¤à§ˆà¦°à¦¿ à¦•à¦°à§‹!' };
+  let data = { title: 'AlamQuant ATTS', body: 'Remember your trading journal!' };
   if (event.data) {
-    try {
-      data = event.data.json();
-    } catch (e) {
-      data.body = event.data.text();
-    }
+    try { data = event.data.json(); } catch(e) { data.body = event.data.text(); }
   }
-
   const options = {
     body: data.body,
     icon: '/icon-192.png',
@@ -52,7 +49,6 @@ self.addEventListener('push', event => {
     vibrate: [200, 100, 200],
     data: { url: data.url || '/' },
   };
-
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 

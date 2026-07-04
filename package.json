@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "deploy": "echo 'Deploy to Vercel'"
+    "start": "node server.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",
@@ -13,6 +12,7 @@
     "chart.js": "^4.4.0",
     "google-auth-library": "^9.0.0",
     "jsonwebtoken": "^9.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.1"
   }
 }

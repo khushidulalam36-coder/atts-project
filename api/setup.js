@@ -1,9 +1,18 @@
-﻿import { neon } from '@neondatabase/serverless';
+﻿import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, '..', '.env.local') });
+
+import { neon } from '@neondatabase/serverless';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
 
+// DATABASE_URL এবং JWT_SECRET অবশ্যই .env.local-এ সুরক্ষিত রাখুন
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-please-in-production';
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'admin123';
@@ -29,6 +38,15 @@ function maskEmail(email) {
   return name.substring(0, 2) + '***@' + domain;
 }
 
+function xmlEscape(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 async function authenticate(req) {
   const auth = req.headers.get('authorization');
   if (!auth) return null;
@@ -37,6 +55,20 @@ async function authenticate(req) {
     const decoded = jwt.verify(token, JWT_SECRET);
     const [user] = await sql`SELECT * FROM users WHERE id = ${decoded.id}`;
     return user;
+  } catch {
+    return null;
+  }
+}
+
+async function authenticateAdmin(req) {
+  const auth = req.headers.get('authorization');
+  if (!auth) return null;
+  try {
+    const token = auth.replace('Bearer ', '');
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (!decoded.role || decoded.role !== 'admin') return null;
+    const [admin] = await sql`SELECT * FROM admin_users WHERE id = ${decoded.id}`;
+    return admin;
   } catch {
     return null;
   }
@@ -113,11 +145,11 @@ async function generateFeedback(userId, journal, userName) {
   }
 
   const radar = journal.radar_scores;
-  if (radar.planning < 12) f.push('পরিকল্পনা অনুসরণে আরও মনোযোগ দিতে হবে।');
-  if (radar.execution < 12) f.push('এক্সিকিউশন ইম্প্রুভ করো, ছোটখাটো ভুল কমানো দরকার।');
-  if (radar.risk < 6) f.push('রিস্ক ম্যানেজমেন্টে আজ দুর্বলতা ছিল, সাবধান।');
-  if (radar.psychology < 12) f.push('আবেগ নিয়ন্ত্রণে কাজ করতে হবে, এটি প্রফেশনাল ট্রেডারের মূল হাতিয়ার।');
-  if (radar.improvement < 12) f.push('আজকের শিক্ষাকে কাজে লাগিয়ে আগামীকাল আরও ভালো করো।');
+  if (radar?.planning < 12) f.push('পরিকল্পনা অনুসরণে আরও মনোযোগ দিতে হবে।');
+  if (radar?.execution < 12) f.push('এক্সিকিউশন ইম্প্রুভ করো, ছোটখাটো ভুল কমানো দরকার।');
+  if (radar?.risk < 6) f.push('রিস্ক ম্যানেজমেন্টে আজ দুর্বলতা ছিল, সাবধান।');
+  if (radar?.psychology < 12) f.push('আবেগ নিয়ন্ত্রণে কাজ করতে হবে, এটি প্রফেশনাল ট্রেডারের মূল হাতিয়ার।');
+  if (radar?.improvement < 12) f.push('আজকের শিক্ষাকে কাজে লাগিয়ে আগামীকাল আরও ভালো করো।');
 
   const last7 = await sql`SELECT radar_scores FROM daily_journals WHERE user_id = ${userId} AND date < CURRENT_DATE ORDER BY date DESC LIMIT 7`;
   if (last7.length >= 3) {
@@ -173,21 +205,39 @@ async function checkAndAwardBadges(userId, journal) {
   return newB;
 }
 
+async function checkAndCompleteQuest(userId, journal, date) {
+  const [quest] = await sql`SELECT * FROM daily_quests WHERE user_id = ${userId} AND quest_date = ${date}`;
+  if (!quest || quest.completed) return;
+  let completed = false;
+  switch (quest.quest_type) {
+    case 'no_revenge':
+      completed = !journal.revenge_trade;
+      break;
+    case 'no_fomo':
+      completed = !journal.fomo_entry;
+      break;
+    case 'q6_8plus':
+      completed = (journal.scores?.q6 >= 8);
+      break;
+    case 'mindfulness':
+      completed = journal.mindfulness_done;
+      break;
+    case 'habit_complete':
+      const habits = await sql`SELECT hd.id FROM habit_definitions hd JOIN habit_logs hl ON hd.id = hl.habit_id WHERE hl.user_id = ${userId} AND hl.date = ${date} AND hl.completed_times IS NOT NULL`;
+      completed = habits.length > 0;
+      break;
+  }
+  if (completed) {
+    await sql`UPDATE daily_quests SET completed = true WHERE id = ${quest.id}`;
+  }
+}
+
 export default async function handler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const url = new URL(req.url);
   const path = url.pathname.replace('/api/setup', '');
 
   try {
-    // অস্থায়ী ডাটাবেস টেস্ট
-if (path === '/test-db' && req.method === 'GET') {
-  try {
-    const result = await sql`SELECT 1 AS test`;
-    return json({ db: 'connected', result });
-  } catch (e) {
-    return json({ db: 'error', message: e.message }, 500);
-  }
-}
     // ---------------- DB Init & Seed ----------------
     if (path === '/init-db' && req.method === 'POST') {
       const { admin_secret } = await req.json();
@@ -333,7 +383,212 @@ if (path === '/test-db' && req.method === 'GET') {
         PRIMARY KEY(user_id, date)
       )`;
 
-      // Seed lessons
+      await sql`CREATE TABLE IF NOT EXISTS habit_definitions (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(100) NOT NULL,
+        icon VARCHAR(10) DEFAULT '✅',
+        color VARCHAR(7) DEFAULT '#d4af37',
+        reminder_times JSONB DEFAULT '[]',
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS habit_logs (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        habit_id UUID REFERENCES habit_definitions(id) ON DELETE CASCADE,
+        date DATE NOT NULL,
+        completed_times JSONB DEFAULT '{}',
+        note TEXT,
+        UNIQUE(user_id, habit_id, date)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS mood_logs (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        date DATE NOT NULL,
+        mood VARCHAR(20) CHECK (mood IN ('happy','neutral','stressed','angry')),
+        UNIQUE(user_id, date)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS streak_freeze_items (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        quantity INT DEFAULT 0,
+        PRIMARY KEY (user_id)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS portfolio_performance (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        date DATE NOT NULL,
+        discipline_score INT,
+        virtual_balance DECIMAL DEFAULT 10000,
+        PRIMARY KEY(user_id, date)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS daily_quests (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id),
+        quest_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        quest_type VARCHAR(50),
+        completed BOOLEAN DEFAULT false,
+        claimed BOOLEAN DEFAULT false,
+        UNIQUE(user_id, quest_date)
+      )`;
+
+      // NEW TABLES (Training Module, Gamification, Admin)
+      await sql`CREATE TABLE IF NOT EXISTS admin_users (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        name VARCHAR(100) DEFAULT 'Admin',
+        role VARCHAR(50) DEFAULT 'super_admin',
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS courses (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        thumbnail_url TEXT,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS chapters (
+        id SERIAL PRIMARY KEY,
+        course_id INT REFERENCES courses(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        order_index INT NOT NULL,
+        content_text TEXT,
+        image_url TEXT,
+        video_url TEXT,
+        passing_score INT DEFAULT 90,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(course_id, order_index)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS chapter_quiz_questions (
+        id SERIAL PRIMARY KEY,
+        chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
+        question TEXT NOT NULL,
+        options JSONB NOT NULL,
+        correct_index INT NOT NULL,
+        explanation TEXT,
+        order_index INT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS user_chapter_progress (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
+        quiz_attempts INT DEFAULT 0,
+        best_score DECIMAL(5,2) DEFAULT 0,
+        passed BOOLEAN DEFAULT false,
+        completed_at TIMESTAMPTZ,
+        last_attempt_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (user_id, chapter_id)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS final_exam_results (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        score DECIMAL(5,2),
+        passed BOOLEAN DEFAULT false,
+        total_questions INT,
+        correct_answers INT,
+        attempted_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (user_id)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS user_energy (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE PRIMARY KEY,
+        current_energy INT DEFAULT 50,
+        max_energy INT DEFAULT 50,
+        last_reset_date DATE DEFAULT CURRENT_DATE,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS trading_simulator (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        scenario JSONB NOT NULL,
+        user_decision JSONB,
+        result JSONB,
+        xp_earned INT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS mentor_assignments (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        mentor_id UUID REFERENCES users(id),
+        student_id UUID REFERENCES users(id) UNIQUE,
+        assigned_at TIMESTAMPTZ DEFAULT NOW(),
+        status VARCHAR(20) DEFAULT 'active'
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS content_translations (
+        id SERIAL PRIMARY KEY,
+        table_name VARCHAR(50) NOT NULL,
+        record_id INT NOT NULL,
+        language_code VARCHAR(10) NOT NULL,
+        field_name VARCHAR(50) NOT NULL,
+        translated_text TEXT,
+        UNIQUE(table_name, record_id, language_code, field_name)
+      )`;
+
+      // Seed admin user
+      const [adminExists] = await sql`SELECT id FROM admin_users WHERE email = 'admin@alamquant.com'`;
+      if (!adminExists) {
+        const adminHash = await bcrypt.hash('Admin@2024!Secure', 12);
+        await sql`INSERT INTO admin_users (email, password_hash, name, role) VALUES ('admin@alamquant.com', ${adminHash}, 'Super Admin', 'super_admin')`;
+      }
+
+      // Seed default course and chapters
+      const [courseExists] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
+      if (!courseExists) {
+        await sql`INSERT INTO courses (title, description) VALUES ('Professional Trader Transformation', 'Complete 30-day transformation from amateur to professional trader')`;
+        const [course] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
+        const courseId = course.id;
+
+        const chaptersSeed = [
+          {
+            title: 'FOMO (Fear Of Missing Out) – সম্পূর্ণ গাইড',
+            order_index: 1,
+            content_text: `<h2>FOMO কি?</h2><p>FOMO বা Fear Of Missing Out হল একটি মানসিক অবস্থা...</p>`,
+            image_url: 'https://alamquant.com/images/fomo-psychology.png',
+            video_url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            passing_score: 90
+          },
+          {
+            title: 'Risk Management – ঝুঁকি ব্যবস্থাপনার মূলনীতি',
+            order_index: 2,
+            content_text: `<h2>Risk Management কেন জরুরি?</h2><p>...</p>`,
+            image_url: 'https://alamquant.com/images/risk-management.png',
+            video_url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            passing_score: 90
+          }
+          // More chapters can be added later via admin panel
+        ];
+
+        for (const ch of chaptersSeed) {
+          const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${courseId}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.image_url}, ${ch.video_url}, ${ch.passing_score}) RETURNING id`;
+          if (ch.order_index === 1) {
+            const quizQuestions = [
+              { question: 'FOMO এর পূর্ণরূপ কি?', options: ['Fear Of Missing Out','Fast Order Management','Free Online Market','Future Options Market'], correct_index: 0, explanation: 'FOMO = Fear Of Missing Out' },
+              { question: 'FOMO এর জন্য দায়ী হরমোন?', options: ['Serotonin','Dopamine','Cortisol','Adrenaline'], correct_index: 1, explanation: 'Dopamine লাভের আশায় নিঃসৃত হয়' },
+              { question: 'FOMO এড়াতে ট্রেডের আগে কতক্ষণ বিশ্লেষণ?', options: ['১ মিনিট','২ মিনিট','৩ মিনিট','৫ মিনিট'], correct_index: 2, explanation: 'ন্যূনতম ৩ মিনিট' },
+              { question: 'FOMO এড়ানোর সঠিক উপায়?', options: ['সব ট্রেড নেওয়া','শুধু A+ সেটআপে ট্রেড','লোকসান হলে রিকভার','অন্যদের কপি'], correct_index: 1, explanation: 'শুধু A+ সেটআপ' },
+              { question: 'দৈনিক সর্বোচ্চ কত ট্রেড?', options: ['৫টি','১০টি','২টি','যত ইচ্ছা'], correct_index: 2, explanation: '২টির বেশি ওভারট্রেডিং' }
+            ];
+            for (const q of quizQuestions) {
+              await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation) VALUES (${chapter.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation})`;
+            }
+          }
+        }
+      }
+
+      // Seed lessons if not exists
       const { count: lc } = (await sql`SELECT COUNT(*)::int FROM lessons`)[0];
       if (lc === 0) {
         const topics = ['Probability Thinking','Loss Acceptance','FOMO','Confirmation Bias','Revenge Trading','Overconfidence','Deep Work','Sleep & Trading','Meditation','Patience','Focus','Review Process','Trading Routine','Long-term Thinking','Community','Risk Management Basics','Position Sizing','Stop Loss Psychology','Discipline Over Emotion','Journaling Effectively','Handling Winning Streaks','Handling Losing Streaks','Pre-market Preparation','Post-market Analysis','Building a Trading Plan','Execution Over Prediction','Emotional Detachment','Continuous Learning','The Institutional Mindset','Graduation Day'];
@@ -358,20 +613,12 @@ if (path === '/test-db' && req.method === 'GET') {
           ('Professional Trader', 'Institutional Mindset', 'Think like a pro', 'PLACEHOLDER_3', '30:00')`;
       }
 
-      // Seed quizzes
+      // Seed daily quiz questions
       const { count: qc } = (await sql`SELECT COUNT(*)::int FROM quizzes`)[0];
       if (qc === 0) {
         const quizData = [
-          { question: 'ট্রেডিংয়ে সবচেয়ে গুরুত্বপূর্ণ কি?', options: ['প্রফিট', 'ডিসিপ্লিন', 'স্পীড', 'লাক'], correct: 1 },
-          { question: 'স্টপ লস সরানো কেন ক্ষতিকর?', options: ['প্রফিট কমায়', 'রিস্ক বাড়ায়', 'কমিশন বাড়ায়', 'সময় নষ্ট'], correct: 1 },
-          { question: 'FOMO এর অর্থ কি?', options: ['Fear Of Missing Out', 'Fast Order Management', 'Free Online Market', 'Future Options'], correct: 0 },
-          { question: 'রিভেঞ্জ ট্রেডিং কেন করা উচিত নয়?', options: ['এটি ইমোশনাল সিদ্ধান্ত', 'এটি দ্রুত লাভ আনে', 'এটি সিস্টেমেটিক', 'এটি নিরাপদ'], correct: 0 },
-          { question: 'একজন প্রফেশনাল ট্রেডারের প্রধান বৈশিষ্ট্য কি?', options: ['বড় ক্যাপিটাল', 'শক্তিশালী কম্পিউটার', 'শৃঙ্খলা', 'ভবিষ্যদ্বাণী'], correct: 2 },
-          { question: 'জার্নালিং এর প্রধান উদ্দেশ্য কি?', options: ['ট্রেড রেকর্ড রাখা', 'আত্মবিশ্লেষণ', 'ব্র্যাগিং', 'অ্যাকাউন্টিং'], correct: 1 },
-          { question: 'ওভারট্রেডিং এর ক্ষতি কি?', options: ['ক্লান্তি', 'কমিশন বাড়া', 'রিস্ক বৃদ্ধি ও মানসিক চাপ', 'সবগুলো'], correct: 3 },
-          { question: 'পজিশন সাইজিং কেন গুরুত্বপূর্ণ?', options: ['সর্বোচ্চ লাভের জন্য', 'রিস্ক নিয়ন্ত্রণে', 'স্প্রেড কভারে', 'মার্জিনে'], correct: 1 },
-          { question: 'প্রি-মার্কেট প্রিপারেশন বলতে বোঝায়?', options: ['খবর দেখা', 'চার্ট এনালাইসিস', 'প্ল্যান তৈরি', 'সবগুলো'], correct: 3 },
-          { question: 'একজন ট্রেডারের জন্য সাইকোলজি কতটা গুরুত্বপূর্ণ?', options: ['২০%', '৫০%', '৮০%', '১০০%'], correct: 2 }
+          { question: 'ট্রেডিংয়ে সবচেয়ে গুরুত্বপূর্ণ কি?', options: ['প্রফিট','ডিসিপ্লিন','স্পীড','লাক'], correct: 1 },
+          { question: 'স্টপ লস সরানো কেন ক্ষতিকর?', options: ['প্রফিট কমায়','রিস্ক বাড়ায়','কমিশন বাড়ায়','সময় নষ্ট'], correct: 1 }
         ];
         for (const q of quizData) {
           await sql`INSERT INTO quizzes (question, options, correct) VALUES (${q.question}, ${JSON.stringify(q.options)}, ${q.correct})`;
@@ -383,10 +630,6 @@ if (path === '/test-db' && req.method === 'GET') {
       if (wc === 0) {
         await sql`INSERT INTO weekly_challenges (week_start, title, description, target, reward_xp) VALUES (CURRENT_DATE - (EXTRACT(DOW FROM CURRENT_DATE)::int - 1), 'No FOMO Week', 'Avoid FOMO entries all week', 5, 25)`;
       }
-
-      // Add columns if not exists (for upgrades)
-      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(100)`;
-      await sql`ALTER TABLE notif_settings ADD COLUMN IF NOT EXISTS push_subscription JSONB`;
 
       return json({ message: 'DB initialized with all tables and sample data' });
     }
@@ -407,10 +650,7 @@ if (path === '/test-db' && req.method === 'GET') {
     if (path === '/auth/google' && req.method === 'POST') {
       const { credential } = await req.json();
       try {
-        const ticket = await googleClient.verifyIdToken({
-          idToken: credential,
-          audience: GOOGLE_CLIENT_ID,
-        });
+        const ticket = await googleClient.verifyIdToken({ idToken: credential, audience: GOOGLE_CLIENT_ID });
         const payload = ticket.getPayload();
         const email = payload.email;
         const displayName = payload.name || email.split('@')[0];
@@ -427,6 +667,17 @@ if (path === '/test-db' && req.method === 'GET') {
       } catch (e) {
         return json({ error: 'Invalid Google token' }, 401);
       }
+    }
+
+    // ---------------- Admin Login (unauthenticated) ----------------
+    if (path === '/admin/login' && req.method === 'POST') {
+      const { email, password } = await req.json();
+      const [adminUser] = await sql`SELECT * FROM admin_users WHERE email = ${email}`;
+      if (!adminUser || !(await bcrypt.compare(password, adminUser.password_hash))) {
+        return json({ error: 'Invalid credentials' }, 401);
+      }
+      const adminToken = jwt.sign({ id: adminUser.id, role: 'admin', admin_level: adminUser.role }, JWT_SECRET, { expiresIn: '12h' });
+      return json({ token: adminToken, name: adminUser.name, role: adminUser.role });
     }
 
     // ---------------- Register ----------------
@@ -457,7 +708,66 @@ if (path === '/test-db' && req.method === 'GET') {
     const user = await authenticate(req);
     if (!user) return json({ error: 'Authentication required' }, 401);
 
-    // Daily reward
+    // ==================== EXISTING USER ENDPOINTS ====================
+
+    if (path === '/mood' && req.method === 'POST') {
+      const { mood, date } = await req.json();
+      await sql`INSERT INTO mood_logs (user_id, date, mood) VALUES (${user.id}, ${date || new Date().toISOString().slice(0,10)}, ${mood}) ON CONFLICT (user_id, date) DO UPDATE SET mood = ${mood}`;
+      return json({ success: true });
+    }
+
+    if (path === '/daily-quest' && req.method === 'GET') {
+      const today = new Date().toISOString().slice(0,10);
+      let [quest] = await sql`SELECT * FROM daily_quests WHERE user_id = ${user.id} AND quest_date = ${today}`;
+      if (!quest) {
+        const types = ['no_revenge','no_fomo','q6_8plus','mindfulness','habit_complete'];
+        const type = types[Math.floor(Math.random()*types.length)];
+        [quest] = await sql`INSERT INTO daily_quests (user_id, quest_date, quest_type) VALUES (${user.id}, ${today}, ${type}) RETURNING *`;
+      }
+      const [journal] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = ${today}`;
+      let progress = 0; const target = 1;
+      if (journal) {
+        switch (quest.quest_type) {
+          case 'no_revenge': progress = journal.revenge_trade ? 0 : 1; break;
+          case 'no_fomo': progress = journal.fomo_entry ? 0 : 1; break;
+          case 'q6_8plus': progress = (journal.scores?.q6 >= 8) ? 1 : 0; break;
+          case 'mindfulness': progress = journal.mindfulness_done ? 1 : 0; break;
+          case 'habit_complete': {
+            const habits = await sql`SELECT hd.id FROM habit_definitions hd JOIN habit_logs hl ON hd.id = hl.habit_id WHERE hl.user_id = ${user.id} AND hl.date = ${today} AND hl.completed_times IS NOT NULL`;
+            progress = habits.length > 0 ? 1 : 0; break;
+          }
+        }
+      }
+      return json({ quest, progress, target, completed: progress === target, claimed: quest.claimed });
+    }
+
+    if (path === '/claim-quest-reward' && req.method === 'POST') {
+      const today = new Date().toISOString().slice(0,10);
+      const [quest] = await sql`SELECT * FROM daily_quests WHERE user_id = ${user.id} AND quest_date = ${today}`;
+      if (!quest || quest.claimed) return json({ error: 'Already claimed or no quest' }, 400);
+      if (!quest.completed) return json({ error: 'Quest not completed yet' }, 400);
+      await sql`UPDATE daily_quests SET claimed = true WHERE id = ${quest.id}`;
+      await sql`UPDATE users SET xp = xp + 15 WHERE id = ${user.id}`;
+      return json({ success: true, xp: 15 });
+    }
+
+    if (path === '/use-streak-freeze' && req.method === 'POST') {
+      const [item] = await sql`SELECT quantity FROM streak_freeze_items WHERE user_id = ${user.id}`;
+      if (!item || item.quantity < 1) return json({ error: 'No freeze available' }, 400);
+      await sql`UPDATE streak_freeze_items SET quantity = quantity - 1 WHERE user_id = ${user.id}`;
+      return json({ success: true, remaining: item.quantity - 1 });
+    }
+
+    if (path === '/portfolio' && req.method === 'GET') {
+      const rows = await sql`SELECT * FROM portfolio_performance WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 30`;
+      return json(rows);
+    }
+
+    if (path === '/latest-feedback' && req.method === 'GET') {
+      const [journal] = await sql`SELECT feedback FROM daily_journals WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 1`;
+      return json({ feedback: journal?.feedback || null });
+    }
+
     if (path === '/daily-reward' && req.method === 'POST') {
       const [exists] = await sql`SELECT * FROM daily_rewards WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       if (!exists) {
@@ -468,11 +778,10 @@ if (path === '/test-db' && req.method === 'GET') {
       return json({ claimed: false, message: 'আজকের বোনাস নেওয়া হয়ে গেছে' });
     }
 
-    // Mystery box
     if (path === '/open-box' && req.method === 'POST') {
       const [box] = await sql`SELECT * FROM mystery_boxes WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       if (box?.opened) return json({ opened: false, message: 'আজ বক্স খোলা হয়ে গেছে' });
-      const rewards = ['+3 XP', '+5 XP', 'বিশেষ ব্যাজ "লাকি ট্রেডার"', '+2 XP'];
+      const rewards = ['+3 XP', '+5 XP', 'বিশেষ ব্যাজ "লাকি ট্রেডার"', '+2 XP', 'Streak Freeze'];
       const reward = rewards[Math.floor(Math.random() * rewards.length)];
       if (!box) {
         await sql`INSERT INTO mystery_boxes (user_id, date, opened, reward) VALUES (${user.id}, CURRENT_DATE, true, ${reward})`;
@@ -482,13 +791,14 @@ if (path === '/test-db' && req.method === 'GET') {
       if (reward.includes('XP')) {
         const xp = parseInt(reward);
         await sql`UPDATE users SET xp = xp + ${xp} WHERE id = ${user.id}`;
-      } else if (reward.includes('বিশেষ ব্যাজ')) {
+      } else if (reward.includes('লাকি ট্রেডার')) {
         await sql`INSERT INTO badges (user_id, badge_type) VALUES (${user.id}, 'lucky-trader') ON CONFLICT DO NOTHING`;
+      } else if (reward === 'Streak Freeze') {
+        await sql`INSERT INTO streak_freeze_items (user_id, quantity) VALUES (${user.id}, 1) ON CONFLICT (user_id) DO UPDATE SET quantity = streak_freeze_items.quantity + 1`;
       }
       return json({ reward });
     }
 
-    // Reaction
     if (path === '/reaction' && req.method === 'POST') {
       const { post_id, reaction } = await req.json();
       if (!['👍','🔥','❤️'].includes(reaction)) return json({ error: 'Invalid reaction' }, 400);
@@ -496,116 +806,6 @@ if (path === '/test-db' && req.method === 'GET') {
       return json({ success: true });
     }
 
-    // ---------- ADMIN ENDPOINTS ----------
-    if (path === '/admin' && req.method === 'GET') {
-      const admin_secret = url.searchParams.get('admin_secret');
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const totalUsers = (await sql`SELECT COUNT(*)::int FROM users`)[0].count;
-      const dau = (await sql`SELECT COUNT(DISTINCT user_id)::int FROM daily_journals WHERE date = CURRENT_DATE`)[0].count;
-      const wau = (await sql`SELECT COUNT(DISTINCT user_id)::int FROM daily_journals WHERE date > CURRENT_DATE - INTERVAL '7 days'`)[0].count;
-      const avgQ6 = (await sql`SELECT AVG((scores->>'q6')::int)::float FROM daily_journals WHERE date > CURRENT_DATE - INTERVAL '30 days'`)[0].avg;
-      const cohort = await sql`SELECT date, COUNT(DISTINCT user_id)::int as users FROM daily_journals GROUP BY date ORDER BY date DESC LIMIT 30`;
-      return json({ totalUsers, dailyActive: dau, weeklyActive: wau, avgDiscipline: avgQ6, cohort });
-    }
-
-    if (path === '/admin/users' && req.method === 'GET') {
-      const admin_secret = url.searchParams.get('admin_secret');
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const search = url.searchParams.get('search') || '';
-      let users;
-      if (search) {
-        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'} ORDER BY created_at DESC LIMIT 50`;
-      } else {
-        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji FROM users ORDER BY created_at DESC LIMIT 50`;
-      }
-      return json(users);
-    }
-
-    if (path === '/admin/simulate-day' && req.method === 'POST') {
-      const { admin_secret, email, days, start_day } = await req.json();
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const targetUser = (await sql`SELECT id FROM users WHERE email = ${email}`)[0];
-      if (!targetUser) return json({ error: 'User not found' }, 404);
-      const userId = targetUser.id;
-      const totalDays = Math.min(Math.max(parseInt(days) || 7, 1), 30);
-      const today = new Date().toISOString().slice(0, 10);
-      const startOffset = Math.min(Math.max(parseInt(start_day) || 1, 1), 30);
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - (startOffset - 1));
-      let inserted = 0;
-      for (let i = 0; i < totalDays; i++) {
-        const date = new Date(startDate);
-        date.setDate(date.getDate() + i);
-        const dateStr = date.toISOString().slice(0, 10);
-        if (dateStr > today) break;
-        const [existing] = await sql`SELECT id FROM daily_journals WHERE user_id = ${userId} AND date = ${dateStr}`;
-        if (existing) continue;
-        const scores = {
-          q1: Math.floor(Math.random() * 10) + 1,
-          q2: Math.floor(Math.random() * 10) + 1,
-          q3: Math.floor(Math.random() * 10) + 1,
-          q4: Math.floor(Math.random() * 10) + 1,
-          q5: Math.floor(Math.random() * 10) + 1,
-          q6: Math.floor(Math.random() * 10) + 1,
-          q7: Math.floor(Math.random() * 10) + 1,
-          q8: Math.floor(Math.random() * 10) + 1,
-          q9: Math.floor(Math.random() * 10) + 1,
-          q10: Math.floor(Math.random() * 10) + 1,
-        };
-        const radar = calculateRadarScores(scores);
-        await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment, trades_count, stop_loss_moved, revenge_trade, fomo_entry, overtrading, rule_followed, scores, radar_scores, evaluation_notes, reflection, feedback, tomorrow_mission) VALUES (${userId}, ${dateStr}, true, 'Simulated commitment', ${Math.floor(Math.random()*5)+1}, ${Math.random()>0.7}, ${Math.random()>0.8}, ${Math.random()>0.7}, ${Math.random()>0.8}, ${scores.q6>=8}, ${JSON.stringify(scores)}, ${JSON.stringify(radar)}, 'Simulated', 'Simulated', 'Good job!', 'Keep it up')`;
-        inserted++;
-      }
-      const { count: totalJournals } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${userId}`)[0];
-      const phase = computeIdentityPhase(totalJournals);
-      await sql`UPDATE users SET identity_level = ${phase}, xp = xp + ${inserted * 3} WHERE id = ${userId}`;
-      return json({ success: true, inserted_days: inserted });
-    }
-
-    if (path.startsWith('/admin/community') && req.method === 'GET') {
-      const admin_secret = url.searchParams.get('admin_secret');
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const posts = await sql`SELECT cp.*, u.email as author, u.display_name, u.avatar_emoji FROM community_posts cp JOIN users u ON cp.user_id = u.id ORDER BY cp.created_at DESC LIMIT 100`;
-      return json(posts.map(p => ({ ...p, author: maskEmail(p.author), display_name: p.display_name || p.author.split('@')[0] })));
-    }
-
-    if (path.match(/^\/admin\/posts\/(.+)\/hide$/) && req.method === 'PUT') {
-      const admin_secret = (await req.json()).admin_secret;
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const postId = path.split('/')[3];
-      const { hide } = await req.json();
-      await sql`UPDATE community_posts SET is_hidden = ${hide} WHERE id = ${postId}`;
-      return json({ success: true });
-    }
-
-    if (path.match(/^\/admin\/posts\/(.+)$/) && req.method === 'DELETE') {
-      const admin_secret = (await req.json()).admin_secret;
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const postId = path.split('/')[3];
-      await sql`DELETE FROM community_posts WHERE id = ${postId}`;
-      return json({ success: true });
-    }
-
-    if (path === '/admin/content' && req.method === 'POST') {
-      const body = await req.json();
-      if (body.admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
-      const { type } = body;
-      if (type === 'lesson') {
-        const { day, phase, title, content } = body;
-        await sql`INSERT INTO lessons (day, phase, title, content) VALUES (${day}, ${phase}, ${title}, ${content})`;
-      } else if (type === 'quiz') {
-        const { question, options, correct } = body;
-        await sql`INSERT INTO quizzes (question, options, correct) VALUES (${question}, ${JSON.stringify(options)}, ${correct})`;
-      } else if (type === 'video') {
-        const { category, title, description, youtube_id, duration } = body;
-        await sql`INSERT INTO video_library (category, title, description, youtube_id, duration) VALUES (${category}, ${title}, ${description}, ${youtube_id}, ${duration})`;
-      } else {
-        return json({ error: 'Invalid content type' }, 400);
-      }
-      return json({ success: true });
-    }
-
-    // ---------- USER ENDPOINTS ----------
     if (path === '/profile' && req.method === 'GET') {
       const [today] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       const { count: total } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0];
@@ -625,6 +825,7 @@ if (path === '/test-db' && req.method === 'GET') {
         disciplineStreak
       });
     }
+
     if (path === '/profile' && req.method === 'POST') {
       const { avatar_emoji, display_name } = await req.json();
       if (avatar_emoji) await sql`UPDATE users SET avatar_emoji = ${avatar_emoji} WHERE id = ${user.id}`;
@@ -633,23 +834,37 @@ if (path === '/test-db' && req.method === 'GET') {
     }
 
     if (path === '/checkin' && req.method === 'POST') {
-      const { mindfulness_done, commitment } = await req.json();
-      await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment) VALUES (${user.id}, CURRENT_DATE, ${mindfulness_done}, ${commitment}) ON CONFLICT (user_id, date) DO UPDATE SET mindfulness_done = ${mindfulness_done}, commitment = ${commitment}`;
+      const { mindfulness_done, commitment, date } = await req.json();
+      const effectiveDate = date || new Date().toISOString().slice(0,10);
+      await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment) VALUES (${user.id}, ${effectiveDate}, ${mindfulness_done}, ${commitment}) ON CONFLICT (user_id, date) DO UPDATE SET mindfulness_done = ${mindfulness_done}, commitment = ${commitment}`;
       return json({ success: true });
     }
 
     if (path === '/evaluation' && req.method === 'POST') {
       const body = await req.json();
-      const { trades_count, stop_loss_moved, plan_deviation, revenge_trade, fomo_entry, overtrading, rule_followed, scores, evaluation_notes, reflection } = body;
-      const [existing] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
+      const { trades_count, stop_loss_moved, plan_deviation, revenge_trade, fomo_entry, overtrading, rule_followed, scores, evaluation_notes, reflection, date, mood } = body;
+      const effectiveDate = date || new Date().toISOString().slice(0,10);
+      const [existing] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = ${effectiveDate}`;
       if (!existing) return json({ error: 'Morning checkin first' }, 400);
       if (existing.feedback) return json({ error: 'Already submitted' }, 400);
       const radar = calculateRadarScores(scores);
-      await sql`UPDATE daily_journals SET trades_count=${trades_count}, stop_loss_moved=${stop_loss_moved}, plan_deviation=${plan_deviation}, revenge_trade=${revenge_trade}, fomo_entry=${fomo_entry}, overtrading=${overtrading}, rule_followed=${rule_followed}, scores=${JSON.stringify(scores)}, radar_scores=${JSON.stringify(radar)}, evaluation_notes=${evaluation_notes}, reflection=${reflection} WHERE user_id=${user.id} AND date=CURRENT_DATE`;
-      const journal = (await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = CURRENT_DATE`)[0];
+      await sql`UPDATE daily_journals SET trades_count=${trades_count}, stop_loss_moved=${stop_loss_moved}, plan_deviation=${plan_deviation}, revenge_trade=${revenge_trade}, fomo_entry=${fomo_entry}, overtrading=${overtrading}, rule_followed=${rule_followed}, scores=${JSON.stringify(scores)}, radar_scores=${JSON.stringify(radar)}, evaluation_notes=${evaluation_notes}, reflection=${reflection} WHERE user_id=${user.id} AND date=${effectiveDate}`;
+      const journal = (await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = ${effectiveDate}`)[0];
       const userName = user.display_name || user.email.split('@')[0];
       const { feedback, mission } = await generateFeedback(user.id, journal, userName);
       await sql`UPDATE daily_journals SET feedback=${feedback}, tomorrow_mission=${mission} WHERE id = ${journal.id}`;
+
+      if (mood) {
+        await sql`INSERT INTO mood_logs (user_id, date, mood) VALUES (${user.id}, ${effectiveDate}, ${mood}) ON CONFLICT (user_id, date) DO UPDATE SET mood = ${mood}`;
+      }
+
+      const prev = await sql`SELECT virtual_balance FROM portfolio_performance WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 1`;
+      const prevBalance = prev.length ? prev[0].virtual_balance : 10000;
+      const discipline = scores.q6;
+      const newBalance = prevBalance + (discipline - 5) * 10;
+      await sql`INSERT INTO portfolio_performance (user_id, date, discipline_score, virtual_balance) VALUES (${user.id}, ${effectiveDate}, ${discipline}, ${newBalance}) ON CONFLICT (user_id, date) DO UPDATE SET discipline_score = ${discipline}, virtual_balance = ${newBalance}`;
+
+      await checkAndCompleteQuest(user.id, journal, effectiveDate);
 
       const streakRes = await sql`WITH grp AS (SELECT date, date - (ROW_NUMBER() OVER (ORDER BY date))::int AS grp FROM daily_journals WHERE user_id = ${user.id}) SELECT COUNT(*)::int as cnt FROM grp GROUP BY grp ORDER BY MAX(date) DESC LIMIT 1`;
       const streak = streakRes[0]?.cnt || 0;
@@ -668,7 +883,7 @@ if (path === '/test-db' && req.method === 'GET') {
       const disciplineStreak = await computeDisciplineStreak(user.id);
       const newXp = (await sql`SELECT xp FROM users WHERE id = ${user.id}`)[0].xp;
       const level = calculateLevel(newXp);
-      const [box] = await sql`SELECT * FROM mystery_boxes WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
+      const [box] = await sql`SELECT * FROM mystery_boxes WHERE user_id = ${user.id} AND date = ${effectiveDate}`;
       return json({ feedback, mission, badges, identity_level: phase, streak, disciplineStreak, totalDays: total, xp: newXp, level, radar_scores: radar, xpGain, bonus, box_available: !box || !box.opened });
     }
 
@@ -750,10 +965,7 @@ if (path === '/test-db' && req.method === 'GET') {
       if (!quiz) return json({ error: 'Invalid quiz' }, 404);
       const correct = answer === quiz.correct;
       await sql`INSERT INTO quiz_attempts (user_id, quiz_id, date, correct) VALUES (${user.id}, ${quiz_id}, CURRENT_DATE, ${correct}) ON CONFLICT DO NOTHING`;
-      if (correct) {
-        await sql`UPDATE users SET xp = xp + 10 WHERE id = ${user.id}`;
-        return json({ correct: true, message: 'Correct! +10 XP' });
-      }
+      if (correct) { await sql`UPDATE users SET xp = xp + 10 WHERE id = ${user.id}`; return json({ correct: true, message: 'Correct! +10 XP' }); }
       return json({ correct: false, message: 'Wrong answer' });
     }
 
@@ -780,7 +992,10 @@ if (path === '/test-db' && req.method === 'GET') {
     }
 
     if (path === '/weekly-challenge' && req.method === 'GET') {
-      const startOfWeek = new Date(); startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+      const startOfWeek = new Date();
+      const day = startOfWeek.getDay();
+      const diff = (day === 0 ? -6 : 1 - day);
+      startOfWeek.setDate(startOfWeek.getDate() + diff);
       const weekStart = startOfWeek.toISOString().slice(0,10);
       const [challenge] = await sql`SELECT * FROM weekly_challenges WHERE week_start = ${weekStart}`;
       if (!challenge) return json(null);
@@ -788,59 +1003,434 @@ if (path === '/test-db' && req.method === 'GET') {
       return json({ ...challenge, progress: completed[0].count });
     }
 
+    // ==================== HABIT ENDPOINTS ====================
+    if (path === '/habits/definitions' && req.method === 'GET') {
+      const habits = await sql`SELECT * FROM habit_definitions WHERE user_id = ${user.id} AND is_active = true ORDER BY created_at`;
+      return json(habits);
+    }
+    if (path === '/habits/definitions' && req.method === 'POST') {
+      const { title, icon, color, reminder_times } = await req.json();
+      const times = typeof reminder_times === 'string' ? reminder_times.split(',').map(t=>t.trim()).filter(t=>t) : (reminder_times || []);
+      const [habit] = await sql`INSERT INTO habit_definitions (user_id, title, icon, color, reminder_times) VALUES (${user.id}, ${title}, ${icon||'✅'}, ${color||'#c59b3b'}, ${JSON.stringify(times)}) RETURNING *`;
+      return json(habit, 201);
+    }
+    if (path.match(/^\/habits\/definitions\/(.+)$/) && req.method === 'PUT') {
+      const habitId = path.split('/')[3];
+      const { title, icon, color, reminder_times } = await req.json();
+      const times = typeof reminder_times === 'string' ? reminder_times.split(',').map(t=>t.trim()).filter(t=>t) : (reminder_times || []);
+      await sql`UPDATE habit_definitions SET title=${title}, icon=${icon}, color=${color}, reminder_times=${JSON.stringify(times)} WHERE id=${habitId} AND user_id=${user.id}`;
+      return json({ success: true });
+    }
+    if (path.match(/^\/habits\/definitions\/(.+)$/) && req.method === 'DELETE') {
+      const habitId = path.split('/')[3];
+      await sql`DELETE FROM habit_definitions WHERE id=${habitId} AND user_id=${user.id}`;
+      return json({ success: true });
+    }
+    if (path === '/habits/logs' && req.method === 'GET') {
+      const date = url.searchParams.get('date') || new Date().toISOString().slice(0,10);
+      const habits = await sql`SELECT * FROM habit_definitions WHERE user_id = ${user.id} AND is_active = true`;
+      const logs = await sql`SELECT * FROM habit_logs WHERE user_id = ${user.id} AND date = ${date}`;
+      const merged = habits.map(h => {
+        const log = logs.find(l => l.habit_id === h.id);
+        return { habit_id: h.id, title: h.title, icon: h.icon, color: h.color, reminder_times: h.reminder_times, completed_times: log?.completed_times || {} };
+      });
+      return json(merged);
+    }
+    if (path === '/habits/logs' && req.method === 'POST') {
+      const { habit_id, date, time, completed } = await req.json();
+      const [habit] = await sql`SELECT id FROM habit_definitions WHERE id = ${habit_id} AND user_id = ${user.id}`;
+      if (!habit) return json({ error: 'Habit not found' }, 404);
+      const [existing] = await sql`SELECT * FROM habit_logs WHERE user_id = ${user.id} AND habit_id = ${habit_id} AND date = ${date}`;
+      if (existing) {
+        const ct = existing.completed_times || {};
+        ct[time] = completed;
+        await sql`UPDATE habit_logs SET completed_times = ${JSON.stringify(ct)} WHERE id = ${existing.id}`;
+      } else {
+        const ct = {}; ct[time] = completed;
+        await sql`INSERT INTO habit_logs (user_id, habit_id, date, completed_times) VALUES (${user.id}, ${habit_id}, ${date}, ${JSON.stringify(ct)})`;
+      }
+      return json({ success: true });
+    }
+
+    // ==================== NEW TRAINING & SIMULATOR ENDPOINTS ====================
+    if (path === '/training/chapters' && req.method === 'GET') {
+      const courseId = url.searchParams.get('course_id') || 1;
+      const chapters = await sql`
+        SELECT c.*, 
+               COALESCE(ucp.passed, false) as passed, 
+               COALESCE(ucp.best_score, 0) as best_score,
+               COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
+               ucp.completed_at
+        FROM chapters c
+        LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
+        WHERE c.course_id = ${courseId} AND c.is_active = true
+        ORDER BY c.order_index
+      `;
+      return json(chapters);
+    }
+
+    if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
+      const chapterId = parseInt(path.split('/')[3]);
+      const [chapter] = await sql`SELECT * FROM chapters WHERE id = ${chapterId} AND is_active = true`;
+      if (!chapter) return json({ error: 'Chapter not found' }, 404);
+      const questions = await sql`SELECT id, question, options, order_index FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY order_index, id`;
+      const [progress] = await sql`SELECT * FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${chapterId}`;
+      const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
+      return json({ ...chapter, questions, user_progress: progress || null, energy: energy?.current_energy || 50 });
+    }
+
+    if (path.match(/^\/training\/chapter\/(\d+)\/quiz$/) && req.method === 'POST') {
+      const chapterId = parseInt(path.split('/')[3]);
+      const { answers } = await req.json();
+      const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
+      if (!energy || energy.current_energy < 5) {
+        return json({ error: 'পর্যাপ্ত এনার্জি নেই!', energy: energy?.current_energy || 0 }, 400);
+      }
+      const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY id`;
+      let correct = 0;
+      const total = questions.length;
+      for (const q of questions) {
+        const userAns = answers.find(a => a.question_id === q.id);
+        if (userAns && userAns.selected_index === q.correct_index) correct++;
+      }
+      const score = total > 0 ? (correct / total) * 100 : 0;
+      const [chapter] = await sql`SELECT passing_score FROM chapters WHERE id = ${chapterId}`;
+      const passed = score >= (chapter.passing_score || 90);
+
+      await sql`
+        INSERT INTO user_chapter_progress (user_id, chapter_id, quiz_attempts, best_score, passed, completed_at, last_attempt_at)
+        VALUES (${user.id}, ${chapterId}, 1, ${score}, ${passed}, ${passed ? new Date().toISOString() : null}, NOW())
+        ON CONFLICT (user_id, chapter_id) DO UPDATE SET
+          quiz_attempts = user_chapter_progress.quiz_attempts + 1,
+          best_score = GREATEST(COALESCE(user_chapter_progress.best_score, 0), ${score}),
+          passed = ${passed},
+          completed_at = CASE WHEN ${passed} THEN NOW() ELSE user_chapter_progress.completed_at END,
+          last_attempt_at = NOW()
+      `;
+      const energyCost = passed ? 5 : 10;
+      await sql`UPDATE user_energy SET current_energy = GREATEST(0, current_energy - ${energyCost}) WHERE user_id = ${user.id}`;
+      if (passed) await sql`UPDATE users SET xp = xp + 20 WHERE id = ${user.id}`;
+
+      return json({
+        score, passed, total, correct, passing_score: chapter.passing_score,
+        xp_earned: passed ? 20 : 0, energy_cost: energyCost,
+        message: passed ? 'অভিনন্দন! আপনি পাস করেছেন।' : `আপনার স্কোর ${score.toFixed(0)}%। পাসিং স্কোর ${chapter.passing_score}%। পুনরায় পড়ুন।`
+      });
+    }
+
+    if (path === '/training/final-exam' && req.method === 'GET') {
+      const chapters = await sql`SELECT id FROM chapters WHERE course_id = 1 AND is_active = true ORDER BY order_index`;
+      const passedChapters = await sql`SELECT chapter_id FROM user_chapter_progress WHERE user_id = ${user.id} AND passed = true`;
+      const passedSet = new Set(passedChapters.map(r => r.chapter_id));
+      if (chapters.some(ch => !passedSet.has(ch.id))) {
+        return json({ error: 'সব চ্যাপ্টার পাস করা আবশ্যক' }, 400);
+      }
+      const [existing] = await sql`SELECT * FROM final_exam_results WHERE user_id = ${user.id} AND passed = true`;
+      if (existing) return json({ message: 'ইতিমধ্যে উত্তীর্ণ', score: existing.score, passed: true });
+      const questions = await sql`
+        SELECT id, question, options FROM chapter_quiz_questions
+        WHERE chapter_id IN (SELECT id FROM chapters WHERE course_id = 1 AND is_active = true)
+        ORDER BY RANDOM() LIMIT 30
+      `;
+      return json({ questions, total: questions.length, passing_score: 80 });
+    }
+
+    if (path === '/training/final-exam' && req.method === 'POST') {
+      const { answers } = await req.json();
+      const questionIds = answers.map(a => a.question_id);
+      const questions = await sql`SELECT id, correct_index FROM chapter_quiz_questions WHERE id = ANY(${questionIds})`;
+      let correct = 0;
+      for (const q of questions) {
+        const userAns = answers.find(a => a.question_id === q.id);
+        if (userAns && userAns.selected_index === q.correct_index) correct++;
+      }
+      const total = questions.length;
+      const score = total ? (correct / total) * 100 : 0;
+      const passed = score >= 80;
+      await sql`
+        INSERT INTO final_exam_results (user_id, score, passed, total_questions, correct_answers)
+        VALUES (${user.id}, ${score}, ${passed}, ${total}, ${correct})
+        ON CONFLICT (user_id) DO UPDATE SET score = ${score}, passed = ${passed}, total_questions = ${total}, correct_answers = ${correct}, attempted_at = NOW()
+      `;
+      if (passed) await sql`UPDATE users SET xp = xp + 100 WHERE id = ${user.id}`;
+      return json({ score, passed, total, correct, xp_earned: passed ? 100 : 0, message: passed ? 'অভিনন্দন! ফাইনাল পরীক্ষায় উত্তীর্ণ!' : `স্কোর ${score.toFixed(0)}%, পাসিং 80%` });
+    }
+
     if (path === '/certificate' && req.method === 'GET') {
-      const { count } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0];
-      if (count < 30) return json({ error: 'Complete 30 days first' }, 400);
-      const phase = computeIdentityPhase(count);
-      const badges = (await sql`SELECT badge_type FROM badges WHERE user_id = ${user.id}`).map(b => b.badge_type).join(', ');
-      const avgScore = (await sql`SELECT AVG((scores->>'q6')::int)::float FROM daily_journals WHERE user_id = ${user.id}`)[0].avg || 0;
+      const { count: totalJournals } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0];
+      if (totalJournals < 1) return json({ error: 'কোনো জার্নাল নেই' }, 400);
+      const chapters = await sql`SELECT c.id, COALESCE(ucp.best_score, 0) as best_score FROM chapters c JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id WHERE ucp.user_id = ${user.id} AND c.is_active = true`;
+      const trainingAvg = chapters.length ? chapters.reduce((s, c) => s + parseFloat(c.best_score), 0) / chapters.length : 0;
+      const [finalExam] = await sql`SELECT score FROM final_exam_results WHERE user_id = ${user.id} AND passed = true ORDER BY attempted_at DESC LIMIT 1`;
+      const trainingScore = Math.round((trainingAvg * 0.6 + (finalExam?.score || 0) * 0.4) * 100) / 100;
+      const avgQ6 = (await sql`SELECT AVG((scores->>'q6')::int)::float FROM daily_journals WHERE user_id = ${user.id}`)[0].avg || 0;
+      const disciplineScore = Math.round((avgQ6 / 10) * 100 * 100) / 100;
+      const streakRes = await sql`WITH grp AS (SELECT date, date - (ROW_NUMBER() OVER (ORDER BY date))::int AS grp FROM daily_journals WHERE user_id = ${user.id}) SELECT COUNT(*)::int as cnt FROM grp GROUP BY grp ORDER BY MAX(date) DESC LIMIT 1`;
+      const streak = streakRes[0]?.cnt || 0;
+      const streakBonus = Math.min(streak * 2, 30);
+      const journalScore = Math.min(disciplineScore + streakBonus, 100);
+      const overall = Math.round(((trainingScore * 0.5 + journalScore * 0.5)) * 100) / 100;
+      const grade = overall >= 95 ? 'A+' : overall >= 85 ? 'A' : overall >= 75 ? 'B+' : overall >= 65 ? 'B' : 'C';
       const verificationId = uuidv4();
       await sql`INSERT INTO certificates (user_id, verification_code) VALUES (${user.id}, ${verificationId})`;
+      const badges = (await sql`SELECT badge_type FROM badges WHERE user_id = ${user.id}`).map(b => b.badge_type).join(', ');
 
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="700" viewBox="0 0 1000 700">
   <defs>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffb800"/>
-      <stop offset="100%" stop-color="#d4af37"/>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2d680"/>
+      <stop offset="50%" stop-color="#c59b3b"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0b16"/>
+      <stop offset="100%" stop-color="#1a0b2e"/>
     </linearGradient>
   </defs>
-  <rect width="100%" height="100%" fill="#0a0a0a"/>
-  <text x="400" y="80" text-anchor="middle" fill="url(#gold)" font-size="38" font-weight="bold" font-family="Arial, sans-serif">AlamQuant Transformation Certificate</text>
-  <text x="400" y="160" text-anchor="middle" fill="#fff" font-size="22" font-family="Arial, sans-serif">This certifies that</text>
-  <text x="400" y="220" text-anchor="middle" fill="url(#gold)" font-size="32" font-weight="bold" font-family="Arial, sans-serif">${user.display_name || user.email}</text>
-  <text x="400" y="280" text-anchor="middle" fill="#ddd" font-size="20" font-family="Arial, sans-serif">has completed the 30-Day Trader Transformation Journey</text>
-  <text x="400" y="340" text-anchor="middle" fill="#ccc" font-size="20" font-family="Arial, sans-serif">Identity Phase: ${phase}</text>
-  <text x="400" y="390" text-anchor="middle" fill="#ccc" font-size="20" font-family="Arial, sans-serif">Avg. Discipline Score: ${avgScore.toFixed(1)}</text>
-  <text x="400" y="440" text-anchor="middle" fill="#aaa" font-size="16" font-family="Arial, sans-serif">Badges: ${badges || 'None'}</text>
-  <text x="400" y="500" text-anchor="middle" fill="#888" font-size="16" font-family="Arial, sans-serif">Date: ${new Date().toLocaleDateString('en-US')}</text>
-  <text x="400" y="550" text-anchor="middle" fill="#666" font-size="12" font-family="Arial, sans-serif">Verification: ${verificationId}</text>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  <rect x="20" y="20" width="960" height="660" fill="none" stroke="url(#goldGrad)" stroke-width="3" rx="15"/>
+  <rect x="30" y="30" width="940" height="640" fill="none" stroke="url(#goldGrad)" stroke-width="1" rx="10"/>
+  <text x="500" y="100" text-anchor="middle" fill="url(#goldGrad)" font-size="42" font-weight="bold" font-family="Arial">AlamQuant Transformation Certificate</text>
+  <text x="500" y="150" text-anchor="middle" fill="#ccc" font-size="18" font-family="Arial">This certifies that</text>
+  <text x="500" y="210" text-anchor="middle" fill="url(#goldGrad)" font-size="36" font-weight="bold" font-family="Arial">${xmlEscape(user.display_name || user.email)}</text>
+  <text x="500" y="260" text-anchor="middle" fill="#ddd" font-size="16" font-family="Arial">has successfully completed the Professional Trader Transformation Program</text>
+  <text x="200" y="340" fill="url(#goldGrad)" font-size="20" font-weight="bold" font-family="Arial">Performance Summary</text>
+  <text x="200" y="380" fill="#fff" font-size="16" font-family="Arial">Training Score: ${trainingScore}%</text>
+  <text x="600" y="380" fill="#fff" font-size="16" font-family="Arial">Discipline Score: ${disciplineScore}%</text>
+  <text x="200" y="420" fill="#fff" font-size="16" font-family="Arial">Journal Streak: ${streak} Days</text>
+  <text x="600" y="420" fill="#fff" font-size="16" font-family="Arial">Identity Phase: ${computeIdentityPhase(totalJournals)}</text>
+  <text x="200" y="460" fill="#fff" font-size="16" font-family="Arial">Total Journals: ${totalJournals} Days</text>
+  <text x="500" y="520" text-anchor="middle" fill="url(#goldGrad)" font-size="28" font-weight="bold" font-family="Arial">Overall Grade: ${grade} (${overall}%)</text>
+  <text x="500" y="580" text-anchor="middle" fill="#aaa" font-size="14" font-family="Arial">Badges: ${badges || 'None'}</text>
+  <text x="500" y="620" text-anchor="middle" fill="#888" font-size="12" font-family="Arial">Verification: ${verificationId} | Date: ${new Date().toLocaleDateString('en-US')}</text>
 </svg>`;
-
       return new Response(svg, {
         headers: { 'Content-Type': 'image/svg+xml', 'Content-Disposition': 'attachment; filename="certificate.svg"' }
       });
     }
 
+    if (path === '/energy' && req.method === 'GET') {
+      const today = new Date().toISOString().slice(0,10);
+      const [energy] = await sql`SELECT * FROM user_energy WHERE user_id = ${user.id}`;
+      if (!energy) {
+        await sql`INSERT INTO user_energy (user_id, current_energy, max_energy, last_reset_date) VALUES (${user.id}, 50, 50, ${today})`;
+        return json({ current_energy: 50, max_energy: 50 });
+      }
+      if (energy.last_reset_date.toISOString().slice(0,10) !== today) {
+        await sql`UPDATE user_energy SET current_energy = max_energy, last_reset_date = ${today} WHERE user_id = ${user.id}`;
+        return json({ current_energy: energy.max_energy, max_energy: energy.max_energy });
+      }
+      return json({ current_energy: energy.current_energy, max_energy: energy.max_energy });
+    }
+
+    if (path === '/simulator/scenario' && req.method === 'GET') {
+      const scenarios = [
+        { market_condition: 'Bullish Trend', chart_description: 'Nifty 50 has been rising for 3 days. RSI 72.', options: ['Buy with full position','Buy half','Wait for pullback','Short sell'], correct_index: 2, explanation: 'RSI overbought, pullback likely.' },
+        { market_condition: 'News Event', chart_description: 'RBI policy in 30 min, high volatility.', options: ['Trade before','Trade after','Avoid trading','Trade during'], correct_index: 2, explanation: 'Avoid trading around major news.' }
+      ];
+      const scenario = scenarios[Math.floor(Math.random()*scenarios.length)];
+      const [saved] = await sql`INSERT INTO trading_simulator (user_id, scenario) VALUES (${user.id}, ${JSON.stringify(scenario)}) RETURNING id`;
+      return json({ id: saved.id, ...scenario });
+    }
+
+    if (path === '/simulator/answer' && req.method === 'POST') {
+      const { scenario_id, selected_index } = await req.json();
+      const [sim] = await sql`SELECT * FROM trading_simulator WHERE id = ${scenario_id} AND user_id = ${user.id}`;
+      if (!sim) return json({ error: 'Scenario not found' }, 404);
+      const isCorrect = selected_index === sim.scenario.correct_index;
+      const xpEarned = isCorrect ? 15 : 0;
+      await sql`UPDATE trading_simulator SET user_decision = ${JSON.stringify({selected_index})}, result = ${JSON.stringify({is_correct: isCorrect})}, xp_earned = ${xpEarned} WHERE id = ${scenario_id}`;
+      if (isCorrect) await sql`UPDATE users SET xp = xp + 15 WHERE id = ${user.id}`;
+      return json({ is_correct: isCorrect, explanation: sim.scenario.explanation, xp_earned: xpEarned });
+    }
+
+    // ==================== ADMIN ENDPOINTS (Token Protected) ====================
+    if (path === '/admin/dashboard' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const totalUsers = (await sql`SELECT COUNT(*)::int FROM users`)[0].count;
+      const dau = (await sql`SELECT COUNT(DISTINCT user_id)::int FROM daily_journals WHERE date = CURRENT_DATE`)[0].count;
+      const totalJournals = (await sql`SELECT COUNT(*)::int FROM daily_journals`)[0].count;
+      const totalChapters = (await sql`SELECT COUNT(*)::int FROM chapters WHERE is_active = true`)[0].count;
+      const completedTrainings = (await sql`SELECT COUNT(*)::int FROM final_exam_results WHERE passed = true`)[0].count;
+      return json({ totalUsers, dailyActiveUsers: dau, totalJournals, totalChapters, completedTrainings, completionRate: totalUsers ? Math.round(completedTrainings/totalUsers*100) : 0 });
+    }
+
+    if (path === '/admin/chapters' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const courseId = url.searchParams.get('course_id') || 1;
+      const chapters = await sql`
+        SELECT c.*, 
+               (SELECT COUNT(*)::int FROM chapter_quiz_questions WHERE chapter_id = c.id) as question_count,
+               (SELECT COUNT(*)::int FROM user_chapter_progress WHERE chapter_id = c.id AND passed = true) as passed_count
+        FROM chapters c WHERE c.course_id = ${courseId} ORDER BY c.order_index
+      `;
+      return json(chapters);
+    }
+
+    if (path === '/admin/chapter' && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const { course_id, title, order_index, content_text, image_url, video_url, passing_score } = await req.json();
+      const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${course_id}, ${title}, ${order_index}, ${content_text}, ${image_url}, ${video_url}, ${passing_score || 90}) RETURNING *`;
+      return json(chapter, 201);
+    }
+
+    if (path.match(/^\/admin\/chapter\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const chapterId = parseInt(path.split('/')[3]);
+      const { title, order_index, content_text, image_url, video_url, passing_score, is_active } = await req.json();
+      await sql`UPDATE chapters SET title=COALESCE(${title}, title), order_index=COALESCE(${order_index}, order_index), content_text=COALESCE(${content_text}, content_text), image_url=COALESCE(${image_url}, image_url), video_url=COALESCE(${video_url}, video_url), passing_score=COALESCE(${passing_score}, passing_score), is_active=COALESCE(${is_active}, is_active) WHERE id=${chapterId}`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/chapter\/(\d+)$/) && req.method === 'DELETE') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const chapterId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM chapters WHERE id = ${chapterId}`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/chapter\/(\d+)\/questions$/) && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const chapterId = parseInt(path.split('/')[3]);
+      const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY order_index, id`;
+      return json(questions);
+    }
+
+    if (path.match(/^\/admin\/chapter\/(\d+)\/question$/) && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const chapterId = parseInt(path.split('/')[3]);
+      const { question, options, correct_index, explanation, order_index } = await req.json();
+      const [q] = await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, order_index) VALUES (${chapterId}, ${question}, ${JSON.stringify(options)}, ${correct_index}, ${explanation}, ${order_index || 0}) RETURNING *`;
+      return json(q, 201);
+    }
+
+    if (path.match(/^\/admin\/question\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const questionId = parseInt(path.split('/')[3]);
+      const { question, options, correct_index, explanation, order_index } = await req.json();
+      await sql`UPDATE chapter_quiz_questions SET question=COALESCE(${question}, question), options=COALESCE(${JSON.stringify(options)}::jsonb, options), correct_index=COALESCE(${correct_index}, correct_index), explanation=COALESCE(${explanation}, explanation), order_index=COALESCE(${order_index}, order_index) WHERE id=${questionId}`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/question\/(\d+)$/) && req.method === 'DELETE') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const questionId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM chapter_quiz_questions WHERE id = ${questionId}`;
+      return json({ success: true });
+    }
+
+    // Legacy admin endpoints (using admin_secret) kept for backward compatibility
+    if (path === '/admin/users' && req.method === 'GET') {
+      const admin_secret = url.searchParams.get('admin_secret');
+      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const search = url.searchParams.get('search') || '';
+      let users;
+      if (search) {
+        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'} ORDER BY created_at DESC LIMIT 50`;
+      } else {
+        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji FROM users ORDER BY created_at DESC LIMIT 50`;
+      }
+      return json(users);
+    }
+
+    if (path === '/admin/simulate-day' && req.method === 'POST') {
+      const { admin_secret, email, days, start_day } = await req.json();
+      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const targetUser = (await sql`SELECT id FROM users WHERE email = ${email}`)[0];
+      if (!targetUser) return json({ error: 'User not found' }, 404);
+      const userId = targetUser.id;
+      const totalDays = Math.min(Math.max(parseInt(days) || 7, 1), 30);
+      const startOffset = Math.min(Math.max(parseInt(start_day) || 1, 1), 30);
+      const startDate = new Date(); startDate.setDate(startDate.getDate() - (startOffset - 1));
+      let inserted = 0;
+      for (let i = 0; i < totalDays; i++) {
+        const date = new Date(startDate); date.setDate(date.getDate() + i);
+        const dateStr = date.toISOString().slice(0,10);
+        if (dateStr > new Date().toISOString().slice(0,10)) break;
+        const [existing] = await sql`SELECT id FROM daily_journals WHERE user_id = ${userId} AND date = ${dateStr}`;
+        if (existing) continue;
+        const scores = {};
+        for (let i=1; i<=10; i++) scores['q'+i] = Math.floor(Math.random()*10)+1;
+        const radar = calculateRadarScores(scores);
+        await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment, trades_count, stop_loss_moved, revenge_trade, fomo_entry, overtrading, rule_followed, scores, radar_scores, evaluation_notes, reflection, feedback, tomorrow_mission) VALUES (${userId}, ${dateStr}, true, 'Simulated', ${Math.floor(Math.random()*5)+1}, ${Math.random()>0.7}, ${Math.random()>0.8}, ${Math.random()>0.7}, ${Math.random()>0.8}, ${scores.q6>=8}, ${JSON.stringify(scores)}, ${JSON.stringify(radar)}, 'Simulated', 'Simulated', 'Good job!', 'Keep it up')`;
+        inserted++;
+      }
+      const { count: totalJournals } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${userId}`)[0];
+      const phase = computeIdentityPhase(totalJournals);
+      await sql`UPDATE users SET identity_level = ${phase}, xp = xp + ${inserted * 3} WHERE id = ${userId}`;
+      return json({ success: true, inserted_days: inserted });
+    }
+
+    if (path === '/admin/community' && req.method === 'GET') {
+      const admin_secret = url.searchParams.get('admin_secret');
+      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const posts = await sql`SELECT cp.*, u.email as author, u.display_name, u.avatar_emoji FROM community_posts cp JOIN users u ON cp.user_id = u.id ORDER BY cp.created_at DESC LIMIT 100`;
+      return json(posts.map(p => ({ ...p, author: maskEmail(p.author), display_name: p.display_name || p.author.split('@')[0] })));
+    }
+
+    if (path.match(/^\/admin\/posts\/(.+)\/hide$/) && req.method === 'PUT') {
+      const admin_secret = (await req.json()).admin_secret;
+      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const postId = path.split('/')[3];
+      const { hide } = await req.json();
+      await sql`UPDATE community_posts SET is_hidden = ${hide} WHERE id = ${postId}`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/posts\/(.+)$/) && req.method === 'DELETE') {
+      const admin_secret = (await req.json()).admin_secret;
+      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const postId = path.split('/')[3];
+      await sql`DELETE FROM community_posts WHERE id = ${postId}`;
+      return json({ success: true });
+    }
+
+    if (path === '/admin/content' && req.method === 'POST') {
+      const body = await req.json();
+      if (body.admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const { type } = body;
+      if (type === 'lesson') {
+        const { day, phase, title, content } = body;
+        await sql`INSERT INTO lessons (day, phase, title, content) VALUES (${day}, ${phase}, ${title}, ${content})`;
+      } else if (type === 'quiz') {
+        const { question, options, correct } = body;
+        await sql`INSERT INTO quizzes (question, options, correct) VALUES (${question}, ${JSON.stringify(options)}, ${correct})`;
+      } else if (type === 'video') {
+        const { category, title, description, youtube_id, duration } = body;
+        await sql`INSERT INTO video_library (category, title, description, youtube_id, duration) VALUES (${category}, ${title}, ${description}, ${youtube_id}, ${duration})`;
+      } else {
+        return json({ error: 'Invalid content type' }, 400);
+      }
+      return json({ success: true });
+    }
+
+    // ==================== VERIFY CERTIFICATE (PUBLIC) ====================
     if (path.startsWith('/verify/') && req.method === 'GET') {
       const code = path.split('/').pop();
-      const [cert] = await sql`SELECT * FROM certificates WHERE verification_code = ${code}`;
-      if (!cert) return json({ valid: false });
-      const [u] = await sql`SELECT email, display_name FROM users WHERE id = ${cert.user_id}`;
-      return json({ valid: true, user: maskEmail(u?.email), display_name: u?.display_name });
+      const [cert] = await sql`SELECT c.*, u.email, u.display_name FROM certificates c JOIN users u ON c.user_id = u.id WHERE verification_code = ${code}`;
+      if (!cert) return json({ valid: false, message: 'সার্টিফিকেট পাওয়া যায়নি' });
+      return json({
+        valid: true,
+        user: maskEmail(cert.email),
+        display_name: cert.display_name,
+        issued_at: cert.issued_at,
+        verification_code: code
+      });
     }
 
     return json({ error: 'Not found' }, 404);
   } catch (error) {
     console.error(error);
     return json({ error: error.message }, 500);
-  }
-}
-// file: api/setup.js - handler function-এর ভিতরে, path check-এর আগে
-if (path === '/test-db' && req.method === 'GET') {
-  try {
-    const result = await sql`SELECT 1 AS test`;
-    return json({ db: 'connected', result });
-  } catch (e) {
-    return json({ db: 'error', message: e.message }, 500);
   }
 }

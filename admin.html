@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlamQuant ATTS â€“ Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --sidebar-width: 260px;
+    }
+    body { font-family: 'Inter', sans-serif; display: flex; min-height: 100vh; }
+    .admin-layout { display: flex; width: 100%; }
+    .admin-sidebar {
+      width: var(--sidebar-width);
+      background: rgba(8, 10, 26, 0.98);
+      border-right: 1px solid var(--border-gold);
+      padding: 20px 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .admin-sidebar .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border-gold); font-size: 1.4rem; font-weight: 800; color: var(--gold-bright); }
+    .admin-sidebar ul { list-style: none; padding: 10px 0; }
+    .admin-sidebar ul li {
+      padding: 14px 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-sidebar ul li:hover, .admin-sidebar ul li.active {
+      background: rgba(197,155,59,0.15);
+      color: var(--gold-bright);
+      border-left: 3px solid var(--gold-bright);
+    }
+    .admin-main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 30px;
+      min-height: 100vh;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-gold);
+    }
+    .stat-card { text-align: center; }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: var(--gold-bright); }
+    .stat-card .stat-label { color: var(--text-secondary); margin-top: 8px; }
+    .chapter-editor { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 20px; margin: 16px 0; border: 1px solid var(--border-gold); }
+    .question-item { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; margin: 12px 0; border-left: 3px solid var(--accent); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .toast {
+      position:fixed; top:20px; right:20px;
+      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color:#0a0a0a; font-weight:700;
+      padding:14px 22px; border-radius:30px;
+      z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      opacity:0; transform:translateX(120%);
+      transition:0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .toast.show { opacity:1; transform:translateX(0); }
+    @media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } .admin-sidebar { width: 200px; } .admin-main { margin-left: 200px; } }
+    @media (max-width: 768px) { .admin-sidebar { width: 70px; } .admin-sidebar ul li span { display: none; } .admin-main { margin-left: 70px; } }
+  </style>
+</head>
+<body>
+  <div id="admin-login-screen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; width:100%;">
+    <div class="glass" style="width:400px; text-align:center; padding:40px;">
+      <h2 style="color:var(--gold-bright);">ðŸ” à¦…à§à¦¯à¦¾à¦¡à¦®à¦¿à¦¨ à¦²à¦—à¦‡à¦¨</h2>
+      <input type="email" id="admin-email" placeholder="à¦…à§à¦¯à¦¾à¦¡à¦®à¦¿à¦¨ à¦‡à¦®à§‡à¦‡à¦²">
+      <input type="password" id="admin-password" placeholder="à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡">
+      <button class="btn btn-lg" onclick="adminLogin()" style="width:100%; margin-top:16px;">à¦ªà§à¦°à¦¬à§‡à¦¶ à¦•à¦°à§à¦¨</button>
+      <p id="login-error" style="color:var(--danger); margin-top:12px; display:none;"></p>
+    </div>
+  </div>
+
+  <div id="admin-dashboard" class="admin-layout" style="display:none;">
+    <nav class="admin-sidebar">
+      <div class="logo">âš™ï¸ ATTS Admin</div>
+      <ul>
+        <li class="active" data-section="dashboard" onclick="showSection('dashboard')">ðŸ“Š à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡</li>
+        <li data-section="chapters" onclick="showSection('chapters')">ðŸ“š à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦°</li>
+        <li data-section="quiz" onclick="showSection('quiz')">â“ à¦•à§à¦‡à¦œ</li>
+        <li data-section="users" onclick="showSection('users')">ðŸ‘¥ à¦‡à¦‰à¦œà¦¾à¦°</li>
+        <li data-section="certificates" onclick="showSection('certificates')">ðŸ† à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ</li>
+        <li data-section="settings" onclick="showSection('settings')">âš™ï¸ à¦¸à§‡à¦Ÿà¦¿à¦‚à¦¸</li>
+      </ul>
+      <div style="position:absolute; bottom:20px; left:20px; right:20px;">
+        <button class="btn btn-outline btn-sm" onclick="adminLogout()" style="width:100%;">à¦²à¦—à¦†à¦‰à¦Ÿ</button>
+      </div>
+    </nav>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h2 id="section-title">ðŸ“Š à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡</h2>
+        <span id="admin-name" style="color:var(--gold-light); font-weight:600;"></span>
+      </div>
+      <div id="content-area"><!-- Dynamic content --></div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API_BASE = "/api/setup";
+    let adminToken = localStorage.getItem("adminToken");
+    let currentSection = "dashboard";
+    let editingChapterId = null;
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
+
+    async function adminApi(method, path, body = null) {
+      const opts = {
+        method,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(`${API_BASE}${path}`, opts);
+      if (res.status === 401 || res.status === 403) { adminLogout(); return null; }
+      return res.json();
+    }
+
+    async function adminLogin() {
+      const email = document.getElementById("admin-email").value;
+      const password = document.getElementById("admin-password").value;
+      const res = await fetch(`${API_BASE}/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.token) {
+        adminToken = data.token;
+        localStorage.setItem("adminToken", adminToken);
+        document.getElementById("admin-login-screen").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "flex";
+        document.getElementById("admin-name").textContent = data.name;
+        showSection("dashboard");
+      } else {
+        document.getElementById("login-error").textContent = data.error || "Login failed";
+        document.getElementById("login-error").style.display = "block";
+      }
+    }
+
+    function adminLogout() {
+      localStorage.removeItem("adminToken");
+      adminToken = null;
+      document.getElementById("admin-login-screen").style.display = "flex";
+      document.getElementById("admin-dashboard").style.display = "none";
+    }
+
+    function showSection(section) {
+      currentSection = section;
+      document.querySelectorAll(".admin-sidebar ul li").forEach(li => li.classList.remove("active"));
+      document.querySelector(`[data-section="${section}"]`)?.classList.add("active");
+      const titles = {
+        dashboard: "ðŸ“Š à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡",
+        chapters: "ðŸ“š à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦° à¦®à§à¦¯à¦¾à¦¨à§‡à¦œà¦®à§‡à¦¨à§à¦Ÿ",
+        quiz: "â“ à¦•à§à¦‡à¦œ à¦®à§à¦¯à¦¾à¦¨à§‡à¦œà¦®à§‡à¦¨à§à¦Ÿ",
+        users: "ðŸ‘¥ à¦‡à¦‰à¦œà¦¾à¦° à¦®à§à¦¯à¦¾à¦¨à§‡à¦œà¦®à§‡à¦¨à§à¦Ÿ",
+        certificates: "ðŸ† à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ",
+        settings: "âš™ï¸ à¦¸à§‡à¦Ÿà¦¿à¦‚à¦¸"
+      };
+      document.getElementById("section-title").textContent = titles[section] || "";
+      switch(section) {
+        case "dashboard": loadDashboard(); break;
+        case "chapters": loadChapters(); break;
+        case "quiz": loadQuizManagement(); break;
+        case "users": loadUsers(); break;
+        case "certificates": loadCertificates(); break;
+        case "settings": loadSettings(); break;
+      }
+    }
+
+    async function loadDashboard() {
+      const data = await adminApi("GET", "/admin/dashboard");
+      if (!data) return;
+      document.getElementById("content-area").innerHTML = `
+        <div class="grid-4">
+          <div class="stat-card glass"><div class="stat-value">${data.totalUsers}</div><div class="stat-label">à¦®à§‹à¦Ÿ à¦‡à¦‰à¦œà¦¾à¦°</div></div>
+          <div class="stat-card glass"><div class="stat-value">${data.dailyActiveUsers}</div><div class="stat-label">à¦†à¦œ à¦¸à¦•à§à¦°à¦¿à¦¯à¦¼</div></div>
+          <div class="stat-card glass"><div class="stat-value">${data.totalJournals}</div><div class="stat-label">à¦®à§‹à¦Ÿ à¦œà¦¾à¦°à§à¦¨à¦¾à¦²</div></div>
+          <div class="stat-card glass"><div class="stat-value">${data.completionRate}%</div><div class="stat-label">à¦Ÿà§à¦°à§‡à¦¨à¦¿à¦‚ à¦¸à¦®à§à¦ªà¦¨à§à¦¨</div></div>
+        </div>
+        <div class="glass" style="margin-top:24px;"><h3>ðŸ“ˆ à¦¦à§à¦°à§à¦¤ à¦ªà¦°à¦¿à¦¸à¦‚à¦–à§à¦¯à¦¾à¦¨</h3><p>à¦®à§‹à¦Ÿ à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦°: <strong>${data.totalChapters}</strong></p><p>à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿà¦ªà§à¦°à¦¾à¦ªà§à¦¤: <strong>${data.completedTrainings}</strong></p></div>`;
+    }
+
+    // ----- Chapters CRUD -----
+    async function loadChapters() {
+      const chapters = await adminApi("GET", "/admin/chapters");
+      if (!chapters) return;
+      let html = `<button class="btn btn-accent" onclick="showChapterForm()" style="margin-bottom:20px;">+ à¦¨à¦¤à§à¦¨ à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦°</button>
+        <div id="chapter-form" class="chapter-editor hidden">
+          <h4 id="chapter-form-title">à¦¨à¦¤à§à¦¨ à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦°</h4>
+          <div class="grid-2"><input type="text" id="ch-title" placeholder="à¦¶à¦¿à¦°à§‹à¦¨à¦¾à¦®"><input type="number" id="ch-order" placeholder="à¦•à§à¦°à¦®" min="1"></div>
+          <textarea id="ch-content" rows="6" placeholder="HTML à¦•à¦¨à¦Ÿà§‡à¦¨à§à¦Ÿ"></textarea>
+          <div class="grid-2"><input type="url" id="ch-image" placeholder="à¦‡à¦®à§‡à¦œ URL"><input type="url" id="ch-video" placeholder="à¦­à¦¿à¦¡à¦¿à¦“ URL"></div>
+          <input type="number" id="ch-passing" placeholder="à¦ªà¦¾à¦¸à¦¿à¦‚ à¦¸à§à¦•à§‹à¦° (%)" value="90" min="0" max="100">
+          <div style="margin-top:12px; display:flex; gap:8px;"><button class="btn btn-accent" onclick="saveChapter()">à¦¸à¦‚à¦°à¦•à§à¦·à¦£</button><button class="btn btn-outline" onclick="cancelChapterEdit()">à¦¬à¦¾à¦¤à¦¿à¦²</button></div>
+        </div>
+        <div id="chapters-list">`;
+      chapters.forEach(ch => {
+        html += `<div class="glass" style="margin:12px 0; padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div><strong>#${ch.order_index} ${ch.title}</strong><div style="font-size:0.85rem; color:var(--text-secondary);">à¦ªà§à¦°à¦¶à§à¦¨: ${ch.question_count} | à¦ªà¦¾à¦¸: ${ch.passed_count} | à¦ªà¦¾à¦¸à¦¿à¦‚: ${ch.passing_score}%</div></div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-sm btn-outline" onclick="editChapter(${ch.id})">âœï¸</button>
+              <button class="btn btn-sm btn-outline" onclick="manageQuestions(${ch.id})">ðŸ“</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteChapter(${ch.id})">ðŸ—‘</button></div></div></div>`;
+      });
+      html += "</div>";
+      document.getElementById("content-area").innerHTML = html;
+    }
+
+    function showChapterForm(chapter = null) {
+      document.getElementById("chapter-form").classList.remove("hidden");
+      if (chapter) {
+        editingChapterId = chapter.id;
+        document.getElementById("ch-title").value = chapter.title;
+        document.getElementById("ch-order").value = chapter.order_index;
+        document.getElementById("ch-content").value = chapter.content_text || "";
+        document.getElementById("ch-image").value = chapter.image_url || "";
+        document.getElementById("ch-video").value = chapter.video_url || "";
+        document.getElementById("ch-passing").value = chapter.passing_score;
+      } else {
+        editingChapterId = null;
+        ["ch-title","ch-order","ch-content","ch-image","ch-video"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("ch-passing").value = 90;
+      }
+    }
+
+    function cancelChapterEdit() { document.getElementById("chapter-form").classList.add("hidden"); editingChapterId = null; }
+
+    async function editChapter(id) {
+      const chapters = await adminApi("GET", "/admin/chapters");
+      const ch = chapters.find(c => c.id === id);
+      if (ch) showChapterForm(ch);
+    }
+
+    async function saveChapter() {
+      const data = {
+        course_id: 1,
+        title: document.getElementById("ch-title").value,
+        order_index: parseInt(document.getElementById("ch-order").value),
+        content_text: document.getElementById("ch-content").value,
+        image_url: document.getElementById("ch-image").value,
+        video_url: document.getElementById("ch-video").value,
+        passing_score: parseInt(document.getElementById("ch-passing").value)
+      };
+      if (!data.title || !data.order_index) return showToast("à¦¶à¦¿à¦°à§‹à¦¨à¦¾à¦® à¦“ à¦•à§à¦°à¦® à¦†à¦¬à¦¶à§à¦¯à¦•");
+      if (editingChapterId) await adminApi("PUT", `/admin/chapter/${editingChapterId}`, data);
+      else await adminApi("POST", "/admin/chapter", data);
+      cancelChapterEdit();
+      loadChapters();
+    }
+
+    async function deleteChapter(id) {
+      if (!confirm("à¦šà§à¦¯à¦¾à¦ªà§à¦Ÿà¦¾à¦° à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¬à§‡à¦¨?")) return;
+      await adminApi("DELETE", `/admin/chapter/${id}`);
+      loadChapters();
+    }
+
+    // ----- Quiz Management -----
+    async function manageQuestions(chapterId) {
+      const questions = await adminApi("GET", `/admin/chapter/${chapterId}/questions`);
+      const chapters = await adminApi("GET", "/admin/chapters");
+      const chapter = chapters.find(c => c.id === chapterId);
+      let html = `<button class="btn btn-outline" onclick="loadChapters()">â† à¦«à¦¿à¦°à§‡ à¦¯à¦¾à¦¨</button>
+        <h3>${chapter?.title || ""} â€“ à¦•à§à¦‡à¦œ à¦ªà§à¦°à¦¶à§à¦¨</h3>
+        <button class="btn btn-accent btn-sm" onclick="showQuestionForm(${chapterId})">+ à¦ªà§à¦°à¦¶à§à¦¨ à¦¯à§‹à¦—</button>
+        <div id="question-form" class="chapter-editor hidden">
+          <h4 id="q-form-title">à¦¨à¦¤à§à¦¨ à¦ªà§à¦°à¦¶à§à¦¨</h4>
+          <input type="hidden" id="q-chapter-id" value="${chapterId}">
+          <input type="hidden" id="q-id" value="">
+          <textarea id="q-text" rows="2" placeholder="à¦ªà§à¦°à¦¶à§à¦¨"></textarea>
+          <div class="grid-2"><input type="text" id="q-opt0" placeholder="à¦…à¦ªà¦¶à¦¨ 1"><input type="text" id="q-opt1" placeholder="à¦…à¦ªà¦¶à¦¨ 2"><input type="text" id="q-opt2" placeholder="à¦…à¦ªà¦¶à¦¨ 3"><input type="text" id="q-opt3" placeholder="à¦…à¦ªà¦¶à¦¨ 4"></div>
+          <input type="number" id="q-correct" placeholder="à¦¸à¦ à¦¿à¦• à¦‰à¦¤à§à¦¤à¦° (0-3)" min="0" max="3">
+          <input type="text" id="q-explanation" placeholder="à¦¬à§à¦¯à¦¾à¦–à§à¦¯à¦¾ (à¦à¦šà§à¦›à¦¿à¦•)">
+          <button class="btn btn-accent btn-sm" onclick="saveQuestion()">à¦¸à¦‚à¦°à¦•à§à¦·à¦£</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('question-form').classList.add('hidden')">à¦¬à¦¾à¦¤à¦¿à¦²</button>
+        </div>
+        <div id="questions-list">`;
+      questions.forEach(q => {
+        html += `<div class="question-item"><p><strong>${q.question}</strong></p>
+          <p style="font-size:0.85rem; color:var(--text-secondary);">${q.options.map((opt,i) => `${i===q.correct_index?"âœ…":"â—‹"} ${opt}`).join(" | ")}</p>
+          ${q.explanation ? `<p style="font-size:0.8rem; color:var(--accent-bright);">${q.explanation}</p>` : ""}
+          <div style="margin-top:8px;"><button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">âœï¸</button><button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">ðŸ—‘</button></div></div>`;
+      });
+      html += "</div>";
+      document.getElementById("content-area").innerHTML = html;
+    }
+
+    function showQuestionForm(chapterId, question = null) {
+      document.getElementById("question-form").classList.remove("hidden");
+      document.getElementById("q-chapter-id").value = chapterId;
+      if (question) {
+        document.getElementById("q-id").value = question.id;
+        document.getElementById("q-text").value = question.question;
+        question.options.forEach((opt,i) => document.getElementById(`q-opt${i}`).value = opt);
+        document.getElementById("q-correct").value = question.correct_index;
+        document.getElementById("q-explanation").value = question.explanation || "";
+      } else {
+        document.getElementById("q-id").value = "";
+        ["q-text","q-correct","q-explanation"].forEach(id => document.getElementById(id).value = "");
+        for(let i=0;i<4;i++) document.getElementById(`q-opt${i}`).value = "";
+      }
+    }
+
+    async function editQuestion(qId, chapterId) {
+      const questions = await adminApi("GET", `/admin/chapter/${chapterId}/questions`);
+      const q = questions.find(q => q.id === qId);
+      if (q) showQuestionForm(chapterId, q);
+    }
+
+    async function saveQuestion() {
+      const chapterId = parseInt(document.getElementById("q-chapter-id").value);
+      const qId = document.getElementById("q-id").value;
+      const data = {
+        question: document.getElementById("q-text").value,
+        options: [0,1,2,3].map(i => document.getElementById(`q-opt${i}`).value),
+        correct_index: parseInt(document.getElementById("q-correct").value),
+        explanation: document.getElementById("q-explanation").value
+      };
+      if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index)) return showToast("à¦¸à¦¬ à¦«à¦¿à¦²à§à¦¡ à¦ªà§‚à¦°à¦£ à¦•à¦°à§à¦¨");
+      if (qId) await adminApi("PUT", `/admin/question/${qId}`, data);
+      else await adminApi("POST", `/admin/chapter/${chapterId}/question`, data);
+      document.getElementById("question-form").classList.add("hidden");
+      manageQuestions(chapterId);
+    }
+
+    async function deleteQuestion(qId, chapterId) {
+      if (!confirm("à¦ªà§à¦°à¦¶à§à¦¨ à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¬à§‡à¦¨?")) return;
+      await adminApi("DELETE", `/admin/question/${qId}`);
+      manageQuestions(chapterId);
+    }
+
+    // ----- Users -----
+    async function loadUsers() {
+      const users = await adminApi("GET", "/admin/users?admin_secret=admin123");
+      let html = `<input type="text" id="user-search" placeholder="à¦‡à¦®à§‡à¦‡à¦² à¦¬à¦¾ à¦¨à¦¾à¦® à¦¸à¦¾à¦°à§à¦š..." oninput="searchUsers()" style="margin-bottom:16px;"><div id="users-list">`;
+      if (users) users.forEach(u => {
+        html += `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"ðŸ™‚"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`;
+      });
+      html += "</div>";
+      document.getElementById("content-area").innerHTML = html;
+    }
+
+    async function searchUsers() {
+      const q = document.getElementById("user-search").value;
+      const users = await adminApi("GET", `/admin/users?admin_secret=admin123&search=${encodeURIComponent(q)}`);
+      const list = document.getElementById("users-list");
+      list.innerHTML = users.map(u => `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"ðŸ™‚"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`).join("");
+    }
+
+    // ----- Certificates -----
+    function loadCertificates() {
+      document.getElementById("content-area").innerHTML = `
+        <div class="glass">
+          <h3>ðŸ† à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨</h3>
+          <input type="text" id="verify-code" placeholder="à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨ à¦•à§‹à¦¡">
+          <button class="btn btn-accent btn-sm" onclick="verifyCertificate()">à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§à¦¨</button>
+          <div id="verify-result" style="margin-top:16px;"></div>
+        </div>`;
+    }
+
+    async function verifyCertificate() {
+      const code = document.getElementById("verify-code").value;
+      const res = await fetch(`/api/setup/verify/${code}`).then(r=>r.json());
+      document.getElementById("verify-result").innerHTML = res.valid
+        ? `<p style="color:var(--success);">âœ… à¦¬à§ˆà¦§ à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ | à¦‡à¦‰à¦œà¦¾à¦°: ${res.user}</p>`
+        : `<p style="color:var(--danger);">âŒ à¦…à¦¬à§ˆà¦§ à¦¸à¦¾à¦°à§à¦Ÿà¦¿à¦«à¦¿à¦•à§‡à¦Ÿ</p>`;
+    }
+
+    // ----- Settings -----
+    function loadSettings() {
+      document.getElementById("content-area").innerHTML = `
+        <div class="glass"><h3>âš™ï¸ à¦¸à¦¿à¦¸à§à¦Ÿà§‡à¦® à¦¸à§‡à¦Ÿà¦¿à¦‚à¦¸</h3><p>à¦¸à§‡à¦Ÿà¦¿à¦‚à¦¸ à¦«à¦¿à¦šà¦¾à¦° à¦¶à§€à¦˜à§à¦°à¦‡ à¦†à¦¸à¦›à§‡à¥¤</p></div>`;
+    }
+
+    if (adminToken) {
+      document.getElementById("admin-login-screen").style.display = "none";
+      document.getElementById("admin-dashboard").style.display = "flex";
+      showSection("dashboard");
+    }
+  </script>
+</body>
+</html>
