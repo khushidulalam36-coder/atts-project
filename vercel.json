@@ -1,11 +1,5 @@
 ﻿{
-  "functions": {
-    "api/setup.js": {
-      "runtime": "edge"
-    }
-  },
   "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
     { "source": "/api/(.*)", "destination": "/api/setup" }
   ]
 }
