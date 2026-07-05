@@ -14,11 +14,12 @@
     :root {
       --bg: #030510;
       --surface: rgba(12, 14, 34, 0.85);
-      --gold: #c59b3b;
-      --gold-bright: #f2d680;
+      --gold: #e5b73b;
+      --gold-bright: #ffdf80;
       --gold-light: #ffe082;
-      --accent: #00bcd4;
+      --accent: #00e5ff;
       --accent-bright: #00e5ff;
+      --accent2: #ff4081;
       --text: #e8e8f0;
       --text-secondary: #9898b0;
       --danger: #ff5252;
@@ -26,7 +27,7 @@
       --warning: #ffd740;
       --purple: #b388ff;
       --orange: #ff9100;
-      --border-gold: rgba(197, 155, 59, 0.25);
+      --border-gold: rgba(229, 183, 59, 0.3);
       --border-accent: rgba(0,229,255,0.3);
       --font-en: 'Inter', sans-serif;
       --radius: 20px;
@@ -86,27 +87,27 @@
     }
     .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
     .glass {
-      background: radial-gradient(circle at top left, rgba(197,155,59,0.1), rgba(12,14,34,0.7));
+      background: radial-gradient(circle at top left, rgba(229,183,59,0.1), rgba(12,14,34,0.7));
       backdrop-filter: blur(30px) saturate(120%);
       -webkit-backdrop-filter: blur(30px) saturate(120%);
       border-radius: var(--radius);
       padding: 24px;
       margin-bottom: 18px;
       border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(229,183,59,0.1);
       transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
       position: relative;
       overflow: hidden;
     }
     .glass:hover {
-      box-shadow: 0 14px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(197,155,59,0.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 25px rgba(229,183,59,0.2);
       transform: translateY(-2px);
-      border-color: rgba(197,155,59,0.4);
+      border-color: rgba(229,183,59,0.5);
     }
     h1,h2,h3,h4 {
       color: var(--gold);
       margin-bottom: 12px;
-      text-shadow: 0 0 16px rgba(197,155,59,0.3);
+      text-shadow: 0 0 16px rgba(229,183,59,0.3);
       position:relative; z-index:1; font-weight:700;
     }
     h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
@@ -120,17 +121,20 @@
       cursor:pointer;
       transition: all var(--transition);
       font-size:0.9rem;
-      box-shadow:0 4px 18px rgba(197,155,59,0.4);
+      box-shadow: 0 4px 18px rgba(229,183,59,0.4);
       letter-spacing:0.5px;
       position:relative;
       overflow:hidden;
       z-index:1;
       font-family:var(--font-en);
     }
-    .btn:hover { box-shadow:0 6px 24px rgba(197,155,59,0.6); transform:translateY(-1px); }
+    .btn:hover {
+      box-shadow: 0 6px 24px rgba(229,183,59,0.6);
+      transform:translateY(-1px);
+    }
     .btn:active { transform:scale(0.96); }
     .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
-    .btn-outline:hover { background:rgba(197,155,59,0.1); }
+    .btn-outline:hover { background:rgba(229,183,59,0.1); }
     .btn-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); box-shadow:0 4px 18px rgba(0,229,255,0.4); }
     .btn-danger { background:linear-gradient(135deg, #ff5252, #ff1744); box-shadow:0 4px 18px rgba(255,82,82,0.4); }
     .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
@@ -150,7 +154,7 @@
     }
     input:focus, textarea:focus, select:focus {
       border-color:var(--gold-bright);
-      box-shadow:0 0 0 3px rgba(197,155,59,0.15), 0 0 20px rgba(197,155,59,0.2);
+      box-shadow:0 0 0 3px rgba(229,183,59,0.15), 0 0 20px rgba(229,183,59,0.2);
       background:rgba(255,255,255,0.08);
     }
     textarea { resize:vertical; min-height:60px; }
@@ -161,8 +165,8 @@
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: rgba(12, 14, 34, 0.95); backdrop-filter: blur(24px);
       border-radius: 40px; padding: 8px 20px; display: flex; gap: 10px;
-      border: 1px solid rgba(197,155,59,0.3);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(197,155,59,0.15);
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(229,183,59,0.15);
       z-index: 100;
     }
     .nav-item {
@@ -294,7 +298,7 @@
     #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .quest-card {
       border: 1px solid var(--gold-bright);
-      background: radial-gradient(circle at top left, rgba(197,155,59,0.15), rgba(12,14,34,0.8));
+      background: radial-gradient(circle at top left, rgba(229,183,59,0.15), rgba(12,14,34,0.8));
       position: relative;
       overflow: hidden;
     }
@@ -303,7 +307,7 @@
       position: absolute;
       width: 200px;
       height: 200px;
-      background: radial-gradient(circle, rgba(197,155,59,0.2), transparent);
+      background: radial-gradient(circle, rgba(229,183,59,0.2), transparent);
       top: -50px;
       left: -50px;
       animation: float 4s infinite;
@@ -335,7 +339,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 25px rgba(197,155,59,0.5);
+      box-shadow: 0 8px 25px rgba(229,183,59,0.5);
       cursor: pointer;
       font-size: 28px;
       z-index: 2000;
@@ -373,7 +377,7 @@
     }
     .mood-emoji.selected {
       transform: scale(1.3);
-      background: rgba(197,155,59,0.2);
+      background: rgba(229,183,59,0.2);
       box-shadow: 0 0 12px var(--gold);
     }
     .evolution-tree {
@@ -393,7 +397,7 @@
     }
     .evolution-tree .stage.active {
       opacity: 1;
-      background: rgba(197,155,59,0.2);
+      background: rgba(229,183,59,0.2);
       box-shadow: 0 0 15px var(--gold);
     }
     .chapter-card { cursor:pointer; }
@@ -411,11 +415,11 @@
   <canvas id="bgCanvas"></canvas>
 
   <script>
-    window.GOOGLE_CLIENT_ID = "{{GOOGLE_CLIENT_ID}}";
+    window.GOOGLE_CLIENT_ID = "514109072753-k5jiiobp3qasdb1aj2g4tgpjr1jc20ag.apps.googleusercontent.com";
   </script>
 
   <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#030510; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
-    <div style="border:4px solid rgba(197,155,59,0.15); border-top:4px solid #c59b3b; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
+    <div style="border:4px solid rgba(229,183,59,0.15); border-top:4px solid #e5b73b; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
     <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
 
@@ -457,48 +461,84 @@
     </div>
   </div>
 
+  <!-- Admin Modal -->
   <div id="admin-modal" class="hidden modal-overlay">
     <div class="glass modal-content" style="max-width:600px; width:95%;">
-      <div class="flex" style="justify-content:space-between; margin-bottom:16px;">
-        <h3>⚙️ অ্যাডমিন প্যানেল</h3>
-        <button class="btn btn-sm btn-outline" onclick="document.getElementById('admin-modal').classList.add('hidden')">✕</button>
+      <div id="admin-login-form">
+        <div class="flex" style="justify-content:space-between; margin-bottom:16px;">
+          <h3>🔐 অ্যাডমিন লগইন</h3>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('admin-modal').classList.add('hidden')">✕</button>
+        </div>
+        <input type="email" id="admin-email" placeholder="ইমেইল">
+        <input type="password" id="admin-password" placeholder="পাসওয়ার্ড">
+        <button class="btn btn-lg" onclick="adminLogin()" style="width:100%; margin-top:8px;">লগইন</button>
+        <p id="admin-login-error" style="color:var(--danger); margin-top:8px; display:none;"></p>
       </div>
-      <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
-        <button class="btn btn-sm" onclick="showAdminTab('stats')">📊 স্ট্যাটস</button>
-        <button class="btn btn-sm btn-outline" onclick="showAdminTab('users')">👥 ইউজার</button>
-        <button class="btn btn-sm btn-outline" onclick="showAdminTab('simulate')">🧪 সিমুলেট</button>
-        <button class="btn btn-sm btn-outline" onclick="showAdminTab('community')">💬 কমিউনিটি</button>
-        <button class="btn btn-sm btn-outline" onclick="showAdminTab('content')">📚 কনটেন্ট</button>
-      </div>
-      <div id="admin-stats-tab" class="admin-tab"><p style="color:var(--text-secondary);">লোড হচ্ছে...</p></div>
-      <div id="admin-users-tab" class="admin-tab hidden">
-        <input type="text" id="admin-user-search" placeholder="ইমেইল বা নাম দিয়ে সার্চ..." oninput="searchAdminUsers()">
-        <div id="admin-users-list" style="max-height:400px; overflow-y:auto;"></div>
-      </div>
-      <div id="admin-simulate-tab" class="admin-tab hidden">
-        <p style="color:var(--text-secondary);">নির্দিষ্ট ইউজারের জন্য টেস্ট ডাটা তৈরি</p>
-        <input type="text" id="simulate-user-email" placeholder="ইউজার ইমেইল">
-        <input type="number" id="simulate-days" placeholder="কত দিন? (1-30)" min="1" max="30" value="7">
-        <input type="number" id="simulate-start-day" placeholder="শুরু দিন (1-30)" min="1" max="30" value="1">
-        <button class="btn btn-sm btn-accent" onclick="simulateUserDays()">সিমুলেট</button>
-      </div>
-      <div id="admin-community-tab" class="admin-tab hidden">
-        <p style="color:var(--text-secondary);">পোস্ট ও কমেন্ট মডারেশন</p>
-        <div id="admin-posts-list" style="max-height:400px; overflow-y:auto;"></div>
-      </div>
-      <div id="admin-content-tab" class="admin-tab hidden">
-        <p style="color:var(--text-secondary);">লেসন / কুইজ / ভিডিও যোগ করুন</p>
-        <select id="content-type-select">
-          <option value="lesson">লেসন</option>
-          <option value="quiz">কুইজ</option>
-          <option value="video">ভিডিও</option>
-        </select>
-        <div id="content-form-fields"></div>
-        <button class="btn btn-sm btn-accent" onclick="addContent()">যোগ করো</button>
+      <div id="admin-panel" class="hidden">
+        <div class="flex" style="justify-content:space-between; margin-bottom:16px;">
+          <h3>⚙️ অ্যাডমিন প্যানেল</h3>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('admin-modal').classList.add('hidden')">✕</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="showAdminTab('stats')">📊 স্ট্যাটস</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('users')">👥 ইউজার</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('simulate')">🧪 সিমুলেট</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('community')">💬 কমিউনিটি</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('content')">📚 কনটেন্ট</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('assessment')">📋 অ্যাসেসমেন্ট</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('benefits')">🎁 বেনিফিট</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('analytics')">📈 অ্যানালিটিক্স</button>
+        </div>
+        <div id="admin-stats-tab" class="admin-tab"><p style="color:var(--text-secondary);">লোড হচ্ছে...</p></div>
+        <div id="admin-users-tab" class="admin-tab hidden">
+          <input type="text" id="admin-user-search" placeholder="ইমেইল বা নাম দিয়ে সার্চ..." oninput="searchAdminUsers()">
+          <div id="admin-users-list" style="max-height:400px; overflow-y:auto;"></div>
+        </div>
+        <div id="admin-simulate-tab" class="admin-tab hidden">
+          <p style="color:var(--text-secondary);">নির্দিষ্ট ইউজারের জন্য টেস্ট ডাটা তৈরি</p>
+          <input type="text" id="simulate-user-email" placeholder="ইউজার ইমেইল">
+          <input type="number" id="simulate-days" placeholder="কত দিন? (1-30)" min="1" max="30" value="7">
+          <input type="number" id="simulate-start-day" placeholder="শুরু দিন (1-30)" min="1" max="30" value="1">
+          <button class="btn btn-sm btn-accent" onclick="simulateUserDays()">সিমুলেট</button>
+        </div>
+        <div id="admin-community-tab" class="admin-tab hidden">
+          <p style="color:var(--text-secondary);">পোস্ট ও কমেন্ট মডারেশন</p>
+          <div id="admin-posts-list" style="max-height:400px; overflow-y:auto;"></div>
+        </div>
+        <div id="admin-content-tab" class="admin-tab hidden">
+          <p style="color:var(--text-secondary);">লেসন / কুইজ / ভিডিও যোগ করুন</p>
+          <select id="content-type-select" onchange="setupContentForm()">
+            <option value="lesson">লেসন</option>
+            <option value="quiz">কুইজ</option>
+            <option value="video">ভিডিও</option>
+          </select>
+          <div id="content-form-fields"></div>
+          <button class="btn btn-sm btn-accent" onclick="addContent()">যোগ করো</button>
+        </div>
+        <div id="admin-assessment-tab" class="admin-tab hidden">
+          <h4>📋 অ্যাসেসমেন্ট প্রশ্ন</h4>
+          <div id="assessment-list" style="max-height:300px; overflow-y:auto;"></div>
+          <button class="btn btn-sm btn-accent" onclick="addAssessmentQuestion()">+ প্রশ্ন যোগ</button>
+          <input type="text" id="new-assessment-q" placeholder="প্রশ্ন">
+          <input type="text" id="new-assessment-cat" placeholder="ক্যাটাগরি">
+        </div>
+        <div id="admin-benefits-tab" class="admin-tab hidden">
+          <h4>🎁 বেনিফিট</h4>
+          <div id="benefits-list" style="max-height:300px; overflow-y:auto;"></div>
+          <button class="btn btn-sm btn-accent" onclick="addBenefit()">+ বেনিফিট যোগ</button>
+          <input type="text" id="new-benefit-title" placeholder="শিরোনাম">
+          <textarea id="new-benefit-desc" placeholder="বিস্তারিত"></textarea>
+          <input type="text" id="new-benefit-icon" placeholder="আইকন (ইমোজি)">
+        </div>
+        <div id="admin-analytics-tab" class="admin-tab hidden">
+          <p style="color:var(--text-secondary);">গত ৭ দিনের সক্রিয় ইউজার</p>
+          <div id="analytics-chart" style="max-height:300px;"></div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- AI Coach -->
   <div id="ai-coach-fab" class="fab" onclick="toggleAiCoach()">
     <span>🧠</span>
   </div>
@@ -577,6 +617,17 @@
       </div>
       <div class="admin-gear" onclick="openAdminPanel()" title="Admin Panel">⚙️</div>
 
+      <!-- Assessment prompt -->
+      <div class="glass" id="assessment-prompt" style="text-align:center;">
+        <button class="btn btn-accent btn-lg" onclick="showAssessment()">📋 আপনার অবস্থা যাচাই করুন</button>
+      </div>
+      <div id="assessment-screen" class="glass hidden">
+        <h2>🧭 ট্রেডিং মানসিকতা নিরীক্ষণ</h2>
+        <div id="assessment-questions"></div>
+        <button class="btn btn-accent" onclick="submitAssessment()">বিশ্লেষণ দেখুন</button>
+        <div id="assessment-result" class="hidden"></div>
+      </div>
+
       <div id="tab-journey" class="tab-content">
         <div class="glass" id="weekly-challenge-card"></div>
         <div class="glass">
@@ -654,7 +705,7 @@
                 <option value="💪">💪 ব্যায়াম</option>
               </select>
               <label>রঙ:</label>
-              <input type="color" id="new-habit-color" value="#c59b3b" style="width:50px;">
+              <input type="color" id="new-habit-color" value="#e5b73b" style="width:50px;">
             </div>
             <label>রিমাইন্ডার সময় (কমা দিয়ে, যেমন: 06:00,12:00,20:00)</label>
             <input type="text" id="new-habit-times" placeholder="06:00,12:00,20:00">
@@ -664,7 +715,7 @@
         </div>
       </div>
 
-      <!-- ========== ট্রেনিং ট্যাব ========== -->
+      <!-- ট্রেনিং ট্যাব -->
       <div id="tab-training" class="tab-content hidden">
         <div class="glass" style="margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -850,6 +901,7 @@
     // ==================== Global Config ====================
     const API = '/api/setup';
     let token = localStorage.getItem('token');
+    let adminToken = localStorage.getItem('adminToken');
     let chart = null, radarChart = null;
     let currentTab = 'journey';
     let quizData = null;
@@ -874,12 +926,15 @@
     }
 
     function celebrate(msg) {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#c59b3b','#f2d680','#00e5ff','#ff5252'] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#e5b73b','#ffdf80','#00e5ff','#ff5252'] });
       showToast(msg || '🎉');
     }
 
     async function apiCall(method, path, body) {
-      const opts = { method, headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } };
+      const headers = { 'Content-Type': 'application/json' };
+      const tokenToUse = adminToken || token;
+      if (tokenToUse) headers['Authorization'] = `Bearer ${tokenToUse}`;
+      const opts = { method, headers };
       if (body) opts.body = JSON.stringify(body);
       try {
         const res = await fetch(`${API}${path}`, opts);
@@ -888,7 +943,7 @@
       } catch(e) { return { error: 'Network error' }; }
     }
 
-    // ==================== Starfield ====================
+    // Starfield background
     (function(){
       const canvas = document.getElementById('bgCanvas');
       const ctx = canvas.getContext('2d');
@@ -937,7 +992,6 @@
       resizeBg(); createStars(150); animateStars();
     })();
 
-    // ==================== Ripple effect ====================
     function createRipple(e, el) {
       const circle = document.createElement('span');
       const d = Math.max(el.clientWidth, el.clientHeight);
@@ -963,7 +1017,6 @@
       setTimeout(() => el.remove(), 2000);
     }
 
-    // ==================== Mood Picker ====================
     document.querySelectorAll('.mood-emoji').forEach(emoji => {
       emoji.addEventListener('click', function() {
         document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected'));
@@ -972,7 +1025,7 @@
       });
     });
 
-    // ==================== Habit Reminders ====================
+    // Habit reminder
     function scheduleHabitReminder(habitId, time, title) {
       const [h,m] = time.split(':');
       const now = new Date();
@@ -1000,7 +1053,6 @@
       });
     }
 
-    // ==================== Habit management ====================
     async function loadHabits() {
       const date = new Date().toLocaleDateString('en-CA');
       const defRes = await fetch(`${API}/habits/definitions`, {headers: {'Authorization':`Bearer ${token}`}});
@@ -1011,7 +1063,6 @@
       renderHabits(habitDefinitions, logs);
       scheduleAllReminders(habitDefinitions);
     }
-
     function renderHabits(habits, logs) {
       const container = document.getElementById('habits-list');
       container.innerHTML = habits.map(h => {
@@ -1027,7 +1078,6 @@
         </div>`;
       }).join('');
     }
-
     async function toggleHabitTime(habitId, time) {
       const date = new Date().toLocaleDateString('en-CA');
       const log = todayLogs.find(l => l.habit_id === habitId);
@@ -1040,7 +1090,6 @@
       loadHabits();
       if(completed) showFloatingXp(3);
     }
-
     function showAddHabitForm() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
     async function saveHabit() {
       const title = document.getElementById('new-habit-title').value.trim();
@@ -1055,7 +1104,7 @@
       showToast('হ্যাবিট যোগ হয়েছে');
     }
 
-    // ==================== Auth & Init ====================
+    // Auth
     function showRegister() {
       document.getElementById('register-form').classList.remove('hidden');
       document.getElementById('login-form').classList.add('hidden');
@@ -1064,7 +1113,6 @@
       document.getElementById('register-form').classList.add('hidden');
       document.getElementById('login-form').classList.remove('hidden');
     }
-
     async function login() {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
@@ -1077,7 +1125,6 @@
         initDashboard(data.user);
       } else alert(data?.error || 'Login failed');
     }
-
     async function register() {
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
@@ -1092,10 +1139,9 @@
         initDashboard(data.user);
       } else alert(data?.error || 'Registration failed');
     }
-
     function logout() {
-      localStorage.removeItem('token');
-      token = null;
+      localStorage.removeItem('token'); token = null;
+      localStorage.removeItem('adminToken'); adminToken = null;
       document.getElementById('auth-screen').classList.remove('hidden');
       document.getElementById('dashboard').classList.add('hidden');
       document.querySelector('.bottom-nav').classList.add('hidden');
@@ -1112,11 +1158,10 @@
 
     function showLevelUp(newLevel, oldLevel) {
       const titles = {5:'Apprentice Trader',10:'Disciplined Soldier',20:'Consistency Master',30:'Institutional Legend'};
-      const titleText = titles[newLevel] ? `তুমি এখন "${titles[newLevel]}"` : '';
       document.getElementById('level-up-title').innerHTML = `লেভেল ${newLevel}!`;
-      document.getElementById('level-up-text').textContent = titleText || `তুমি এখন লেভেল ${newLevel} এ পৌঁছে গেছো!`;
+      document.getElementById('level-up-text').textContent = titles[newLevel] || `তুমি এখন লেভেল ${newLevel} এ পৌঁছে গেছো!`;
       document.getElementById('level-up-modal').classList.remove('hidden');
-      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#c59b3b','#f2d680','#00e5ff','#b388ff'] });
+      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#e5b73b','#ffdf80','#00e5ff','#b388ff'] });
     }
 
     async function checkStreakMilestone(streak) {
@@ -1147,7 +1192,7 @@
     async function openMysteryBox() {
       const res = await apiCall('POST', '/open-box');
       document.getElementById('mystery-box-modal').classList.add('hidden');
-      if (res?.reward) { celebrate(`🎁 ${res.reward} পেয়েছ!`); }
+      if (res?.reward) celebrate(`🎁 ${res.reward} পেয়েছ!`);
       else showToast(res?.message || 'বক্স খালি!');
       loadProfile();
     }
@@ -1185,27 +1230,71 @@
       else showToast(res?.error || 'দাবি করতে ব্যর্থ');
     }
 
-    function showAdminTab(tab) {
-      document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
-      document.getElementById('admin-'+tab+'-tab').classList.remove('hidden');
-      if (tab==='stats') loadAdminStats();
-      if (tab==='users') loadAdminUsers();
-      if (tab==='community') loadAdminCommunity();
-      if (tab==='content') setupContentForm();
+    // Admin login
+    async function adminLogin() {
+      const email = document.getElementById('admin-email').value;
+      const password = document.getElementById('admin-password').value;
+      const res = await fetch(`${API}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.token) {
+        adminToken = data.token;
+        localStorage.setItem('adminToken', adminToken);
+        document.getElementById('admin-login-form').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        showAdminTab('stats');
+      } else {
+        document.getElementById('admin-login-error').textContent = data.error || 'Login failed';
+        document.getElementById('admin-login-error').style.display = 'block';
+      }
+    }
+    function openAdminPanel() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      if (adminToken) {
+        document.getElementById('admin-login-form').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        showAdminTab('stats');
+      } else {
+        document.getElementById('admin-login-form').classList.remove('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
+      }
     }
 
-    async function openAdminPanel() { document.getElementById('admin-modal').classList.remove('hidden'); showAdminTab('stats'); }
-    // ... (admin functions are same as before, omitted for brevity but present in final file)
+    // Admin Tabs
+    function showAdminTab(tab) {
+      document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('admin-'+tab+'-tab');
+      if (target) target.classList.remove('hidden');
+      switch(tab) {
+        case 'stats': loadAdminStats(); break;
+        case 'users': loadAdminUsers(); break;
+        case 'community': loadAdminCommunity(); break;
+        case 'content': setupContentForm(); break;
+        case 'assessment': loadAdminAssessment(); break;
+        case 'benefits': loadAdminBenefits(); break;
+        case 'analytics': loadAdminAnalytics(); break;
+      }
+    }
+
     async function loadAdminStats() {
-      const res = await apiCall('GET', '/admin?admin_secret=admin123');
-      document.getElementById('admin-stats-tab').innerHTML = res && !res.error ? `
-        <div class="grid-2"><div class="mini-stat"><strong>মোট ইউজার:</strong> ${res.totalUsers||0}</div>
-        <div class="mini-stat"><strong>আজ সক্রিয়:</strong> ${res.dailyActive||0}</div>
-        <div class="mini-stat"><strong>সাপ্তাহিক:</strong> ${res.weeklyActive||0}</div>
-        <div class="mini-stat"><strong>গড় Q6:</strong> ${res.avgDiscipline?.toFixed(1)||'N/A'}</div></div>` : '<p>লোড করতে সমস্যা</p>';
+      const data = await apiCall('GET', '/admin/dashboard');
+      if (data && !data.error) {
+        document.getElementById('admin-stats-tab').innerHTML = `
+          <div class="grid-2">
+            <div class="mini-stat"><strong>মোট ইউজার:</strong> ${data.totalUsers}</div>
+            <div class="mini-stat"><strong>আজ সক্রিয়:</strong> ${data.dailyActiveUsers}</div>
+            <div class="mini-stat"><strong>মোট জার্নাল:</strong> ${data.totalJournals}</div>
+            <div class="mini-stat"><strong>ট্রেনিং সম্পন্ন:</strong> ${data.completedTrainings}</div>
+          </div>`;
+      } else {
+        document.getElementById('admin-stats-tab').innerHTML = '<p>লোড করতে সমস্যা</p>';
+      }
     }
     async function loadAdminUsers() {
-      const res = await apiCall('GET', '/admin/users?admin_secret=admin123');
+      const res = await apiCall('GET', '/admin/users');
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `<div class="user-card flex" style="justify-content:space-between;">
         <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span><span class="badge">${u.xp} XP</span></div>`).join('');
@@ -1213,7 +1302,7 @@
     }
     async function searchAdminUsers() {
       const q = document.getElementById('admin-user-search').value;
-      const res = await apiCall('GET', `/admin/users?admin_secret=admin123&search=${encodeURIComponent(q)}`);
+      const res = await apiCall('GET', `/admin/users?search=${encodeURIComponent(q)}`);
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `<div class="user-card flex" style="justify-content:space-between;">
         <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span><span class="badge">${u.xp} XP</span></div>`).join('');
@@ -1223,12 +1312,12 @@
       const days = document.getElementById('simulate-days').value;
       const startDay = document.getElementById('simulate-start-day').value;
       if (!email) return showToast('ইউজার ইমেইল দাও');
-      const res = await apiCall('POST', '/admin/simulate-day', { admin_secret:'admin123', email, days:parseInt(days), start_day:parseInt(startDay) });
+      const res = await apiCall('POST', '/admin/simulate-day', { email, days:parseInt(days), start_day:parseInt(startDay) });
       if (res?.success) showToast(`✅ ${res.inserted_days} দিন সিমুলেট হয়েছে`);
       else showToast(res?.error||'ব্যর্থ');
     }
     async function loadAdminCommunity() {
-      const res = await apiCall('GET', '/admin/community?admin_secret=admin123');
+      const res = await apiCall('GET', '/admin/community');
       const list = document.getElementById('admin-posts-list');
       if (res && !res.error) list.innerHTML = res.map(p => `<div class="user-card">
         <div class="flex" style="justify-content:space-between;"><span><strong>${escapeHtml(p.display_name||p.author)}</strong> · ${escapeHtml(p.post_type)}</span>
@@ -1237,12 +1326,12 @@
       else list.innerHTML = '<p>লোড করতে সমস্যা</p>';
     }
     async function togglePostVisibility(postId, currentHidden) {
-      await apiCall('PUT', `/admin/posts/${postId}/hide`, { admin_secret:'admin123', hide:!currentHidden });
+      await apiCall('PUT', `/admin/posts/${postId}/hide`, { hide:!currentHidden });
       loadAdminCommunity(); showToast(currentHidden?'পোস্ট দেখানো হবে':'পোস্ট লুকানো হয়েছে');
     }
     async function deletePost(postId) {
       if (!confirm('পোস্ট ডিলিট করবে?')) return;
-      await apiCall('DELETE', `/admin/posts/${postId}`, { admin_secret:'admin123' });
+      await apiCall('DELETE', `/admin/posts/${postId}`);
       loadAdminCommunity(); showToast('পোস্ট ডিলিট হয়েছে');
     }
     function setupContentForm() {
@@ -1254,7 +1343,7 @@
     }
     async function addContent() {
       const type = document.getElementById('content-type-select').value;
-      let body = { admin_secret:'admin123', type };
+      let body = { type };
       if (type==='lesson') { body.day=parseInt(document.getElementById('content-day').value); body.phase=document.getElementById('content-phase').value; body.title=document.getElementById('content-title').value; body.content=document.getElementById('content-body').value; }
       else if (type==='quiz') { body.question=document.getElementById('content-question').value; body.options=JSON.parse(document.getElementById('content-options').value); body.correct=parseInt(document.getElementById('content-correct').value); }
       else if (type==='video') { body.category=document.getElementById('content-category').value; body.title=document.getElementById('content-vtitle').value; body.description=document.getElementById('content-vdesc').value; body.youtube_id=document.getElementById('content-ytid').value; body.duration=document.getElementById('content-duration').value; }
@@ -1263,61 +1352,137 @@
       else showToast(res?.error||'ব্যর্থ');
     }
 
-    async function initDashboard(userData) {
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('auth-screen').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
-      document.querySelector('.bottom-nav').classList.remove('hidden');
-      document.querySelector('.admin-gear').classList.remove('hidden');
-      if (userData) {
-        currentUser = userData;
-        previousLevel = userData.level||1;
-        document.getElementById('user-avatar').textContent = userData.avatar_emoji||'🙂';
-        document.getElementById('user-display-name').textContent = userData.display_name||userData.email.split('@')[0];
-        document.getElementById('user-identity').textContent = userData.identity_level;
-        document.getElementById('xp-display').textContent = `⭐ ${userData.xp||0} XP`;
-        document.getElementById('user-level').textContent = userData.level||1;
-        document.getElementById('user-level-bar').textContent = userData.level||1;
-        document.getElementById('streak-count').textContent = '0';
-        updateXpBar(userData.xp, userData.level);
-        updateEvolutionTree(userData.identity_level);
-        if (!localStorage.getItem('welcome_shown')) {
-          document.getElementById('welcome-modal').classList.remove('hidden');
-          document.getElementById('welcome-name').textContent = userData.display_name||userData.email.split('@')[0];
-        }
-      }
-      await loadProfile();
-      await loadQuiz();
-      await loadWeeklyChallenge();
-      await loadDailyQuest();
-      renderSliders();
-      showTab('journey');
-      setTimeout(() => claimDailyBonus(), 1500);
-      initGoogleSignIn();
+    // Assessment & Benefits Admin
+    async function loadAdminAssessment() {
+      const res = await apiCall('GET', '/assessment/questions');
+      const list = document.getElementById('assessment-list');
+      if (res && !res.error) {
+        list.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between; padding:4px;">
+          <span>${q.id}. ${escapeHtml(q.question)} (${q.category})</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteAssessment(${q.id})">🗑</button>
+        </div>`).join('');
+      } else list.innerHTML = '<p>ডাটা নাই</p>';
+    }
+    async function addAssessmentQuestion() {
+      const question = document.getElementById('new-assessment-q').value;
+      const category = document.getElementById('new-assessment-cat').value;
+      if (!question) return showToast('প্রশ্ন লিখুন');
+      await apiCall('POST', '/admin/assessment-question', { question, category });
+      document.getElementById('new-assessment-q').value = '';
+      document.getElementById('new-assessment-cat').value = '';
+      loadAdminAssessment();
+    }
+    async function deleteAssessment(id) {
+      await apiCall('DELETE', `/admin/assessment/${id}`);
+      loadAdminAssessment();
     }
 
-    function closeWelcome() { localStorage.setItem('welcome_shown','1'); document.getElementById('welcome-modal').classList.add('hidden'); }
+    async function loadAdminBenefits() {
+      const res = await apiCall('GET', '/benefits');
+      const list = document.getElementById('benefits-list');
+      if (res && !res.error) {
+        list.innerHTML = res.map(b => `<div class="flex" style="justify-content:space-between; padding:4px;">
+          <span>${b.icon} ${b.title}</span>
+          <button class="btn btn-sm btn-danger" onclick="deleteBenefit(${b.id})">🗑</button>
+        </div>`).join('');
+      } else list.innerHTML = '<p>ডাটা নাই</p>';
+    }
+    async function addBenefit() {
+      const title = document.getElementById('new-benefit-title').value;
+      const description = document.getElementById('new-benefit-desc').value;
+      const icon = document.getElementById('new-benefit-icon').value;
+      if (!title) return showToast('শিরোনাম দরকার');
+      await apiCall('POST', '/admin/benefit', { title, description, icon });
+      document.getElementById('new-benefit-title').value = '';
+      document.getElementById('new-benefit-desc').value = '';
+      document.getElementById('new-benefit-icon').value = '';
+      loadAdminBenefits();
+    }
+    async function deleteBenefit(id) {
+      await apiCall('DELETE', `/admin/benefit/${id}`);
+      loadAdminBenefits();
+    }
 
-    function updateEvolutionTree(currentPhase) {
+    async function loadAdminAnalytics() {
+      const res = await apiCall('GET', '/admin/analytics/retention');
+      const container = document.getElementById('analytics-chart');
+      if (res && !res.error) {
+        container.innerHTML = `<canvas id="retentionChart"></canvas>`;
+        const ctx = document.getElementById('retentionChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: res.map(d => d.date),
+            datasets: [{
+              label: 'Active Users',
+              data: res.map(d => d.active_users),
+              borderColor: '#e5b73b',
+              backgroundColor: 'rgba(229,183,59,0.1)',
+            }]
+          }
+        });
+      } else container.innerHTML = '<p>ডাটা নাই</p>';
+    }
+
+    // Assessment screen user
+    async function showAssessment() {
+      document.getElementById('assessment-screen').classList.remove('hidden');
+      document.getElementById('assessment-prompt').classList.add('hidden');
+      const qList = await fetch(`${API}/assessment/questions`).then(r=>r.json());
+      let html = '';
+      qList.forEach((q, i) => {
+        html += `<div class="glass" style="margin:10px 0;">
+          <p><strong>${i+1}. ${escapeHtml(q.question)}</strong></p>
+          <label style="margin-right:20px;"><input type="radio" name="q${q.id}" value="yes"> হ্যাঁ</label>
+          <label><input type="radio" name="q${q.id}" value="no"> না</label>
+        </div>`;
+      });
+      document.getElementById('assessment-questions').innerHTML = html;
+    }
+    async function submitAssessment() {
+      const answers = [];
+      document.querySelectorAll('#assessment-questions input[type="radio"]:checked').forEach(inp => {
+        const id = parseInt(inp.name.replace('q',''));
+        answers.push({ question_id: id, answer: inp.value === 'yes' });
+      });
+      const res = await apiCall('POST', '/assessment/submit', { answers });
+      const resultDiv = document.getElementById('assessment-result');
+      resultDiv.classList.remove('hidden');
+      resultDiv.innerHTML = `
+        <h3>আপনার স্কোর: ${res.yesCount}/${res.total}</h3>
+        <p>${res.recommendation}</p>
+        <button class="btn btn-accent" onclick="showBenefits()">ট্রেনিংয়ের উপকারিতা দেখুন</button>
+      `;
+    }
+    async function showBenefits() {
+      const benefits = await fetch(`${API}/benefits`).then(r=>r.json());
+      let html = '<div class="glass"><h3>কেন এই প্রোগ্রাম?</h3>';
+      benefits.forEach(b => {
+        html += `<div style="display:flex; gap:10px; margin:12px 0;">
+          <span style="font-size:28px;">${b.icon}</span>
+          <div><strong>${b.title}</strong><br><small>${b.description}</small></div>
+        </div>`;
+      });
+      html += '</div>';
+      document.getElementById('assessment-result').insertAdjacentHTML('beforeend', html);
+    }
+
+    // Journey functions
+    function updateEvolutionTree(phase) {
       const stages = document.querySelectorAll('.evolution-tree .stage');
-      const phaseMap = { 'Awareness':0, 'Discipline':1, 'Consistency':2, 'Psychology':3, 'Professional':4, 'Institutional':5 };
-      const idx = phaseMap[currentPhase] ?? 0;
-      stages.forEach((s, i) => s.classList.toggle('active', i === idx));
+      const map = { 'Awareness':0, 'Discipline':1, 'Consistency':2, 'Psychology':3, 'Professional':4, 'Institutional':5 };
+      const idx = map[phase] ?? 0;
+      stages.forEach((s,i) => s.classList.toggle('active', i===idx));
     }
 
     function renderSliders() {
       const container = document.getElementById('score-sliders');
       const questions = [
-        { id:'q1', short:'পরিকল্পনা অনুসরণ', full:'আজ আমি কি আমার পূর্বনির্ধারিত Trading Plan শতভাগ অনুসরণ করেছি?' },
-        { id:'q2', short:'উচ্চ-মানের সেটআপ', full:'আজ আমি কি শুধুমাত্র A+ Quality Setup-এ ট্রেড নিয়েছি?' },
-        { id:'q3', short:'ঝুঁকি ব্যবস্থাপনা', full:'আমার নির্ধারিত Risk Limit, Lot Size সঠিকভাবে অনুসরণ করেছি?' },
-        { id:'q4', short:'এক্সিকিউশন মান', full:'সঠিক Confirmation পেয়ে সঠিক সময়ে Entry নিয়েছি?' },
-        { id:'q5', short:'শৃঙ্খলাপূর্ণ এক্সিট', full:'Take Profit, Stop Loss অনুযায়ী ট্রেড বন্ধ করেছি?' },
-        { id:'q6', short:'শৃঙ্খলা ও নিয়ম', full:'কোনো Trading Rule ভঙ্গ না করে শৃঙ্খলা বজায় রেখেছি?' },
-        { id:'q7', short:'আবেগ নিয়ন্ত্রণ', full:'Fear, Greed, FOMO নিয়ন্ত্রণে রেখেছি?' },
-        { id:'q8', short:'ধৈর্য ও মনোযোগ', full:'ধৈর্য ধরে সঠিক সুযোগের অপেক্ষা করেছি?' },
-        { id:'q9', short:'দৈনিক পর্যালোচনা', full:'প্রতিটি ট্রেড বিশ্লেষণ করে ভুল থেকে শিক্ষা নিয়েছি?' },
-        { id:'q10', short:'ধারাবাহিক উন্নতি', full:'গতকালের ভুল পুনরাবৃত্তি না করে নিজেকে উন্নত করেছি?' }
+        { id:'q1', short:'পরিকল্পনা অনুসরণ' }, { id:'q2', short:'উচ্চ-মানের সেটআপ' },
+        { id:'q3', short:'ঝুঁকি ব্যবস্থাপনা' }, { id:'q4', short:'এক্সিকিউশন মান' },
+        { id:'q5', short:'শৃঙ্খলাপূর্ণ এক্সিট' }, { id:'q6', short:'শৃঙ্খলা ও নিয়ম' },
+        { id:'q7', short:'আবেগ নিয়ন্ত্রণ' }, { id:'q8', short:'ধৈর্য ও মনোযোগ' },
+        { id:'q9', short:'দৈনিক পর্যালোচনা' }, { id:'q10', short:'ধারাবাহিক উন্নতি' }
       ];
       container.innerHTML = questions.map(q => `
         <div class="slider-item">
@@ -1425,7 +1590,7 @@
       if (data && !data.error) {
         document.getElementById('evaluation-section').classList.add('hidden');
         showFeedback(data);
-        if (data.badges?.length) { celebrate(`🏅 ${data.badges.join(', ')} অর্জিত!`); }
+        if (data.badges?.length) celebrate(`🏅 ${data.badges.join(', ')} অর্জিত!`);
         showToast(`+${data.xpGain} XP ${data.bonus?'(+'+data.bonus+' XP Streak Bonus!)':''}`);
         document.getElementById('mystery-box-btn').classList.toggle('hidden', !data.box_available);
         selectedMood = null;
@@ -1442,7 +1607,6 @@
       document.getElementById('feedback-area').classList.remove('hidden');
     }
 
-    // ==================== Progress, Insights, Lessons, Videos, Community (same as before) ====================
     async function loadProgress() {
       const data = await apiCall('GET', '/progress');
       if (!data) return;
@@ -1473,20 +1637,22 @@
       if (radarChart) radarChart.destroy();
       if (data.radar_today) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(197,155,59,0.25)', borderColor:'#c59b3b' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
+        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(229,183,59,0.25)', borderColor:'#e5b73b' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
       }
       if (chart) chart.destroy();
       const ctx2 = document.getElementById('scoresChart').getContext('2d');
-      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#c59b3b' }] } });
+      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#e5b73b' }] } });
       document.getElementById('certificate-btn').classList.toggle('hidden', data.totalDays<30);
       document.getElementById('share-certificate-btn').classList.toggle('hidden', data.totalDays<30);
     }
+
     async function loadInsights() {
       const res = await apiCall('GET', '/insights');
       document.getElementById('insights-content').innerHTML = res ? `
         <p>📊 মোট জার্নাল: ${res.totalJournals}</p><p>🔥 বর্তমান স্ট্রিক: ${res.currentStreak}</p>
         <p>⚠️ সবচেয়ে ঘনঘন ভুল: ${res.topMistake}</p><p>📈 গড় ডিসিপ্লিন: ${res.avgDiscipline?.toFixed(1)||'N/A'}</p>` : 'ইনসাইট লোড করতে সমস্যা';
     }
+
     async function loadLessons() {
       const lessons = await apiCall('GET', '/lessons');
       document.getElementById('lessons-list').innerHTML = lessons.map(l => `
@@ -1495,12 +1661,14 @@
           <button class="btn btn-sm" ${l.completed_at?'disabled':''} onclick="completeLesson(${l.id})">${l.completed_at?'✅':'সম্পন্ন'}</button></div>`).join('');
     }
     async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); loadProfile(); showToast('+3 XP!'); }
+
     async function loadVideos() {
       const videos = await apiCall('GET', '/videos');
       document.getElementById('video-grid').innerHTML = videos.map(v => `
         <div class="video-card">${(v.youtube_id.startsWith('PLACEHOLDER')||v.youtube_id.startsWith('YOUR')) ? '<div style="height:170px; display:flex; align-items:center; justify-content:center; background:#111;">📺 শীঘ্রই আসছে</div>' : `<iframe src="https://www.youtube.com/embed/${v.youtube_id}" allowfullscreen></iframe>`}
         <div class="video-info"><h4 style="color:var(--gold);">${escapeHtml(v.title)}</h4><p>${escapeHtml(v.description)}</p><small>${v.duration}</small></div></div>`).join('');
     }
+
     async function loadCommunity() {
       const posts = await apiCall('GET', '/community');
       document.getElementById('posts-container').innerHTML = posts.map(p => `
@@ -1541,6 +1709,7 @@
       await apiCall('POST', '/reply-post', { post_id:postId, content });
       input.value = ''; loadReplies(postId); showToast('উত্তর দেওয়া হয়েছে!');
     }
+
     async function loadLeaderboard() {
       const data = await apiCall('GET', '/leaderboard');
       document.getElementById('leaderboard-list').innerHTML = data.map((u,i) => `
@@ -1552,6 +1721,7 @@
         document.getElementById('my-rank').textContent = myIndex>=0 ? `আপনার অবস্থান: #${myIndex+1}` : 'লিডারবোর্ডে নেই';
       }
     }
+
     async function loadQuiz() {
       const data = await apiCall('GET', '/quiz');
       if (data?.question) {
@@ -1573,11 +1743,13 @@
       if (res.correct) { loadProfile(); celebrate('🧠 +10 XP!'); }
       document.getElementById('quiz-modal').classList.add('hidden');
     }
+
     async function loadWeeklyChallenge() {
       const challenge = await apiCall('GET', '/weekly-challenge');
       if (challenge) document.getElementById('weekly-challenge-card').innerHTML = `<div class="glass"><h4>🔥 সাপ্তাহিক চ্যালেঞ্জ: ${escapeHtml(challenge.title)}</h4><p>${escapeHtml(challenge.description)} | প্রগ্রেস: ${challenge.progress}/${challenge.target}</p><div class="progress-bar"><div class="progress-fill" style="width:${(challenge.progress/challenge.target)*100}%"></div></div></div>`;
       else document.getElementById('weekly-challenge-card').innerHTML = '';
     }
+
     async function loadProfilePage() {
       const data = await apiCall('GET', '/profile');
       if (!data) return;
@@ -1625,6 +1797,7 @@
       }
       await apiCall('POST', '/save-subscription', { subscription:sub });
     }
+
     async function downloadCertificate() {
       const res = await fetch(`${API}/certificate`, { headers:{'Authorization':`Bearer ${token}`} });
       if (!res.ok) { showToast('প্রথমে ৩০ দিন সম্পন্ন করো'); return; }
@@ -1666,7 +1839,7 @@
       if (res?.claimed) showFloatingXp(1);
     }
 
-    // ==================== প্রশিক্ষণ মডিউল ====================
+    // Training
     async function loadTrainingTab() {
       await loadEnergy();
       const chapters = await apiCall('GET', '/training/chapters?course_id=1');
@@ -1677,17 +1850,14 @@
       chapters.forEach((ch, i) => {
         const isLocked = i > 0 && !chapters[i-1].passed;
         const statusIcon = isLocked ? '🔒' : ch.passed ? '✅' : '📖';
-        html += `
-          <div class="glass chapter-card ${isLocked ? 'locked' : ''}" 
-               onclick="${isLocked ? '' : `openChapterModal(${ch.id})`}">
-            <div style="font-size:2rem;">${statusIcon}</div>
-            <strong>${escapeHtml(ch.title)}</strong>
-            ${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : isLocked ? '<span class="badge">তালাবদ্ধ</span>' : ''}
-            <div class="progress-bar" style="height:6px; margin-top:8px;">
-              <div class="progress-fill" style="width:${ch.passed ? 100 : ch.best_score || 0}%"></div>
-            </div>
+        html += `<div class="glass chapter-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? '' : `openChapterModal(${ch.id})`}">
+          <div style="font-size:2rem;">${statusIcon}</div>
+          <strong>${escapeHtml(ch.title)}</strong>
+          ${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : isLocked ? '<span class="badge">তালাবদ্ধ</span>' : ''}
+          <div class="progress-bar" style="height:6px; margin-top:8px;">
+            <div class="progress-fill" style="width:${ch.passed ? 100 : ch.best_score || 0}%"></div>
           </div>
-        `;
+        </div>`;
       });
       container.innerHTML = html;
       const finalSection = document.getElementById('final-exam-section');
@@ -1701,7 +1871,6 @@
         finalSection.classList.add('hidden');
       }
     }
-
     async function loadEnergy() {
       const energy = await apiCall('GET', '/energy');
       if (energy) {
@@ -1710,7 +1879,6 @@
         document.getElementById('energy-fill').style.width = (energy.current_energy / energy.max_energy * 100) + '%';
       }
     }
-
     async function openChapterModal(chapterId) {
       currentChapterId = chapterId;
       const data = await apiCall('GET', `/training/chapter/${chapterId}`);
@@ -1732,27 +1900,20 @@
       } else {
         quizContainer.innerHTML = currentChapterQuestions.map((q, i) => `
           <div style="margin:16px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
-            <p><strong>${i + 1}. ${escapeHtml(q.question)}</strong></p>
-            ${q.options.map((opt, j) => `
-              <label style="display:block; margin:6px 0; cursor:pointer;">
-                <input type="radio" name="q_${q.id}" value="${j}"> ${escapeHtml(opt)}
-              </label>
-            `).join('')}
-          </div>
-        `).join('');
+            <p><strong>${i+1}. ${escapeHtml(q.question)}</strong></p>
+            ${q.options.map((opt, j) => `<label style="display:block; margin:6px 0; cursor:pointer;"><input type="radio" name="q_${q.id}" value="${j}"> ${escapeHtml(opt)}</label>`).join('')}
+          </div>`).join('');
         document.getElementById('submit-quiz-btn').style.display = 'inline-block';
         document.getElementById('retry-chapter-btn').style.display = 'none';
       }
       document.getElementById('quiz-result').classList.add('hidden');
       document.getElementById('chapter-modal').classList.remove('hidden');
     }
-
     function closeChapterModal() {
       document.getElementById('chapter-modal').classList.add('hidden');
       document.getElementById('chapter-modal-video').src = '';
       loadTrainingTab();
     }
-
     async function submitChapterQuiz() {
       const answers = [];
       currentChapterQuestions.forEach(q => {
@@ -1765,20 +1926,17 @@
       const resultDiv = document.getElementById('quiz-result');
       resultDiv.classList.remove('hidden');
       if (result.passed) { celebrate('চ্যাপ্টার পাস! 🎉'); showFloatingXp(result.xp_earned); }
-      resultDiv.innerHTML = `
-        <div class="glass" style="margin-top:16px; text-align:center;">
-          <h4 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '✅ পাস!' : '❌ পাস করতে পারেননি'}</h4>
-          <p style="font-size:1.5rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
-          <p>${result.message}</p>
-          ${!result.passed ? '<button class="btn btn-outline" onclick="closeChapterModal()">পুনরায় পড়ুন</button>' : ''}
-        </div>
-      `;
+      resultDiv.innerHTML = `<div class="glass" style="margin-top:16px; text-align:center;">
+        <h4 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '✅ পাস!' : '❌ পাস করতে পারেননি'}</h4>
+        <p style="font-size:1.5rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
+        <p>${result.message}</p>
+        ${!result.passed ? '<button class="btn btn-outline" onclick="closeChapterModal()">পুনরায় পড়ুন</button>' : ''}
+      </div>`;
       document.getElementById('submit-quiz-btn').style.display = 'none';
       document.getElementById('retry-chapter-btn').style.display = 'inline-block';
       await loadEnergy();
       await loadProfile();
     }
-
     async function startFinalExam() {
       const data = await apiCall('GET', '/training/final-exam');
       if (!data || data.error) return showToast(data?.error || 'ত্রুটি');
@@ -1786,18 +1944,12 @@
       const container = document.getElementById('final-exam-questions');
       container.innerHTML = data.questions.map((q, i) => `
         <div style="margin:12px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
-          <p><strong>${i + 1}. ${escapeHtml(q.question)}</strong></p>
-          ${q.options.map((opt, j) => `
-            <label style="display:block; margin:4px 0; cursor:pointer;">
-              <input type="radio" name="feq_${q.id}" value="${j}"> ${escapeHtml(opt)}
-            </label>
-          `).join('')}
-        </div>
-      `).join('');
+          <p><strong>${i+1}. ${escapeHtml(q.question)}</strong></p>
+          ${q.options.map((opt, j) => `<label style="display:block; margin:4px 0; cursor:pointer;"><input type="radio" name="feq_${q.id}" value="${j}"> ${escapeHtml(opt)}</label>`).join('')}
+        </div>`).join('');
       document.getElementById('final-exam-result').classList.add('hidden');
       document.getElementById('final-exam-modal').classList.remove('hidden');
     }
-
     async function submitFinalExam() {
       const questions = document.querySelectorAll('#final-exam-questions > div');
       const answers = [];
@@ -1813,17 +1965,15 @@
       const resultDiv = document.getElementById('final-exam-result');
       resultDiv.classList.remove('hidden');
       if (result.passed) { celebrate('ফাইনাল পরীক্ষা পাস! 🏆'); showFloatingXp(result.xp_earned); }
-      resultDiv.innerHTML = `
-        <div class="glass" style="text-align:center; margin-top:16px;">
-          <h3 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '🏆 অভিনন্দন! আপনি উত্তীর্ণ!' : '❌ পুনরায় চেষ্টা করুন'}</h3>
-          <p style="font-size:2rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
-          <p>${result.message}</p>
-          ${result.passed ? '<button class="btn btn-accent btn-lg" onclick="showTab(\'progress\')">সার্টিফিকেট ডাউনলোড</button>' : '<button class="btn btn-outline" onclick="document.getElementById(\'final-exam-modal\').classList.add(\'hidden\')">বন্ধ করুন</button>'}
-        </div>
-      `;
+      resultDiv.innerHTML = `<div class="glass" style="text-align:center; margin-top:16px;">
+        <h3 style="color:${result.passed ? 'var(--success)' : 'var(--danger)'};">${result.passed ? '🏆 অভিনন্দন! আপনি উত্তীর্ণ!' : '❌ পুনরায় চেষ্টা করুন'}</h3>
+        <p style="font-size:2rem; font-weight:bold;">স্কোর: ${result.score.toFixed(0)}%</p>
+        <p>${result.message}</p>
+        ${result.passed ? '<button class="btn btn-accent btn-lg" onclick="showTab(\'progress\')">সার্টিফিকেট ডাউনলোড</button>' : '<button class="btn btn-outline" onclick="document.getElementById(\'final-exam-modal\').classList.add(\'hidden\')">বন্ধ করুন</button>'}
+      </div>`;
     }
 
-    // ==================== Navigation ====================
+    // Navigation
     document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
     document.getElementById('content-type-select')?.addEventListener('change', setupContentForm);
 

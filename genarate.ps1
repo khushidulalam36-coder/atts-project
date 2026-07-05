@@ -546,7 +546,9 @@ $packageJson = @'
     "google-auth-library": "^9.0.0",
     "jsonwebtoken": "^9.0.0",
     "uuid": "^9.0.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "@vercel/blob": "^0.15.0",
+    "openai": "^4.0.0"
   }
 }
 '@
@@ -655,6 +657,7 @@ DATABASE_URL=postgresql://user:password@host:port/database?sslmode=require
 JWT_SECRET=replace_with_strong_random_secret
 ADMIN_SECRET=admin123
 GOOGLE_CLIENT_ID=replace_with_google_client_id
+OPENAI_API_KEY=sk-your-openai-api-key
 '@
 $envLocal | Out-File -FilePath "$projectRoot\.env.local" -Encoding utf8
 Write-Host "Created .env.local (placeholder)" -ForegroundColor Yellow
