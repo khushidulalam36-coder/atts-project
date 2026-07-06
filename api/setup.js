@@ -1,4 +1,4 @@
-﻿// api/setup.js - Final Production-Ready with Node.js Runtime Wrapper (full code)
+// api/setup.js - Final Production-Ready with Node.js Runtime Wrapper (full code)
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
