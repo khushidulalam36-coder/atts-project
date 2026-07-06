@@ -1,4 +1,4 @@
-﻿// api/setup.js - Final Production-Ready (100% complete, no missing endpoints)
+﻿// api/setup.js - Final Production-Ready with Node.js Runtime Wrapper (full code)
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -234,15 +234,70 @@ async function checkAndCompleteQuest(userId, journal, date) {
   }
 }
 
-export default async function handler(req) {
+// Node.js runtime wrapper – converts Node (req, res) to Fetch API
+function toNodeHandler(handlerFn) {
+  return async (req, res) => {
+    const host = req.headers.host;
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const fullUrl = `${protocol}://${host}${req.url}`;
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value) {
+        if (Array.isArray(value)) value.forEach(v => headers.append(key, v));
+        else headers.set(key, value);
+      }
+    }
+    let body = null;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      const chunks = [];
+      for await (const chunk of req) {
+        chunks.push(chunk);
+      }
+      body = Buffer.concat(chunks);
+    }
+    const request = new Request(fullUrl, {
+      method: req.method,
+      headers: headers,
+      body: body,
+    });
+    try {
+      const response = await handlerFn(request);
+      const responseHeaders = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
+      res.writeHead(response.status, responseHeaders);
+      if (response.body) {
+        const reader = response.body.getReader();
+        const pump = async () => {
+          const { done, value } = await reader.read();
+          if (done) {
+            res.end();
+            return;
+          }
+          res.write(value);
+          await pump();
+        };
+        await pump();
+      } else {
+        res.end();
+      }
+    } catch (err) {
+      console.error(err);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+    }
+  };
+}
+
+// The main handler (expects a Fetch Request)
+async function apiHandler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const host = req.headers.get('host') || 'localhost:3000';
-const protocol = req.headers.get('x-forwarded-proto') || 'http';
-const url = new URL(req.url, `${protocol}://${host}`);
+  const url = new URL(req.url);
   const path = url.pathname.replace('/api/setup', '');
 
   try {
-    // ---------------- DB Init & Seed ----------------
+    // ==================== DB Init & Seed ====================
     if (path === '/init-db' && req.method === 'POST') {
       const { admin_secret } = await req.json();
       if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
@@ -440,7 +495,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
         UNIQUE(user_id, quest_date)
       )`;
 
-      // NEW TABLES (Training Module, Gamification, Admin)
       await sql`CREATE TABLE IF NOT EXISTS admin_users (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -541,7 +595,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
         UNIQUE(table_name, record_id, language_code, field_name)
       )`;
 
-      // Additional tables for Assessment & Benefits
       await sql`CREATE TABLE IF NOT EXISTS assessment_questions (
         id SERIAL PRIMARY KEY,
         question TEXT NOT NULL,
@@ -575,12 +628,10 @@ const url = new URL(req.url, `${protocol}://${host}`);
         await sql`INSERT INTO courses (title, description) VALUES ('Professional Trader Transformation', 'Complete 30-day transformation from amateur to professional trader')`;
         const [course] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
         const courseId = course.id;
-
         const chaptersSeed = [
           { title: 'FOMO (Fear Of Missing Out) – সম্পূর্ণ গাইড', order_index: 1, content_text: `<h2>FOMO কি?</h2><p>FOMO বা Fear Of Missing Out হল একটি মানসিক অবস্থা...</p>`, image_url: null, video_url: null, passing_score: 90 },
           { title: 'Risk Management – ঝুঁকি ব্যবস্থাপনার মূলনীতি', order_index: 2, content_text: `<h2>Risk Management কেন জরুরি?</h2><p>...</p>`, image_url: null, video_url: null, passing_score: 90 }
         ];
-
         for (const ch of chaptersSeed) {
           const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${courseId}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.image_url}, ${ch.video_url}, ${ch.passing_score}) RETURNING id`;
           if (ch.order_index === 1) {
@@ -595,7 +646,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
         }
       }
 
-      // Seed assessment questions if not exist
+      // Seed assessment questions
       const { count: aqCount } = (await sql`SELECT COUNT(*)::int FROM assessment_questions`)[0];
       if (aqCount === 0) {
         await sql`INSERT INTO assessment_questions (question, category, order_index) VALUES 
@@ -625,7 +676,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ message: 'DB initialized with all tables and sample data' });
     }
 
-    // ---------------- Auto Login ----------------
+    // ---------------- PUBLIC: Auto Login, Google OAuth, Admin Login, Register, Login ----------------
     if (path === '/auto-login' && req.method === 'GET') {
       const tokenParam = url.searchParams.get('token');
       if (!tokenParam) return json({ error: 'No token' }, 400);
@@ -637,7 +688,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ token: newToken, user: { id: user.id, email: user.email, display_name: user.display_name, identity_level: user.identity_level, xp: user.xp, level: calculateLevel(user.xp), avatar_emoji: user.avatar_emoji } });
     }
 
-    // ---------------- Google OAuth ----------------
     if (path === '/auth/google' && req.method === 'POST') {
       const { credential } = await req.json();
       try {
@@ -660,7 +710,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       }
     }
 
-    // ---------------- Admin Login (unauthenticated) ----------------
     if (path === '/admin/login' && req.method === 'POST') {
       const { email, password } = await req.json();
       const [adminUser] = await sql`SELECT * FROM admin_users WHERE email = ${email}`;
@@ -671,7 +720,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ token: adminToken, name: adminUser.name, role: adminUser.role });
     }
 
-    // ---------------- Register ----------------
     if (path === '/register' && req.method === 'POST') {
       const { email, password, display_name, avatar_emoji } = await req.json();
       if (!email || !password || password.length < 6) return json({ error: 'Invalid input' }, 400);
@@ -682,7 +730,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ token, user });
     }
 
-    // ---------------- Login ----------------
     if (path === '/login' && req.method === 'POST') {
       const { email, password, display_name } = await req.json();
       const [user] = await sql`SELECT * FROM users WHERE email = ${email}`;
@@ -695,13 +742,12 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ token, user: { id: user.id, email: user.email, display_name: user.display_name, identity_level: user.identity_level, xp: user.xp, level: calculateLevel(user.xp), avatar_emoji: user.avatar_emoji } });
     }
 
-    // ==================== NEW: Assessment Questions ====================
+    // ---------------- PUBLIC: Assessment Questions & Benefits ----------------
     if (path === '/assessment/questions' && req.method === 'GET') {
       const questions = await sql`SELECT * FROM assessment_questions ORDER BY order_index`;
       return json(questions);
-   }
+    }
 
-     // ==================== Benefits ====================
     if (path === '/benefits' && req.method === 'GET') {
       const benefits = await sql`SELECT * FROM benefits ORDER BY id`;
       return json(benefits);
@@ -711,7 +757,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
     const user = await authenticate(req);
     if (!user) return json({ error: 'Authentication required' }, 401);
 
-    // ==================== USER ENDPOINTS ====================
+    // ==================== USER ENDPOINTS (authenticated) ====================
     if (path === '/mood' && req.method === 'POST') {
       const { mood, date } = await req.json();
       await sql`INSERT INTO mood_logs (user_id, date, mood) VALUES (${user.id}, ${date || new Date().toISOString().slice(0,10)}, ${mood}) ON CONFLICT (user_id, date) DO UPDATE SET mood = ${mood}`;
@@ -1051,7 +1097,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // ==================== NEW TRAINING & SIMULATOR ENDPOINTS ====================
+    // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
     if (path === '/training/chapters' && req.method === 'GET') {
       const courseId = url.searchParams.get('course_id') || 1;
       const chapters = await sql`
@@ -1243,7 +1289,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ is_correct: isCorrect, explanation: sim.scenario.explanation, xp_earned: xpEarned });
     }
 
-    // ==================== NEW: Assessment Questions ====================
+    // ==================== ASSESSMENT SUBMIT (authenticated) ====================
     if (path === '/assessment/submit' && req.method === 'POST') {
       const { answers } = await req.json();
       for (const a of answers) {
@@ -1257,7 +1303,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ yesCount, total: answers.length, recommendation });
     }
 
-    // ==================== AI Coach ====================
+    // ==================== AI COACH ====================
     if (path === '/ai/coach' && req.method === 'POST') {
       if (OPENAI_API_KEY) {
         const journals = await sql`SELECT scores, stop_loss_moved, revenge_trade, fomo_entry FROM daily_journals WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 7`;
@@ -1276,7 +1322,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
     }
 
     // ==================== ADMIN ENDPOINTS ====================
-    // Admin Dashboard (JWT)
     if (path === '/admin/dashboard' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1288,7 +1333,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ totalUsers, dailyActiveUsers: dau, totalJournals, totalChapters, completedTrainings, completionRate: totalUsers ? Math.round(completedTrainings/totalUsers*100) : 0 });
     }
 
-    // Admin Users List (JWT)
     if (path === '/admin/users' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1302,7 +1346,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json(users);
     }
 
-    // Admin Delete User (JWT)
     if (path.match(/^\/admin\/user\/(.+)$/) && req.method === 'DELETE') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1311,7 +1354,6 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // Admin Reset Password (JWT)
     if (path === '/admin/reset-password' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1322,7 +1364,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // Admin Chapters CRUD (JWT protected)
+    // Admin Chapters CRUD (existing, JWT)
     if (path === '/admin/chapters' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1395,7 +1437,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // Admin Simulate, Community, Posts, Content (existing, keep as before)
+    // Admin Simulate, Community, Posts, Content (existing)
     if (path === '/admin/simulate-day' && req.method === 'POST') {
       const { admin_secret, email, days, start_day } = await req.json();
       if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
@@ -1466,7 +1508,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // ==================== NEW: Admin Assessment CRUD ====================
+    // ---------------- NEW: Admin Assessment CRUD ----------------
     if (path === '/admin/assessment-question' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1484,7 +1526,7 @@ const url = new URL(req.url, `${protocol}://${host}`);
       return json({ success: true });
     }
 
-    // ==================== NEW: Admin Benefits CRUD ====================
+    // ---------------- NEW: Admin Benefits CRUD ----------------
     if (path === '/admin/benefit' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1547,3 +1589,5 @@ const url = new URL(req.url, `${protocol}://${host}`);
     return json({ error: error.message }, 500);
   }
 }
+
+export default toNodeHandler(apiHandler);
