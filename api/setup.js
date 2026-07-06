@@ -293,7 +293,10 @@ function toNodeHandler(handlerFn) {
 // The main handler (expects a Fetch Request)
 async function apiHandler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const url = new URL(req.url);
+  const host = req.headers.get('host') || 'localhost';
+const protocol = req.headers.get('x-forwarded-proto') || 'http';
+const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
+const url = new URL(fullUrl);
   const path = url.pathname.replace('/api/setup', '');
 
   try {
