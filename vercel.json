@@ -1,5 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/setup" }
-  ]
-}
+{"rewrites":[{"source":"/api/(.*)","destination":"/api/setup"},{"source":"/admin","destination":"/admin.html"}]}
