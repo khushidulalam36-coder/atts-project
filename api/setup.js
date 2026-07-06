@@ -374,10 +374,17 @@ function toNodeHandler(handlerFn) {
 async function apiHandler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const host = req.headers.get('host') || 'localhost';
-  const protocol = req.headers.get('x-forwarded-proto') || 'http';
-  const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
-  const url = new URL(fullUrl);
-  const path = url.pathname.replace('/api/setup', '');
+const protocol = req.headers.get('x-forwarded-proto') || 'http';
+const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
+const url = new URL(fullUrl);
+let path = url.pathname;
+
+// ✅ লোকাল ও ভের্সেল উভয়ের জন্য সঠিক পাথ বের করা
+if (path.startsWith('/api/setup')) {
+  path = path.replace('/api/setup', '');
+} else if (path.startsWith('/api/')) {
+  path = path.replace('/api', '');
+}
 
   try {
     // ==================== DB Init & Seed ====================
