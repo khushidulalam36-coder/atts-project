@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="theme-color" content="#030510">
+  <meta name="theme-color" content="#02040c">
   <title>AlamQuant ATTS – Professional Trader Transformation</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
@@ -12,27 +12,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #030510;
-      --surface: rgba(12, 14, 34, 0.85);
-      --gold: #e5b73b;
-      --gold-bright: #ffdf80;
-      --gold-light: #ffe082;
-      --accent: #00e5ff;
-      --accent-bright: #00e5ff;
-      --accent2: #ff4081;
-      --text: #e8e8f0;
-      --text-secondary: #9898b0;
+      --bg: #02040c;
+      --surface: rgba(15, 18, 42, 0.8);
+      --gold: #f2c744;
+      --gold-bright: #ffe8a1;
+      --gold-light: #ffdf80;
+      --accent: #00f0ff;
+      --accent-bright: #5effff;
+      --accent2: #ff337a;
+      --text: #edeef2;
+      --text-secondary: #9ca3b8;
       --danger: #ff5252;
       --success: #69f0ae;
       --warning: #ffd740;
       --purple: #b388ff;
       --orange: #ff9100;
-      --border-gold: rgba(229, 183, 59, 0.3);
-      --border-accent: rgba(0,229,255,0.3);
+      --border-gold: rgba(242,199,68,0.35);
+      --border-accent: rgba(0,240,255,0.3);
       --font-en: 'Inter', sans-serif;
-      --radius: 20px;
-      --radius-sm: 12px;
-      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --glow-gold: 0 0 20px rgba(242,199,68,0.4);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     @keyframes spin { 100% { transform:rotate(360deg); } }
@@ -50,7 +51,7 @@
       0%,100% { transform:translateY(0px); }
       50% { transform:translateY(-10px); }
     }
-    @keyframes gradientShift {
+    @keyframes bgSlide {
       0% { background-position:0% 50%; }
       50% { background-position:100% 50%; }
       100% { background-position:0% 50%; }
@@ -73,9 +74,9 @@
     }
     body {
       font-family: var(--font-en);
-      background: linear-gradient(135deg, #0a0b16 0%, #1a0b2e 50%, #0a0b16 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+      background: linear-gradient(160deg, #090b1a 0%, #150b2e 50%, #090b1a 100%);
+      background-size: 300% 300%;
+      animation: bgSlide 20s ease infinite;
       color: var(--text);
       display: flex;
       justify-content: center;
@@ -87,41 +88,41 @@
     }
     .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
     .glass {
-      background: radial-gradient(circle at top left, rgba(229,183,59,0.1), rgba(12,14,34,0.7));
-      backdrop-filter: blur(30px) saturate(120%);
-      -webkit-backdrop-filter: blur(30px) saturate(120%);
+      background: linear-gradient(145deg, rgba(25,28,55,0.8), rgba(15,18,42,0.6));
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       border-radius: var(--radius);
       padding: 24px;
       margin-bottom: 18px;
       border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(229,183,59,0.1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.02);
       transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
       position: relative;
       overflow: hidden;
     }
     .glass:hover {
-      box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 25px rgba(229,183,59,0.2);
-      transform: translateY(-2px);
-      border-color: rgba(229,183,59,0.5);
+      border-color: rgba(242,199,68,0.6);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.8), 0 0 30px var(--glow-gold);
+      transform: translateY(-3px);
     }
     h1,h2,h3,h4 {
       color: var(--gold);
       margin-bottom: 12px;
-      text-shadow: 0 0 16px rgba(229,183,59,0.3);
+      text-shadow: 0 0 16px rgba(242,199,68,0.3);
       position:relative; z-index:1; font-weight:700;
     }
     h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
     .btn {
-      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#0a0a0a;
+      background: linear-gradient(135deg, #f2c744 0%, #ff8c00 100%);
+      color: #0b0b1a;
       border:none;
       padding:12px 24px;
       border-radius:30px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition: all var(--transition);
       font-size:0.9rem;
-      box-shadow: 0 4px 18px rgba(229,183,59,0.4);
+      box-shadow: 0 4px 22px rgba(242,199,68,0.5);
       letter-spacing:0.5px;
       position:relative;
       overflow:hidden;
@@ -129,13 +130,13 @@
       font-family:var(--font-en);
     }
     .btn:hover {
-      box-shadow: 0 6px 24px rgba(229,183,59,0.6);
+      box-shadow: 0 6px 24px rgba(242,199,68,0.6);
       transform:translateY(-1px);
     }
     .btn:active { transform:scale(0.96); }
     .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
-    .btn-outline:hover { background:rgba(229,183,59,0.1); }
-    .btn-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); box-shadow:0 4px 18px rgba(0,229,255,0.4); }
+    .btn-outline:hover { background:rgba(242,199,68,0.1); }
+    .btn-accent { background:linear-gradient(135deg, #00f0ff, #0051ff); box-shadow:0 4px 22px rgba(0,240,255,0.5); }
     .btn-danger { background:linear-gradient(135deg, #ff5252, #ff1744); box-shadow:0 4px 18px rgba(255,82,82,0.4); }
     .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
     .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
@@ -154,7 +155,7 @@
     }
     input:focus, textarea:focus, select:focus {
       border-color:var(--gold-bright);
-      box-shadow:0 0 0 3px rgba(229,183,59,0.15), 0 0 20px rgba(229,183,59,0.2);
+      box-shadow:0 0 0 3px rgba(242,199,68,0.15), 0 0 20px rgba(242,199,68,0.2);
       background:rgba(255,255,255,0.08);
     }
     textarea { resize:vertical; min-height:60px; }
@@ -166,7 +167,7 @@
       background: rgba(12, 14, 34, 0.95); backdrop-filter: blur(24px);
       border-radius: 40px; padding: 8px 20px; display: flex; gap: 10px;
       border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(229,183,59,0.15);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(242,199,68,0.15);
       z-index: 100;
     }
     .nav-item {
@@ -298,108 +299,33 @@
     #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
     .quest-card {
       border: 1px solid var(--gold-bright);
-      background: radial-gradient(circle at top left, rgba(229,183,59,0.15), rgba(12,14,34,0.8));
-      position: relative;
-      overflow: hidden;
+      background: radial-gradient(circle at top left, rgba(242,199,68,0.15), rgba(12,14,34,0.8));
     }
-    .quest-card::before {
-      content: '';
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(229,183,59,0.2), transparent);
-      top: -50px;
-      left: -50px;
-      animation: float 4s infinite;
-    }
-    .quest-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .xp-reward {
-      color: var(--gold-bright);
-      font-weight: bold;
-    }
-    .quest-progress {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
+    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .xp-reward { color: var(--gold-bright); font-weight: bold; }
+    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
     .fab {
-      position: fixed;
-      bottom: 90px;
-      right: 80px;
-      width: 56px;
-      height: 56px;
+      position: fixed; bottom: 90px; right: 80px; width: 56px; height: 56px;
       background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 25px rgba(229,183,59,0.5);
-      cursor: pointer;
-      font-size: 28px;
-      z-index: 2000;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 25px rgba(242,199,68,0.5); cursor: pointer; font-size: 28px; z-index: 2000;
       transition: transform 0.3s;
     }
     .fab:hover { transform: scale(1.1); }
     .drawer {
-      position: fixed;
-      bottom: 150px;
-      right: 20px;
-      width: 280px;
-      background: rgba(12,14,34,0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid var(--gold);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      z-index: 1500;
+      position: fixed; bottom: 150px; right: 20px; width: 280px;
+      background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px;
+      padding: 16px; border: 1px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500;
     }
-    .mood-picker {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 16px 0;
-      background: rgba(255,255,255,0.03);
-      padding: 12px;
-      border-radius: 12px;
-    }
-    .mood-emoji {
-      font-size: 28px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      padding: 4px;
-      border-radius: 50%;
-    }
-    .mood-emoji.selected {
-      transform: scale(1.3);
-      background: rgba(229,183,59,0.2);
-      box-shadow: 0 0 12px var(--gold);
-    }
+    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
+    .mood-emoji.selected { transform: scale(1.3); background: rgba(242,199,68,0.2); box-shadow: 0 0 12px var(--gold); }
     .evolution-tree {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      background: rgba(0,0,0,0.2);
-      padding: 16px;
-      border-radius: 12px;
+      display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;
     }
-    .evolution-tree .stage {
-      text-align: center;
-      padding: 8px;
-      border-radius: 8px;
-      opacity: 0.4;
-      transition: 0.3s;
-    }
-    .evolution-tree .stage.active {
-      opacity: 1;
-      background: rgba(229,183,59,0.2);
-      box-shadow: 0 0 15px var(--gold);
-    }
+    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
+    .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
     .chapter-card { cursor:pointer; }
     .chapter-card.locked { opacity:0.5; pointer-events: none; }
     @media (max-width:640px) {
@@ -418,8 +344,8 @@
     window.GOOGLE_CLIENT_ID = "";
   </script>
 
-  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#030510; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
-    <div style="border:4px solid rgba(229,183,59,0.15); border-top:4px solid #e5b73b; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
+  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#02040c; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
+    <div style="border:4px solid rgba(242,199,68,0.15); border-top:4px solid #f2c744; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
     <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
 
@@ -514,6 +440,15 @@
           </select>
           <div id="content-form-fields"></div>
           <button class="btn btn-sm btn-accent" onclick="addContent()">যোগ করো</button>
+          <div style="margin-top:24px;">
+            <h4>বর্তমান কনটেন্ট তালিকা</h4>
+            <div id="content-list-section"></div>
+          </div>
+          <div style="margin-top:16px;">
+            <h4>ইমেজ আপলোড (Vercel Blob)</h4>
+            <input type="file" id="image-upload" accept="image/*">
+            <button class="btn btn-sm btn-accent" onclick="uploadImage()">আপলোড</button>
+          </div>
         </div>
         <div id="admin-assessment-tab" class="admin-tab hidden">
           <h4>📋 অ্যাসেসমেন্ট প্রশ্ন</h4>
@@ -617,7 +552,7 @@
       </div>
       <div class="admin-gear" onclick="openAdminPanel()" title="Admin Panel">⚙️</div>
 
-      <!-- Assessment prompt -->
+      <!-- Assessment prompt (visible until first assessment) -->
       <div class="glass" id="assessment-prompt" style="text-align:center;">
         <button class="btn btn-accent btn-lg" onclick="showAssessment()">📋 আপনার অবস্থা যাচাই করুন</button>
       </div>
@@ -926,7 +861,7 @@
     }
 
     function celebrate(msg) {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#e5b73b','#ffdf80','#00e5ff','#ff5252'] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#f2c744','#ffe8a1','#00f0ff','#ff5252'] });
       showToast(msg || '🎉');
     }
 
@@ -1149,6 +1084,7 @@
       clearAllReminders();
     }
 
+    // Dashboard Init
     function updateXpBar(xp, level) {
       const xpForCurrent = (level-1)*75;
       const progress = Math.min(100, Math.max(0, ((xp - xpForCurrent) / 75) * 100));
@@ -1161,7 +1097,7 @@
       document.getElementById('level-up-title').innerHTML = `লেভেল ${newLevel}!`;
       document.getElementById('level-up-text').textContent = titles[newLevel] || `তুমি এখন লেভেল ${newLevel} এ পৌঁছে গেছো!`;
       document.getElementById('level-up-modal').classList.remove('hidden');
-      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#e5b73b','#ffdf80','#00e5ff','#b388ff'] });
+      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#f2c744','#ffe8a1','#00f0ff','#b388ff'] });
     }
 
     async function checkStreakMilestone(streak) {
@@ -1230,7 +1166,7 @@
       else showToast(res?.error || 'দাবি করতে ব্যর্থ');
     }
 
-    // Admin login
+    // Admin login & panel
     async function adminLogin() {
       const email = document.getElementById('admin-email').value;
       const password = document.getElementById('admin-password').value;
@@ -1272,7 +1208,7 @@
         case 'stats': loadAdminStats(); break;
         case 'users': loadAdminUsers(); break;
         case 'community': loadAdminCommunity(); break;
-        case 'content': setupContentForm(); break;
+        case 'content': setupContentForm(); loadContentList(); break;
         case 'assessment': loadAdminAssessment(); break;
         case 'benefits': loadAdminBenefits(); break;
         case 'analytics': loadAdminAnalytics(); break;
@@ -1296,16 +1232,27 @@
     async function loadAdminUsers() {
       const res = await apiCall('GET', '/admin/users');
       const list = document.getElementById('admin-users-list');
-      if (res && !res.error) list.innerHTML = res.map(u => `<div class="user-card flex" style="justify-content:space-between;">
-        <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span><span class="badge">${u.xp} XP</span></div>`).join('');
-      else list.innerHTML = '<p>লোড করতে সমস্যা</p>';
+      if (res && !res.error) list.innerHTML = res.map(u => `
+        <div class="user-card flex" style="justify-content:space-between;">
+          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
+          <div>
+            <span class="badge">${u.xp} XP</span>
+            <button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button>
+          </div>
+        </div>`).join('');
     }
     async function searchAdminUsers() {
       const q = document.getElementById('admin-user-search').value;
       const res = await apiCall('GET', `/admin/users?search=${encodeURIComponent(q)}`);
       const list = document.getElementById('admin-users-list');
-      if (res && !res.error) list.innerHTML = res.map(u => `<div class="user-card flex" style="justify-content:space-between;">
-        <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span><span class="badge">${u.xp} XP</span></div>`).join('');
+      if (res && !res.error) list.innerHTML = res.map(u => `
+        <div class="user-card flex" style="justify-content:space-between;">
+          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
+          <div>
+            <span class="badge">${u.xp} XP</span>
+            <button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button>
+          </div>
+        </div>`).join('');
     }
     async function simulateUserDays() {
       const email = document.getElementById('simulate-user-email').value;
@@ -1348,20 +1295,77 @@
       else if (type==='quiz') { body.question=document.getElementById('content-question').value; body.options=JSON.parse(document.getElementById('content-options').value); body.correct=parseInt(document.getElementById('content-correct').value); }
       else if (type==='video') { body.category=document.getElementById('content-category').value; body.title=document.getElementById('content-vtitle').value; body.description=document.getElementById('content-vdesc').value; body.youtube_id=document.getElementById('content-ytid').value; body.duration=document.getElementById('content-duration').value; }
       const res = await apiCall('POST', '/admin/content', body);
-      if (res?.success) showToast('✅ কনটেন্ট যোগ হয়েছে');
+      if (res?.success) { showToast('✅ কনটেন্ট যোগ হয়েছে'); loadContentList(); }
       else showToast(res?.error||'ব্যর্থ');
     }
+    async function loadContentList() {
+      const lessons = await apiCall('GET', '/lessons') || [];
+      const container = document.getElementById('content-list-section');
+      container.innerHTML = `<h5>লেসন</h5>` + lessons.map(l => `
+        <div class="flex" style="justify-content:space-between; padding:4px 0;">
+          <span>${l.day}. ${escapeHtml(l.title)}</span>
+          <div>
+            <button class="btn btn-sm btn-outline" onclick="editContentPrompt('lesson',${l.id})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button>
+          </div>
+        </div>`).join('');
+      // Quiz list fetch not implemented fully; but you can add similar
+    }
+    function editContentPrompt(type, id) {
+      const newVals = {};
+      if (type==='lesson') {
+        newVals.day = prompt('দিন');
+        newVals.phase = prompt('ফেজ');
+        newVals.title = prompt('শিরোনাম');
+        newVals.content = prompt('কনটেন্ট');
+        if (newVals.day) apiCall('PUT', `/admin/content/lesson/${id}`, newVals).then(() => loadContentList());
+      }
+    }
+    async function deleteContent(type, id) {
+      if (!confirm('মুছে ফেলবেন?')) return;
+      await apiCall('DELETE', `/admin/content/${type}/${id}`);
+      loadContentList();
+    }
 
-    // Assessment & Benefits Admin
+    // Upload image
+    async function uploadImage() {
+      const file = document.getElementById('image-upload').files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch(`${API}/admin/upload-image`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.url) {
+        showToast('ইমেজ আপলোড সফল: ' + data.url);
+        navigator.clipboard.writeText(data.url);
+      } else showToast('আপলোড ব্যর্থ');
+    }
+
+    // Assessment Admin
     async function loadAdminAssessment() {
       const res = await apiCall('GET', '/assessment/questions');
       const list = document.getElementById('assessment-list');
       if (res && !res.error) {
-        list.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between; padding:4px;">
-          <span>${q.id}. ${escapeHtml(q.question)} (${q.category})</span>
-          <button class="btn btn-sm btn-danger" onclick="deleteAssessment(${q.id})">🗑</button>
-        </div>`).join('');
-      } else list.innerHTML = '<p>ডাটা নাই</p>';
+        list.innerHTML = res.map(q => `
+          <div class="flex" style="justify-content:space-between; padding:6px 0;">
+            <span><b>${q.id}</b> ${escapeHtml(q.question)} <i>(${q.category})</i></span>
+            <div>
+              <button class="btn btn-sm btn-outline" onclick="editAssessmentPrompt(${q.id}, '${escapeHtml(q.question)}', '${escapeHtml(q.category)}')">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteAssessment(${q.id})">🗑</button>
+            </div>
+          </div>`).join('');
+      }
+    }
+    function editAssessmentPrompt(id, question, category) {
+      const newQ = prompt('প্রশ্ন সম্পাদনা:', question);
+      const newCat = prompt('ক্যাটাগরি:', category);
+      if (newQ !== null) {
+        apiCall('PUT', `/admin/assessment/${id}`, { question: newQ, category: newCat }).then(() => loadAdminAssessment());
+      }
     }
     async function addAssessmentQuestion() {
       const question = document.getElementById('new-assessment-q').value;
@@ -1377,15 +1381,28 @@
       loadAdminAssessment();
     }
 
+    // Benefits Admin
     async function loadAdminBenefits() {
       const res = await apiCall('GET', '/benefits');
       const list = document.getElementById('benefits-list');
       if (res && !res.error) {
-        list.innerHTML = res.map(b => `<div class="flex" style="justify-content:space-between; padding:4px;">
-          <span>${b.icon} ${b.title}</span>
-          <button class="btn btn-sm btn-danger" onclick="deleteBenefit(${b.id})">🗑</button>
-        </div>`).join('');
-      } else list.innerHTML = '<p>ডাটা নাই</p>';
+        list.innerHTML = res.map(b => `
+          <div class="flex" style="justify-content:space-between; padding:6px 0;">
+            <span>${b.icon} <b>${b.title}</b></span>
+            <div>
+              <button class="btn btn-sm btn-outline" onclick="editBenefitPrompt(${b.id}, '${escapeHtml(b.title)}', '${escapeHtml(b.description)}', '${b.icon}')">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBenefit(${b.id})">🗑</button>
+            </div>
+          </div>`).join('');
+      }
+    }
+    function editBenefitPrompt(id, title, desc, icon) {
+      const newTitle = prompt('শিরোনাম:', title);
+      const newDesc = prompt('বিবরণ:', desc);
+      const newIcon = prompt('আইকন:', icon);
+      if (newTitle) {
+        apiCall('PUT', `/admin/benefit/${id}`, { title: newTitle, description: newDesc, icon: newIcon }).then(() => loadAdminBenefits());
+      }
     }
     async function addBenefit() {
       const title = document.getElementById('new-benefit-title').value;
@@ -1403,32 +1420,30 @@
       loadAdminBenefits();
     }
 
+    // Analytics
     async function loadAdminAnalytics() {
       const res = await apiCall('GET', '/admin/analytics/retention');
       const container = document.getElementById('analytics-chart');
       if (res && !res.error) {
         container.innerHTML = `<canvas id="retentionChart"></canvas>`;
         const ctx = document.getElementById('retentionChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: res.map(d => d.date),
-            datasets: [{
-              label: 'Active Users',
-              data: res.map(d => d.active_users),
-              borderColor: '#e5b73b',
-              backgroundColor: 'rgba(229,183,59,0.1)',
-            }]
-          }
-        });
+        new Chart(ctx, { type: 'line', data: { labels: res.map(d => d.date), datasets: [{ label: 'Active Users', data: res.map(d => d.active_users), borderColor: '#f2c744', backgroundColor: 'rgba(242,199,68,0.1)' }] } });
       } else container.innerHTML = '<p>ডাটা নাই</p>';
+    }
+
+    // User password reset (admin)
+    async function resetUserPassword(userId) {
+      const newPass = prompt('নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর):');
+      if (!newPass || newPass.length < 6) return showToast('পাসওয়ার্ড ৬+ অক্ষর দিন');
+      const res = await apiCall('POST', '/admin/reset-password', { user_id: userId, new_password: newPass });
+      if (res.success) showToast('পাসওয়ার্ড রিসেট হয়েছে');
     }
 
     // Assessment screen user
     async function showAssessment() {
       document.getElementById('assessment-screen').classList.remove('hidden');
       document.getElementById('assessment-prompt').classList.add('hidden');
-      const qList = await fetch(`${API}/assessment/questions`).then(r=>r.json());
+      const qList = await apiCall('GET', '/assessment/questions');
       let html = '';
       qList.forEach((q, i) => {
         html += `<div class="glass" style="margin:10px 0;">
@@ -1455,7 +1470,7 @@
       `;
     }
     async function showBenefits() {
-      const benefits = await fetch(`${API}/benefits`).then(r=>r.json());
+      const benefits = await apiCall('GET', '/benefits');
       let html = '<div class="glass"><h3>কেন এই প্রোগ্রাম?</h3>';
       benefits.forEach(b => {
         html += `<div style="display:flex; gap:10px; margin:12px 0;">
@@ -1511,6 +1526,7 @@
       if (tab==='profile') loadProfilePage();
       if (tab==='insights') loadInsights();
       if (tab==='training') loadTrainingTab();
+      if (tab==='journey') renderSliders();
     }
 
     async function loadProfile() {
@@ -1549,6 +1565,12 @@
       }
       updateReflectionPrompts();
       loadDailyQuest();
+      if (totalDays === 0) {
+        // new user, show assessment prompt
+        document.getElementById('assessment-prompt').classList.remove('hidden');
+      } else {
+        document.getElementById('assessment-prompt').classList.add('hidden');
+      }
     }
 
     function updateReflectionPrompts() {
@@ -1637,11 +1659,11 @@
       if (radarChart) radarChart.destroy();
       if (data.radar_today) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(229,183,59,0.25)', borderColor:'#e5b73b' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
+        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(242,199,68,0.25)', borderColor:'#f2c744' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
       }
       if (chart) chart.destroy();
       const ctx2 = document.getElementById('scoresChart').getContext('2d');
-      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#e5b73b' }] } });
+      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#f2c744' }] } });
       document.getElementById('certificate-btn').classList.toggle('hidden', data.totalDays<30);
       document.getElementById('share-certificate-btn').classList.toggle('hidden', data.totalDays<30);
     }
@@ -1834,11 +1856,6 @@
       } else showToast('Google login failed');
     }
 
-    async function claimDailyBonus() {
-      const res = await apiCall('POST', '/daily-reward');
-      if (res?.claimed) showFloatingXp(1);
-    }
-
     // Training
     async function loadTrainingTab() {
       await loadEnergy();
@@ -1982,6 +1999,24 @@
         navigator.serviceWorker.register('/sw.js').catch(()=>{});
       });
     }
+
+    // Init
+    async function initDashboard(user) {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.querySelector('.bottom-nav').classList.remove('hidden');
+      document.querySelector('.admin-gear').classList.remove('hidden');
+      currentUser = user;
+      previousLevel = user.level;
+      await loadProfile(); // this will also trigger auto assessment for new user
+      showTab('journey');
+      loadWeeklyChallenge();
+      renderSliders();
+      initGoogleSignIn();
+      loadQuiz();
+    }
+    function closeWelcome() { document.getElementById('welcome-modal').classList.add('hidden'); }
 
     window.addEventListener('load', async () => {
       const params = new URLSearchParams(window.location.search);

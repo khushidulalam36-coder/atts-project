@@ -13,6 +13,7 @@ import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
 import { put } from '@vercel/blob';
+import busboy from 'busboy';   // new dependency
 
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-please-in-production';
@@ -234,12 +235,91 @@ async function checkAndCompleteQuest(userId, journal, date) {
   }
 }
 
-// Node.js runtime wrapper – converts Node (req, res) to Fetch API
+// ====================== Node.js to Fetch API wrapper ======================
 function toNodeHandler(handlerFn) {
   return async (req, res) => {
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const fullUrl = `${protocol}://${host}${req.url}`;
+
+    // ---------- Handle multipart file upload directly (busboy) ----------
+    if (req.method === 'POST' && req.url.startsWith('/api/setup/admin/upload-image')) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        res.writeHead(401, corsHeaders);
+        res.end(JSON.stringify({ error: 'Authentication required' }));
+        return;
+      }
+      try {
+        const token = authHeader.replace('Bearer ', '');
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded.role || decoded.role !== 'admin') {
+          res.writeHead(403, corsHeaders);
+          res.end(JSON.stringify({ error: 'Forbidden' }));
+          return;
+        }
+      } catch {
+        res.writeHead(401, corsHeaders);
+        res.end(JSON.stringify({ error: 'Invalid token' }));
+        return;
+      }
+
+      const contentType = req.headers['content-type'];
+      if (!contentType || !contentType.startsWith('multipart/form-data')) {
+        res.writeHead(400, corsHeaders);
+        res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
+        return;
+      }
+
+      try {
+        const bb = busboy({ headers: { 'content-type': contentType } });
+        const files = [];
+
+        bb.on('file', (fieldname, fileStream, info) => {
+          const { filename, mimeType } = info;
+          const chunks = [];
+          fileStream.on('data', (chunk) => chunks.push(chunk));
+          fileStream.on('end', async () => {
+            const buffer = Buffer.concat(chunks);
+            try {
+              const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
+              files.push(blob.url);
+            } catch (err) {
+              console.error('Blob upload error:', err);
+              res.writeHead(500, corsHeaders);
+              res.end(JSON.stringify({ error: 'Upload failed' }));
+              return;
+            }
+          });
+        });
+
+        bb.on('finish', () => {
+          if (files.length === 0) {
+            res.writeHead(400, corsHeaders);
+            res.end(JSON.stringify({ error: 'No file uploaded' }));
+            return;
+          }
+          res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ url: files[0] }));
+        });
+
+        bb.on('error', (err) => {
+          console.error('Busboy error:', err);
+          res.writeHead(500, corsHeaders);
+          res.end(JSON.stringify({ error: 'Upload error' }));
+        });
+
+        req.pipe(bb);
+        return;
+      } catch (err) {
+        console.error(err);
+        res.writeHead(500, corsHeaders);
+        res.end(JSON.stringify({ error: 'Internal server error' }));
+        return;
+      }
+    }
+
+    // ---------- Normal Fetch API conversion for other routes ----------
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
       if (value) {
@@ -290,13 +370,13 @@ function toNodeHandler(handlerFn) {
   };
 }
 
-// The main handler (expects a Fetch Request)
+// ====================== Main API Handler ======================
 async function apiHandler(req) {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   const host = req.headers.get('host') || 'localhost';
-const protocol = req.headers.get('x-forwarded-proto') || 'http';
-const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
-const url = new URL(fullUrl);
+  const protocol = req.headers.get('x-forwarded-proto') || 'http';
+  const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
+  const url = new URL(fullUrl);
   const path = url.pathname.replace('/api/setup', '');
 
   try {
@@ -1470,23 +1550,24 @@ const url = new URL(fullUrl);
     }
 
     if (path === '/admin/community' && req.method === 'GET') {
-      const admin_secret = url.searchParams.get('admin_secret');
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const posts = await sql`SELECT cp.*, u.email as author, u.display_name, u.avatar_emoji FROM community_posts cp JOIN users u ON cp.user_id = u.id ORDER BY cp.created_at DESC LIMIT 100`;
       return json(posts.map(p => ({ ...p, author: maskEmail(p.author), display_name: p.display_name || p.author.split('@')[0] })));
     }
 
     if (path.match(/^\/admin\/posts\/(.+)\/hide$/) && req.method === 'PUT') {
-      const { admin_secret, hide } = await req.json();
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const postId = path.split('/')[3];
+      const { hide } = await req.json();
       await sql`UPDATE community_posts SET is_hidden = ${hide} WHERE id = ${postId}`;
       return json({ success: true });
     }
 
     if (path.match(/^\/admin\/posts\/(.+)$/) && req.method === 'DELETE') {
-      const { admin_secret } = await req.json();
-      if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const postId = path.split('/')[3];
       await sql`DELETE FROM community_posts WHERE id = ${postId}`;
       return json({ success: true });
@@ -1494,7 +1575,8 @@ const url = new URL(fullUrl);
 
     if (path === '/admin/content' && req.method === 'POST') {
       const body = await req.json();
-      if (body.admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const { type } = body;
       if (type === 'lesson') {
         const { day, phase, title, content } = body;
@@ -1511,7 +1593,56 @@ const url = new URL(fullUrl);
       return json({ success: true });
     }
 
-    // ---------------- NEW: Admin Assessment CRUD ----------------
+    // ================= NEW: Content PUT/DELETE =================
+    if (path.match(/^\/admin\/content\/(lesson|quiz|video)\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const [type, idStr] = path.split('/').slice(-2);
+      const id = parseInt(idStr);
+      const body = await req.json();
+      if (type === 'lesson') {
+        const { day, phase, title, content } = body;
+        await sql`UPDATE lessons SET day=${day}, phase=${phase}, title=${title}, content=${content} WHERE id=${id}`;
+      } else if (type === 'quiz') {
+        const { question, options, correct } = body;
+        await sql`UPDATE quizzes SET question=${question}, options=${JSON.stringify(options)}, correct=${correct} WHERE id=${id}`;
+      } else if (type === 'video') {
+        const { category, title, description, youtube_id, duration } = body;
+        await sql`UPDATE video_library SET category=${category}, title=${title}, description=${description}, youtube_id=${youtube_id}, duration=${duration} WHERE id=${id}`;
+      }
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/content\/(lesson|quiz|video)\/(\d+)$/) && req.method === 'DELETE') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const [type, idStr] = path.split('/').slice(-2);
+      const id = parseInt(idStr);
+      const tableMap = { lesson: 'lessons', quiz: 'quizzes', video: 'video_library' };
+      await sql`DELETE FROM ${sql(tableMap[type])} WHERE id = ${id}`;
+      return json({ success: true });
+    }
+
+    // ---------------- Assessment/ Benefit PUT (admin) ---------------
+    if (path.match(/^\/admin\/assessment\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const id = parseInt(path.split('/')[3]);
+      const { question, category } = await req.json();
+      await sql`UPDATE assessment_questions SET question = ${question}, category = ${category} WHERE id = ${id}`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const id = parseInt(path.split('/')[3]);
+      const { title, description, icon } = await req.json();
+      await sql`UPDATE benefits SET title = ${title}, description = ${description}, icon = ${icon} WHERE id = ${id}`;
+      return json({ success: true });
+    }
+
+    // (Already have assessment POST and DELETE, benefit POST and DELETE)
     if (path === '/admin/assessment-question' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1529,7 +1660,6 @@ const url = new URL(fullUrl);
       return json({ success: true });
     }
 
-    // ---------------- NEW: Admin Benefits CRUD ----------------
     if (path === '/admin/benefit' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1561,16 +1691,8 @@ const url = new URL(fullUrl);
       return json(dailyActive);
     }
 
-    // ---------------- Vercel Blob Image Upload ----------------
-    if (path === '/admin/upload-image' && req.method === 'POST') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return json({ error: 'Forbidden' }, 403);
-      const formData = await req.formData();
-      const file = formData.get('image');
-      if (!file) return json({ error: 'No file' }, 400);
-      const blob = await put(file.name, file, { access: 'public' });
-      return json({ url: blob.url });
-    }
+    // ---------------- Vercel Blob Image Upload (Handled in wrapper) ----------------
+    // No need to define again, handled in toNodeHandler.
 
     // ---------------- VERIFY CERTIFICATE (PUBLIC) ----------------
     if (path.startsWith('/verify/') && req.method === 'GET') {
@@ -1593,4 +1715,5 @@ const url = new URL(fullUrl);
   }
 }
 
+export { apiHandler };
 export default toNodeHandler(apiHandler);

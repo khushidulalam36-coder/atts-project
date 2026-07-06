@@ -2,7 +2,7 @@
 import { readFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { fileURLToPath } from 'url';
-import handler from './api/setup.js';
+import handler from './api/setup.js';   // ← ডিফল্ট এক্সপোর্ট (toNodeHandler(apiHandler))
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -31,12 +31,13 @@ async function serveStatic(req, res) {
 }
 
 const server = createServer(async (req, res) => {
+  // CORS headers for all responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
   if (req.method === 'OPTIONS') {
-    res.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    });
+    res.writeHead(200);
     res.end();
     return;
   }
@@ -44,33 +45,8 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost:3000');
 
   if (url.pathname.startsWith('/api/')) {
-    const chunks = [];
-    req.on('data', chunk => chunks.push(chunk));
-    req.on('end', async () => {
-      const body = Buffer.concat(chunks).toString();
-      const webReq = new Request(url, {
-        method: req.method,
-        headers: req.headers,
-        body: req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined,
-      });
-
-      try {
-        const webRes = await handler(webReq);
-        res.writeHead(webRes.status, Object.fromEntries(webRes.headers.entries()));
-        if (webRes.body) {
-          const reader = webRes.body.getReader();
-          const pump = () => reader.read().then(({ done, value }) => {
-            if (done) res.end();
-            else { res.write(value); pump(); }
-          });
-          pump();
-        } else res.end();
-      } catch (err) {
-        console.error(err);
-        res.writeHead(500);
-        res.end('Internal Server Error');
-      }
-    });
+    // সরাসরি API হ্যান্ডলারকে req, res দিন – কোনো ফেচ Request নয়
+    handler(req, res);
   } else {
     await serveStatic(req, res);
   }
