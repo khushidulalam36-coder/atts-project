@@ -17,24 +17,8 @@ New-Item -ItemType Directory -Force -Path "$projectRoot\api" | Out-Null
 # ============================================
 $vercelJson = @'
 {
-  "functions": {
-    "api/setup.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/api/(.*)", "destination": "/api/setup" }
-  ],
-  "crons": [
-    {
-      "path": "/api/setup/cron/streak-freeze-check",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/setup/cron/morning-reminder",
-      "schedule": "0 6 * * *"
-    }
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
 '@
