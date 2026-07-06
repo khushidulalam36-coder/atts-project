@@ -867,7 +867,7 @@
 
     async function apiCall(method, path, body) {
       const headers = { 'Content-Type': 'application/json' };
-      const tokenToUse = adminToken || token;
+      const tokenToUse = token;    // ← শুধুমাত্র ইউজার টোকেন ব্যবহার করবে
       if (tokenToUse) headers['Authorization'] = `Bearer ${tokenToUse}`;
       const opts = { method, headers };
       if (body) opts.body = JSON.stringify(body);
