@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'atts-v8';
+const CACHE_NAME = 'atts-v8';
 const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', event => {
