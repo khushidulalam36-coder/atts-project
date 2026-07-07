@@ -2,8 +2,8 @@
 # AlamQuant ATTS - Production-Ready File Generator
 # ============================================
 # This script creates all necessary project files.
-# index.html and api/setup.js are created as PLACEHOLDERS.
-# You must replace them with the provided production code manually.
+# IMPORTANT: After running this script, you must manually replace
+# index.html and api/setup.js with the final production versions.
 # ============================================
 
 $projectRoot = Get-Location
@@ -13,20 +13,21 @@ Write-Host "Project root: $projectRoot" -ForegroundColor Cyan
 New-Item -ItemType Directory -Force -Path "$projectRoot\api" | Out-Null
 
 # ============================================
-# 1. vercel.json (updated with nodejs18.x runtime)
+# 1. vercel.json
 # ============================================
 $vercelJson = @'
 {
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/setup" },
     { "source": "/admin", "destination": "/admin.html" }
   ]
 }
 '@
 $vercelJson | Out-File -FilePath "$projectRoot\vercel.json" -Encoding utf8
-Write-Host "Created vercel.json (nodejs18.x)" -ForegroundColor Green
+Write-Host "Created vercel.json" -ForegroundColor Green
 
 # ============================================
-# 2. package.json (busboy added)
+# 2. package.json
 # ============================================
 $packageJson = @'
 {
@@ -52,36 +53,39 @@ $packageJson = @'
 }
 '@
 $packageJson | Out-File -FilePath "$projectRoot\package.json" -Encoding utf8
-Write-Host "Created package.json (busboy added)" -ForegroundColor Green
+Write-Host "Created package.json" -ForegroundColor Green
 
 # ============================================
-# 3. styles.css (Complete Premium Styles)
+# 3. styles.css (Enterprise Premium Theme)
 # ============================================
 $stylesCss = @'
-/* AlamQuant ATTS Premium Styles */
+/* AlamQuant ATTS Premium Enterprise Styles */
 :root {
-  --bg: #02040c;
-  --surface: rgba(15, 18, 42, 0.8);
-  --gold: #f2c744;
-  --gold-bright: #ffe8a1;
-  --gold-light: #ffdf80;
-  --accent: #00f0ff;
-  --accent-bright: #5effff;
-  --accent2: #ff337a;
-  --text: #edeef2;
-  --text-secondary: #9ca3b8;
-  --danger: #ff5252;
-  --success: #69f0ae;
-  --warning: #ffd740;
-  --purple: #b388ff;
-  --orange: #ff9100;
-  --border-gold: rgba(242,199,68,0.35);
-  --border-accent: rgba(0,240,255,0.3);
+  --bg: #030614;
+  --surface: rgba(20, 24, 50, 0.85);
+  --gold: #f5c542;
+  --gold-bright: #ffe9a0;
+  --gold-light: #ffd966;
+  --accent: #00e5ff;
+  --accent-bright: #6effff;
+  --accent2: #ff4d6d;
+  --purple: #b392f0;
+  --cyan: #00bcd4;
+  --orange: #ff8c42;
+  --text: #f0f0fc;
+  --text-secondary: #a0a3c0;
+  --danger: #ff4757;
+  --success: #2ed573;
+  --warning: #ffb347;
+  --border-gold: rgba(245,197,66,0.45);
+  --border-accent: rgba(0,229,255,0.35);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: 0.3s ease;
+  --glow-gold: 0 0 25px rgba(245,197,66,0.5);
+  --glow-accent: 0 0 20px rgba(0,229,255,0.4);
+  --bg-gradient: linear-gradient(145deg, #0d0f25 0%, #1a1035 50%, #0d0f25 100%);
   --font-en: 'Inter', sans-serif;
-  --radius: 22px;
-  --radius-sm: 14px;
-  --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --glow-gold: 0 0 20px rgba(242,199,68,0.4);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -123,18 +127,22 @@ $stylesCss = @'
   50% { opacity:1; }
   100% { opacity:0; transform: translate(200px,-200px) scale(0); }
 }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 body {
-  font-family: var(--font-en);
-  background: linear-gradient(160deg, #090b1a 0%, #150b2e 50%, #090b1a 100%);
-  background-size: 300% 300%;
-  animation: bgSlide 20s ease infinite;
+  font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
+  background: var(--bg-gradient);
+  background-size: 400% 400%;
+  animation: bgSlide 30s ease infinite;
   color: var(--text);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding-bottom: 140px;
+  padding-bottom: 130px;
   overflow-x: hidden;
   position: relative;
 }
@@ -142,82 +150,88 @@ body {
 .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
 
 .glass {
-  background: linear-gradient(145deg, rgba(25,28,55,0.8), rgba(15,18,42,0.6));
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 18px;
+  background: rgba(25, 28, 55, 0.7);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid var(--border-gold);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.02);
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.02);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 18px;
+  transition: all var(--transition);
 }
-
 .glass:hover {
-  border-color: rgba(242,199,68,0.6);
-  box-shadow: 0 15px 50px rgba(0,0,0,0.8), 0 0 30px var(--glow-gold);
-  transform: translateY(-3px);
+  border-color: var(--gold-bright);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.7), var(--glow-gold);
+  transform: translateY(-4px);
 }
 
-h1,h2,h3,h4 {
-  color: var(--gold);
+h1, h2, h3, h4 {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  font-weight: 800;
   margin-bottom: 12px;
-  text-shadow: 0 0 16px rgba(242,199,68,0.3);
-  position:relative; z-index:1; font-weight:700;
 }
-
 h2 { font-size:1.6rem; }
 h3 { font-size:1.25rem; }
 
 .btn {
-  background: linear-gradient(135deg, #f2c744 0%, #ff8c00 100%);
-  color: #0b0b1a;
+  background: linear-gradient(135deg, #f5c542, #e6a800);
+  color: #0a0a1a;
   border:none;
   padding:12px 24px;
   border-radius:30px;
-  font-weight:800;
+  font-weight:700;
   cursor:pointer;
-  transition: all var(--transition);
+  transition: all 0.3s ease;
   font-size:0.9rem;
-  box-shadow: 0 4px 22px rgba(242,199,68,0.5);
+  box-shadow: 0 4px 15px rgba(245,197,66,0.4);
   letter-spacing:0.5px;
   position:relative;
   overflow:hidden;
   z-index:1;
-  font-family:var(--font-en);
+  font-family:var(--font-en), 'Inter', sans-serif;
 }
-
-.btn:hover { box-shadow:0 6px 24px rgba(242,199,68,0.6); transform:translateY(-1px); }
+.btn:hover {
+  box-shadow: 0 6px 20px rgba(245,197,66,0.6);
+  transform:translateY(-2px);
+}
 .btn:active { transform:scale(0.96); }
 
 .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
 .btn-outline:hover { background:rgba(242,199,68,0.1); }
 
-.btn-accent { background:linear-gradient(135deg, #00f0ff, #0051ff); box-shadow:0 4px 22px rgba(0,240,255,0.5); }
-.btn-danger { background:linear-gradient(135deg, #ff5252, #ff1744); box-shadow:0 4px 18px rgba(255,82,82,0.4); }
+.btn-accent {
+  background: linear-gradient(135deg, #00e5ff, #0066cc);
+  box-shadow:0 4px 15px rgba(0,229,255,0.4);
+}
+.btn-danger {
+  background: linear-gradient(135deg, #ff4757, #cc0033);
+  box-shadow:0 4px 15px rgba(255,71,87,0.4);
+}
 .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
 .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
 
 input, textarea, select {
-  background:rgba(255,255,255,0.05);
-  border:1px solid var(--border-gold);
-  color:white;
-  padding:14px 16px;
-  border-radius:var(--radius-sm);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border-gold);
+  color: white;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
   width:100%;
   margin:6px 0;
   font-family:inherit;
-  transition:var(--transition);
+  transition: var(--transition);
   outline:none;
   font-size:0.95rem;
 }
-
 input:focus, textarea:focus, select:focus {
-  border-color:var(--gold-bright);
-  box-shadow:0 0 0 3px rgba(242,199,68,0.15), 0 0 20px rgba(242,199,68,0.2);
-  background:rgba(255,255,255,0.08);
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(245,197,66,0.2), 0 0 20px var(--glow-gold);
+  background: rgba(255,255,255,0.12);
 }
 
 textarea { resize:vertical; min-height:60px; }
@@ -228,21 +242,19 @@ textarea { resize:vertical; min-height:60px; }
 
 .bottom-nav {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-  background: rgba(12, 14, 34, 0.95); backdrop-filter: blur(24px);
-  border-radius: 40px; padding: 8px 20px; display: flex; gap: 10px;
+  background: rgba(20, 24, 50, 0.95); backdrop-filter: blur(25px);
+  border-radius: 50px; padding: 8px 25px; display: flex; gap: 10px;
   border: 1px solid var(--border-gold);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(242,199,68,0.15);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
   z-index: 100;
 }
-
 .nav-item {
-  flex-direction: column; align-items: center; font-size: 10px; color: #888;
+  flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary);
   transition: 0.3s; cursor: pointer; padding: 4px 6px;
 }
-
 .nav-item span { font-size: 20px; transition: 0.3s; }
-.nav-item.active { color: var(--gold-bright); }
-.nav-item.active span { transform: translateY(-4px) scale(1.2); text-shadow: 0 0 15px var(--gold-bright); }
+.nav-item.active { color: var(--gold-bright); text-shadow: 0 0 10px var(--gold-bright); }
+.nav-item.active span { transform: translateY(-4px) scale(1.2); }
 .nav-item.active::after {
   content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
   width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
@@ -259,24 +271,22 @@ textarea { resize:vertical; min-height:60px; }
   align-items:center;
   gap:4px;
 }
-
 .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
 
 .progress-bar {
-  background:rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.1);
   border-radius:20px;
   height:14px;
   overflow:hidden;
   margin:10px 0;
-  box-shadow:inset 0 2px 4px rgba(0,0,0,0.4);
 }
-
 .progress-fill {
   height:100%;
-  background:linear-gradient(90deg, var(--gold), var(--gold-bright));
+  background: linear-gradient(90deg, var(--gold), #ffaa00);
+  border-radius: 20px;
+  box-shadow: 0 0 10px var(--gold);
   width:0%;
-  transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
-  border-radius:20px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
@@ -293,7 +303,6 @@ textarea { resize:vertical; min-height:60px; }
   align-items:center; justify-content:center;
   z-index:10000; backdrop-filter:blur(4px);
 }
-
 .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
 
 .gold-text {
@@ -302,15 +311,31 @@ textarea { resize:vertical; min-height:60px; }
   background-clip: text;
   -webkit-text-fill-color:transparent;
 }
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  height: 80px;
+}
+
+@media (max-width:640px) {
+  .grid-2 { grid-template-columns:1fr; }
+  .glass { padding:16px; }
+  h2 { font-size:1.3rem; }
+  .bottom-nav { padding: 4px 10px; gap: 6px; }
+  .nav-item span { font-size: 18px; }
+}
 '@
 $stylesCss | Out-File -FilePath "$projectRoot\styles.css" -Encoding utf8
-Write-Host "Created styles.css (premium theme)" -ForegroundColor Green
+Write-Host "Created styles.css (Enterprise Premium Theme)" -ForegroundColor Green
 
 # ============================================
 # 4. sw.js (Service Worker)
 # ============================================
 $swJs = @'
-const CACHE_NAME = 'atts-v7';
+const CACHE_NAME = 'atts-v8';
 const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', event => {
@@ -388,8 +413,8 @@ $manifestJson = @'
   "short_name": "ATTS",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#02040c",
-  "theme_color": "#f2c744",
+  "background_color": "#030614",
+  "theme_color": "#f5c542",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -415,7 +440,7 @@ import { createServer } from 'http';
 import { readFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { fileURLToPath } from 'url';
-import handler from './api/setup.js';   // ← ডিফল্ট এক্সপোর্ট (toNodeHandler(apiHandler))
+import handler from './api/setup.js';   // import default export (toNodeHandler(apiHandler))
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -504,7 +529,7 @@ $gitignore | Out-File -FilePath "$projectRoot\.gitignore" -Encoding utf8
 Write-Host "Created .gitignore" -ForegroundColor Green
 
 # ============================================
-# 9. admin.html (Complete Admin Dashboard - FULL JavaScript)
+# 9. admin.html (Complete Admin Dashboard)
 # ============================================
 $adminHtml = @'
 <!DOCTYPE html>
@@ -910,7 +935,7 @@ $adminHtml = @'
 </html>
 '@
 $adminHtml | Out-File -FilePath "$projectRoot\admin.html" -Encoding utf8
-Write-Host "Created admin.html (full JavaScript)" -ForegroundColor Green
+Write-Host "Created admin.html" -ForegroundColor Green
 
 # ============================================
 # 10. verify.html (Public Certificate Verification)
@@ -978,7 +1003,7 @@ $verifyHtml | Out-File -FilePath "$projectRoot\verify.html" -Encoding utf8
 Write-Host "Created verify.html" -ForegroundColor Green
 
 # ============================================
-# 11. index.html (PLACEHOLDER - replace with final production index.html)
+# 11. index.html (PLACEHOLDER)
 # ============================================
 $indexPlaceholder = @"
 <!--
@@ -1003,10 +1028,10 @@ $indexPlaceholder = @"
 </html>
 "@
 $indexPlaceholder | Out-File -FilePath "$projectRoot\index.html" -Encoding utf8
-Write-Host "Created index.html (PLACEHOLDER - replace with production code)" -ForegroundColor Yellow
+Write-Host "Created index.html (PLACEHOLDER - replace with final production version)" -ForegroundColor Yellow
 
 # ============================================
-# 12. api/setup.js (PLACEHOLDER - replace with final production api/setup.js)
+# 12. api/setup.js (PLACEHOLDER)
 # ============================================
 $setupJsPlaceholder = @'
 // ===================================================
@@ -1019,7 +1044,7 @@ export default async function handler(req) {
 }
 '@
 $setupJsPlaceholder | Out-File -FilePath "$projectRoot\api\setup.js" -Encoding utf8
-Write-Host "Created api/setup.js (PLACEHOLDER - replace with production code)" -ForegroundColor Yellow
+Write-Host "Created api/setup.js (PLACEHOLDER - replace with final production version)" -ForegroundColor Yellow
 
 # ============================================
 # Final message
@@ -1029,7 +1054,7 @@ Write-Host "============================================================" -Foreg
 Write-Host "  All project files generated successfully!" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "IMPORTANT NEXT STEPS:" -ForegroundColor Yellow
 Write-Host "1. Replace 'index.html' and 'api/setup.js' with the final production versions." -ForegroundColor Yellow
 Write-Host "2. Fill in your real credentials in '.env.local'." -ForegroundColor Yellow
 Write-Host "3. Place icon-192.png and icon-512.png in the project root (for PWA)." -ForegroundColor Yellow

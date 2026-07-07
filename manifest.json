@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "AlamQuant ATTS",
   "short_name": "ATTS",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#02040c",
-  "theme_color": "#f2c744",
+  "background_color": "#030614",
+  "theme_color": "#f5c542",
   "icons": [
     {
       "src": "/icon-192.png",

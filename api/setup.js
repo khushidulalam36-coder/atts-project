@@ -1,4 +1,8 @@
-// api/setup.js - Final Production-Ready with Node.js Runtime Wrapper (full code)
+﻿// ===================================================
+// AlamQuant ATTS - api/setup.js
+// Enterprise-Grade Production Ready
+// ===================================================
+
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -13,7 +17,7 @@ import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
 import { put } from '@vercel/blob';
-import busboy from 'busboy';   // new dependency
+import busboy from 'busboy';
 
 const sql = neon(process.env.DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me-please-in-production';
@@ -387,13 +391,18 @@ if (path.startsWith('/api/setup')) {
 }
 
   try {
-    // ==================== DB Init & Seed ====================
+    // ==================== DB Init & Seed (PROTECTED) ====================
     if (path === '/init-db' && req.method === 'POST') {
+      // Security: only allow if ALLOW_INIT_DB env is true
+      if (process.env.ALLOW_INIT_DB !== 'true') {
+        return json({ error: 'Init DB is disabled in production' }, 403);
+      }
       const { admin_secret } = await req.json();
       if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
 
       await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
+      // Users
       await sql`CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -406,6 +415,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Daily Journals
       await sql`CREATE TABLE IF NOT EXISTS daily_journals (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -428,6 +438,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(user_id, date)
       )`;
 
+      // Badges
       await sql`CREATE TABLE IF NOT EXISTS badges (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -436,6 +447,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(user_id, badge_type)
       )`;
 
+      // Lessons (legacy)
       await sql`CREATE TABLE IF NOT EXISTS lessons (
         id SERIAL PRIMARY KEY,
         day INT NOT NULL,
@@ -451,6 +463,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY (user_id, lesson_id)
       )`;
 
+      // Community
       await sql`CREATE TABLE IF NOT EXISTS community_posts (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -470,6 +483,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Quizzes (legacy)
       await sql`CREATE TABLE IF NOT EXISTS quizzes (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         question TEXT NOT NULL,
@@ -486,6 +500,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY (user_id, quiz_id, date)
       )`;
 
+      // Notifications
       await sql`CREATE TABLE IF NOT EXISTS notif_settings (
         user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         email_enabled BOOLEAN DEFAULT true,
@@ -493,6 +508,7 @@ if (path.startsWith('/api/setup')) {
         push_subscription JSONB
       )`;
 
+      // Videos
       await sql`CREATE TABLE IF NOT EXISTS video_library (
         id SERIAL PRIMARY KEY,
         category VARCHAR(100),
@@ -502,6 +518,7 @@ if (path.startsWith('/api/setup')) {
         duration VARCHAR(20)
       )`;
 
+      // Certificates
       await sql`CREATE TABLE IF NOT EXISTS certificates (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id),
@@ -509,6 +526,7 @@ if (path.startsWith('/api/setup')) {
         issued_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Weekly Challenges
       await sql`CREATE TABLE IF NOT EXISTS weekly_challenges (
         id SERIAL PRIMARY KEY,
         week_start DATE,
@@ -518,12 +536,14 @@ if (path.startsWith('/api/setup')) {
         reward_xp INT
       )`;
 
+      // Daily Rewards
       await sql`CREATE TABLE IF NOT EXISTS daily_rewards (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL DEFAULT CURRENT_DATE,
         PRIMARY KEY(user_id, date)
       )`;
 
+      // Mystery Boxes
       await sql`CREATE TABLE IF NOT EXISTS mystery_boxes (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -532,6 +552,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY(user_id, date)
       )`;
 
+      // Habits
       await sql`CREATE TABLE IF NOT EXISTS habit_definitions (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -553,6 +574,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(user_id, habit_id, date)
       )`;
 
+      // Mood
       await sql`CREATE TABLE IF NOT EXISTS mood_logs (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -561,12 +583,14 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(user_id, date)
       )`;
 
+      // Streak Freeze
       await sql`CREATE TABLE IF NOT EXISTS streak_freeze_items (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         quantity INT DEFAULT 0,
         PRIMARY KEY (user_id)
       )`;
 
+      // Portfolio Performance
       await sql`CREATE TABLE IF NOT EXISTS portfolio_performance (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL,
@@ -575,6 +599,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY(user_id, date)
       )`;
 
+      // Daily Quests
       await sql`CREATE TABLE IF NOT EXISTS daily_quests (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id),
@@ -585,6 +610,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(user_id, quest_date)
       )`;
 
+      // Admin Users
       await sql`CREATE TABLE IF NOT EXISTS admin_users (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -594,6 +620,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Courses
       await sql`CREATE TABLE IF NOT EXISTS courses (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -603,6 +630,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Chapters
       await sql`CREATE TABLE IF NOT EXISTS chapters (
         id SERIAL PRIMARY KEY,
         course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -617,6 +645,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(course_id, order_index)
       )`;
 
+      // Chapter Quiz Questions
       await sql`CREATE TABLE IF NOT EXISTS chapter_quiz_questions (
         id SERIAL PRIMARY KEY,
         chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
@@ -628,6 +657,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // User Chapter Progress
       await sql`CREATE TABLE IF NOT EXISTS user_chapter_progress (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
@@ -639,6 +669,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY (user_id, chapter_id)
       )`;
 
+      // Final Exam Results
       await sql`CREATE TABLE IF NOT EXISTS final_exam_results (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         score DECIMAL(5,2),
@@ -649,6 +680,7 @@ if (path.startsWith('/api/setup')) {
         PRIMARY KEY (user_id)
       )`;
 
+      // User Energy
       await sql`CREATE TABLE IF NOT EXISTS user_energy (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE PRIMARY KEY,
         current_energy INT DEFAULT 50,
@@ -657,6 +689,7 @@ if (path.startsWith('/api/setup')) {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Trading Simulator
       await sql`CREATE TABLE IF NOT EXISTS trading_simulator (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -667,6 +700,7 @@ if (path.startsWith('/api/setup')) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // Mentor Assignments
       await sql`CREATE TABLE IF NOT EXISTS mentor_assignments (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         mentor_id UUID REFERENCES users(id),
@@ -675,6 +709,7 @@ if (path.startsWith('/api/setup')) {
         status VARCHAR(20) DEFAULT 'active'
       )`;
 
+      // Content Translations (for i18n)
       await sql`CREATE TABLE IF NOT EXISTS content_translations (
         id SERIAL PRIMARY KEY,
         table_name VARCHAR(50) NOT NULL,
@@ -685,6 +720,7 @@ if (path.startsWith('/api/setup')) {
         UNIQUE(table_name, record_id, language_code, field_name)
       )`;
 
+      // Assessment Questions
       await sql`CREATE TABLE IF NOT EXISTS assessment_questions (
         id SERIAL PRIMARY KEY,
         question TEXT NOT NULL,
@@ -698,11 +734,40 @@ if (path.startsWith('/api/setup')) {
         answered_at TIMESTAMPTZ DEFAULT NOW(),
         PRIMARY KEY (user_id, question_id)
       )`;
+
+      // Benefits
       await sql`CREATE TABLE IF NOT EXISTS benefits (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         description TEXT,
         icon VARCHAR(10)
+      )`;
+
+      // ===== ENTERPRISE NEW TABLES =====
+      // Admin Activity Log
+      await sql`CREATE TABLE IF NOT EXISTS admin_activity_log (
+        id SERIAL PRIMARY KEY,
+        admin_id UUID REFERENCES admin_users(id),
+        action VARCHAR(255) NOT NULL,
+        details JSONB,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      // Exam Sessions (for timed exams)
+      await sql`CREATE TABLE IF NOT EXISTS exam_sessions (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES users(id),
+        start_time TIMESTAMPTZ DEFAULT NOW(),
+        expiry TIMESTAMPTZ NOT NULL,
+        status VARCHAR(20) DEFAULT 'active'
+      )`;
+
+      // UI Translations (i18n)
+      await sql`CREATE TABLE IF NOT EXISTS ui_translations (
+        id SERIAL PRIMARY KEY,
+        key VARCHAR(255) UNIQUE NOT NULL,
+        lang VARCHAR(10) NOT NULL,
+        value TEXT NOT NULL
       )`;
 
       // Seed admin user
@@ -952,8 +1017,20 @@ if (path.startsWith('/api/setup')) {
       const streakRes = await sql`WITH grp AS (SELECT date, date - (ROW_NUMBER() OVER (ORDER BY date))::int AS grp FROM daily_journals WHERE user_id = ${user.id}) SELECT COUNT(*)::int as cnt FROM grp GROUP BY grp ORDER BY MAX(date) DESC LIMIT 1`;
       const streak = streakRes[0]?.cnt || 0;
       const disciplineStreak = await computeDisciplineStreak(user.id);
+      // Check if user is also an admin
+      const [adminExists] = await sql`SELECT id FROM admin_users WHERE email = ${user.email}`;
+      const userData = {
+        id: user.id,
+        email: user.email,
+        display_name: user.display_name,
+        identity_level: user.identity_level,
+        xp: user.xp,
+        level: calculateLevel(user.xp),
+        avatar_emoji: user.avatar_emoji,
+        is_admin: !!adminExists
+      };
       return json({
-        user: { id: user.id, email: user.email, display_name: user.display_name, identity_level: user.identity_level, xp: user.xp, level: calculateLevel(user.xp), avatar_emoji: user.avatar_emoji },
+        user: userData,
         today_entry: today,
         totalDays: total,
         streak,
@@ -1254,24 +1331,47 @@ if (path.startsWith('/api/setup')) {
     }
 
     if (path === '/training/final-exam' && req.method === 'GET') {
+      // Check if already passed
+      const [existing] = await sql`SELECT * FROM final_exam_results WHERE user_id = ${user.id} AND passed = true`;
+      if (existing) return json({ message: 'ইতিমধ্যে উত্তীর্ণ', score: existing.score, passed: true });
+
+      // Check chapters all passed
       const chapters = await sql`SELECT id FROM chapters WHERE course_id = 1 AND is_active = true ORDER BY order_index`;
       const passedChapters = await sql`SELECT chapter_id FROM user_chapter_progress WHERE user_id = ${user.id} AND passed = true`;
       const passedSet = new Set(passedChapters.map(r => r.chapter_id));
       if (chapters.some(ch => !passedSet.has(ch.id))) {
         return json({ error: 'সব চ্যাপ্টার পাস করা আবশ্যক' }, 400);
       }
-      const [existing] = await sql`SELECT * FROM final_exam_results WHERE user_id = ${user.id} AND passed = true`;
-      if (existing) return json({ message: 'ইতিমধ্যে উত্তীর্ণ', score: existing.score, passed: true });
+
+      // Create exam session
+      const startTime = new Date();
+      const expiry = new Date(startTime.getTime() + 20 * 60 * 1000); // 20 min
+      const [session] = await sql`INSERT INTO exam_sessions (user_id, start_time, expiry) VALUES (${user.id}, ${startTime}, ${expiry}) RETURNING id, start_time, expiry`;
+
+      // Get random questions
       const questions = await sql`
         SELECT id, question, options FROM chapter_quiz_questions
         WHERE chapter_id IN (SELECT id FROM chapters WHERE course_id = 1 AND is_active = true)
         ORDER BY RANDOM() LIMIT 30
       `;
-      return json({ questions, total: questions.length, passing_score: 80 });
+      return json({
+        session_id: session.id,
+        start_time: session.start_time,
+        expiry: session.expiry,
+        questions,
+        total: questions.length,
+        passing_score: 80
+      });
     }
 
     if (path === '/training/final-exam' && req.method === 'POST') {
-      const { answers } = await req.json();
+      const { session_id, answers } = await req.json();
+      // Validate session
+      const [session] = await sql`SELECT * FROM exam_sessions WHERE id = ${session_id} AND user_id = ${user.id}`;
+      if (!session || session.status !== 'active' || new Date() > new Date(session.expiry)) {
+        return json({ error: 'Time expired or invalid session' }, 400);
+      }
+
       const questionIds = answers.map(a => a.question_id);
       const questions = await sql`SELECT id, correct_index FROM chapter_quiz_questions WHERE id = ANY(${questionIds})`;
       let correct = 0;
@@ -1282,13 +1382,19 @@ if (path.startsWith('/api/setup')) {
       const total = questions.length;
       const score = total ? (correct / total) * 100 : 0;
       const passed = score >= 80;
+
       await sql`
         INSERT INTO final_exam_results (user_id, score, passed, total_questions, correct_answers)
         VALUES (${user.id}, ${score}, ${passed}, ${total}, ${correct})
         ON CONFLICT (user_id) DO UPDATE SET score = ${score}, passed = ${passed}, total_questions = ${total}, correct_answers = ${correct}, attempted_at = NOW()
       `;
+      await sql`UPDATE exam_sessions SET status = 'completed' WHERE id = ${session_id}`;
       if (passed) await sql`UPDATE users SET xp = xp + 100 WHERE id = ${user.id}`;
-      return json({ score, passed, total, correct, xp_earned: passed ? 100 : 0, message: passed ? 'অভিনন্দন! ফাইনাল পরীক্ষায় উত্তীর্ণ!' : `স্কোর ${score.toFixed(0)}%, পাসিং 80%` });
+
+      return json({
+        score, passed, total, correct, xp_earned: passed ? 100 : 0,
+        message: passed ? 'অভিনন্দন! ফাইনাল পরীক্ষায় উত্তীর্ণ!' : `স্কোর ${score.toFixed(0)}%, পাসিং 80%`
+      });
     }
 
     if (path === '/certificate' && req.method === 'GET') {
@@ -1441,6 +1547,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const userId = path.split('/')[3];
       await sql`DELETE FROM users WHERE id = ${userId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'user_delete', ${JSON.stringify({deleted_user_id: userId})})`;
       return json({ success: true });
     }
 
@@ -1451,10 +1558,25 @@ if (path.startsWith('/api/setup')) {
       if (!user_id || !new_password || new_password.length < 6) return json({ error: 'Invalid input' }, 400);
       const hash = await bcrypt.hash(new_password, 12);
       await sql`UPDATE users SET password_hash = ${hash} WHERE id = ${user_id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'user_password_reset', ${JSON.stringify({user_id})})`;
       return json({ success: true });
     }
 
-    // Admin Chapters CRUD (existing, JWT)
+    // ** NEW: Admin change own password **
+    if (path === '/admin/change-password' && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const { current_password, new_password } = await req.json();
+      const valid = await bcrypt.compare(current_password, adminUser.password_hash);
+      if (!valid) return json({ error: 'Current password incorrect' }, 400);
+      if (!new_password || new_password.length < 6) return json({ error: 'New password must be at least 6 characters' }, 400);
+      const hash = await bcrypt.hash(new_password, 12);
+      await sql`UPDATE admin_users SET password_hash = ${hash} WHERE id = ${adminUser.id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'admin_password_change', ${JSON.stringify({})})`;
+      return json({ success: true });
+    }
+
+    // Admin Chapters CRUD (with activity log)
     if (path === '/admin/chapters' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1473,6 +1595,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const { course_id, title, order_index, content_text, image_url, video_url, passing_score } = await req.json();
       const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${course_id}, ${title}, ${order_index}, ${content_text}, ${image_url}, ${video_url}, ${passing_score || 90}) RETURNING *`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'chapter_create', ${JSON.stringify(chapter)})`;
       return json(chapter, 201);
     }
 
@@ -1482,6 +1605,7 @@ if (path.startsWith('/api/setup')) {
       const chapterId = parseInt(path.split('/')[3]);
       const { title, order_index, content_text, image_url, video_url, passing_score, is_active } = await req.json();
       await sql`UPDATE chapters SET title=COALESCE(${title}, title), order_index=COALESCE(${order_index}, order_index), content_text=COALESCE(${content_text}, content_text), image_url=COALESCE(${image_url}, image_url), video_url=COALESCE(${video_url}, video_url), passing_score=COALESCE(${passing_score}, passing_score), is_active=COALESCE(${is_active}, is_active) WHERE id=${chapterId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'chapter_update', ${JSON.stringify({chapter_id: chapterId})})`;
       return json({ success: true });
     }
 
@@ -1490,6 +1614,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const chapterId = parseInt(path.split('/')[3]);
       await sql`DELETE FROM chapters WHERE id = ${chapterId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'chapter_delete', ${JSON.stringify({chapter_id: chapterId})})`;
       return json({ success: true });
     }
 
@@ -1507,6 +1632,7 @@ if (path.startsWith('/api/setup')) {
       const chapterId = parseInt(path.split('/')[3]);
       const { question, options, correct_index, explanation, order_index } = await req.json();
       const [q] = await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, order_index) VALUES (${chapterId}, ${question}, ${JSON.stringify(options)}, ${correct_index}, ${explanation}, ${order_index || 0}) RETURNING *`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'question_create', ${JSON.stringify(q)})`;
       return json(q, 201);
     }
 
@@ -1516,6 +1642,7 @@ if (path.startsWith('/api/setup')) {
       const questionId = parseInt(path.split('/')[3]);
       const { question, options, correct_index, explanation, order_index } = await req.json();
       await sql`UPDATE chapter_quiz_questions SET question=COALESCE(${question}, question), options=COALESCE(${JSON.stringify(options)}::jsonb, options), correct_index=COALESCE(${correct_index}, correct_index), explanation=COALESCE(${explanation}, explanation), order_index=COALESCE(${order_index}, order_index) WHERE id=${questionId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'question_update', ${JSON.stringify({question_id: questionId})})`;
       return json({ success: true });
     }
 
@@ -1524,10 +1651,11 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const questionId = parseInt(path.split('/')[3]);
       await sql`DELETE FROM chapter_quiz_questions WHERE id = ${questionId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'question_delete', ${JSON.stringify({question_id: questionId})})`;
       return json({ success: true });
     }
 
-    // Admin Simulate, Community, Posts, Content (existing)
+    // Admin Simulate, Community, Posts, Content (with logging where appropriate)
     if (path === '/admin/simulate-day' && req.method === 'POST') {
       const { admin_secret, email, days, start_day } = await req.json();
       if (admin_secret !== ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
@@ -1553,6 +1681,7 @@ if (path.startsWith('/api/setup')) {
       const { count: totalJournals } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${userId}`)[0];
       const phase = computeIdentityPhase(totalJournals);
       await sql`UPDATE users SET identity_level = ${phase}, xp = xp + ${inserted * 3} WHERE id = ${userId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'simulate_days', ${JSON.stringify({user_id: userId, inserted})})`;
       return json({ success: true, inserted_days: inserted });
     }
 
@@ -1569,6 +1698,7 @@ if (path.startsWith('/api/setup')) {
       const postId = path.split('/')[3];
       const { hide } = await req.json();
       await sql`UPDATE community_posts SET is_hidden = ${hide} WHERE id = ${postId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'post_visibility_change', ${JSON.stringify({post_id: postId, hidden: hide})})`;
       return json({ success: true });
     }
 
@@ -1577,6 +1707,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const postId = path.split('/')[3];
       await sql`DELETE FROM community_posts WHERE id = ${postId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'post_delete', ${JSON.stringify({post_id: postId})})`;
       return json({ success: true });
     }
 
@@ -1597,10 +1728,11 @@ if (path.startsWith('/api/setup')) {
       } else {
         return json({ error: 'Invalid content type' }, 400);
       }
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_add', ${JSON.stringify(body)})`;
       return json({ success: true });
     }
 
-    // ================= NEW: Content PUT/DELETE =================
+    // Content PUT/DELETE (with logging)
     if (path.match(/^\/admin\/content\/(lesson|quiz|video)\/(\d+)$/) && req.method === 'PUT') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1617,6 +1749,7 @@ if (path.startsWith('/api/setup')) {
         const { category, title, description, youtube_id, duration } = body;
         await sql`UPDATE video_library SET category=${category}, title=${title}, description=${description}, youtube_id=${youtube_id}, duration=${duration} WHERE id=${id}`;
       }
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_update', ${JSON.stringify({type, id})})`;
       return json({ success: true });
     }
 
@@ -1627,16 +1760,18 @@ if (path.startsWith('/api/setup')) {
       const id = parseInt(idStr);
       const tableMap = { lesson: 'lessons', quiz: 'quizzes', video: 'video_library' };
       await sql`DELETE FROM ${sql(tableMap[type])} WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_delete', ${JSON.stringify({type, id})})`;
       return json({ success: true });
     }
 
-    // ---------------- Assessment/ Benefit PUT (admin) ---------------
+    // Assessment/ Benefit PUT (admin)
     if (path.match(/^\/admin\/assessment\/(\d+)$/) && req.method === 'PUT') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const id = parseInt(path.split('/')[3]);
       const { question, category } = await req.json();
       await sql`UPDATE assessment_questions SET question = ${question}, category = ${category} WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_update', ${JSON.stringify({id})})`;
       return json({ success: true });
     }
 
@@ -1646,16 +1781,17 @@ if (path.startsWith('/api/setup')) {
       const id = parseInt(path.split('/')[3]);
       const { title, description, icon } = await req.json();
       await sql`UPDATE benefits SET title = ${title}, description = ${description}, icon = ${icon} WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_update', ${JSON.stringify({id})})`;
       return json({ success: true });
     }
 
-    // (Already have assessment POST and DELETE, benefit POST and DELETE)
     if (path === '/admin/assessment-question' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const { question, category } = await req.json();
       if (!question) return json({ error: 'Question required' }, 400);
       const [q] = await sql`INSERT INTO assessment_questions (question, category, order_index) VALUES (${question}, ${category || ''}, 99) RETURNING *`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_add', ${JSON.stringify(q)})`;
       return json(q, 201);
     }
 
@@ -1664,6 +1800,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const id = parseInt(path.split('/')[3]);
       await sql`DELETE FROM assessment_questions WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_delete', ${JSON.stringify({id})})`;
       return json({ success: true });
     }
 
@@ -1673,6 +1810,7 @@ if (path.startsWith('/api/setup')) {
       const { title, description, icon } = await req.json();
       if (!title) return json({ error: 'Title required' }, 400);
       const [b] = await sql`INSERT INTO benefits (title, description, icon) VALUES (${title}, ${description || ''}, ${icon || '🎁'}) RETURNING *`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_add', ${JSON.stringify(b)})`;
       return json(b, 201);
     }
 
@@ -1681,10 +1819,11 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
       const id = parseInt(path.split('/')[3]);
       await sql`DELETE FROM benefits WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_delete', ${JSON.stringify({id})})`;
       return json({ success: true });
     }
 
-    // ---------------- Admin Analytics (Retention) ----------------
+    // Analytics
     if (path === '/admin/analytics/retention' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return json({ error: 'Forbidden' }, 403);
@@ -1698,8 +1837,14 @@ if (path.startsWith('/api/setup')) {
       return json(dailyActive);
     }
 
-    // ---------------- Vercel Blob Image Upload (Handled in wrapper) ----------------
-    // No need to define again, handled in toNodeHandler.
+    // i18n endpoint
+    if (path === '/translations' && req.method === 'GET') {
+      const lang = url.searchParams.get('lang') || 'bn';
+      const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
+      const result = {};
+      rows.forEach(r => result[r.key] = r.value);
+      return json(result);
+    }
 
     // ---------------- VERIFY CERTIFICATE (PUBLIC) ----------------
     if (path.startsWith('/verify/') && req.method === 'GET') {

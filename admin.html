@@ -77,7 +77,7 @@
 <body>
   <div id="admin-login-screen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; width:100%;">
     <div class="glass" style="width:400px; text-align:center; padding:40px;">
-      <h2 style="color:var(--gold-bright);">🔐 Admin Login</h2>
+      <h2 style="color:var(--gold-bright);">ðŸ” Admin Login</h2>
       <input type="email" id="admin-email" placeholder="Admin Email">
       <input type="password" id="admin-password" placeholder="Password">
       <button class="btn btn-lg" onclick="adminLogin()" style="width:100%; margin-top:16px;">Login</button>
@@ -87,13 +87,13 @@
 
   <div id="admin-dashboard" class="admin-layout" style="display:none;">
     <nav class="admin-sidebar">
-      <div class="logo">⚙️ ATTS Admin</div>
+      <div class="logo">âš™ï¸ ATTS Admin</div>
       <ul>
-        <li class="active" data-section="dashboard" onclick="showSection('dashboard')">📊 Dashboard</li>
-        <li data-section="chapters" onclick="showSection('chapters')">📚 Chapters</li>
-        <li data-section="users" onclick="showSection('users')">👥 Users</li>
-        <li data-section="certificates" onclick="showSection('certificates')">🏆 Certificates</li>
-        <li data-section="settings" onclick="showSection('settings')">⚙️ Settings</li>
+        <li class="active" data-section="dashboard" onclick="showSection('dashboard')">ðŸ“Š Dashboard</li>
+        <li data-section="chapters" onclick="showSection('chapters')">ðŸ“š Chapters</li>
+        <li data-section="users" onclick="showSection('users')">ðŸ‘¥ Users</li>
+        <li data-section="certificates" onclick="showSection('certificates')">ðŸ† Certificates</li>
+        <li data-section="settings" onclick="showSection('settings')">âš™ï¸ Settings</li>
       </ul>
       <div style="position:absolute; bottom:20px; left:20px; right:20px;">
         <button class="btn btn-outline btn-sm" onclick="adminLogout()" style="width:100%;">Logout</button>
@@ -102,7 +102,7 @@
 
     <main class="admin-main">
       <div class="admin-header">
-        <h2 id="section-title">📊 Dashboard</h2>
+        <h2 id="section-title">ðŸ“Š Dashboard</h2>
         <span id="admin-name" style="color:var(--gold-light); font-weight:600;"></span>
       </div>
       <div id="content-area"></div>
@@ -169,11 +169,11 @@
       document.querySelectorAll(".admin-sidebar ul li").forEach(li => li.classList.remove("active"));
       document.querySelector(`[data-section="${section}"]`)?.classList.add("active");
       const titles = {
-        dashboard: "📊 Dashboard",
-        chapters: "📚 Chapters Management",
-        users: "👥 User Management",
-        certificates: "🏆 Certificates",
-        settings: "⚙️ Settings"
+        dashboard: "ðŸ“Š Dashboard",
+        chapters: "ðŸ“š Chapters Management",
+        users: "ðŸ‘¥ User Management",
+        certificates: "ðŸ† Certificates",
+        settings: "âš™ï¸ Settings"
       };
       document.getElementById("section-title").textContent = titles[section] || "";
       switch(section) {
@@ -278,7 +278,7 @@
       const questions = await adminApi("GET", `/admin/chapter/${chapterId}/questions`);
       const chapters = await adminApi("GET", "/admin/chapters");
       const chapter = chapters.find(c => c.id === chapterId);
-      let html = `<button class="btn btn-outline" onclick="loadChapters()">← Back</button>
+      let html = `<button class="btn btn-outline" onclick="loadChapters()">â† Back</button>
         <h3>${chapter?.title || ""} - Quiz Questions</h3>
         <button class="btn btn-accent btn-sm" onclick="showQuestionForm(${chapterId})">+ Add Question</button>
         <div id="question-form" class="chapter-editor hidden">
@@ -295,7 +295,7 @@
         <div id="questions-list">`;
       questions.forEach(q => {
         html += `<div class="question-item"><p><strong>${q.question}</strong></p>
-          <p style="font-size:0.85rem; color:var(--text-secondary);">${q.options.map((opt,i) => `${i===q.correct_index?"✓":"○"} ${opt}`).join(" | ")}</p>
+          <p style="font-size:0.85rem; color:var(--text-secondary);">${q.options.map((opt,i) => `${i===q.correct_index?"âœ“":"â—‹"} ${opt}`).join(" | ")}</p>
           ${q.explanation ? `<p style="font-size:0.8rem; color:var(--accent-bright);">${q.explanation}</p>` : ""}
           <div style="margin-top:8px;"><button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">Delete</button></div></div>`;
       });
@@ -353,7 +353,7 @@
       if (!users) return;
       let html = `<input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:16px;"><div id="users-list">`;
       users.forEach(u => {
-        html += `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"🙂"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`;
+        html += `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"ðŸ™‚"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`;
       });
       html += "</div>";
       document.getElementById("content-area").innerHTML = html;
@@ -363,14 +363,14 @@
       const q = document.getElementById("user-search").value;
       const users = await adminApi("GET", `/admin/users?search=${encodeURIComponent(q)}`);
       const list = document.getElementById("users-list");
-      list.innerHTML = users.map(u => `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"🙂"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`).join("");
+      list.innerHTML = users.map(u => `<div class="glass" style="margin:8px 0; padding:12px;"><strong>${u.avatar_emoji||"ðŸ™‚"} ${u.display_name||u.email}</strong><span class="badge">Lv.${u.level} | ${u.xp} XP</span><span class="badge badge-accent">${u.identity_level}</span></div>`).join("");
     }
 
     // ----- Certificates -----
     function loadCertificates() {
       document.getElementById("content-area").innerHTML = `
         <div class="glass">
-          <h3>🏆 Certificate Verification</h3>
+          <h3>ðŸ† Certificate Verification</h3>
           <input type="text" id="verify-code" placeholder="Verification Code">
           <button class="btn btn-accent btn-sm" onclick="verifyCertificate()">Verify</button>
           <div id="verify-result" style="margin-top:16px;"></div>
@@ -381,14 +381,14 @@
       const code = document.getElementById("verify-code").value;
       const res = await fetch(`/api/setup/verify/${code}`).then(r=>r.json());
       document.getElementById("verify-result").innerHTML = res.valid
-        ? `<p style="color:var(--success);">✅ Valid Certificate | User: ${res.user}</p>`
-        : `<p style="color:var(--danger);">❌ Invalid Certificate</p>`;
+        ? `<p style="color:var(--success);">âœ… Valid Certificate | User: ${res.user}</p>`
+        : `<p style="color:var(--danger);">âŒ Invalid Certificate</p>`;
     }
 
     // ----- Settings -----
     function loadSettings() {
       document.getElementById("content-area").innerHTML = `
-        <div class="glass"><h3>⚙️ System Settings</h3><p>Settings coming soon.</p></div>`;
+        <div class="glass"><h3>âš™ï¸ System Settings</h3><p>Settings coming soon.</p></div>`;
     }
 
     if (adminToken) {

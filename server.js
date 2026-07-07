@@ -2,7 +2,7 @@
 import { readFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { fileURLToPath } from 'url';
-import handler from './api/setup.js';   // ← ডিফল্ট এক্সপোর্ট (toNodeHandler(apiHandler))
+import handler from './api/setup.js';   // import default export (toNodeHandler(apiHandler))
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -45,7 +45,7 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost:3000');
 
   if (url.pathname.startsWith('/api/')) {
-    // সরাসরি API হ্যান্ডলারকে req, res দিন – কোনো ফেচ Request নয়
+    // à¦¸à¦°à¦¾à¦¸à¦°à¦¿ API à¦¹à§à¦¯à¦¾à¦¨à§à¦¡à¦²à¦¾à¦°à¦•à§‡ req, res à¦¦à¦¿à¦¨ â€“ à¦•à§‹à¦¨à§‹ à¦«à§‡à¦š Request à¦¨à§Ÿ
     handler(req, res);
   } else {
     await serveStatic(req, res);
