@@ -908,6 +908,15 @@ if (path.startsWith('/api/setup')) {
       return json(benefits);
     }
 
+    // i18n endpoint (PUBLIC)
+if (path === '/translations' && req.method === 'GET') {
+  const lang = url.searchParams.get('lang') || 'bn';
+  const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
+  const result = {};
+  rows.forEach(r => result[r.key] = r.value);
+  return json(result);
+}
+
     // ---------------- Auth Required ----------------
     const user = await authenticate(req);
     if (!user) return json({ error: 'Authentication required' }, 401);
@@ -1835,15 +1844,6 @@ if (path.startsWith('/api/setup')) {
         ORDER BY date
       `;
       return json(dailyActive);
-    }
-
-    // i18n endpoint
-    if (path === '/translations' && req.method === 'GET') {
-      const lang = url.searchParams.get('lang') || 'bn';
-      const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
-      const result = {};
-      rows.forEach(r => result[r.key] = r.value);
-      return json(result);
     }
 
     // ---------------- VERIFY CERTIFICATE (PUBLIC) ----------------
