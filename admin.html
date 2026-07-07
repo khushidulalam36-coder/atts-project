@@ -136,26 +136,62 @@
     }
 
     async function adminLogin() {
-      const email = document.getElementById("admin-email").value;
-      const password = document.getElementById("admin-password").value;
-      const res = await fetch(`${API_BASE}/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (data.token) {
-        adminToken = data.token;
-        localStorage.setItem("adminToken", adminToken);
-        document.getElementById("admin-login-screen").style.display = "none";
-        document.getElementById("admin-dashboard").style.display = "flex";
-        document.getElementById("admin-name").textContent = data.name;
-        showSection("dashboard");
-      } else {
-        document.getElementById("login-error").textContent = data.error || "Login failed";
-        document.getElementById("login-error").style.display = "block";
-      }
+  const email = document.getElementById("admin-email").value;
+  const password = document.getElementById("admin-password").value;
+  const res = await fetch(`${API_BASE}/admin/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (data.token) {
+    adminToken = data.token;
+    localStorage.setItem("adminToken", adminToken);
+
+    // প্রথমে প্যানেল না দেখিয়ে ডেটা লোড করি
+    document.getElementById("admin-login-screen").style.display = "none";
+    const dashboard = document.getElementById("admin-dashboard");
+    dashboard.style.display = "flex";
+    document.getElementById("content-area").innerHTML = '<p style="color:var(--text-secondary);">ড্যাশবোর্ড লোড হচ্ছে...</p>';
+
+    const stats = await fetch(`${API_BASE}/admin/dashboard`, {
+      headers: { "Authorization": `Bearer ${adminToken}` }
+    }).then(res => res.json());
+
+    if (stats && !stats.error) {
+      document.getElementById("admin-name").textContent = data.name;
+      // সরাসরি showSection কল করার বদলে আগে ড্যাশবোর্ড রেন্ডার করি
+      loadDashboardWithData(stats); // আমরা একটি হেল্পার ফাংশন ব্যবহার করব
+    } else {
+      // ব্যর্থ হলে আবার লগইন ফর্ম দেখাই
+      document.getElementById("admin-dashboard").style.display = "none";
+      document.getElementById("admin-login-screen").style.display = "flex";
+      document.getElementById("login-error").textContent = stats?.error || "ড্যাশবোর্ড লোড ব্যর্থ";
+      document.getElementById("login-error").style.display = "block";
+      adminToken = null;
+      localStorage.removeItem("adminToken");
     }
+  } else {
+    document.getElementById("login-error").textContent = data.error || "Login failed";
+    document.getElementById("login-error").style.display = "block";
+  }
+}
+
+// হেল্পার ফাংশন — loadDashboard কে সরাসরি ডাটা দিয়ে কল
+function loadDashboardWithData(data) {
+  document.getElementById("content-area").innerHTML = `
+    <div class="grid-4">
+      <div class="stat-card glass"><div class="stat-value">${data.totalUsers}</div><div class="stat-label">Total Users</div></div>
+      <div class="stat-card glass"><div class="stat-value">${data.dailyActiveUsers}</div><div class="stat-label">Today Active</div></div>
+      <div class="stat-card glass"><div class="stat-value">${data.totalJournals}</div><div class="stat-label">Total Journals</div></div>
+      <div class="stat-card glass"><div class="stat-value">${data.completionRate}%</div><div class="stat-label">Training Completed</div></div>
+    </div>
+    <div class="glass" style="margin-top:24px;"><h3>Quick Stats</h3><p>Total Chapters: <strong>${data.totalChapters}</strong></p><p>Certified: <strong>${data.completedTrainings}</strong></p></div>`;
+  // বর্তমান সেকশন হিসেবে ড্যাশবোর্ড সেট
+  currentSection = "dashboard";
+  document.querySelectorAll(".admin-sidebar ul li").forEach(li => li.classList.remove("active"));
+  document.querySelector(`[data-section="dashboard"]`)?.classList.add("active");
+}
 
     function adminLogout() {
       localStorage.removeItem("adminToken");
