@@ -831,6 +831,17 @@ if (path.startsWith('/api/setup')) {
       return json({ message: 'DB initialized with all tables and sample data' });
     }
 
+      // ==================== DEBUG: Check JWT_SECRET ====================
+  if (path === '/debug-env' && req.method === 'GET') {
+    const secret = process.env.JWT_SECRET;
+    return json({
+      jwt_set: !!secret,
+      length: secret ? secret.length : 0,
+      firstChar: secret ? secret[0] : 'none',
+      message: 'JWT_SECRET is ' + (secret ? 'set' : 'NOT SET')
+    });
+  }
+
     // ---------------- PUBLIC: Auto Login, Google OAuth, Admin Login, Register, Login ----------------
     if (path === '/auto-login' && req.method === 'GET') {
       const tokenParam = url.searchParams.get('token');
