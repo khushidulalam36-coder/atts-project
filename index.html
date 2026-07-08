@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="theme-color" content="#02040c">
+  <meta name="theme-color" content="#020617">
   <title>AlamQuant ATTS – Professional Trader Transformation</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
@@ -12,32 +12,324 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #030614;
-      --surface: rgba(20, 24, 50, 0.85);
-      --gold: #f5c542;
-      --gold-bright: #ffe9a0;
-      --gold-light: #ffd966;
-      --accent: #00e5ff;
-      --accent-bright: #6effff;
-      --accent2: #ff4d6d;
-      --purple: #b392f0;
-      --cyan: #00bcd4;
-      --orange: #ff8c42;
-      --text: #f0f0fc;
-      --text-secondary: #a0a3c0;
-      --danger: #ff4757;
-      --success: #2ed573;
-      --warning: #ffb347;
-      --border-gold: rgba(245,197,66,0.45);
-      --border-accent: rgba(0,229,255,0.35);
-      --radius: 20px;
-      --radius-sm: 12px;
-      --transition: 0.3s ease;
-      --glow-gold: 0 0 25px rgba(245,197,66,0.5);
-      --glow-accent: 0 0 20px rgba(0,229,255,0.4);
-      --bg-gradient: linear-gradient(145deg, #0d0f25 0%, #1a1035 50%, #0d0f25 100%);
+      --bg: #020617;
+      --surface: rgba(15, 23, 42, 0.85);
+      --gold: #eab308;
+      --gold-bright: #facc15;
+      --gold-light: #fef08a;
+      --accent: #38bdf8;
+      --accent-bright: #7dd3fc;
+      --accent2: #f43f5e;
+      --purple: #a78bfa;
+      --cyan: #22d3ee;
+      --orange: #fb923c;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --border-gold: rgba(234,179,8,0.5);
+      --border-accent: rgba(56,189,248,0.4);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --glow-gold: 0 0 30px rgba(234,179,8,0.5);
+      --glow-accent: 0 0 25px rgba(56,189,248,0.5);
+      --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', 'Hind Siliguri', sans-serif;
+      background: var(--bg-gradient);
+      background-size: 400% 400%;
+      animation: bgSlide 25s ease infinite;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-bottom: 130px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.02);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      transition: all var(--transition);
+    }
+    .glass:hover {
+      border-color: var(--gold-bright);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold);
+      transform: translateY(-2px);
+    }
+
+    h1, h2, h3, h4 {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
+
+    .btn {
+      background: linear-gradient(135deg, var(--gold), #ca8a04);
+      color: #020617;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(234,179,8,0.4);
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover { box-shadow: 0 6px 20px rgba(234,179,8,0.7); transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+    .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); box-shadow: none; }
+    .btn-outline:hover { background: rgba(234,179,8,0.1); }
+    .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); box-shadow: 0 4px 15px rgba(56,189,248,0.4); }
+    .btn-danger { background: linear-gradient(135deg, var(--danger), #b91c1c); box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
+    .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
+    .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
+
+    input, textarea, select {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      width: 100%;
+      margin: 6px 0;
+      font-family: inherit;
+      transition: var(--transition);
+      outline: none;
+      font-size: 0.95rem;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 0 3px rgba(234,179,8,0.25), var(--glow-gold);
+      background: rgba(255,255,255,0.12);
+    }
+
+    textarea { resize:vertical; min-height:60px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .hidden { display:none !important; }
+
+    .bottom-nav {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px);
+      border-radius: 50px; padding: 8px 25px; display: flex; gap: 10px;
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      z-index: 100;
+    }
+    .nav-item {
+      flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary);
+      transition: 0.3s; cursor: pointer; padding: 4px 6px;
+    }
+    .nav-item span { font-size: 20px; transition: 0.3s; }
+    .nav-item.active { color: var(--gold-bright); text-shadow: 0 0 10px var(--gold-bright); }
+    .nav-item.active span { transform: translateY(-4px) scale(1.2); }
+    .nav-item.active::after {
+      content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
+    }
+
+    .badge {
+      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color:#020617;
+      padding:4px 12px;
+      border-radius:20px;
+      font-weight:700;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+    }
+    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
+
+    .progress-bar {
+      background: rgba(255,255,255,0.1);
+      border-radius:20px;
+      height:14px;
+      overflow:hidden;
+      margin:10px 0;
+    }
+    .progress-fill {
+      height:100%;
+      background: linear-gradient(90deg, var(--gold), #ffaa00);
+      border-radius: 20px;
+      box-shadow: 0 0 10px var(--gold);
+      width:0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
+
+    .phase-tag {
+      background:var(--gold); color:#020617;
+      padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem;
+      display:inline-block;
+    }
+    .post {
+      background:rgba(255,255,255,0.03);
+      border-radius:var(--radius-sm);
+      padding:16px; margin-bottom:10px;
+      border:1px solid rgba(255,255,255,0.05);
+      transition:var(--transition);
+    }
+    .post:hover { background:rgba(255,255,255,0.06); }
+
+    .slider-item {
+      display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0;
+    }
+    .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
+    .slider-item input[type="range"] { flex:3; accent-color:var(--gold); }
+    .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
+
+    .xp-bar-container {
+      background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden;
+      position: relative; margin: 10px 0;
+    }
+    .xp-bar-fill {
+      height:100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold)); background-size: 200% 100%;
+      animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center;
+      transition: width 0.8s;
+    }
+    .xp-text { color: #020617; font-weight: bold; font-size: 0.75rem; z-index: 1; }
+
+    .float-xp {
+      position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2rem; font-weight: 900; color: var(--gold-bright);
+      text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none;
+    }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+
+    .habit-card { transition: all 0.3s; margin-bottom:12px; }
+    .habit-time-slot {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
+      margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
+    }
+    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
+
+    .toast {
+      position:fixed; top:20px; right:20px;
+      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color:#020617; font-weight:700;
+      padding:14px 22px; border-radius:30px;
+      z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      opacity:0; transform:translateX(120%);
+      transition:0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .toast.show { opacity:1; transform:translateX(0); }
+
+    .mini-stat {
+      background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px;
+      border:1px solid var(--border-gold); backdrop-filter:blur(5px);
+      display:inline-flex; align-items:center; gap:8px; font-weight:600;
+    }
+    .streak-fire {
+      background: linear-gradient(135deg, #ff9100, #ff3d00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight:900; animation: pulse 1.5s infinite;
+    }
+    .admin-gear {
+      position:fixed; bottom:90px; right:20px; z-index:1000;
+      background:var(--surface); border:1px solid var(--border-gold);
+      border-radius:50%; width:48px; height:48px; display:flex;
+      align-items:center; justify-content:center; cursor:pointer;
+      font-size:22px; color:var(--gold); backdrop-filter:blur(12px);
+      box-shadow:0 4px 20px rgba(0,0,0,0.6);
+      transition:transform var(--transition);
+    }
+    .admin-gear:hover { transform:rotate(90deg); }
+
+    .modal-overlay {
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.85); display:flex;
+      align-items:center; justify-content:center;
+      z-index:10000; backdrop-filter:blur(4px);
+    }
+    .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
+
+    .gold-text {
+      background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
+      -webkit-background-clip:text;
+      background-clip: text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+    .quest-card {
+      border: 1px solid var(--gold-bright);
+      background: radial-gradient(circle at top left, rgba(242,199,68,0.15), rgba(12,14,34,0.8));
+    }
+    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .xp-reward { color: var(--gold-bright); font-weight: bold; }
+    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+
+    .fab {
+      position: fixed; bottom: 90px; right: 80px; width: 56px; height: 56px;
+      background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 25px rgba(242,199,68,0.5); cursor: pointer; font-size: 28px; z-index: 2000;
+      transition: transform 0.3s;
+    }
+    .fab:hover { transform: scale(1.1); }
+
+    .drawer {
+      position: fixed; bottom: 150px; right: 20px; width: 280px;
+      background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px;
+      padding: 16px; border: 1px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500;
+    }
+
+    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
+    .mood-emoji.selected { transform: scale(1.3); background: rgba(242,199,68,0.2); box-shadow: 0 0 12px var(--gold); }
+
+    .evolution-tree {
+      display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;
+    }
+    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
+    .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
+
+    .chapter-card { cursor:pointer; }
+    .chapter-card.locked { opacity:0.5; pointer-events: none; }
+
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+      height: 80px;
+    }
+
+    /* কুইজ অপশন */
+    .quiz-option { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+    .quiz-option input[type="radio"] { width: auto; margin: 0; accent-color: var(--gold); }
+    .quiz-option label { flex: 1; cursor: pointer; color: var(--text); }
+    .question-block { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; }
+
+    /* অ্যানিমেশন */
     @keyframes spin { 100% { transform:rotate(360deg); } }
     @keyframes bounceIn {
       0% { transform:scale(0); opacity:0; }
@@ -79,282 +371,6 @@
       100% { background-position: -200% 0; }
     }
 
-    body {
-      font-family: 'Inter', 'Hind Siliguri', sans-serif;
-      background: var(--bg-gradient);
-      background-size: 400% 400%;
-      animation: bgSlide 30s ease infinite;
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding-bottom: 130px;
-      overflow-x: hidden;
-      position: relative;
-    }
-    .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
-    .glass {
-      background: rgba(25, 28, 55, 0.7);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.02);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 18px;
-      transition: all var(--transition);
-    }
-    .glass:hover {
-      border-color: var(--gold-bright);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.7), var(--glow-gold);
-      transform: translateY(-4px);
-    }
-
-    h1, h2, h3, h4 {
-      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: none;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-    h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
-    .btn {
-      background: linear-gradient(135deg, #f5c542, #e6a800);
-      color: #0a0a1a;
-      border:none;
-      padding:12px 24px;
-      border-radius:30px;
-      font-weight:700;
-      cursor:pointer;
-      transition: all 0.3s ease;
-      font-size:0.9rem;
-      box-shadow: 0 4px 15px rgba(245,197,66,0.4);
-      letter-spacing:0.5px;
-      position:relative;
-      overflow:hidden;
-      z-index:1;
-      font-family:'Inter', sans-serif;
-    }
-    .btn:hover {
-      box-shadow: 0 6px 20px rgba(245,197,66,0.6);
-      transform:translateY(-2px);
-    }
-    .btn:active { transform:scale(0.96); }
-    .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
-    .btn-outline:hover { background:rgba(242,199,68,0.1); }
-    .btn-accent {
-      background: linear-gradient(135deg, #00e5ff, #0066cc);
-      box-shadow:0 4px 15px rgba(0,229,255,0.4);
-    }
-    .btn-danger {
-      background: linear-gradient(135deg, #ff4757, #cc0033);
-      box-shadow:0 4px 15px rgba(255,71,87,0.4);
-    }
-    .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
-    .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
-    input, textarea, select {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border-gold);
-      color: white;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      width:100%;
-      margin:6px 0;
-      font-family:inherit;
-      transition: var(--transition);
-      outline:none;
-      font-size:0.95rem;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--gold-bright);
-      box-shadow: 0 0 0 3px rgba(245,197,66,0.2), 0 0 20px var(--glow-gold);
-      background: rgba(255,255,255,0.12);
-    }
-    textarea { resize:vertical; min-height:60px; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .hidden { display:none !important; }
-    .bottom-nav {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(20, 24, 50, 0.95); backdrop-filter: blur(25px);
-      border-radius: 50px; padding: 8px 25px; display: flex; gap: 10px;
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-      z-index: 100;
-    }
-    .nav-item {
-      flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary);
-      transition: 0.3s; cursor: pointer; padding: 4px 6px;
-    }
-    .nav-item span { font-size: 20px; transition: 0.3s; }
-    .nav-item.active { color: var(--gold-bright); text-shadow: 0 0 10px var(--gold-bright); }
-    .nav-item.active span { transform: translateY(-4px) scale(1.2); }
-    .nav-item.active::after {
-      content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-      width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
-    }
-    .badge {
-      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#0a0a0a;
-      padding:4px 12px;
-      border-radius:20px;
-      font-weight:700;
-      font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-    }
-    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
-    .progress-bar {
-      background: rgba(255,255,255,0.1);
-      border-radius:20px;
-      height:14px;
-      overflow:hidden;
-      margin:10px 0;
-    }
-    .progress-fill {
-      height:100%;
-      background: linear-gradient(90deg, var(--gold), #ffaa00);
-      border-radius: 20px;
-      box-shadow: 0 0 10px var(--gold);
-      width:0%;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-    }
-    .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
-    .phase-tag {
-      background:var(--gold); color:#0a0a0a;
-      padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem;
-      display:inline-block;
-    }
-    .post {
-      background:rgba(255,255,255,0.03);
-      border-radius:var(--radius-sm);
-      padding:16px; margin-bottom:10px;
-      border:1px solid rgba(255,255,255,0.05);
-      transition:var(--transition);
-    }
-    .post:hover { background:rgba(255,255,255,0.06); }
-    .slider-item {
-      display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0;
-    }
-    .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
-    .slider-item input[type="range"] { flex:3; accent-color:var(--gold); }
-    .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
-    .xp-bar-container {
-      background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden;
-      position: relative; margin: 10px 0;
-    }
-    .xp-bar-fill {
-      height:100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold)); background-size: 200% 100%;
-      animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center;
-      transition: width 0.8s;
-    }
-    .xp-text { color: #0a0a0a; font-weight: bold; font-size: 0.75rem; z-index: 1; }
-    .float-xp {
-      position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
-      font-size: 2rem; font-weight: 900; color: var(--gold-bright);
-      text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none;
-    }
-    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
-    .habit-card { transition: all 0.3s; margin-bottom:12px; }
-    .habit-time-slot {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
-      margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
-    }
-    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
-    .toast {
-      position:fixed; top:20px; right:20px;
-      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#0a0a0a; font-weight:700;
-      padding:14px 22px; border-radius:30px;
-      z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
-      opacity:0; transform:translateX(120%);
-      transition:0.4s cubic-bezier(0.4,0,0.2,1);
-    }
-    .toast.show { opacity:1; transform:translateX(0); }
-    .mini-stat {
-      background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px;
-      border:1px solid var(--border-gold); backdrop-filter:blur(5px);
-      display:inline-flex; align-items:center; gap:8px; font-weight:600;
-    }
-    .streak-fire {
-      background: linear-gradient(135deg, #ff9100, #ff3d00);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight:900; animation: pulse 1.5s infinite;
-    }
-    .admin-gear {
-      position:fixed; bottom:90px; right:20px; z-index:1000;
-      background:var(--surface); border:1px solid var(--border-gold);
-      border-radius:50%; width:48px; height:48px; display:flex;
-      align-items:center; justify-content:center; cursor:pointer;
-      font-size:22px; color:var(--gold); backdrop-filter:blur(12px);
-      box-shadow:0 4px 20px rgba(0,0,0,0.6);
-      transition:transform var(--transition);
-    }
-    .admin-gear:hover { transform:rotate(90deg); }
-    .modal-overlay {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.85); display:flex;
-      align-items:center; justify-content:center;
-      z-index:10000; backdrop-filter:blur(4px);
-    }
-    .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
-    .gold-text {
-      background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
-      -webkit-background-clip:text;
-      background-clip: text;
-      -webkit-text-fill-color:transparent;
-    }
-    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    .quest-card {
-      border: 1px solid var(--gold-bright);
-      background: radial-gradient(circle at top left, rgba(242,199,68,0.15), rgba(12,14,34,0.8));
-    }
-    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .xp-reward { color: var(--gold-bright); font-weight: bold; }
-    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-    .fab {
-      position: fixed; bottom: 90px; right: 80px; width: 56px; height: 56px;
-      background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 25px rgba(242,199,68,0.5); cursor: pointer; font-size: 28px; z-index: 2000;
-      transition: transform 0.3s;
-    }
-    .fab:hover { transform: scale(1.1); }
-    .drawer {
-      position: fixed; bottom: 150px; right: 20px; width: 280px;
-      background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px;
-      padding: 16px; border: 1px solid var(--gold);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500;
-    }
-    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
-    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
-    .mood-emoji.selected { transform: scale(1.3); background: rgba(242,199,68,0.2); box-shadow: 0 0 12px var(--gold); }
-    .evolution-tree {
-      display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;
-    }
-    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
-    .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
-    .chapter-card { cursor:pointer; }
-    .chapter-card.locked { opacity:0.5; pointer-events: none; }
-    /* Skeleton loading */
-    .skeleton {
-      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: var(--radius-sm);
-      height: 80px;
-    }
-    @media (max-width: 600px) {
-      .admin-panel .flex { flex-direction: column; }
-      .admin-tab .grid-2 { grid-template-columns: 1fr; }
-    }
     @media (max-width:640px) {
       .grid-2 { grid-template-columns:1fr; }
       .glass { padding:16px; }
@@ -371,8 +387,8 @@
     window.GOOGLE_CLIENT_ID = "";
   </script>
 
-  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#02040c; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
-    <div style="border:4px solid rgba(242,199,68,0.15); border-top:4px solid #f2c744; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
+  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#020617; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
+    <div style="border:4px solid rgba(242,199,68,0.15); border-top:4px solid #eab308; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
     <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
 
@@ -454,6 +470,9 @@
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('benefits')">🎁 বেনিফিট</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('analytics')">📈 অ্যানালিটিক্স</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('chapters')">📚 চ্যাপ্টার</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('courses')">📚 কোর্স</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('activity')">📋 অ্যাক্টিভিটি লগ</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('settings')">⚙️ সেটিংস</button>
         </div>
         <div id="admin-stats-tab" class="admin-tab"><p style="color:var(--text-secondary);">লোড হচ্ছে...</p></div>
         <div id="admin-users-tab" class="admin-tab hidden">
@@ -553,6 +572,32 @@
                 <input type="hidden" id="qm-chapter-id" value="">
               </div>
             </div>
+          </div>
+        </div>
+        <div id="admin-courses-tab" class="admin-tab hidden">
+          <h4>📚 কোর্স ম্যানেজমেন্ট</h4>
+          <button class="btn btn-sm btn-accent" onclick="showCourseForm()">+ নতুন কোর্স</button>
+          <div id="course-form" class="glass hidden" style="margin-top:16px;">
+            <div class="form-group"><label>শিরোনাম</label><input type="text" id="course-title"></div>
+            <div class="form-group"><label>বিবরণ</label><textarea id="course-desc"></textarea></div>
+            <button class="btn btn-accent btn-sm" onclick="saveCourse()">সংরক্ষণ</button>
+            <button class="btn btn-outline btn-sm" onclick="cancelCourseForm()">বাতিল</button>
+            <input type="hidden" id="course-edit-id" value="">
+          </div>
+          <div id="courses-list" style="margin-top:20px;"></div>
+        </div>
+        <div id="admin-activity-tab" class="admin-tab hidden">
+          <h4>📋 অ্যাক্টিভিটি লগ</h4>
+          <div id="activity-log-table" style="max-height:400px; overflow-y:auto;"></div>
+        </div>
+        <div id="admin-settings-tab" class="admin-tab hidden">
+          <div class="glass">
+            <h3>⚙️ অ্যাডমিন সেটিংস</h3>
+            <div class="form-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" id="current-password"></div>
+            <div class="form-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="new-password"></div>
+            <div class="form-group"><label>নতুন পাসওয়ার্ড আবার</label><input type="password" id="confirm-password"></div>
+            <button class="btn btn-accent" onclick="changeAdminPassword()">পাসওয়ার্ড পরিবর্তন</button>
+            <div id="settings-message" style="margin-top:12px;"></div>
           </div>
         </div>
       </div>
@@ -726,7 +771,7 @@
                 <option value="💪">💪 ব্যায়াম</option>
               </select>
               <label>রঙ:</label>
-              <input type="color" id="new-habit-color" value="#e5b73b" style="width:50px;">
+              <input type="color" id="new-habit-color" value="#eab308" style="width:50px;">
             </div>
             <label>রিমাইন্ডার সময় (কমা দিয়ে, যেমন: 06:00,12:00,20:00)</label>
             <input type="text" id="new-habit-times" placeholder="06:00,12:00,20:00">
@@ -744,7 +789,7 @@
             <span><strong id="energy-current">50</strong>/<span id="energy-max">50</span></span>
           </div>
           <div class="progress-bar" style="height:12px;">
-            <div id="energy-fill" class="progress-fill" style="width:100%; background:linear-gradient(90deg, #00e5ff, #006064);"></div>
+            <div id="energy-fill" class="progress-fill" style="width:100%; background:linear-gradient(90deg, #38bdf8, #0284c7);"></div>
           </div>
         </div>
         <div class="glass">
@@ -922,20 +967,6 @@
     <div class="nav-item" data-tab="profile"><span>👤</span> প্রোফাইল</div>
   </div>
 
-  <!-- Google Translate Widget -->
-  <div id="google_translate_element" style="position:fixed; top:80px; right:20px; z-index:10000; opacity:0.8;"></div>
-  <script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'bn',
-      includedLanguages: 'bn,en,hi,ar,ur',
-      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-      autoDisplay: false
-    }, 'google_translate_element');
-  }
-  </script>
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
   <script>
     // ==================== Global Config ====================
     const API = '/api/setup';
@@ -968,7 +999,7 @@
     }
 
     function celebrate(msg) {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#f2c744','#ffe8a1','#00f0ff','#ff5252'] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#eab308','#fef08a','#38bdf8','#f43f5e'] });
       showToast(msg || '🎉');
     }
 
@@ -998,18 +1029,13 @@
           const key = el.dataset.i18n;
           el.textContent = this.t(key, el.textContent);
         });
-        document.querySelectorAll('[data-i18n-html]').forEach(el => {
-          const key = el.dataset.i18nHtml;
-          el.innerHTML = this.t(key, el.innerHTML);
-        });
       }
     };
 
     // ================== API Call functions ==================
     async function apiCall(method, path, body) {
       const headers = { 'Content-Type': 'application/json' };
-      const tokenToUse = token;
-      if (tokenToUse) headers['Authorization'] = `Bearer ${tokenToUse}`;
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       const opts = { method, headers };
       if (body) opts.body = JSON.stringify(body);
       try {
@@ -1114,7 +1140,6 @@
       setTimeout(() => el.remove(), 2000);
     }
 
-    // Password reset modal functions
     function resetUserPasswordUI(userId) {
       currentResetUserId = userId;
       document.getElementById('reset-pass-modal').classList.remove('hidden');
@@ -1189,7 +1214,7 @@
       document.getElementById('level-up-title').innerHTML = `লেভেল ${newLevel}!`;
       document.getElementById('level-up-text').textContent = titles[newLevel] || `তুমি এখন লেভেল ${newLevel} এ পৌঁছে গেছো!`;
       document.getElementById('level-up-modal').classList.remove('hidden');
-      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#f2c744','#ffe8a1','#00f0ff','#b388ff'] });
+      confetti({ particleCount:200, spread:120, origin:{y:0.5}, colors:['#eab308','#fef08a','#38bdf8','#a78bfa'] });
     }
 
     async function checkStreakMilestone(streak) {
@@ -1271,14 +1296,36 @@
       if (data.token) {
         adminToken = data.token;
         localStorage.setItem('adminToken', adminToken);
+
         document.getElementById('admin-login-form').classList.add('hidden');
-        document.getElementById('admin-panel').classList.remove('hidden');
-        showAdminTab('stats');
+        const panel = document.getElementById('admin-panel');
+        panel.innerHTML = '<p style="color:var(--text-secondary);">লগইন সফল, ডাটা লোড হচ্ছে...</p>';
+        panel.classList.remove('hidden');
+
+        const stats = await adminApiCall('GET', '/admin/dashboard');
+        if (stats && !stats.error) {
+          document.getElementById('admin-stats-tab').innerHTML = `
+            <div class="grid-2">
+              <div class="mini-stat"><strong>মোট ইউজার:</strong> ${stats.totalUsers}</div>
+              <div class="mini-stat"><strong>আজ সক্রিয়:</strong> ${stats.dailyActiveUsers}</div>
+              <div class="mini-stat"><strong>মোট জার্নাল:</strong> ${stats.totalJournals}</div>
+              <div class="mini-stat"><strong>ট্রেনিং সম্পন্ন:</strong> ${stats.completedTrainings}</div>
+            </div>`;
+          showAdminTab('stats');
+        } else {
+          document.getElementById('admin-panel').classList.add('hidden');
+          document.getElementById('admin-login-form').classList.remove('hidden');
+          document.getElementById('admin-login-error').textContent = stats?.error || 'ড্যাশবোর্ড লোড ব্যর্থ';
+          document.getElementById('admin-login-error').style.display = 'block';
+          adminToken = null;
+          localStorage.removeItem('adminToken');
+        }
       } else {
         document.getElementById('admin-login-error').textContent = data.error || 'Login failed';
         document.getElementById('admin-login-error').style.display = 'block';
       }
     }
+
     function openAdminPanel() {
       document.getElementById('admin-modal').classList.remove('hidden');
       if (adminToken) {
@@ -1305,10 +1352,12 @@
         case 'benefits': loadAdminBenefits(); break;
         case 'analytics': loadAdminAnalytics(); break;
         case 'chapters': loadAdminChapters(); break;
+        case 'courses': loadCourses(); break;
+        case 'activity': loadActivityLog(); break;
+        case 'settings': break;
       }
     }
 
-    // Admin stats
     async function loadAdminStats() {
       const data = await adminApiCall('GET', '/admin/dashboard');
       if (data && !data.error) {
@@ -1319,8 +1368,6 @@
             <div class="mini-stat"><strong>মোট জার্নাল:</strong> ${data.totalJournals}</div>
             <div class="mini-stat"><strong>ট্রেনিং সম্পন্ন:</strong> ${data.completedTrainings}</div>
           </div>`;
-      } else {
-        document.getElementById('admin-stats-tab').innerHTML = '<p>লোড করতে সমস্যা</p>';
       }
     }
     async function loadAdminUsers() {
@@ -1420,7 +1467,6 @@
       loadContentList();
     }
 
-    // Upload image
     async function uploadImage() {
       const file = document.getElementById('image-upload').files[0];
       if (!file) return;
@@ -1438,7 +1484,6 @@
       } else showToast('আপলোড ব্যর্থ');
     }
 
-    // Assessment Admin
     async function loadAdminAssessment() {
       const res = await adminApiCall('GET', '/assessment/questions');
       const list = document.getElementById('assessment-list');
@@ -1474,7 +1519,6 @@
       loadAdminAssessment();
     }
 
-    // Benefits Admin
     async function loadAdminBenefits() {
       const res = await adminApiCall('GET', '/benefits');
       const list = document.getElementById('benefits-list');
@@ -1513,18 +1557,17 @@
       loadAdminBenefits();
     }
 
-    // Analytics
     async function loadAdminAnalytics() {
       const res = await adminApiCall('GET', '/admin/analytics/retention');
       const container = document.getElementById('analytics-chart');
       if (res && !res.error) {
         container.innerHTML = `<canvas id="retentionChart"></canvas>`;
         const ctx = document.getElementById('retentionChart').getContext('2d');
-        new Chart(ctx, { type: 'line', data: { labels: res.map(d => d.date), datasets: [{ label: 'Active Users', data: res.map(d => d.active_users), borderColor: '#f2c744', backgroundColor: 'rgba(242,199,68,0.1)' }] } });
+        new Chart(ctx, { type: 'line', data: { labels: res.map(d => d.date), datasets: [{ label: 'Active Users', data: res.map(d => d.active_users), borderColor: '#eab308', backgroundColor: 'rgba(234,179,8,0.1)' }] } });
       } else container.innerHTML = '<p>ডাটা নাই</p>';
     }
 
-    // ================== অ্যাডমিন চ্যাপ্টার CRUD ==================
+    // Admin Chapters
     let editingChapterId = null;
     let currentQmChapterId = null;
     let currentQmTitle = '';
@@ -1550,7 +1593,6 @@
           </div>
         </div>
       `).join('');
-      i18n.apply();
     }
 
     function openChapterEditor(chapter = null) {
@@ -1613,7 +1655,6 @@
       loadAdminChapters();
     }
 
-    // প্রশ্ন ব্যবস্থাপনা
     async function manageQuestions(chapterId, title) {
       currentQmChapterId = chapterId;
       currentQmTitle = title;
@@ -1921,11 +1962,11 @@
       if (radarChart) radarChart.destroy();
       if (data.radar_today) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(242,199,68,0.25)', borderColor:'#f2c744' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
+        radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[data.radar_today.planning,data.radar_today.execution,data.radar_today.risk,data.radar_today.psychology,data.radar_today.improvement], backgroundColor:'rgba(234,179,8,0.25)', borderColor:'#eab308' }] }, options:{ scales:{ r:{ min:0, max:20 } } } });
       }
       if (chart) chart.destroy();
       const ctx2 = document.getElementById('scoresChart').getContext('2d');
-      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#f2c744' }] } });
+      chart = new Chart(ctx2, { type:'line', data:{ labels:data.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline (Q6)', data:data.days.map(d=>d.scores?.q6), borderColor:'#eab308' }] } });
       document.getElementById('certificate-btn').classList.toggle('hidden', data.totalDays<30);
       document.getElementById('share-certificate-btn').classList.toggle('hidden', data.totalDays<30);
     }
@@ -2179,9 +2220,12 @@
         document.getElementById('retry-chapter-btn').style.display = 'inline-block';
       } else {
         quizContainer.innerHTML = currentChapterQuestions.map((q, i) => `
-          <div style="margin:16px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+          <div class="question-block">
             <p><strong>${i+1}. ${escapeHtml(q.question)}</strong></p>
-            ${q.options.map((opt, j) => `<label style="display:block; margin:6px 0; cursor:pointer;"><input type="radio" name="q_${q.id}" value="${j}"> ${escapeHtml(opt)}</label>`).join('')}
+            ${q.options.map((opt, j) => `<div class="quiz-option">
+              <input type="radio" name="q_${q.id}" value="${j}" id="q_${q.id}_${j}">
+              <label for="q_${q.id}_${j}">${escapeHtml(opt)}</label>
+            </div>`).join('')}
           </div>`).join('');
         document.getElementById('submit-quiz-btn').style.display = 'inline-block';
         document.getElementById('retry-chapter-btn').style.display = 'none';
@@ -2215,7 +2259,6 @@
     }
     function autoSubmitCurrentQuestion() {
       showToast('সময় শেষ হয়েছে');
-      // Optionally, simulate clicking submit if all answered
     }
     function closeChapterModal() {
       document.getElementById('chapter-modal').classList.add('hidden');
@@ -2252,7 +2295,6 @@
       if (!data || data.error) return showToast(data?.error || 'ত্রুটি');
       if (data.passed) return showToast('ইতিমধ্যে উত্তীর্ণ!');
       window._examSessionId = data.session_id;
-      // Start overall timer
       const expiry = new Date(data.expiry).getTime();
       const timerDisplay = document.getElementById('overall-timer');
       if (window._finalExamTimer) clearInterval(window._finalExamTimer);
@@ -2270,10 +2312,14 @@
       }, 1000);
       const container = document.getElementById('final-exam-questions');
       container.innerHTML = data.questions.map((q, i) => `
-        <div style="margin:12px 0; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
-          <p><strong>${i+1}. ${escapeHtml(q.question)}</strong> <span style="color:var(--accent-bright);">(30s)</span></p>
-          ${q.options.map((opt, j) => `<label style="display:block; margin:4px 0; cursor:pointer;"><input type="radio" name="feq_${q.id}" value="${j}"> ${escapeHtml(opt)}</label>`).join('')}
-        </div>`).join('');
+        <div class="question-block">
+          <p><strong>${i+1}. ${escapeHtml(q.question)}</strong></p>
+          ${q.options.map((opt, j) => `<div class="quiz-option">
+            <input type="radio" name="feq_${q.id}" value="${j}" id="feq_${q.id}_${j}">
+            <label for="feq_${q.id}_${j}">${escapeHtml(opt)}</label>
+          </div>`).join('')}
+        </div>
+      `).join('');
       document.getElementById('final-exam-result').classList.add('hidden');
       document.getElementById('final-exam-modal').classList.remove('hidden');
     }
@@ -2298,7 +2344,7 @@
       window._examSessionId = null;
     }
 
-    // Habit reminders (unchanged but kept)
+    // Habit reminders
     function scheduleHabitReminder(habitId, time, title) {
       const [h,m] = time.split(':');
       const now = new Date();
@@ -2380,7 +2426,6 @@
     document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
     document.getElementById('content-type-select')?.addEventListener('change', setupContentForm);
 
-    // ESC key to close modals
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => {
@@ -2436,6 +2481,101 @@
         document.getElementById('auth-screen').classList.remove('hidden');
       }
     });
+
+    // Courses CRUD
+    async function loadCourses() {
+      const courses = await adminApiCall('GET', '/admin/courses');
+      const container = document.getElementById('courses-list');
+      if (!courses || courses.error) { container.innerHTML = '<p>লোড করতে সমস্যা</p>'; return; }
+      let html = '<table class="admin-table"><thead><tr><th>ID</th><th>শিরোনাম</th><th>বিবরণ</th><th>অ্যাকশন</th></tr></thead><tbody>';
+      courses.forEach(c => {
+        html += `<tr>
+          <td>${c.id}</td>
+          <td>${escapeHtml(c.title)}</td>
+          <td>${escapeHtml(c.description || '')}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="editCourse(${c.id}, '${escapeHtml(c.title)}', '${escapeHtml(c.description||'')}')">এডিট</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCourse(${c.id})">ডিলিট</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function showCourseForm() {
+      document.getElementById('course-form').classList.remove('hidden');
+      document.getElementById('course-edit-id').value = '';
+      document.getElementById('course-title').value = '';
+      document.getElementById('course-desc').value = '';
+    }
+
+    function cancelCourseForm() {
+      document.getElementById('course-form').classList.add('hidden');
+    }
+
+    function editCourse(id, title, desc) {
+      document.getElementById('course-form').classList.remove('hidden');
+      document.getElementById('course-edit-id').value = id;
+      document.getElementById('course-title').value = title;
+      document.getElementById('course-desc').value = desc;
+    }
+
+    async function saveCourse() {
+      const title = document.getElementById('course-title').value;
+      const description = document.getElementById('course-desc').value;
+      const id = document.getElementById('course-edit-id').value;
+      if (!title) return showToast('শিরোনাম আবশ্যক');
+      if (id) {
+        await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active: true });
+      } else {
+        await adminApiCall('POST', '/admin/course', { title, description });
+      }
+      cancelCourseForm();
+      loadCourses();
+      showToast('✅ কোর্স সংরক্ষিত');
+    }
+
+    async function deleteCourse(id) {
+      if (!confirm('কোর্স মুছে ফেললে সংশ্লিষ্ট সব চ্যাপ্টার মুছে যাবে!')) return;
+      await adminApiCall('DELETE', `/admin/course/${id}`);
+      loadCourses();
+      showToast('🗑️ কোর্স ডিলিট হয়েছে');
+    }
+
+    // Activity Log
+    async function loadActivityLog() {
+      const logs = await adminApiCall('GET', '/admin/activity-log');
+      const container = document.getElementById('activity-log-table');
+      if (!logs || logs.error) { container.innerHTML = '<p>লগ লোড করতে সমস্যা</p>'; return; }
+      let html = '<table class="admin-table"><thead><tr><th>সময়</th><th>অ্যাডমিন</th><th>কাজ</th><th>বিস্তারিত</th></tr></thead><tbody>';
+      logs.forEach(log => {
+        html += `<tr>
+          <td>${new Date(log.created_at).toLocaleString('bn-BD')}</td>
+          <td>${log.admin_name || log.admin_email}</td>
+          <td>${log.action}</td>
+          <td>${JSON.stringify(log.details || {}).substring(0,60)}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // Settings
+    async function changeAdminPassword() {
+      const current = document.getElementById('current-password').value;
+      const newPass = document.getElementById('new-password').value;
+      const confirm = document.getElementById('confirm-password').value;
+      if (newPass !== confirm) return showToast('নতুন পাসওয়ার্ড মিলছে না');
+      if (newPass.length < 6) return showToast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে');
+      const res = await adminApiCall('PUT', '/admin/change-password', { current_password: current, new_password: newPass });
+      if (res && res.success) {
+        showToast('✅ পাসওয়ার্ড পরিবর্তন সফল');
+        document.getElementById('settings-message').innerHTML = '<p style="color:var(--success);">পাসওয়ার্ড আপডেট হয়েছে</p>';
+      } else {
+        document.getElementById('settings-message').innerHTML = `<p style="color:var(--danger);">${res?.error || 'ত্রুটি'}</p>`;
+      }
+    }
   </script>
 </body>
 </html>

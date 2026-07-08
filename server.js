@@ -1,4 +1,4 @@
-import { createServer } from 'http';
+﻿import { createServer } from 'http';
 import { readFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -45,7 +45,6 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost:3000');
 
   if (url.pathname.startsWith('/api/')) {
-    // à¦¸à¦°à¦¾à¦¸à¦°à¦¿ API à¦¹à§à¦¯à¦¾à¦¨à§à¦¡à¦²à¦¾à¦°à¦•à§‡ req, res à¦¦à¦¿à¦¨ â€“ à¦•à§‹à¦¨à§‹ à¦«à§‡à¦š Request à¦¨à§Ÿ
     handler(req, res);
   } else {
     await serveStatic(req, res);

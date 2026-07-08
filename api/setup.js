@@ -1,4 +1,4 @@
-// ===================================================
+﻿// ===================================================
 // AlamQuant ATTS - api/setup.js
 // Enterprise-Grade Production Ready
 // ===================================================
@@ -76,7 +76,7 @@ async function authenticateAdmin(req) {
     const [admin] = await sql`SELECT * FROM admin_users WHERE id = ${decoded.id}`;
     return admin;
   } catch (err) {
-    console.error('JWT verify error:', err.message); // ← শুধু এই লাইন যোগ করুন
+    console.error('JWT verify error:', err.message);
     return null;
   }
 }
@@ -1190,6 +1190,82 @@ async function apiHandler(req) {
         ORDER BY date
       `;
       return json(dailyActive);
+    }
+
+    // ==================== NEW ENTERPRISE ENDPOINTS ====================
+    // Course CRUD
+    if (path === '/admin/courses' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const courses = await sql`SELECT * FROM courses ORDER BY created_at DESC`;
+      return json(courses);
+    }
+    if (path === '/admin/course' && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const { title, description } = await req.json();
+      const [course] = await sql`INSERT INTO courses (title, description) VALUES (${title}, ${description}) RETURNING *`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'course_create', ${JSON.stringify(course)})`;
+      return json(course, 201);
+    }
+    if (path.match(/^\/admin\/course\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const courseId = parseInt(path.split('/')[3]);
+      const { title, description, is_active } = await req.json();
+      await sql`UPDATE courses SET title=${title}, description=${description}, is_active=${is_active} WHERE id=${courseId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'course_update', ${JSON.stringify({courseId})})`;
+      return json({ success: true });
+    }
+    if (path.match(/^\/admin\/course\/(\d+)$/) && req.method === 'DELETE') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const courseId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM courses WHERE id = ${courseId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'course_delete', ${JSON.stringify({courseId})})`;
+      return json({ success: true });
+    }
+
+    // Activity Log
+    if (path === '/admin/activity-log' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const logs = await sql`
+        SELECT al.*, au.email as admin_email, au.name as admin_name
+        FROM admin_activity_log al
+        JOIN admin_users au ON al.admin_id = au.id
+        ORDER BY al.created_at DESC
+        LIMIT 100
+      `;
+      return json(logs);
+    }
+
+    // User Export CSV
+    if (path === '/admin/users/export' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const users = await sql`SELECT id, email, display_name, identity_level, xp, level, created_at FROM users ORDER BY created_at DESC`;
+      const csv = ['id,email,display_name,identity_level,xp,level,created_at']
+        .concat(users.map(u => `${u.id},${u.email},${u.display_name},${u.identity_level},${u.xp},${u.level},${u.created_at}`))
+        .join('\n');
+      return new Response(csv, {
+        headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="users.csv"' }
+      });
+    }
+
+    // System Health
+    if (path === '/admin/health' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return json({ error: 'Forbidden' }, 403);
+      const dbCheck = await sql`SELECT 1 as ok`;
+      return json({
+        database: dbCheck.length > 0 ? 'connected' : 'error',
+        tables: {
+          users: (await sql`SELECT COUNT(*)::int FROM users`)[0].count,
+          journals: (await sql`SELECT COUNT(*)::int FROM daily_journals`)[0].count,
+          chapters: (await sql`SELECT COUNT(*)::int FROM chapters`)[0].count,
+        }
+      });
     }
 
     // ---------------- VERIFY CERTIFICATE (PUBLIC) ----------------
