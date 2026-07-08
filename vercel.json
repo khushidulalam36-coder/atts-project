@@ -1,18 +1,4 @@
 ﻿{
-  "headers": [
-    {
-      "source": "/admin.html",
-      "headers": [{ "key": "Content-Type", "value": "text/html; charset=utf-8" }]
-    },
-    {
-      "source": "/index.html",
-      "headers": [{ "key": "Content-Type", "value": "text/html; charset=utf-8" }]
-    },
-    {
-      "source": "/verify.html",
-      "headers": [{ "key": "Content-Type", "value": "text/html; charset=utf-8" }]
-    }
-  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/setup" },
     { "source": "/admin", "destination": "/admin.html" },
