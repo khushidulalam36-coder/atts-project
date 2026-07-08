@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <meta name="theme-color" content="#020617">
   <title>AlamQuant ATTS – Professional Trader Transformation</title>
+  <meta name="google-client-id" content="">
+  <meta name="vapid-public-key" content="">
+  <meta name="app-url" content="https://your-domain.vercel.app">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -32,304 +35,13 @@
       --border-accent: rgba(56,189,248,0.4);
       --radius: 16px;
       --radius-sm: 10px;
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
       --glow-gold: 0 0 30px rgba(234,179,8,0.5);
       --glow-accent: 0 0 25px rgba(56,189,248,0.5);
       --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+      --font-en: 'Inter', sans-serif;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-
-    body {
-      font-family: 'Inter', 'Hind Siliguri', sans-serif;
-      background: var(--bg-gradient);
-      background-size: 400% 400%;
-      animation: bgSlide 25s ease infinite;
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding-bottom: 130px;
-      overflow-x: hidden;
-      position: relative;
-    }
-    .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
-
-    .glass {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.02);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 18px;
-      transition: all var(--transition);
-    }
-    .glass:hover {
-      border-color: var(--gold-bright);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold);
-      transform: translateY(-2px);
-    }
-
-    h1, h2, h3, h4 {
-      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-    h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
-
-    .btn {
-      background: linear-gradient(135deg, var(--gold), #ca8a04);
-      color: #020617;
-      border: none;
-      padding: 10px 22px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-      font-size: 0.9rem;
-      box-shadow: 0 4px 15px rgba(234,179,8,0.4);
-      letter-spacing: 0.3px;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn:hover { box-shadow: 0 6px 20px rgba(234,179,8,0.7); transform: translateY(-1px); }
-    .btn:active { transform: scale(0.97); }
-    .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); box-shadow: none; }
-    .btn-outline:hover { background: rgba(234,179,8,0.1); }
-    .btn-accent { background: linear-gradient(135deg, var(--accent), #0284c7); box-shadow: 0 4px 15px rgba(56,189,248,0.4); }
-    .btn-danger { background: linear-gradient(135deg, var(--danger), #b91c1c); box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
-    .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
-    .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
-
-    input, textarea, select {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border-gold);
-      color: var(--text);
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      width: 100%;
-      margin: 6px 0;
-      font-family: inherit;
-      transition: var(--transition);
-      outline: none;
-      font-size: 0.95rem;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--gold-bright);
-      box-shadow: 0 0 0 3px rgba(234,179,8,0.25), var(--glow-gold);
-      background: rgba(255,255,255,0.12);
-    }
-
-    textarea { resize:vertical; min-height:60px; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .hidden { display:none !important; }
-
-    .bottom-nav {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px);
-      border-radius: 50px; padding: 8px 25px; display: flex; gap: 10px;
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-      z-index: 100;
-    }
-    .nav-item {
-      flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary);
-      transition: 0.3s; cursor: pointer; padding: 4px 6px;
-    }
-    .nav-item span { font-size: 20px; transition: 0.3s; }
-    .nav-item.active { color: var(--gold-bright); text-shadow: 0 0 10px var(--gold-bright); }
-    .nav-item.active span { transform: translateY(-4px) scale(1.2); }
-    .nav-item.active::after {
-      content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-      width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
-    }
-
-    .badge {
-      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#020617;
-      padding:4px 12px;
-      border-radius:20px;
-      font-weight:700;
-      font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-    }
-    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
-
-    .progress-bar {
-      background: rgba(255,255,255,0.1);
-      border-radius:20px;
-      height:14px;
-      overflow:hidden;
-      margin:10px 0;
-    }
-    .progress-fill {
-      height:100%;
-      background: linear-gradient(90deg, var(--gold), #ffaa00);
-      border-radius: 20px;
-      box-shadow: 0 0 10px var(--gold);
-      width:0%;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-    }
-    .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
-
-    .phase-tag {
-      background:var(--gold); color:#020617;
-      padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem;
-      display:inline-block;
-    }
-    .post {
-      background:rgba(255,255,255,0.03);
-      border-radius:var(--radius-sm);
-      padding:16px; margin-bottom:10px;
-      border:1px solid rgba(255,255,255,0.05);
-      transition:var(--transition);
-    }
-    .post:hover { background:rgba(255,255,255,0.06); }
-
-    .slider-item {
-      display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0;
-    }
-    .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
-    .slider-item input[type="range"] { flex:3; accent-color:var(--gold); }
-    .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
-
-    .xp-bar-container {
-      background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden;
-      position: relative; margin: 10px 0;
-    }
-    .xp-bar-fill {
-      height:100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold)); background-size: 200% 100%;
-      animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center;
-      transition: width 0.8s;
-    }
-    .xp-text { color: #020617; font-weight: bold; font-size: 0.75rem; z-index: 1; }
-
-    .float-xp {
-      position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
-      font-size: 2rem; font-weight: 900; color: var(--gold-bright);
-      text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none;
-    }
-    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
-
-    .habit-card { transition: all 0.3s; margin-bottom:12px; }
-    .habit-time-slot {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
-      margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
-    }
-    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
-
-    .toast {
-      position:fixed; top:20px; right:20px;
-      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
-      color:#020617; font-weight:700;
-      padding:14px 22px; border-radius:30px;
-      z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
-      opacity:0; transform:translateX(120%);
-      transition:0.4s cubic-bezier(0.4,0,0.2,1);
-    }
-    .toast.show { opacity:1; transform:translateX(0); }
-
-    .mini-stat {
-      background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px;
-      border:1px solid var(--border-gold); backdrop-filter:blur(5px);
-      display:inline-flex; align-items:center; gap:8px; font-weight:600;
-    }
-    .streak-fire {
-      background: linear-gradient(135deg, #ff9100, #ff3d00);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight:900; animation: pulse 1.5s infinite;
-    }
-    .admin-gear {
-      position:fixed; bottom:90px; right:20px; z-index:1000;
-      background:var(--surface); border:1px solid var(--border-gold);
-      border-radius:50%; width:48px; height:48px; display:flex;
-      align-items:center; justify-content:center; cursor:pointer;
-      font-size:22px; color:var(--gold); backdrop-filter:blur(12px);
-      box-shadow:0 4px 20px rgba(0,0,0,0.6);
-      transition:transform var(--transition);
-    }
-    .admin-gear:hover { transform:rotate(90deg); }
-
-    .modal-overlay {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.85); display:flex;
-      align-items:center; justify-content:center;
-      z-index:10000; backdrop-filter:blur(4px);
-    }
-    .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
-
-    .gold-text {
-      background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
-      -webkit-background-clip:text;
-      background-clip: text;
-      -webkit-text-fill-color:transparent;
-    }
-
-    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-
-    .quest-card {
-      border: 1px solid var(--gold-bright);
-      background: radial-gradient(circle at top left, rgba(242,199,68,0.15), rgba(12,14,34,0.8));
-    }
-    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .xp-reward { color: var(--gold-bright); font-weight: bold; }
-    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-
-    .fab {
-      position: fixed; bottom: 90px; right: 80px; width: 56px; height: 56px;
-      background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 25px rgba(242,199,68,0.5); cursor: pointer; font-size: 28px; z-index: 2000;
-      transition: transform 0.3s;
-    }
-    .fab:hover { transform: scale(1.1); }
-
-    .drawer {
-      position: fixed; bottom: 150px; right: 20px; width: 280px;
-      background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px;
-      padding: 16px; border: 1px solid var(--gold);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500;
-    }
-
-    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
-    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
-    .mood-emoji.selected { transform: scale(1.3); background: rgba(242,199,68,0.2); box-shadow: 0 0 12px var(--gold); }
-
-    .evolution-tree {
-      display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;
-    }
-    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
-    .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
-
-    .chapter-card { cursor:pointer; }
-    .chapter-card.locked { opacity:0.5; pointer-events: none; }
-
-    .skeleton {
-      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: var(--radius-sm);
-      height: 80px;
-    }
-
-    /* কুইজ অপশন */
-    .quiz-option { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
-    .quiz-option input[type="radio"] { width: auto; margin: 0; accent-color: var(--gold); }
-    .quiz-option label { flex: 1; cursor: pointer; color: var(--text); }
-    .question-block { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; }
-
-    /* অ্যানিমেশন */
     @keyframes spin { 100% { transform:rotate(360deg); } }
     @keyframes bounceIn {
       0% { transform:scale(0); opacity:0; }
@@ -370,30 +82,382 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-
+    body {
+      font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
+      background: var(--bg-gradient);
+      background-size: 400% 400%;
+      animation: bgSlide 30s ease infinite;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-bottom: 130px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.02);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      transition: all var(--transition);
+    }
+    .glass:hover {
+      border-color: var(--gold-bright);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold);
+      transform: translateY(-2px);
+    }
+    h1, h2, h3, h4 {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    h2 { font-size:1.6rem; }
+    h3 { font-size:1.25rem; }
+    .btn {
+      background: linear-gradient(135deg, var(--gold), #ca8a04);
+      color: #020617;
+      border:none;
+      padding:10px 22px;
+      border-radius:30px;
+      font-weight:600;
+      cursor:pointer;
+      transition: all 0.25s ease;
+      font-size:0.9rem;
+      box-shadow: 0 4px 15px rgba(234,179,8,0.4);
+      letter-spacing:0.5px;
+      position:relative;
+      overflow:hidden;
+      z-index:1;
+      font-family:var(--font-en), 'Inter', sans-serif;
+    }
+    .btn:hover {
+      box-shadow: 0 6px 20px rgba(234,179,8,0.7);
+      transform:translateY(-1px);
+    }
+    .btn:active { transform:scale(0.97); }
+    .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
+    .btn-outline:hover { background:rgba(242,199,68,0.1); }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #0284c7);
+      box-shadow:0 4px 15px rgba(56,189,248,0.4);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      box-shadow:0 4px 15px rgba(239,68,68,0.4);
+    }
+    .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
+    .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
+    input, textarea, select {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      width:100%;
+      margin:6px 0;
+      font-family:inherit;
+      transition: var(--transition);
+      outline:none;
+      font-size:0.95rem;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 0 3px rgba(234,179,8,0.2), var(--glow-gold);
+      background: rgba(255,255,255,0.12);
+    }
+    textarea { resize:vertical; min-height:60px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .hidden { display:none !important; }
+    .bottom-nav {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px);
+      border-radius: 50px; padding: 8px 25px; display: flex; gap: 10px;
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      z-index: 100;
+    }
+    .nav-item {
+      flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary);
+      transition: 0.3s; cursor: pointer; padding: 4px 6px;
+    }
+    .nav-item span { font-size: 20px; transition: 0.3s; }
+    .nav-item.active { color: var(--gold-bright); text-shadow: 0 0 10px var(--gold-bright); }
+    .nav-item.active span { transform: translateY(-4px) scale(1.2); }
+    .nav-item.active::after {
+      content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--gold-bright); border-radius: 3px; box-shadow: 0 0 12px var(--gold-bright);
+    }
+    .badge {
+      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color:#020617;
+      padding:4px 12px;
+      border-radius:20px;
+      font-weight:700;
+      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+    }
+    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
+    .progress-bar {
+      background: rgba(255,255,255,0.1);
+      border-radius:20px;
+      height:14px;
+      overflow:hidden;
+      margin:10px 0;
+    }
+    .progress-fill {
+      height:100%;
+      background: linear-gradient(90deg, var(--gold), #ffaa00);
+      border-radius: 20px;
+      box-shadow: 0 0 10px var(--gold);
+      width:0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
+    .phase-tag {
+      background:var(--gold); color:#020617;
+      padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem;
+      display:inline-block;
+    }
+    .post {
+      background:rgba(255,255,255,0.03);
+      border-radius:var(--radius-sm);
+      padding:16px; margin-bottom:10px;
+      border:1px solid rgba(255,255,255,0.05);
+      transition:var(--transition);
+    }
+    .post:hover { background:rgba(255,255,255,0.06); }
+    .slider-item {
+      display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0;
+    }
+    .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
+    .slider-item input[type="range"] { flex:3; accent-color:var(--gold); }
+    .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
+    .xp-bar-container {
+      background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden;
+      position: relative; margin: 10px 0;
+    }
+    .xp-bar-fill {
+      height:100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold)); background-size: 200% 100%;
+      animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center;
+      transition: width 0.8s;
+    }
+    .xp-text { color: #020617; font-weight: bold; font-size: 0.75rem; z-index: 1; }
+    .float-xp {
+      position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2rem; font-weight: 900; color: var(--gold-bright);
+      text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none;
+    }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+    .habit-card { transition: all 0.3s; margin-bottom:12px; }
+    .habit-time-slot {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
+      margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
+    }
+    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
+    .toast {
+      position:fixed; top:20px; right:20px;
+      background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color:#020617; font-weight:700;
+      padding:14px 22px; border-radius:30px;
+      z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      opacity:0; transform:translateX(120%);
+      transition:0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .toast.show { opacity:1; transform:translateX(0); }
+    .mini-stat {
+      background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px;
+      border:1px solid var(--border-gold); backdrop-filter:blur(5px);
+      display:inline-flex; align-items:center; gap:8px; font-weight:600;
+    }
+    .streak-fire {
+      background: linear-gradient(135deg, #ff9100, #ff3d00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight:900; animation: pulse 1.5s infinite;
+    }
+    .admin-gear {
+      position:fixed; bottom:90px; right:20px; z-index:1000;
+      background:var(--surface); border:1px solid var(--border-gold);
+      border-radius:50%; width:48px; height:48px; display:flex;
+      align-items:center; justify-content:center; cursor:pointer;
+      font-size:22px; color:var(--gold); backdrop-filter:blur(12px);
+      box-shadow:0 4px 20px rgba(0,0,0,0.6);
+      transition:transform var(--transition);
+    }
+    .admin-gear:hover { transform:rotate(90deg); }
+    .modal-overlay {
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.85); display:flex;
+      align-items:center; justify-content:center;
+      z-index:10000; backdrop-filter:blur(4px);
+    }
+    .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
+    .gold-text {
+      background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
+      -webkit-background-clip:text;
+      background-clip: text;
+      -webkit-text-fill-color:transparent;
+    }
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+    .quest-card {
+      border: 1px solid var(--gold-bright);
+      background: radial-gradient(circle at top left, rgba(242,199,68,0.15), rgba(12,14,34,0.8));
+    }
+    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .xp-reward { color: var(--gold-bright); font-weight: bold; }
+    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .fab {
+      position: fixed; bottom: 90px; right: 80px; width: 56px; height: 56px;
+      background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 25px rgba(242,199,68,0.5); cursor: pointer; font-size: 28px; z-index: 2000;
+      transition: transform 0.3s;
+    }
+    .fab:hover { transform: scale(1.1); }
+    .drawer {
+      position: fixed; bottom: 150px; right: 20px; width: 280px;
+      background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px;
+      padding: 16px; border: 1px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500;
+    }
+    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
+    .mood-emoji.selected { transform: scale(1.3); background: rgba(242,199,68,0.2); box-shadow: 0 0 12px var(--gold); }
+    .evolution-tree {
+      display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px;
+    }
+    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
+    .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
+    .chapter-card { cursor:pointer; }
+    .chapter-card.locked { opacity:0.5; pointer-events: none; }
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+      height: 80px;
+    }
+    .quiz-option { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+    .quiz-option input[type="radio"] { width: auto; margin: 0; accent-color: var(--gold); }
+    .quiz-option label { flex: 1; cursor: pointer; color: var(--text); }
+    .question-block { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    .admin-table th {
+      background: rgba(234,179,8,0.15);
+      color: var(--gold-bright);
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
+    }
+    .admin-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+    .admin-table tr:hover td {
+      background: rgba(255,255,255,0.05);
+    }
+    .admin-sidebar {
+      width: 260px;
+      background: rgba(2,6,23,0.98);
+      border-right: 1px solid var(--border-gold);
+      padding: 24px 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .admin-sidebar .logo {
+      padding: 0 24px 20px;
+      border-bottom: 1px solid var(--border-gold);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+    }
+    .admin-sidebar ul li {
+      padding: 12px 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 3px solid transparent;
+      font-weight: 500;
+    }
+    .admin-sidebar ul li:hover,
+    .admin-sidebar ul li.active {
+      background: rgba(234,179,8,0.15);
+      color: var(--gold-bright);
+      border-left-color: var(--gold);
+    }
+    .admin-main { margin-left: 260px; flex: 1; padding: 30px; min-height: 100vh; }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-gold);
+    }
+    .stat-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--border-gold); border-radius: var(--radius); padding: 20px; text-align: center; transition: var(--transition); }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--glow-gold); }
+    .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--gold-bright); }
+    .stat-label { color: var(--text-secondary); margin-top: 8px; font-size: 0.9rem; }
+    .chapter-editor { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 20px; margin: 16px 0; border: 1px solid var(--border-gold); }
+    .question-item { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; margin: 12px 0; border-left: 3px solid var(--accent); }
+    .user-card { padding:12px; background:rgba(255,255,255,0.03); border-radius:12px; margin-bottom:8px; }
+    .heatmap-day { width:30px; height:30px; border-radius:6px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:12px; }
+    .heatmap-day.active { background:rgba(234,179,8,0.4); color:#000; }
+    .timeline-item { padding:8px 14px; border-radius:20px; margin:0 4px; font-size:0.8rem; }
+    .timeline-item.active { background:var(--gold); color:#020617; font-weight:700; }
+    .timeline-item.completed { background:rgba(105,240,174,0.3); }
+    .timeline-item.upcoming { color:var(--text-secondary); }
     @media (max-width:640px) {
-      .grid-2 { grid-template-columns:1fr; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
       .glass { padding:16px; }
       h2 { font-size:1.3rem; }
       .bottom-nav { padding: 4px 10px; gap: 6px; }
       .nav-item span { font-size: 18px; }
+      .admin-sidebar { width: 70px; }
+      .admin-sidebar ul li span { display: none; }
+      .admin-main { margin-left: 70px; }
     }
   </style>
 </head>
 <body>
   <canvas id="bgCanvas"></canvas>
-
-  <script>
-    window.GOOGLE_CLIENT_ID = "";
-  </script>
-
   <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#020617; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
     <div style="border:4px solid rgba(242,199,68,0.15); border-top:4px solid #eab308; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
     <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
-
   <div id="toast" class="toast"></div>
-
   <div id="welcome-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="text-align:center; animation:bounceIn 0.5s;">
       <div style="font-size:60px; animation:float 3s infinite;">🌟</div>
@@ -403,7 +467,6 @@
       <button class="btn btn-lg" onclick="closeWelcome()" style="margin-top:16px;">শুরু করো 🚀</button>
     </div>
   </div>
-
   <div id="level-up-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="text-align:center; animation:bounceIn 0.6s;">
       <div style="font-size:70px;">🎉</div>
@@ -412,15 +475,14 @@
       <button class="btn btn-lg" onclick="document.getElementById('level-up-modal').classList.add('hidden')">অসাধারণ! 🔥</button>
     </div>
   </div>
-
   <div id="mystery-box-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="text-align:center;">
-      <div style="font-size:100px; cursor:pointer; animation:float 2s infinite;" onclick="openMysteryBox()">🎁</div>
+      <div style="font-size:100px; animation:float 2s infinite;" id="mystery-box-icon" onclick="openMysteryBox()">🎁</div>
       <p style="font-weight:600;">মিস্ট্রি বক্স খোলো!</p>
       <p style="color:var(--text-secondary); font-size:0.85rem;">কি পুরস্কার পাবে জানতে ক্লিক করো</p>
+      <div id="mystery-result" style="margin-top:10px; font-weight:bold;"></div>
     </div>
   </div>
-
   <div id="streak-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="text-align:center; animation:bounceIn 0.5s;">
       <div style="font-size:80px;">🔥</div>
@@ -429,8 +491,6 @@
       <button class="btn btn-lg" onclick="document.getElementById('streak-modal').classList.add('hidden')">চালিয়ে যাও</button>
     </div>
   </div>
-
-  <!-- Password Reset Modal -->
   <div id="reset-pass-modal" class="modal-overlay hidden" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="max-width:400px;">
       <h3>🔑 পাসওয়ার্ড রিসেট</h3>
@@ -441,10 +501,21 @@
       </div>
     </div>
   </div>
-
-  <!-- Admin Modal -->
+  <div id="forgot-password-modal" class="hidden modal-overlay">
+    <div class="glass modal-content" style="max-width:400px;">
+      <h3>🔑 পাসওয়ার্ড রিসেট</h3>
+      <p>আপনার ইমেইল দিন, আমরা একটি রিসেট লিঙ্ক পাঠাবো।</p>
+      <input type="email" id="forgot-email" placeholder="ইমেইল">
+      <button class="btn btn-accent" onclick="requestPasswordReset()">রিসেট লিঙ্ক পাঠান</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')">বাতিল</button>
+      <div id="forgot-message" style="margin-top:8px;"></div>
+    </div>
+  </div>
+  <div id="verify-email-banner" class="hidden" style="background:var(--warning); color:#020617; padding:12px; text-align:center; font-weight:600; display:none;">
+    আপনার ইমেইল ভেরিফাই করা হয়নি। <button class="btn btn-sm" onclick="resendVerificationEmail()">পুনরায় পাঠান</button>
+  </div>
   <div id="admin-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
-    <div class="glass modal-content" style="max-width:600px; width:95%;">
+    <div class="glass modal-content" style="max-width:800px; width:95%; max-height:90vh; overflow-y:auto;">
       <div id="admin-login-form">
         <div class="flex" style="justify-content:space-between; margin-bottom:16px;">
           <h3>🔐 অ্যাডমিন লগইন</h3>
@@ -466,12 +537,13 @@
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('simulate')">🧪 সিমুলেট</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('community')">💬 কমিউনিটি</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('content')">📚 কনটেন্ট</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('translations')">🌐 অনুবাদ</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('assessment')">📋 অ্যাসেসমেন্ট</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('benefits')">🎁 বেনিফিট</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('analytics')">📈 অ্যানালিটিক্স</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('chapters')">📚 চ্যাপ্টার</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('courses')">📚 কোর্স</button>
-          <button class="btn btn-sm btn-outline" onclick="showAdminTab('activity')">📋 অ্যাক্টিভিটি লগ</button>
+          <button class="btn btn-sm btn-outline" onclick="showAdminTab('activity')">📋 অ্যাক্টিভিটি</button>
           <button class="btn btn-sm btn-outline" onclick="showAdminTab('settings')">⚙️ সেটিংস</button>
         </div>
         <div id="admin-stats-tab" class="admin-tab"><p style="color:var(--text-secondary);">লোড হচ্ছে...</p></div>
@@ -501,6 +573,11 @@
           <button class="btn btn-sm btn-accent" onclick="addContent()">যোগ করো</button>
           <div style="margin-top:24px;">
             <h4>বর্তমান কনটেন্ট তালিকা</h4>
+            <select id="content-list-type" onchange="loadContentList()">
+              <option value="lesson">লেসন</option>
+              <option value="quiz">কুইজ</option>
+              <option value="video">ভিডিও</option>
+            </select>
             <div id="content-list-section"></div>
           </div>
           <div style="margin-top:16px;">
@@ -508,6 +585,14 @@
             <input type="file" id="image-upload" accept="image/*">
             <button class="btn btn-sm btn-accent" onclick="uploadImage()">আপলোড</button>
           </div>
+        </div>
+        <div id="admin-translations-tab" class="admin-tab hidden">
+          <select id="trans-lang-select" onchange="loadAdminTranslations()">
+            <option value="bn">বাংলা</option>
+            <option value="en">English</option>
+          </select>
+          <div id="translations-list" style="max-height:400px; overflow-y:auto;"></div>
+          <button class="btn btn-sm btn-accent" onclick="addTranslationForm()">+ নতুন অনুবাদ</button>
         </div>
         <div id="admin-assessment-tab" class="admin-tab hidden">
           <h4>📋 অ্যাসেসমেন্ট প্রশ্ন</h4>
@@ -603,15 +688,12 @@
       </div>
     </div>
   </div>
-
-  <!-- AI Coach -->
   <div id="ai-coach-fab" class="fab" onclick="toggleAiCoach()">
     <span>🧠</span>
   </div>
   <div id="ai-coach-drawer" class="drawer hidden">
     <p id="ai-coach-message">লোড হচ্ছে...</p>
   </div>
-
   <div class="container" id="app">
     <div id="auth-screen" class="glass hidden" style="text-align:center;">
       <div style="font-size:60px; margin-bottom:12px; animation:float 3s infinite;">📈</div>
@@ -623,6 +705,7 @@
         <input type="password" id="login-password" placeholder="পাসওয়ার্ড">
         <button class="btn btn-lg" onclick="login()" style="width:100%; margin-top:8px;">লগইন</button>
         <button class="btn btn-outline btn-sm" onclick="showRegister()" style="width:100%; margin-top:8px;">নতুন অ্যাকাউন্ট খুলুন</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.remove('hidden')" style="width:100%; margin-top:8px;">পাসওয়ার্ড ভুলে গেছেন?</button>
         <div style="margin:16px 0; color:var(--text-secondary);">— অথবা —</div>
         <div id="google-signin-btn" style="display:flex; justify-content:center;"></div>
       </div>
@@ -645,7 +728,6 @@
         <button class="btn btn-outline btn-sm" onclick="showLogin()" style="width:100%; margin-top:8px;">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন</button>
       </div>
     </div>
-
     <div id="dashboard" class="hidden">
       <div id="daily-quest-card" class="glass quest-card">
         <div class="quest-header">
@@ -660,7 +742,6 @@
           <button id="claim-quest-btn" class="btn btn-sm btn-accent" disabled onclick="claimQuestReward()" data-i18n="quest.claim">পুরস্কার নাও</button>
         </div>
       </div>
-
       <div class="glass" style="padding:18px 22px;">
         <div class="flex" style="justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div class="flex" style="gap:10px;">
@@ -682,8 +763,6 @@
         </div>
       </div>
       <div class="admin-gear hidden" onclick="openAdminPanel()">⚙️</div>
-
-      <!-- Assessment prompt (visible until first assessment) -->
       <div class="glass" id="assessment-prompt" style="text-align:center;">
         <button class="btn btn-accent btn-lg" onclick="showAssessment()" data-i18n="assessment.prompt">📋 আপনার অবস্থা যাচাই করুন</button>
       </div>
@@ -693,7 +772,6 @@
         <button class="btn btn-accent" onclick="submitAssessment()" data-i18n="assessment.submit">বিশ্লেষণ দেখুন</button>
         <div id="assessment-result" class="hidden"></div>
       </div>
-
       <div id="tab-journey" class="tab-content">
         <div class="glass" id="weekly-challenge-card"></div>
         <div class="glass">
@@ -749,7 +827,6 @@
           </div>
         </div>
       </div>
-
       <div id="tab-habits" class="tab-content hidden">
         <div class="glass" style="text-align:right; margin-bottom:12px;">
           <button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ নতুন অভ্যাস</button>
@@ -780,8 +857,6 @@
           </div>
         </div>
       </div>
-
-      <!-- ট্রেনিং ট্যাব -->
       <div id="tab-training" class="tab-content hidden">
         <div class="glass" style="margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -803,7 +878,6 @@
           <button class="btn btn-accent btn-lg" onclick="startFinalExam()">ফাইনাল পরীক্ষা শুরু</button>
         </div>
       </div>
-
       <div id="tab-progress" class="tab-content hidden">
         <div class="glass">
           <h3>📈 অগ্রগতি</h3>
@@ -821,14 +895,12 @@
           <button id="share-certificate-btn" class="btn btn-outline hidden" onclick="shareCertificate()" style="margin-left:10px;">📤 শেয়ার</button>
         </div>
       </div>
-
       <div id="tab-insights" class="tab-content hidden">
         <div class="glass">
           <h3>📊 ইনসাইটস</h3>
           <div id="insights-content">লোড হচ্ছে...</div>
         </div>
       </div>
-
       <div id="tab-lessons" class="tab-content hidden">
         <div class="glass">
           <div class="flex" style="justify-content:space-between;">
@@ -838,7 +910,6 @@
           <div id="lessons-list"></div>
         </div>
       </div>
-
       <div id="tab-videos" class="tab-content hidden">
         <div class="glass">
           <div class="flex" style="justify-content:space-between;">
@@ -848,7 +919,6 @@
           <div id="video-grid" class="video-grid"></div>
         </div>
       </div>
-
       <div id="tab-community" class="tab-content hidden">
         <div class="glass">
           <div class="flex" style="justify-content:space-between;">
@@ -863,7 +933,6 @@
           <div id="posts-container"></div>
         </div>
       </div>
-
       <div id="tab-leaderboard" class="tab-content hidden">
         <div class="glass">
           <h3>🏆 সাপ্তাহিক লিডারবোর্ড</h3>
@@ -871,7 +940,6 @@
           <div id="leaderboard-list"></div>
         </div>
       </div>
-
       <div id="tab-profile" class="tab-content hidden">
         <div class="glass">
           <h3>👤 প্রোফাইল</h3>
@@ -916,8 +984,6 @@
       </div>
     </div>
   </div>
-
-  <!-- চ্যাপ্টার ভিউ মোডাল -->
   <div id="chapter-modal" class="modal-overlay hidden" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto; width:95%;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button>
@@ -942,8 +1008,6 @@
       <button class="btn btn-outline" id="retry-chapter-btn" onclick="closeChapterModal()" style="margin-top:8px; display:none;">পুনরায় পড়ুন</button>
     </div>
   </div>
-
-  <!-- ফাইনাল এক্সাম মোডাল -->
   <div id="final-exam-modal" class="modal-overlay hidden" aria-modal="true" role="dialog">
     <div class="glass modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto; width:95%;">
       <h2>🏆 ফাইনাল পরীক্ষা</h2>
@@ -957,7 +1021,6 @@
       <div id="final-exam-result" class="hidden"></div>
     </div>
   </div>
-
   <div class="bottom-nav hidden">
     <div class="nav-item" data-tab="journey"><span>📅</span> যাত্রা</div>
     <div class="nav-item" data-tab="habits"><span>✅</span> অভ্যাস</div>
@@ -966,107 +1029,7 @@
     <div class="nav-item" data-tab="community"><span>🌍</span> কমিউনিটি</div>
     <div class="nav-item" data-tab="profile"><span>👤</span> প্রোফাইল</div>
   </div>
-
   <script>
-    // ==================== Global Config ====================
-    const API = '/api/setup';
-    let token = localStorage.getItem('token');
-    let adminToken = localStorage.getItem('adminToken');
-    let chart = null, radarChart = null;
-    let currentTab = 'journey';
-    let quizData = null;
-    let currentUser = null;
-    let previousLevel = null;
-    let habitDefinitions = [];
-    let todayLogs = [];
-    let activeReminders = [];
-    let selectedMood = null;
-    let currentChapterId = null;
-    let currentChapterQuestions = [];
-    let currentQuizMode = 'learning';
-    let practiceTimer = null;
-    let currentResetUserId = null;
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-
-    function showToast(msg, dur=3000) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), dur);
-    }
-
-    function celebrate(msg) {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#eab308','#fef08a','#38bdf8','#f43f5e'] });
-      showToast(msg || '🎉');
-    }
-
-    // ================== i18n Engine ==================
-    const i18n = {
-      lang: localStorage.getItem('lang') || 'bn',
-      translations: {},
-      async init() {
-        await this.load(this.lang);
-      },
-      async load(lang) {
-        try {
-          const res = await fetch(`${API}/translations?lang=${lang}`);
-          this.translations = await res.json();
-        } catch(e) { this.translations = {}; }
-        this.lang = lang;
-        localStorage.setItem('lang', lang);
-        const sel = document.getElementById('lang-select');
-        if (sel) sel.value = lang;
-        this.apply();
-      },
-      t(key, fallback = '') {
-        return this.translations[key] || fallback;
-      },
-      apply() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          const key = el.dataset.i18n;
-          el.textContent = this.t(key, el.textContent);
-        });
-      }
-    };
-
-    // ================== API Call functions ==================
-    async function apiCall(method, path, body) {
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const opts = { method, headers };
-      if (body) opts.body = JSON.stringify(body);
-      try {
-        const res = await fetch(`${API}${path}`, opts);
-        if (res.status === 401) { logout(); return null; }
-        return res.json();
-      } catch(e) { return { error: 'Network error' }; }
-    }
-
-    async function adminApiCall(method, path, body = null) {
-      const headers = { 'Content-Type': 'application/json' };
-      if (adminToken) headers['Authorization'] = `Bearer ${adminToken}`;
-      const opts = { method, headers };
-      if (body) opts.body = JSON.stringify(body);
-      try {
-        const res = await fetch(`${API}${path}`, opts);
-        if (res.status === 401) {
-          document.getElementById('admin-panel').classList.add('hidden');
-          document.getElementById('admin-login-form').classList.remove('hidden');
-          adminToken = null;
-          localStorage.removeItem('adminToken');
-          showToast('অ্যাডমিন সেশন শেষ হয়েছে');
-          return null;
-        }
-        return res.json();
-      } catch(e) {
-        return { error: 'Network error' };
-      }
-    }
-
-    // Starfield background
     (function(){
       const canvas = document.getElementById('bgCanvas');
       const ctx = canvas.getContext('2d');
@@ -1140,23 +1103,113 @@
       setTimeout(() => el.remove(), 2000);
     }
 
-    function resetUserPasswordUI(userId) {
-      currentResetUserId = userId;
-      document.getElementById('reset-pass-modal').classList.remove('hidden');
-    }
-    async function resetPasswordConfirm() {
-      const pass = document.getElementById('new-pass-input').value;
-      if (pass.length < 6) return showToast('পাসওয়ার্ড ৬+ অক্ষর দিন');
-      await adminApiCall('POST', '/admin/reset-password', { user_id: currentResetUserId, new_password: pass });
-      document.getElementById('reset-pass-modal').classList.add('hidden');
-      document.getElementById('new-pass-input').value = '';
-      showToast('পাসওয়ার্ড রিসেট হয়েছে');
-    }
-    function closeResetPassModal() {
-      document.getElementById('reset-pass-modal').classList.add('hidden');
+    const APP_URL = document.querySelector('meta[name="app-url"]')?.content || window.location.origin;
+    const API = '/api/setup';
+    let token = localStorage.getItem('token');
+    let adminToken = localStorage.getItem('adminToken');
+    let chart = null, radarChart = null;
+    let currentTab = 'journey';
+    let quizData = null;
+    let currentUser = null;
+    let previousLevel = null;
+    let habitDefinitions = [];
+    let todayLogs = [];
+    let activeReminders = [];
+    let reminderInterval = null;
+    let selectedMood = null;
+    let currentChapterId = null;
+    let currentChapterQuestions = [];
+    let currentQuizMode = 'learning';
+    let practiceTimer = null;
+    let currentResetUserId = null;
+    window.GOOGLE_CLIENT_ID = document.querySelector('meta[name="google-client-id"]')?.content || '';
+    const VAPID_PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.content || '';
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
 
-    // Auth
+    function showToast(msg, dur=3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), dur);
+    }
+
+    function celebrate(msg) {
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#eab308','#fef08a','#38bdf8','#f43f5e'] });
+      showToast(msg || '🎉');
+    }
+
+    const i18n = {
+      lang: localStorage.getItem('lang') || 'bn',
+      translations: {},
+      async init() {
+        await this.load(this.lang);
+      },
+      async load(lang) {
+        try {
+          const res = await fetch(`${API}/translations?lang=${lang}`);
+          this.translations = await res.json();
+        } catch(e) { this.translations = {}; }
+        this.lang = lang;
+        localStorage.setItem('lang', lang);
+        const sel = document.getElementById('lang-select');
+        if (sel) sel.value = lang;
+        this.apply();
+      },
+      t(key, fallback = '') {
+        return this.translations[key] || fallback;
+      },
+      apply() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.dataset.i18n;
+          el.textContent = this.t(key, el.textContent);
+        });
+      }
+    };
+
+    async function apiCall(method, path, body, showError = true) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+      try {
+        const res = await fetch(`${API}${path}`, opts);
+        if (res.status === 401) { logout(); return null; }
+        const data = await res.json();
+        if (data.error && showError) showToast(data.error);
+        return data;
+      } catch(e) {
+        if (showError) showToast('Network error');
+        return null;
+      }
+    }
+
+    async function adminApiCall(method, path, body = null, showError = true) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (adminToken) headers['Authorization'] = `Bearer ${adminToken}`;
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+      try {
+        const res = await fetch(`${API}${path}`, opts);
+        if (res.status === 401) {
+          document.getElementById('admin-panel').classList.add('hidden');
+          document.getElementById('admin-login-form').classList.remove('hidden');
+          adminToken = null;
+          localStorage.removeItem('adminToken');
+          showToast('অ্যাডমিন সেশন শেষ হয়েছে');
+          return null;
+        }
+        const data = await res.json();
+        if (data.error && showError) showToast(data.error);
+        return data;
+      } catch(e) {
+        if (showError) showToast('Network error');
+        return null;
+      }
+    }
+
     function showRegister() {
       document.getElementById('register-form').classList.remove('hidden');
       document.getElementById('login-form').classList.add('hidden');
@@ -1164,6 +1217,25 @@
     function showLogin() {
       document.getElementById('register-form').classList.add('hidden');
       document.getElementById('login-form').classList.remove('hidden');
+    }
+    function showForgotPassword() {
+      document.getElementById('forgot-password-modal').classList.remove('hidden');
+    }
+    async function requestPasswordReset() {
+      const email = document.getElementById('forgot-email').value;
+      if (!email) return showToast('ইমেইল দিন');
+      const res = await apiCall('POST', '/request-password-reset', { email }, false);
+      document.getElementById('forgot-message').textContent = res?.message || 'Something went wrong';
+    }
+    async function resendVerificationEmail() {
+      showToast('পুনরায় পাঠানোর জন্য অ্যাডমিনের সাথে যোগাযোগ করুন');
+    }
+    function checkEmailVerification() {
+      if (currentUser && !currentUser.email_verified) {
+        document.getElementById('verify-email-banner').style.display = 'block';
+      } else {
+        document.getElementById('verify-email-banner').style.display = 'none';
+      }
     }
     async function login() {
       const email = document.getElementById('login-email').value;
@@ -1189,19 +1261,22 @@
         token = data.token;
         localStorage.setItem('token', token);
         initDashboard(data.user);
+        if (!data.user.email_verified) checkEmailVerification();
       } else showToast(data?.error || 'Registration failed');
     }
-    function logout() {
+    async function logout() {
+      if (token) {
+        await apiCall('POST', '/logout', {}, false);
+      }
       localStorage.removeItem('token'); token = null;
       localStorage.removeItem('adminToken'); adminToken = null;
+      clearAllReminders();
       document.getElementById('auth-screen').classList.remove('hidden');
       document.getElementById('dashboard').classList.add('hidden');
       document.querySelector('.bottom-nav').classList.add('hidden');
       document.querySelector('.admin-gear').classList.add('hidden');
-      clearAllReminders();
     }
 
-    // Dashboard Init
     function updateXpBar(xp, level) {
       const xpForCurrent = (level-1)*75;
       const progress = Math.min(100, Math.max(0, ((xp - xpForCurrent) / 75) * 100));
@@ -1243,11 +1318,17 @@
 
     function showMysteryBox() { document.getElementById('mystery-box-modal').classList.remove('hidden'); }
     async function openMysteryBox() {
-      const res = await apiCall('POST', '/open-box');
-      document.getElementById('mystery-box-modal').classList.add('hidden');
-      if (res?.reward) celebrate(`🎁 ${res.reward} পেয়েছ!`);
-      else showToast(res?.message || 'বক্স খালি!');
-      loadProfile();
+      document.getElementById('mystery-box-icon').style.pointerEvents = 'none';
+      document.getElementById('mystery-result').textContent = 'খোলা হচ্ছে...';
+      const res = await apiCall('POST', '/open-box', null, false);
+      if (res?.reward) {
+        document.getElementById('mystery-result').textContent = `🎁 ${res.reward}`;
+        celebrate(`🎁 ${res.reward} পেয়েছ!`);
+        setTimeout(() => document.getElementById('mystery-box-modal').classList.add('hidden'), 2000);
+      } else {
+        document.getElementById('mystery-result').textContent = res?.message || 'কিছু পাওয়া যায়নি';
+        setTimeout(() => document.getElementById('mystery-box-modal').classList.add('hidden'), 2000);
+      }
     }
 
     async function toggleAiCoach() {
@@ -1283,7 +1364,6 @@
       else showToast(res?.error || 'দাবি করতে ব্যর্থ');
     }
 
-    // Admin login & panel
     async function adminLogin() {
       const email = document.getElementById('admin-email').value;
       const password = document.getElementById('admin-password').value;
@@ -1296,29 +1376,11 @@
       if (data.token) {
         adminToken = data.token;
         localStorage.setItem('adminToken', adminToken);
-
         document.getElementById('admin-login-form').classList.add('hidden');
-        const panel = document.getElementById('admin-panel');
-        panel.innerHTML = '<p style="color:var(--text-secondary);">লগইন সফল, ডাটা লোড হচ্ছে...</p>';
-        panel.classList.remove('hidden');
-
-        const stats = await adminApiCall('GET', '/admin/dashboard');
-        if (stats && !stats.error) {
-          document.getElementById('admin-stats-tab').innerHTML = `
-            <div class="grid-2">
-              <div class="mini-stat"><strong>মোট ইউজার:</strong> ${stats.totalUsers}</div>
-              <div class="mini-stat"><strong>আজ সক্রিয়:</strong> ${stats.dailyActiveUsers}</div>
-              <div class="mini-stat"><strong>মোট জার্নাল:</strong> ${stats.totalJournals}</div>
-              <div class="mini-stat"><strong>ট্রেনিং সম্পন্ন:</strong> ${stats.completedTrainings}</div>
-            </div>`;
-          showAdminTab('stats');
-        } else {
-          document.getElementById('admin-panel').classList.add('hidden');
-          document.getElementById('admin-login-form').classList.remove('hidden');
-          document.getElementById('admin-login-error').textContent = stats?.error || 'ড্যাশবোর্ড লোড ব্যর্থ';
-          document.getElementById('admin-login-error').style.display = 'block';
-          adminToken = null;
-          localStorage.removeItem('adminToken');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        showAdminTab('stats');
+        if (data.require_password_change) {
+          showToast('পাসওয়ার্ড পরিবর্তন করুন!');
         }
       } else {
         document.getElementById('admin-login-error').textContent = data.error || 'Login failed';
@@ -1338,7 +1400,6 @@
       }
     }
 
-    // Admin Tabs
     function showAdminTab(tab) {
       document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('hidden'));
       const target = document.getElementById('admin-'+tab+'-tab');
@@ -1348,6 +1409,7 @@
         case 'users': loadAdminUsers(); break;
         case 'community': loadAdminCommunity(); break;
         case 'content': setupContentForm(); loadContentList(); break;
+        case 'translations': loadAdminTranslations(); break;
         case 'assessment': loadAdminAssessment(); break;
         case 'benefits': loadAdminBenefits(); break;
         case 'analytics': loadAdminAnalytics(); break;
@@ -1362,11 +1424,11 @@
       const data = await adminApiCall('GET', '/admin/dashboard');
       if (data && !data.error) {
         document.getElementById('admin-stats-tab').innerHTML = `
-          <div class="grid-2">
-            <div class="mini-stat"><strong>মোট ইউজার:</strong> ${data.totalUsers}</div>
-            <div class="mini-stat"><strong>আজ সক্রিয়:</strong> ${data.dailyActiveUsers}</div>
-            <div class="mini-stat"><strong>মোট জার্নাল:</strong> ${data.totalJournals}</div>
-            <div class="mini-stat"><strong>ট্রেনিং সম্পন্ন:</strong> ${data.completedTrainings}</div>
+          <div class="grid-4">
+            <div class="stat-card glass"><div class="stat-value">${data.totalUsers}</div><div class="stat-label">মোট ইউজার</div></div>
+            <div class="stat-card glass"><div class="stat-value">${data.dailyActiveUsers}</div><div class="stat-label">আজ সক্রিয়</div></div>
+            <div class="stat-card glass"><div class="stat-value">${data.totalJournals}</div><div class="stat-label">মোট জার্নাল</div></div>
+            <div class="stat-card glass"><div class="stat-value">${data.completedTrainings}</div><div class="stat-label">ট্রেনিং সম্পন্ন</div></div>
           </div>`;
       }
     }
@@ -1374,11 +1436,12 @@
       const res = await adminApiCall('GET', '/admin/users');
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `
-        <div class="user-card flex" style="justify-content:space-between;">
+        <div class="user-card flex" style="justify-content:space-between; align-items:center;">
           <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
-          <div>
+          <div style="display:flex; gap:6px; align-items:center;">
             <span class="badge">${u.xp} XP</span>
             <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
           </div>
         </div>`).join('');
     }
@@ -1387,13 +1450,34 @@
       const res = await adminApiCall('GET', `/admin/users?search=${encodeURIComponent(q)}`);
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `
-        <div class="user-card flex" style="justify-content:space-between;">
+        <div class="user-card flex" style="justify-content:space-between; align-items:center;">
           <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
-          <div>
+          <div style="display:flex; gap:6px; align-items:center;">
             <span class="badge">${u.xp} XP</span>
             <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
           </div>
         </div>`).join('');
+    }
+    async function deleteUser(userId) {
+      if (!confirm('এই ইউজার সম্পূর্ণ মুছে ফেলবেন?')) return;
+      const res = await adminApiCall('DELETE', `/admin/user/${userId}`);
+      if (res?.success) { showToast('ইউজার ডিলিট হয়েছে'); loadAdminUsers(); }
+    }
+    function resetUserPasswordUI(userId) {
+      currentResetUserId = userId;
+      document.getElementById('reset-pass-modal').classList.remove('hidden');
+    }
+    async function resetPasswordConfirm() {
+      const pass = document.getElementById('new-pass-input').value;
+      if (pass.length < 6) return showToast('পাসওয়ার্ড ৬+ অক্ষর দিন');
+      await adminApiCall('POST', '/admin/reset-password', { user_id: currentResetUserId, new_password: pass });
+      document.getElementById('reset-pass-modal').classList.add('hidden');
+      document.getElementById('new-pass-input').value = '';
+      showToast('পাসওয়ার্ড রিসেট হয়েছে');
+    }
+    function closeResetPassModal() {
+      document.getElementById('reset-pass-modal').classList.add('hidden');
     }
     async function simulateUserDays() {
       const email = document.getElementById('simulate-user-email').value;
@@ -1440,33 +1524,66 @@
       else showToast(res?.error||'ব্যর্থ');
     }
     async function loadContentList() {
-      const lessons = await apiCall('GET', '/lessons') || [];
+      const type = document.getElementById('content-list-type').value;
+      const res = await adminApiCall('GET', `/admin/content/list?type=${type}`);
       const container = document.getElementById('content-list-section');
-      container.innerHTML = `<h5>লেসন</h5>` + lessons.map(l => `
-        <div class="flex" style="justify-content:space-between; padding:4px 0;">
-          <span>${l.day}. ${escapeHtml(l.title)}</span>
-          <div>
-            <button class="btn btn-sm btn-outline" onclick="editContentPrompt('lesson',${l.id})">✏️</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button>
-          </div>
-        </div>`).join('');
+      if (!res || res.error) { container.innerHTML = '<p>লোড করতে সমস্যা</p>'; return; }
+      if (type === 'lesson') {
+        container.innerHTML = '<h5>লেসন</h5>' + res.map(l => `
+          <div class="flex" style="justify-content:space-between; padding:4px 0;">
+            <span>${l.day}. ${escapeHtml(l.title)}</span>
+            <div>
+              <button class="btn btn-sm btn-outline" onclick="editContentPrompt('lesson',${l.id})">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button>
+            </div>
+          </div>`).join('');
+      } else if (type === 'quiz') {
+        container.innerHTML = '<h5>কুইজ</h5>' + res.map(q => `
+          <div class="flex" style="justify-content:space-between; padding:4px 0;">
+            <span>${escapeHtml(q.question)}</span>
+            <div>
+              <button class="btn btn-sm btn-outline" onclick="editContentPrompt('quiz',${q.id})">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteContent('quiz',${q.id})">🗑</button>
+            </div>
+          </div>`).join('');
+      } else if (type === 'video') {
+        container.innerHTML = '<h5>ভিডিও</h5>' + res.map(v => `
+          <div class="flex" style="justify-content:space-between; padding:4px 0;">
+            <span>${escapeHtml(v.title)}</span>
+            <div>
+              <button class="btn btn-sm btn-outline" onclick="editContentPrompt('video',${v.id})">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteContent('video',${v.id})">🗑</button>
+            </div>
+          </div>`).join('');
+      }
     }
     function editContentPrompt(type, id) {
-      const newVals = {};
-      if (type==='lesson') {
-        newVals.day = prompt('দিন');
-        newVals.phase = prompt('ফেজ');
-        newVals.title = prompt('শিরোনাম');
-        newVals.content = prompt('কনটেন্ট');
-        if (newVals.day) adminApiCall('PUT', `/admin/content/lesson/${id}`, newVals).then(() => loadContentList());
+      if (type === 'lesson') {
+        const day = prompt('দিন');
+        const phase = prompt('ফেজ');
+        const title = prompt('শিরোনাম');
+        const content = prompt('কনটেন্ট');
+        if (day) adminApiCall('PUT', `/admin/content/lesson/${id}`, { day: parseInt(day), phase, title, content });
+      } else if (type === 'quiz') {
+        const question = prompt('প্রশ্ন');
+        const optionsStr = prompt('অপশন (JSON)');
+        const correct = prompt('সঠিক ইনডেক্স');
+        if (question) adminApiCall('PUT', `/admin/content/quiz/${id}`, { question, options: JSON.parse(optionsStr), correct: parseInt(correct) });
+      } else if (type === 'video') {
+        const category = prompt('ক্যাটাগরি');
+        const title = prompt('শিরোনাম');
+        const description = prompt('বিবরণ');
+        const youtube_id = prompt('YouTube ID');
+        const duration = prompt('সময়');
+        if (title) adminApiCall('PUT', `/admin/content/video/${id}`, { category, title, description, youtube_id, duration });
       }
+      loadContentList();
     }
     async function deleteContent(type, id) {
       if (!confirm('মুছে ফেলবেন?')) return;
       await adminApiCall('DELETE', `/admin/content/${type}/${id}`);
       loadContentList();
     }
-
     async function uploadImage() {
       const file = document.getElementById('image-upload').files[0];
       if (!file) return;
@@ -1483,7 +1600,41 @@
         navigator.clipboard.writeText(data.url);
       } else showToast('আপলোড ব্যর্থ');
     }
-
+    async function loadAdminTranslations() {
+      const lang = document.getElementById('trans-lang-select').value;
+      const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
+      const container = document.getElementById('translations-list');
+      if (!rows || rows.error) return;
+      container.innerHTML = rows.map(t => `
+        <div class="flex" style="justify-content:space-between; align-items:center; padding:8px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:8px;">
+          <div><strong>${escapeHtml(t.key)}</strong><br><small>${escapeHtml(t.value)}</small></div>
+          <div>
+            <button class="btn btn-sm btn-outline" onclick="editTranslationPrompt('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteTranslation('${t.key}','${lang}')">🗑</button>
+          </div>
+        </div>`).join('');
+    }
+    function addTranslationForm() {
+      const lang = document.getElementById('trans-lang-select').value;
+      const key = prompt('Key:');
+      if (!key) return;
+      const value = prompt('Value:');
+      if (value) {
+        adminApiCall('POST', '/admin/translations', { key, lang, value });
+        loadAdminTranslations();
+        showToast('অনুবাদ যোগ হয়েছে');
+      }
+    }
+    function editTranslationPrompt(key, lang, currentValue) {
+      const newValue = prompt('নতুন মান:', currentValue);
+      if (newValue !== null) {
+        adminApiCall('POST', '/admin/translations', { key, lang, value: newValue });
+        loadAdminTranslations();
+      }
+    }
+    async function deleteTranslation(key, lang) {
+      showToast('ডিলিট ফিচার শীঘ্রই আসছে');
+    }
     async function loadAdminAssessment() {
       const res = await adminApiCall('GET', '/assessment/questions');
       const list = document.getElementById('assessment-list');
@@ -1518,16 +1669,15 @@
       await adminApiCall('DELETE', `/admin/assessment/${id}`);
       loadAdminAssessment();
     }
-
     async function loadAdminBenefits() {
       const res = await adminApiCall('GET', '/benefits');
       const list = document.getElementById('benefits-list');
       if (res && !res.error) {
         list.innerHTML = res.map(b => `
           <div class="flex" style="justify-content:space-between; padding:6px 0;">
-            <span>${b.icon} <b>${b.title}</b></span>
+            <span>${b.icon} <b>${escapeHtml(b.title)}</b></span>
             <div>
-              <button class="btn btn-sm btn-outline" onclick="editBenefitPrompt(${b.id}, '${escapeHtml(b.title)}', '${escapeHtml(b.description)}', '${b.icon}')">✏️</button>
+              <button class="btn btn-sm btn-outline" onclick="editBenefitPrompt(${b.id}, '${escapeHtml(b.title)}', '${escapeHtml(b.description||'')}', '${b.icon}')">✏️</button>
               <button class="btn btn-sm btn-danger" onclick="deleteBenefit(${b.id})">🗑</button>
             </div>
           </div>`).join('');
@@ -1556,7 +1706,6 @@
       await adminApiCall('DELETE', `/admin/benefit/${id}`);
       loadAdminBenefits();
     }
-
     async function loadAdminAnalytics() {
       const res = await adminApiCall('GET', '/admin/analytics/retention');
       const container = document.getElementById('analytics-chart');
@@ -1566,12 +1715,9 @@
         new Chart(ctx, { type: 'line', data: { labels: res.map(d => d.date), datasets: [{ label: 'Active Users', data: res.map(d => d.active_users), borderColor: '#eab308', backgroundColor: 'rgba(234,179,8,0.1)' }] } });
       } else container.innerHTML = '<p>ডাটা নাই</p>';
     }
-
-    // Admin Chapters
     let editingChapterId = null;
     let currentQmChapterId = null;
     let currentQmTitle = '';
-
     async function loadAdminChapters() {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       if (!chapters) return;
@@ -1594,7 +1740,6 @@
         </div>
       `).join('');
     }
-
     function openChapterEditor(chapter = null) {
       document.getElementById('chapter-editor-form').classList.remove('hidden');
       if (chapter) {
@@ -1615,18 +1760,15 @@
         document.getElementById('ch-edit-id').value = '';
       }
     }
-
     async function editChapter(id) {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       const ch = chapters.find(c => c.id === id);
       if (ch) openChapterEditor(ch);
     }
-
     function cancelChapterEdit() {
       document.getElementById('chapter-editor-form').classList.add('hidden');
       editingChapterId = null;
     }
-
     async function saveChapter() {
       const data = {
         course_id: 1,
@@ -1648,13 +1790,11 @@
       loadAdminChapters();
       showToast('✅ সংরক্ষিত');
     }
-
     async function deleteChapter(id) {
       if (!confirm('সত্যিই মুছে ফেলবেন?')) return;
       await adminApiCall('DELETE', `/admin/chapter/${id}`);
       loadAdminChapters();
     }
-
     async function manageQuestions(chapterId, title) {
       currentQmChapterId = chapterId;
       currentQmTitle = title;
@@ -1664,11 +1804,9 @@
       document.getElementById('question-manager-modal').classList.remove('hidden');
       document.getElementById('qm-question-form').classList.add('hidden');
     }
-
     function closeQuestionManager() {
       document.getElementById('question-manager-modal').classList.add('hidden');
     }
-
     async function loadQuestionsForChapter(chapterId) {
       const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
       const list = document.getElementById('qm-questions-list');
@@ -1684,7 +1822,6 @@
         </div>
       `).join('');
     }
-
     function openQuestionForm(q = null) {
       document.getElementById('qm-question-form').classList.remove('hidden');
       if (q) {
@@ -1699,17 +1836,14 @@
         for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = '';
       }
     }
-
     async function editQuestion(qId, chapterId) {
       const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
       const q = questions.find(q => q.id === qId);
       if (q) openQuestionForm(q);
     }
-
     function cancelQuestionEdit() {
       document.getElementById('qm-question-form').classList.add('hidden');
     }
-
     async function saveQuestion() {
       const chapterId = parseInt(document.getElementById('qm-chapter-id').value);
       const qId = document.getElementById('qm-edit-qid').value;
@@ -1730,14 +1864,95 @@
       loadQuestionsForChapter(chapterId);
       showToast('✅ প্রশ্ন সংরক্ষিত');
     }
-
     async function deleteQuestion(qId, chapterId) {
       if (!confirm('প্রশ্ন মুছবেন?')) return;
       await adminApiCall('DELETE', `/admin/question/${qId}`);
       loadQuestionsForChapter(chapterId);
     }
-
-    // Assessment screen user
+    async function loadCourses() {
+      const courses = await adminApiCall('GET', '/admin/courses');
+      const container = document.getElementById('courses-list');
+      if (!courses || courses.error) { container.innerHTML = '<p>লোড করতে সমস্যা</p>'; return; }
+      let html = '<table class="admin-table"><thead><tr><th>ID</th><th>শিরোনাম</th><th>বিবরণ</th><th>অ্যাকশন</th></tr></thead><tbody>';
+      courses.forEach(c => {
+        html += `<tr>
+          <td>${c.id}</td>
+          <td>${escapeHtml(c.title)}</td>
+          <td>${escapeHtml(c.description || '')}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="editCourse(${c.id}, '${escapeHtml(c.title)}', '${escapeHtml(c.description||'')}')">এডিট</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCourse(${c.id})">ডিলিট</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+    function showCourseForm() {
+      document.getElementById('course-form').classList.remove('hidden');
+      document.getElementById('course-edit-id').value = '';
+      document.getElementById('course-title').value = '';
+      document.getElementById('course-desc').value = '';
+    }
+    function cancelCourseForm() {
+      document.getElementById('course-form').classList.add('hidden');
+    }
+    function editCourse(id, title, desc) {
+      document.getElementById('course-form').classList.remove('hidden');
+      document.getElementById('course-edit-id').value = id;
+      document.getElementById('course-title').value = title;
+      document.getElementById('course-desc').value = desc;
+    }
+    async function saveCourse() {
+      const title = document.getElementById('course-title').value;
+      const description = document.getElementById('course-desc').value;
+      const id = document.getElementById('course-edit-id').value;
+      if (!title) return showToast('শিরোনাম আবশ্যক');
+      if (id) {
+        await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active: true });
+      } else {
+        await adminApiCall('POST', '/admin/course', { title, description });
+      }
+      cancelCourseForm();
+      loadCourses();
+      showToast('✅ কোর্স সংরক্ষিত');
+    }
+    async function deleteCourse(id) {
+      if (!confirm('কোর্স মুছে ফেললে সংশ্লিষ্ট সব চ্যাপ্টার মুছে যাবে!')) return;
+      await adminApiCall('DELETE', `/admin/course/${id}`);
+      loadCourses();
+      showToast('🗑️ কোর্স ডিলিট হয়েছে');
+    }
+    async function loadActivityLog() {
+      const logs = await adminApiCall('GET', '/admin/activity-log');
+      const container = document.getElementById('activity-log-table');
+      if (!logs || logs.error) { container.innerHTML = '<p>লগ লোড করতে সমস্যা</p>'; return; }
+      let html = '<table class="admin-table"><thead><tr><th>সময়</th><th>অ্যাডমিন</th><th>কাজ</th><th>বিস্তারিত</th></tr></thead><tbody>';
+      logs.forEach(log => {
+        html += `<tr>
+          <td>${new Date(log.created_at).toLocaleString('bn-BD')}</td>
+          <td>${log.admin_name || log.admin_email}</td>
+          <td>${log.action}</td>
+          <td>${JSON.stringify(log.details || {}).substring(0,60)}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+    async function changeAdminPassword() {
+      const current = document.getElementById('current-password').value;
+      const newPass = document.getElementById('new-password').value;
+      const confirm = document.getElementById('confirm-password').value;
+      if (newPass !== confirm) return showToast('নতুন পাসওয়ার্ড মিলছে না');
+      if (newPass.length < 6) return showToast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে');
+      const res = await adminApiCall('PUT', '/admin/change-password', { current_password: current, new_password: newPass });
+      if (res && res.success) {
+        showToast('✅ পাসওয়ার্ড পরিবর্তন সফল');
+        document.getElementById('settings-message').innerHTML = '<p style="color:var(--success);">পাসওয়ার্ড আপডেট হয়েছে</p>';
+      } else {
+        document.getElementById('settings-message').innerHTML = `<p style="color:var(--danger);">${res?.error || 'ত্রুটি'}</p>`;
+      }
+    }
     async function showAssessment() {
       document.getElementById('assessment-screen').classList.remove('hidden');
       document.getElementById('assessment-prompt').classList.add('hidden');
@@ -1773,21 +1988,18 @@
       benefits.forEach(b => {
         html += `<div style="display:flex; gap:10px; margin:12px 0;">
           <span style="font-size:28px;">${b.icon}</span>
-          <div><strong>${b.title}</strong><br><small>${b.description}</small></div>
+          <div><strong>${escapeHtml(b.title)}</strong><br><small>${escapeHtml(b.description)}</small></div>
         </div>`;
       });
       html += '</div>';
       document.getElementById('assessment-result').insertAdjacentHTML('beforeend', html);
     }
-
-    // Journey functions
     function updateEvolutionTree(phase) {
       const stages = document.querySelectorAll('.evolution-tree .stage');
       const map = { 'Awareness':0, 'Discipline':1, 'Consistency':2, 'Psychology':3, 'Professional':4, 'Institutional':5 };
       const idx = map[phase] ?? 0;
       stages.forEach((s,i) => s.classList.toggle('active', i===idx));
     }
-
     function renderSliders() {
       const container = document.getElementById('score-sliders');
       const questions = [
@@ -1806,7 +2018,6 @@
       `).join('');
       container.querySelectorAll('input[type="range"]').forEach(inp => inp.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value));
     }
-
     function showTab(tab) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const target = document.getElementById('tab-'+tab);
@@ -1826,7 +2037,6 @@
       if (tab==='training') loadTrainingTab();
       if (tab==='journey') renderSliders();
     }
-
     async function loadProfile() {
       const data = await apiCall('GET', '/profile');
       if (!data) return;
@@ -1850,6 +2060,7 @@
       } else {
         document.querySelector('.admin-gear').classList.add('hidden');
       }
+      checkEmailVerification();
       if (today_entry) {
         document.getElementById('morning-section').classList.add('hidden');
         document.getElementById('checkin-done-msg').classList.remove('hidden');
@@ -1868,19 +2079,12 @@
       }
       updateReflectionPrompts();
       loadDailyQuest();
-      if (totalDays === 0) {
-        document.getElementById('assessment-prompt').classList.remove('hidden');
-      } else {
-        document.getElementById('assessment-prompt').classList.add('hidden');
-      }
       i18n.apply();
     }
-
     function updateReflectionPrompts() {
       const prompts = ["আজকের সেশনে সবচেয়ে বড় চ্যালেঞ্জ কী ছিল?","এমন কোনো ট্রেড করেছ যা সেটআপের বাইরে? কেন?","আজ যদি কোনো নিয়ম ভেঙে থাকো, তা কীভাবে ঠেকাবে?","আজ কোন সিদ্ধান্তে নিজের প্রতি সবচেয়ে সন্তুষ্ট?"];
       document.getElementById('reflection-prompts').textContent = `💡 ${prompts[Math.floor(Math.random()*prompts.length)]}`;
     }
-
     async function submitCheckin() {
       if (!document.getElementById('mindfulness-done').checked) return showToast('Mindfulness সম্পন্ন করো');
       const commitment = document.getElementById('commitment').value.trim();
@@ -1892,7 +2096,6 @@
       setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); updateReflectionPrompts(); }, 1000);
       showToast('✅ চেক-ইন সফল!');
     }
-
     async function submitEvaluation() {
       if (!selectedMood) return showToast('একটি মুড নির্বাচন করো');
       const scores = {};
@@ -1924,14 +2127,12 @@
         if (currentTab==='progress') loadProgress();
       } else showToast(data?.error||'Error');
     }
-
     function showFeedback(fb) {
       document.getElementById('feedback-text').textContent = fb.feedback;
       document.getElementById('tomorrow-mission').textContent = fb.mission || fb.tomorrow_mission || '';
       document.getElementById('new-badges').innerHTML = (fb.badges||[]).map(b => `<span class="badge">🏅 ${b}</span>`).join('');
       document.getElementById('feedback-area').classList.remove('hidden');
     }
-
     async function loadProgress() {
       const data = await apiCall('GET', '/progress');
       if (!data) return;
@@ -1970,14 +2171,12 @@
       document.getElementById('certificate-btn').classList.toggle('hidden', data.totalDays<30);
       document.getElementById('share-certificate-btn').classList.toggle('hidden', data.totalDays<30);
     }
-
     async function loadInsights() {
       const res = await apiCall('GET', '/insights');
       document.getElementById('insights-content').innerHTML = res ? `
         <p>📊 মোট জার্নাল: ${res.totalJournals}</p><p>🔥 বর্তমান স্ট্রিক: ${res.currentStreak}</p>
         <p>⚠️ সবচেয়ে ঘনঘন ভুল: ${res.topMistake}</p><p>📈 গড় ডিসিপ্লিন: ${res.avgDiscipline?.toFixed(1)||'N/A'}</p>` : 'ইনসাইট লোড করতে সমস্যা';
     }
-
     async function loadLessons() {
       const lessons = await apiCall('GET', '/lessons');
       document.getElementById('lessons-list').innerHTML = lessons.map(l => `
@@ -1986,14 +2185,12 @@
           <button class="btn btn-sm" ${l.completed_at?'disabled':''} onclick="completeLesson(${l.id})">${l.completed_at?'✅':'সম্পন্ন'}</button></div>`).join('');
     }
     async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); loadProfile(); showToast('+3 XP!'); }
-
     async function loadVideos() {
       const videos = await apiCall('GET', '/videos');
       document.getElementById('video-grid').innerHTML = videos.map(v => `
         <div class="video-card">${(v.youtube_id.startsWith('PLACEHOLDER')||v.youtube_id.startsWith('YOUR')) ? '<div style="height:170px; display:flex; align-items:center; justify-content:center; background:#111;">📺 শীঘ্রই আসছে</div>' : `<iframe src="https://www.youtube.com/embed/${v.youtube_id}" allowfullscreen></iframe>`}
         <div class="video-info"><h4 style="color:var(--gold);">${escapeHtml(v.title)}</h4><p>${escapeHtml(v.description)}</p><small>${v.duration}</small></div></div>`).join('');
     }
-
     async function loadCommunity() {
       const posts = await apiCall('GET', '/community');
       document.getElementById('posts-container').innerHTML = posts.map(p => `
@@ -2035,7 +2232,6 @@
       await apiCall('POST', '/reply-post', { post_id:postId, content });
       input.value = ''; loadReplies(postId); showToast('উত্তর দেওয়া হয়েছে!');
     }
-
     async function loadLeaderboard() {
       const data = await apiCall('GET', '/leaderboard');
       document.getElementById('leaderboard-list').innerHTML = data.map((u,i) => `
@@ -2047,7 +2243,6 @@
         document.getElementById('my-rank').textContent = myIndex>=0 ? `আপনার অবস্থান: #${myIndex+1}` : 'লিডারবোর্ডে নেই';
       }
     }
-
     async function loadQuiz() {
       const data = await apiCall('GET', '/quiz');
       if (data?.question) {
@@ -2069,13 +2264,11 @@
       if (res.correct) { loadProfile(); celebrate('🧠 +10 XP!'); }
       document.getElementById('quiz-modal').classList.add('hidden');
     }
-
     async function loadWeeklyChallenge() {
       const challenge = await apiCall('GET', '/weekly-challenge');
       if (challenge) document.getElementById('weekly-challenge-card').innerHTML = `<div class="glass"><h4>🔥 সাপ্তাহিক চ্যালেঞ্জ: ${escapeHtml(challenge.title)}</h4><p>${escapeHtml(challenge.description)} | প্রগ্রেস: ${challenge.progress}/${challenge.target}</p><div class="progress-bar"><div class="progress-fill" style="width:${(challenge.progress/challenge.target)*100}%"></div></div></div>`;
       else document.getElementById('weekly-challenge-card').innerHTML = '';
     }
-
     async function loadProfilePage() {
       const data = await apiCall('GET', '/profile');
       if (!data) return;
@@ -2113,17 +2306,21 @@
       if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
     }
     async function subscribeToPush() {
+      if (!VAPID_PUBLIC_KEY) {
+        console.log('VAPID key missing');
+        return;
+      }
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
       const reg = await navigator.serviceWorker.ready;
       let sub = await reg.pushManager.getSubscription();
       if (!sub) {
-        const vapidPublicKey = '';
-        if (!vapidPublicKey) return;
-        sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:vapidPublicKey });
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: VAPID_PUBLIC_KEY
+        });
       }
-      await apiCall('POST', '/save-subscription', { subscription:sub });
+      await apiCall('POST', '/save-subscription', { subscription: sub });
     }
-
     async function downloadCertificate() {
       const res = await fetch(`${API}/certificate`, { headers:{'Authorization':`Bearer ${token}`} });
       if (!res.ok) { showToast('প্রথমে ৩০ দিন সম্পন্ন করো'); return; }
@@ -2138,7 +2335,6 @@
       if (navigator.share) navigator.share({ title:'AlamQuant ATTS Certificate', text:'আমি ৩০ দিনের ট্রেডার ট্রান্সফরমেশন জার্নি সম্পন্ন করেছি!', url:window.location.href });
       else showToast('শেয়ারিং সাপোর্টেড নয়');
     }
-
     function initGoogleSignIn() {
       if (typeof google !== 'undefined' && google.accounts && window.GOOGLE_CLIENT_ID) {
         google.accounts.id.initialize({
@@ -2149,6 +2345,8 @@
           document.getElementById('google-signin-btn'),
           { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' }
         );
+      } else {
+        document.getElementById('google-signin-btn').innerHTML = '<p style="color:var(--text-secondary);">Google login unavailable</p>';
       }
     }
     async function handleGoogleCredential(response) {
@@ -2159,8 +2357,6 @@
         initDashboard(data.user);
       } else showToast('Google login failed');
     }
-
-    // Training
     async function loadTrainingTab() {
       await loadEnergy();
       const chapters = await apiCall('GET', '/training/chapters?course_id=1');
@@ -2253,12 +2449,10 @@
         document.getElementById('practice-timer').textContent = `⏳ ${timeLeft}s`;
         if (timeLeft <= 0) {
           clearInterval(practiceTimer);
-          autoSubmitCurrentQuestion();
+          document.getElementById('practice-timer').textContent = '⏰ সময় শেষ!';
+          submitChapterQuiz();
         }
       }, 1000);
-    }
-    function autoSubmitCurrentQuestion() {
-      showToast('সময় শেষ হয়েছে');
     }
     function closeChapterModal() {
       document.getElementById('chapter-modal').classList.add('hidden');
@@ -2343,33 +2537,24 @@
       </div>`;
       window._examSessionId = null;
     }
-
-    // Habit reminders
-    function scheduleHabitReminder(habitId, time, title) {
-      const [h,m] = time.split(':');
-      const now = new Date();
-      const target = new Date(); target.setHours(h,m,0,0);
-      if (target <= now) target.setDate(target.getDate()+1);
-      const ms = target - now;
-      const timerId = setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          new Notification(`🧩 ${title}`, { body: `এখন ${time} টায় অভ্যাস করার সময়`, icon: '/icon-72.png' });
-        }
-        scheduleHabitReminder(habitId, time, title);
-      }, ms);
-      activeReminders.push({ habitId, time, timerId });
+    function startReminderScheduler() {
+      if (reminderInterval) clearInterval(reminderInterval);
+      reminderInterval = setInterval(() => {
+        if (!currentUser || !token) return;
+        const now = new Date();
+        const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        habitDefinitions.forEach(habit => {
+          if (habit.reminder_times && habit.reminder_times.includes(currentTime)) {
+            if (Notification.permission === 'granted') {
+              new Notification(`🧩 ${habit.title}`, { body: `এখন ${currentTime} টায় অভ্যাস করার সময়`, icon: '/icon-72.png' });
+            }
+            showToast(`⏰ ${habit.title} করার সময় হয়েছে!`);
+          }
+        });
+      }, 60000);
     }
     function clearAllReminders() {
-      activeReminders.forEach(r => clearTimeout(r.timerId));
-      activeReminders = [];
-    }
-    function scheduleAllReminders(defs) {
-      clearAllReminders();
-      defs.forEach(habit => {
-        if (habit.reminder_times) {
-          habit.reminder_times.forEach(time => scheduleHabitReminder(habit.id, time, habit.title));
-        }
-      });
+      if (reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; }
     }
     async function loadHabits() {
       const date = new Date().toLocaleDateString('en-CA');
@@ -2379,7 +2564,6 @@
       const logs = await logRes.json();
       todayLogs = logs;
       renderHabits(habitDefinitions, logs);
-      scheduleAllReminders(habitDefinitions);
     }
     function renderHabits(habits, logs) {
       const container = document.getElementById('habits-list');
@@ -2421,11 +2605,7 @@
       loadHabits();
       showToast('হ্যাবিট যোগ হয়েছে');
     }
-
-    // Navigation
     document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
-    document.getElementById('content-type-select')?.addEventListener('change', setupContentForm);
-
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => {
@@ -2435,14 +2615,11 @@
         });
       }
     });
-
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(()=>{});
       });
     }
-
-    // Init
     async function initDashboard(user) {
       document.getElementById('auth-screen').classList.add('hidden');
       document.getElementById('loading-screen').style.display = 'none';
@@ -2451,15 +2628,16 @@
       if (user.is_admin) document.querySelector('.admin-gear').classList.remove('hidden');
       currentUser = user;
       previousLevel = user.level;
+      checkEmailVerification();
       await loadProfile();
       showTab('journey');
       loadWeeklyChallenge();
       renderSliders();
       initGoogleSignIn();
       loadQuiz();
+      startReminderScheduler();
     }
     function closeWelcome() { document.getElementById('welcome-modal').classList.add('hidden'); }
-
     window.addEventListener('load', async () => {
       await i18n.init();
       const params = new URLSearchParams(window.location.search);
@@ -2481,101 +2659,6 @@
         document.getElementById('auth-screen').classList.remove('hidden');
       }
     });
-
-    // Courses CRUD
-    async function loadCourses() {
-      const courses = await adminApiCall('GET', '/admin/courses');
-      const container = document.getElementById('courses-list');
-      if (!courses || courses.error) { container.innerHTML = '<p>লোড করতে সমস্যা</p>'; return; }
-      let html = '<table class="admin-table"><thead><tr><th>ID</th><th>শিরোনাম</th><th>বিবরণ</th><th>অ্যাকশন</th></tr></thead><tbody>';
-      courses.forEach(c => {
-        html += `<tr>
-          <td>${c.id}</td>
-          <td>${escapeHtml(c.title)}</td>
-          <td>${escapeHtml(c.description || '')}</td>
-          <td>
-            <button class="btn btn-sm btn-outline" onclick="editCourse(${c.id}, '${escapeHtml(c.title)}', '${escapeHtml(c.description||'')}')">এডিট</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteCourse(${c.id})">ডিলিট</button>
-          </td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      container.innerHTML = html;
-    }
-
-    function showCourseForm() {
-      document.getElementById('course-form').classList.remove('hidden');
-      document.getElementById('course-edit-id').value = '';
-      document.getElementById('course-title').value = '';
-      document.getElementById('course-desc').value = '';
-    }
-
-    function cancelCourseForm() {
-      document.getElementById('course-form').classList.add('hidden');
-    }
-
-    function editCourse(id, title, desc) {
-      document.getElementById('course-form').classList.remove('hidden');
-      document.getElementById('course-edit-id').value = id;
-      document.getElementById('course-title').value = title;
-      document.getElementById('course-desc').value = desc;
-    }
-
-    async function saveCourse() {
-      const title = document.getElementById('course-title').value;
-      const description = document.getElementById('course-desc').value;
-      const id = document.getElementById('course-edit-id').value;
-      if (!title) return showToast('শিরোনাম আবশ্যক');
-      if (id) {
-        await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active: true });
-      } else {
-        await adminApiCall('POST', '/admin/course', { title, description });
-      }
-      cancelCourseForm();
-      loadCourses();
-      showToast('✅ কোর্স সংরক্ষিত');
-    }
-
-    async function deleteCourse(id) {
-      if (!confirm('কোর্স মুছে ফেললে সংশ্লিষ্ট সব চ্যাপ্টার মুছে যাবে!')) return;
-      await adminApiCall('DELETE', `/admin/course/${id}`);
-      loadCourses();
-      showToast('🗑️ কোর্স ডিলিট হয়েছে');
-    }
-
-    // Activity Log
-    async function loadActivityLog() {
-      const logs = await adminApiCall('GET', '/admin/activity-log');
-      const container = document.getElementById('activity-log-table');
-      if (!logs || logs.error) { container.innerHTML = '<p>লগ লোড করতে সমস্যা</p>'; return; }
-      let html = '<table class="admin-table"><thead><tr><th>সময়</th><th>অ্যাডমিন</th><th>কাজ</th><th>বিস্তারিত</th></tr></thead><tbody>';
-      logs.forEach(log => {
-        html += `<tr>
-          <td>${new Date(log.created_at).toLocaleString('bn-BD')}</td>
-          <td>${log.admin_name || log.admin_email}</td>
-          <td>${log.action}</td>
-          <td>${JSON.stringify(log.details || {}).substring(0,60)}</td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      container.innerHTML = html;
-    }
-
-    // Settings
-    async function changeAdminPassword() {
-      const current = document.getElementById('current-password').value;
-      const newPass = document.getElementById('new-password').value;
-      const confirm = document.getElementById('confirm-password').value;
-      if (newPass !== confirm) return showToast('নতুন পাসওয়ার্ড মিলছে না');
-      if (newPass.length < 6) return showToast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে');
-      const res = await adminApiCall('PUT', '/admin/change-password', { current_password: current, new_password: newPass });
-      if (res && res.success) {
-        showToast('✅ পাসওয়ার্ড পরিবর্তন সফল');
-        document.getElementById('settings-message').innerHTML = '<p style="color:var(--success);">পাসওয়ার্ড আপডেট হয়েছে</p>';
-      } else {
-        document.getElementById('settings-message').innerHTML = `<p style="color:var(--danger);">${res?.error || 'ত্রুটি'}</p>`;
-      }
-    }
   </script>
 </body>
 </html>

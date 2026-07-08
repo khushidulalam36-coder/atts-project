@@ -2,7 +2,7 @@
 import { readFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { fileURLToPath } from 'url';
-import handler from './api/setup.js';   // import default export (toNodeHandler(apiHandler))
+import handler from './api/setup.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -31,7 +31,6 @@ async function serveStatic(req, res) {
 }
 
 const server = createServer(async (req, res) => {
-  // CORS headers for all responses
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
