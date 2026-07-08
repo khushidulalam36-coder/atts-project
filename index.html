@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="theme-color" content="#020617">
+  <meta name="theme-color" content="#010314">
   <title>AlamQuant ATTS – Professional Trader Transformation</title>
   <meta name="google-client-id" content="">
   <meta name="vapid-public-key" content="">
@@ -15,30 +15,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #020617;
-      --surface: rgba(15, 23, 42, 0.85);
-      --gold: #eab308;
-      --gold-bright: #facc15;
-      --gold-light: #fef08a;
-      --accent: #38bdf8;
-      --accent-bright: #7dd3fc;
+      --bg: #010314;
+      --surface: rgba(10, 15, 35, 0.9);
+      --gold: #f59e0b;
+      --gold-bright: #fbbf24;
+      --gold-light: #fde68a;
+      --accent: #0ea5e9;
+      --accent-bright: #38bdf8;
       --accent2: #f43f5e;
-      --purple: #a78bfa;
-      --cyan: #22d3ee;
-      --orange: #fb923c;
-      --text: #f1f5f9;
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+      --orange: #f97316;
+      --text: #f8fafc;
       --text-secondary: #94a3b8;
       --danger: #ef4444;
-      --success: #22c55e;
+      --success: #10b981;
       --warning: #f59e0b;
-      --border-gold: rgba(234,179,8,0.5);
-      --border-accent: rgba(56,189,248,0.4);
+      --border-gold: rgba(245, 158, 11, 0.5);
+      --border-accent: rgba(14, 165, 233, 0.4);
       --radius: 16px;
       --radius-sm: 10px;
-      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
-      --glow-gold: 0 0 30px rgba(234,179,8,0.5);
-      --glow-accent: 0 0 25px rgba(56,189,248,0.5);
-      --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+      --glow-gold: 0 0 30px rgba(245, 158, 11, 0.5), 0 0 60px rgba(245, 158, 11, 0.15);
+      --glow-accent: 0 0 25px rgba(14, 165, 233, 0.5), 0 0 50px rgba(14, 165, 233, 0.15);
+      --bg-gradient: linear-gradient(135deg, #010314 0%, #0a0f23 30%, #060b1f 70%, #010314 100%);
       --font-en: 'Inter', sans-serif;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -82,6 +82,10 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+    @keyframes goldShine {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
     body {
       font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
       background: var(--bg-gradient);
@@ -96,31 +100,51 @@
       overflow-x: hidden;
       position: relative;
     }
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 50%);
+      animation: rotate 30s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
     .container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
     .glass {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
       border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.02);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05);
       border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 18px;
       transition: all var(--transition);
+      transform-style: preserve-3d;
+      perspective: 1000px;
     }
     .glass:hover {
       border-color: var(--gold-bright);
       box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold);
-      transform: translateY(-2px);
+      transform: translateY(-4px) rotateX(1deg) rotateY(-0.5deg);
     }
     h1, h2, h3, h4 {
-      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold-light), var(--gold));
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-shadow: none;
       font-weight: 800;
       margin-bottom: 12px;
+      animation: goldShine 4s linear infinite;
     }
     h2 { font-size:1.6rem; }
     h3 { font-size:1.25rem; }
@@ -134,7 +158,7 @@
       cursor:pointer;
       transition: all 0.25s ease;
       font-size:0.9rem;
-      box-shadow: 0 4px 15px rgba(234,179,8,0.4);
+      box-shadow: 0 4px 15px rgba(234,179,8,0.4), 8px 8px 16px rgba(0,0,0,0.4), -2px -2px 8px rgba(255,255,255,0.05);
       letter-spacing:0.5px;
       position:relative;
       overflow:hidden;
@@ -143,14 +167,17 @@
     }
     .btn:hover {
       box-shadow: 0 6px 20px rgba(234,179,8,0.7);
-      transform:translateY(-1px);
+      transform:translateY(-2px);
     }
-    .btn:active { transform:scale(0.97); }
+    .btn:active { 
+      transform:scale(0.97); 
+      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.5), inset -2px -2px 4px rgba(255,255,255,0.02);
+    }
     .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
-    .btn-outline:hover { background:rgba(242,199,68,0.1); }
+    .btn-outline:hover { background:rgba(245,158,11,0.1); }
     .btn-accent {
       background: linear-gradient(135deg, var(--accent), #0284c7);
-      box-shadow:0 4px 15px rgba(56,189,248,0.4);
+      box-shadow:0 4px 15px rgba(14,165,233,0.4);
     }
     .btn-danger {
       background: linear-gradient(135deg, var(--danger), #b91c1c);
@@ -173,7 +200,7 @@
     }
     input:focus, textarea:focus, select:focus {
       border-color: var(--gold-bright);
-      box-shadow: 0 0 0 3px rgba(234,179,8,0.2), var(--glow-gold);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.2), var(--glow-gold);
       background: rgba(255,255,255,0.12);
     }
     textarea { resize:vertical; min-height:60px; }
@@ -270,7 +297,7 @@
       background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px;
       margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem;
     }
-    .habit-time-slot.done { background: rgba(105,240,174,0.2); border: 1px solid #69f0ae; }
+    .habit-time-slot.done { background: rgba(16,185,129,0.2); border: 1px solid #10b981; }
     .toast {
       position:fixed; top:20px; right:20px;
       background:linear-gradient(135deg, var(--gold), var(--gold-bright));
@@ -346,7 +373,8 @@
     }
     .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
     .evolution-tree .stage.active { opacity: 1; background: rgba(242,199,68,0.2); box-shadow: 0 0 15px var(--gold); }
-    .chapter-card { cursor:pointer; }
+    .chapter-card { cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .chapter-card:hover:not(.locked) { transform: translateY(-5px); box-shadow: var(--glow-gold); }
     .chapter-card.locked { opacity:0.5; pointer-events: none; }
     .skeleton {
       background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
@@ -434,10 +462,10 @@
     .question-item { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; margin: 12px 0; border-left: 3px solid var(--accent); }
     .user-card { padding:12px; background:rgba(255,255,255,0.03); border-radius:12px; margin-bottom:8px; }
     .heatmap-day { width:30px; height:30px; border-radius:6px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:12px; }
-    .heatmap-day.active { background:rgba(234,179,8,0.4); color:#000; }
+    .heatmap-day.active { background:rgba(245,158,11,0.4); color:#000; }
     .timeline-item { padding:8px 14px; border-radius:20px; margin:0 4px; font-size:0.8rem; }
     .timeline-item.active { background:var(--gold); color:#020617; font-weight:700; }
-    .timeline-item.completed { background:rgba(105,240,174,0.3); }
+    .timeline-item.completed { background:rgba(16,185,129,0.3); }
     .timeline-item.upcoming { color:var(--text-secondary); }
     @media (max-width:640px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
@@ -453,9 +481,9 @@
 </head>
 <body>
   <canvas id="bgCanvas"></canvas>
-  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#020617; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
-    <div style="border:4px solid rgba(242,199,68,0.15); border-top:4px solid #eab308; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
-    <span style="color:var(--gold); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
+  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#010314; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;">
+    <div style="border:4px solid rgba(245,158,11,0.15); border-top:4px solid #f59e0b; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
+    <span style="color:var(--gold-bright); font-weight:700; font-size:1.1rem; letter-spacing:1px;">AlamQuant ATTS</span>
   </div>
   <div id="toast" class="toast"></div>
   <div id="welcome-modal" class="hidden modal-overlay" aria-modal="true" role="dialog">
@@ -1030,6 +1058,7 @@
     <div class="nav-item" data-tab="profile"><span>👤</span> প্রোফাইল</div>
   </div>
   <script>
+    // ==================== সম্পূর্ণ জাভাস্ক্রিপ্ট (আগের index.html থেকে) ====================
     (function(){
       const canvas = document.getElementById('bgCanvas');
       const ctx = canvas.getContext('2d');
@@ -1428,8 +1457,9 @@
             <div class="stat-card glass"><div class="stat-value">${data.totalUsers}</div><div class="stat-label">মোট ইউজার</div></div>
             <div class="stat-card glass"><div class="stat-value">${data.dailyActiveUsers}</div><div class="stat-label">আজ সক্রিয়</div></div>
             <div class="stat-card glass"><div class="stat-value">${data.totalJournals}</div><div class="stat-label">মোট জার্নাল</div></div>
-            <div class="stat-card glass"><div class="stat-value">${data.completedTrainings}</div><div class="stat-label">ট্রেনিং সম্পন্ন</div></div>
-          </div>`;
+            <div class="stat-card glass"><div class="stat-value">${data.completionRate}%</div><div class="stat-label">ট্রেনিং সম্পন্ন</div></div>
+          </div>
+          <div class="glass" style="margin-top:24px;"><h3>Quick Stats</h3><p>Total Chapters: <strong>${data.totalChapters}</strong></p><p>Certified: <strong>${data.completedTrainings}</strong></p></div>`;
       }
     }
     async function loadAdminUsers() {
@@ -1437,7 +1467,7 @@
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `
         <div class="user-card flex" style="justify-content:space-between; align-items:center;">
-          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
+          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lv.${u.level} · ${escapeHtml(u.identity_level)}</span>
           <div style="display:flex; gap:6px; align-items:center;">
             <span class="badge">${u.xp} XP</span>
             <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>
@@ -1451,7 +1481,7 @@
       const list = document.getElementById('admin-users-list');
       if (res && !res.error) list.innerHTML = res.map(u => `
         <div class="user-card flex" style="justify-content:space-between; align-items:center;">
-          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lvl ${u.level} · ${escapeHtml(u.identity_level)}</span>
+          <span>${escapeHtml(u.avatar_emoji||'🙂')} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lv.${u.level} · ${escapeHtml(u.identity_level)}</span>
           <div style="display:flex; gap:6px; align-items:center;">
             <span class="badge">${u.xp} XP</span>
             <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>

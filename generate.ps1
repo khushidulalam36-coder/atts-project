@@ -11,6 +11,9 @@
 $projectRoot = Get-Location
 Write-Host "Project root: $projectRoot" -ForegroundColor Cyan
 
+# BOM‑হীন UTF‑8 এনকোডিং (এই লাইনটি ছাড়া বাংলা ও ইমোজি নষ্ট হবে)
+$Utf8NoBom = New-Object System.Text.UTF8Encoding $false
+
 # Create required folders
 New-Item -ItemType Directory -Force -Path "$projectRoot\api" | Out-Null
 
@@ -21,7 +24,7 @@ $vercelJson = @'
 {
   "headers": [
     {
-      "source": "^/(.*\\.html)$",
+      "source": "/(.*).html",
       "headers": [
         { "key": "Content-Type", "value": "text/html; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
@@ -43,7 +46,7 @@ $vercelJson = @'
   ]
 }
 '@
-$vercelJson | Out-File -FilePath "$projectRoot\vercel.json" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\vercel.json", $vercelJson, $Utf8NoBom)
 Write-Host "Created vercel.json (Enterprise security headers)" -ForegroundColor Green
 
 # ============================================
@@ -75,7 +78,7 @@ $packageJson = @'
   }
 }
 '@
-$packageJson | Out-File -FilePath "$projectRoot\package.json" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\package.json", $packageJson, $Utf8NoBom)
 Write-Host "Created package.json" -ForegroundColor Green
 
 # ============================================
@@ -512,7 +515,7 @@ textarea { resize:vertical; min-height:60px; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
 }
 '@
-$stylesCss | Out-File -FilePath "$projectRoot\styles.css" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\styles.css", $stylesCss, $Utf8NoBom)
 Write-Host "Created styles.css (Enterprise Premium Theme)" -ForegroundColor Green
 
 # ============================================
@@ -585,7 +588,7 @@ self.addEventListener('notificationclick', event => {
   );
 });
 '@
-$swJs | Out-File -FilePath "$projectRoot\sw.js" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\sw.js", $swJs, $Utf8NoBom)
 Write-Host "Created sw.js (with push notification handling)" -ForegroundColor Green
 
 # ============================================
@@ -613,7 +616,7 @@ $manifestJson = @'
   ]
 }
 '@
-$manifestJson | Out-File -FilePath "$projectRoot\manifest.json" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\manifest.json", $manifestJson, $Utf8NoBom)
 Write-Host "Created manifest.json" -ForegroundColor Green
 
 # ============================================
@@ -677,7 +680,7 @@ server.listen(PORT, () => {
   console.log('Server running at http://localhost:' + PORT);
 });
 '@
-$serverJs | Out-File -FilePath "$projectRoot\server.js" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\server.js", $serverJs, $Utf8NoBom)
 Write-Host "Created server.js" -ForegroundColor Green
 
 # ============================================
@@ -702,7 +705,7 @@ CORS_ORIGIN=https://your-domain.vercel.app
 # A random temporary password will be printed in Vercel function logs.
 # Change password immediately after first login!
 '@
-$envLocal | Out-File -FilePath "$projectRoot\.env.local" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\.env.local", $envLocal, $Utf8NoBom)
 Write-Host "Created .env.local (placeholder with init instructions)" -ForegroundColor Yellow
 
 # ============================================
@@ -715,12 +718,13 @@ node_modules/
 .DS_Store
 *.log
 '@
-$gitignore | Out-File -FilePath "$projectRoot\.gitignore" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\.gitignore", $gitignore, $Utf8NoBom)
 Write-Host "Created .gitignore" -ForegroundColor Green
 
 # ============================================
 # 9. admin.html (Complete Enterprise Admin Panel)
 # ============================================
+# Note: The content of admin.html remains the same as before; we just save it with the correct encoding.
 $adminHtml = @'
 <!DOCTYPE html>
 <html lang="bn">
@@ -1118,7 +1122,7 @@ $adminHtml = @'
 </body>
 </html>
 '@
-$adminHtml | Out-File -FilePath "$projectRoot\admin.html" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\admin.html", $adminHtml, $Utf8NoBom)
 Write-Host "Created admin.html (Enterprise Grade)" -ForegroundColor Green
 
 # ============================================
@@ -1170,7 +1174,7 @@ $verifyHtml = @'
 </body>
 </html>
 '@
-$verifyHtml | Out-File -FilePath "$projectRoot\verify.html" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\verify.html", $verifyHtml, $Utf8NoBom)
 Write-Host "Created verify.html" -ForegroundColor Green
 
 # ============================================
@@ -1189,7 +1193,7 @@ $indexHtmlPlaceholder = @'
 </body>
 </html>
 '@
-$indexHtmlPlaceholder | Out-File -FilePath "$projectRoot\index.html" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\index.html", $indexHtmlPlaceholder, $Utf8NoBom)
 Write-Host "Created placeholder index.html (REPLACE with final enterprise version)" -ForegroundColor Yellow
 
 # ============================================
@@ -1205,7 +1209,7 @@ export default async function handler(req) {
   return new Response("API not configured yet", { status: 501 });
 }
 '@
-$setupJsPlaceholder | Out-File -FilePath "$projectRoot\api\setup.js" -Encoding utf8
+[System.IO.File]::WriteAllText("$projectRoot\api\setup.js", $setupJsPlaceholder, $Utf8NoBom)
 Write-Host "Created placeholder api/setup.js (REPLACE with final enterprise version)" -ForegroundColor Yellow
 
 # ============================================
