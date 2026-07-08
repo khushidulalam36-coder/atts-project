@@ -54,15 +54,14 @@ function xmlEscape(str) {
     .replace(/'/g, '&apos;');
 }
 
-async function authenticateAdmin(req) {
+async function authenticate(req) {
   const auth = req.headers.get('authorization');
   if (!auth) return null;
   try {
     const token = auth.replace('Bearer ', '');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded.role || decoded.role !== 'admin') return null;
-    const [admin] = await sql`SELECT * FROM admin_users WHERE id = ${decoded.id}`;
-    return admin;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const [user] = await sql`SELECT * FROM users WHERE id = ${decoded.id}`;
+    return user;
   } catch {
     return null;
   }
@@ -73,7 +72,7 @@ async function authenticateAdmin(req) {
   if (!auth) return null;
   try {
     const token = auth.replace('Bearer ', '');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     if (!decoded.role || decoded.role !== 'admin') return null;
     const [admin] = await sql`SELECT * FROM admin_users WHERE id = ${decoded.id}`;
     return admin;
@@ -257,7 +256,7 @@ function toNodeHandler(handlerFn) {
       }
       try {
         const token = authHeader.replace('Bearer ', '');
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         if (!decoded.role || decoded.role !== 'admin') {
           res.writeHead(403, corsHeaders);
           res.end(JSON.stringify({ error: 'Forbidden' }));
@@ -832,26 +831,15 @@ if (path.startsWith('/api/setup')) {
       return json({ message: 'DB initialized with all tables and sample data' });
     }
 
-      // ==================== DEBUG: Check JWT_SECRET ====================
-  if (path === '/debug-env' && req.method === 'GET') {
-    const secret = process.env.JWT_SECRET;
-    return json({
-      jwt_set: !!secret,
-      length: secret ? secret.length : 0,
-      firstChar: secret ? secret[0] : 'none',
-      message: 'JWT_SECRET is ' + (secret ? 'set' : 'NOT SET')
-    });
-  }
-
     // ---------------- PUBLIC: Auto Login, Google OAuth, Admin Login, Register, Login ----------------
     if (path === '/auto-login' && req.method === 'GET') {
       const tokenParam = url.searchParams.get('token');
       if (!tokenParam) return json({ error: 'No token' }, 400);
       let payload;
-      try { payload = jwt.verify(tokenParam, process.env.JWT_SECRET); } catch { return json({ error: 'Invalid token' }, 401); }
+      try { payload = jwt.verify(tokenParam, JWT_SECRET); } catch { return json({ error: 'Invalid token' }, 401); }
       let user = (await sql`SELECT * FROM users WHERE email = ${payload.email}`)[0];
       if (!user) user = (await sql`INSERT INTO users (email, password_hash) VALUES (${payload.email}, '') RETURNING *`)[0];
-      const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+      const newToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '30d' });
       return json({ token: newToken, user: { id: user.id, email: user.email, display_name: user.display_name, identity_level: user.identity_level, xp: user.xp, level: calculateLevel(user.xp), avatar_emoji: user.avatar_emoji } });
     }
 
@@ -883,7 +871,7 @@ if (path.startsWith('/api/setup')) {
       if (!adminUser || !(await bcrypt.compare(password, adminUser.password_hash))) {
         return json({ error: 'Invalid credentials' }, 401);
       }
-      const adminToken = jwt.sign({ id: adminUser.id, role: 'admin', admin_level: adminUser.role }, process.env.JWT_SECRET, { expiresIn: '12h' });
+      const adminToken = jwt.sign({ id: adminUser.id, role: 'admin', admin_level: adminUser.role }, JWT_SECRET, { expiresIn: '12h' });
       return json({ token: adminToken, name: adminUser.name, role: adminUser.role });
     }
 
