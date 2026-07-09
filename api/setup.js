@@ -1119,6 +1119,17 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+        // Vercel Blob URL manually add (for media library)
+    if (path === '/admin/media/url' && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const { url } = await req.json();
+      if (!url) return errorJson('URL required', 400);
+      await sql`INSERT INTO media_files (url, filename) VALUES (${url}, 'manual')`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'add_media_url', ${JSON.stringify({url})})`;
+      return json({ success: true });
+    }
+
     if (path === '/admin/translations' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
