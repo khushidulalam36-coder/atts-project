@@ -496,16 +496,6 @@
     .ql-toolbar.ql-snow { border-color: var(--border-gold); background: rgba(255,255,255,0.05); }
     .ql-container.ql-snow { border-color: var(--border-gold); }
     .ql-editor { color: var(--text); }
-    @media (max-width:640px) {
-      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
-      .glass { padding:16px; }
-      h2 { font-size:1.3rem; }
-      .bottom-nav { padding: 4px 10px; gap: 6px; }
-      .nav-item span { font-size: 18px; }
-      .admin-sidebar { width: 70px; }
-      .admin-sidebar ul li span { display: none; }
-      .admin-main { margin-left: 70px; }
-    }
     /* ======= মিসিং CSS (যোগ করুন) ======= */
     .habit-times-grid {
       display: flex;
@@ -536,6 +526,16 @@
       font-size: 0.9rem;
     }
     /* ======= শেষ ======= */
+    @media (max-width:640px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+      .glass { padding:16px; }
+      h2 { font-size:1.3rem; }
+      .bottom-nav { padding: 4px 10px; gap: 6px; }
+      .nav-item span { font-size: 18px; }
+      .admin-sidebar { width: 70px; }
+      .admin-sidebar ul li span { display: none; }
+      .admin-main { margin-left: 70px; }
+    }
   </style>
 </head>
 <body>
@@ -634,6 +634,10 @@
         <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.remove('hidden')" style="width:100%; margin-top:8px;">পাসওয়ার্ড ভুলে গেছেন?</button>
         <div style="margin:16px 0; color:var(--text-secondary);">— অথবা —</div>
         <div id="google-signin-btn" style="display:flex; justify-content:center;"></div>
+        <!-- 🔑 Admin hidden link -->
+        <div style="text-align:center; margin-top:12px;">
+          <a href="#" onclick="document.getElementById('admin-modal').classList.remove('hidden'); return false;" style="color:var(--text-secondary); font-size:0.8rem; text-decoration:none;">🔑 Admin</a>
+        </div>
       </div>
       <div id="register-form" class="hidden">
         <input type="text" id="reg-name" placeholder="তোমার নাম">
@@ -1275,6 +1279,7 @@
     let habitDefinitions = [];
     let todayLogs = [];
     let reminderInterval = null;
+    // ======= শেষ =======
 
     function escapeHtml(text) {
       if (!text) return '';
@@ -1908,6 +1913,7 @@
       await adminApiCall('DELETE', `/admin/chapter/${id}`);
       loadAdminChapters();
     }
+    // Already declared at top, so remove redeclaration
     let currentQmChapterId, currentQmTitle;
     async function manageQuestions(chapterId, title) {
       currentQmChapterId = chapterId;
@@ -2785,29 +2791,13 @@
       loadHabits();
       showToast('হ্যাবিট যোগ হয়েছে');
     }
-    document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => {
-          if (modal.id !== 'admin-modal' || document.getElementById('admin-panel').classList.contains('hidden')) {
-            modal.classList.add('hidden');
-          }
-        });
-      }
-    });
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(()=>{});
-      });
-    }
 
-        // ======= মিসিং ফাংশন (যোগ করুন) =======
+    // ======= মিসিং ফাংশন (যোগ করুন) =======
     function showAssessment() {
       document.getElementById('assessment-screen').classList.remove('hidden');
       document.getElementById('assessment-prompt').classList.add('hidden');
       loadAssessmentQuestions();
     }
-
     async function loadAssessmentQuestions() {
       const questions = await apiCall('GET', '/assessment/questions');
       const container = document.getElementById('assessment-questions');
@@ -2822,7 +2812,6 @@
       `).join('');
       document.getElementById('assessment-result').classList.add('hidden');
     }
-
     async function submitAssessment() {
       const radios = document.querySelectorAll('#assessment-questions input[type="radio"]:checked');
       const answers = [];
@@ -2838,7 +2827,6 @@
       </div>`;
       document.getElementById('assessment-screen').classList.add('hidden');
     }
-
     function updateEvolutionTree(phase) {
       document.querySelectorAll('.evolution-tree .stage').forEach(el => {
         el.classList.remove('active');
@@ -2846,6 +2834,22 @@
       });
     }
     // ======= শেষ =======
+
+    document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => showTab(item.dataset.tab)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => {
+          if (modal.id !== 'admin-modal' || document.getElementById('admin-panel').classList.contains('hidden')) {
+            modal.classList.add('hidden');
+          }
+        });
+      }
+    });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(()=>{});
+      });
+    }
     async function initDashboard(user) {
       document.getElementById('auth-screen').classList.add('hidden');
       document.getElementById('loading-screen').style.display = 'none';
