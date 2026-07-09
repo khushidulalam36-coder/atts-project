@@ -1,14 +1,6 @@
 // ===================================================
-// AlamQuant ATTS - api/setup.js (Enterprise-Grade v3.0)
-// Final Production-Ready API Handler
-// Sections:
-//  1. Dependencies & Config
-//  2. Database Init & Seed (site_settings, media_files, language columns)
-//  3. Public Endpoints (auth, verify, theme, assessment questions, benefits, translations)
-//  4. Admin Endpoints (dashboard, users, impersonate, settings, media, chapters, courses, activity, etc.)
-//  5. Authenticated User Endpoints (profile, journal, training, community, simulator, etc.)
+// SECTION 1: Dependencies & Configuration
 // ===================================================
-
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -24,8 +16,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
 import { put } from '@vercel/blob';
 import busboy from 'busboy';
+import { Resend } from 'resend';
+import { z } from 'zod';
+import * as Sentry from '@sentry/node';
 
-// ---------- Environment & config validation ----------
+// ---------- Environment validation ----------
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
@@ -38,21 +33,51 @@ const sql = neon(process.env.DATABASE_URL);
 const ADMIN_SECRET = process.env.ADMIN_SECRET || (() => { throw new Error('ADMIN_SECRET must be set') })();
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
-const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5 MB
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://your-domain.vercel.app';
+const allowedOrigins = CORS_ORIGIN === '*' ? '*' : CORS_ORIGIN.split(',').map(s => s.trim());
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const SENTRY_DSN = process.env.SENTRY_DSN || '';
+const RATE_LIMIT_KV_URL = process.env.KV_URL || '';
+
+// Sentry initialization
+if (SENTRY_DSN) {
+  Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.1 });
+}
 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// ---------- Simple in-memory rate limiter ----------
+// ---------- Rate limiter (Vercel KV + in-memory fallback) ----------
+let kv;
+if (RATE_LIMIT_KV_URL) {
+  try {
+    const { createClient } = await import('@vercel/kv');
+    kv = createClient({ url: RATE_LIMIT_KV_URL });
+  } catch (e) {
+    console.warn('KV import failed, using in-memory rate limiter');
+    Sentry.captureException(e);
+  }
+}
+
 const rateLimitMap = new Map();
-function rateLimiter(ip, limit = 60, windowMs = 60000) {
-  const key = ip;
+async function rateLimiter(ip, limit = 100, windowMs = 60000) {
+  if (kv) {
+    try {
+      const key = `rl:${ip}`;
+      const current = await kv.incr(key);
+      if (current === 1) await kv.expire(key, Math.ceil(windowMs / 1000));
+      return current <= limit;
+    } catch (e) {
+      Sentry.captureException(e);
+      // fall through to in-memory
+    }
+  }
   const now = Date.now();
-  if (!rateLimitMap.has(key)) {
-    rateLimitMap.set(key, { count: 1, start: now });
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, start: now });
     return true;
   }
-  const entry = rateLimitMap.get(key);
+  const entry = rateLimitMap.get(ip);
   if (now - entry.start > windowMs) {
     entry.count = 1;
     entry.start = now;
@@ -62,11 +87,11 @@ function rateLimiter(ip, limit = 60, windowMs = 60000) {
   return entry.count <= limit;
 }
 
-// ---------- Helper ----------
+// ---------- Helper functions ----------
 function json(data, status = 200, extraHeaders = {}) {
   const headers = {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': CORS_ORIGIN,
+    'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     ...extraHeaders,
@@ -105,7 +130,8 @@ async function authenticate(req) {
     if (blacklisted) return null;
     const [user] = await sql`SELECT * FROM users WHERE id = ${decoded.id}`;
     return user;
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err);
     return null;
   }
 }
@@ -123,7 +149,7 @@ async function authenticateAdmin(req) {
     }
     return admin;
   } catch (err) {
-    console.error('JWT verify error:', err.message);
+    Sentry.captureException(err);
     return null;
   }
 }
@@ -198,7 +224,6 @@ async function generateFeedback(userId, journal, userName) {
     f.push('ওভারট্রেডিং ক্যাপিটাল ও মাইন্ড দুটোই ক্ষয় করে।');
     m.push('কাল সর্বোচ্চ ২টি ট্রেড করবে, মান বজায় রাখো।');
   }
-
   const radar = journal.radar_scores;
   if (radar?.planning < 12) f.push('পরিকল্পনা অনুসরণে আরও মনোযোগ দিতে হবে।');
   if (radar?.execution < 12) f.push('এক্সিকিউশন ইম্প্রুভ করো, ছোটখাটো ভুল কমানো দরকার।');
@@ -287,18 +312,49 @@ async function checkAndCompleteQuest(userId, journal, date) {
   }
 }
 
-// ====================== Node.js to Fetch API wrapper (fixed) ======================
+// ---------- Zod validation schemas ----------
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  display_name: z.string().optional(),
+  avatar_emoji: z.string().max(10).optional(),
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+  display_name: z.string().optional(),
+});
+
+const evaluationSchema = z.object({
+  trades_count: z.number().int().min(0),
+  stop_loss_moved: z.boolean(),
+  plan_deviation: z.boolean(),
+  revenge_trade: z.boolean(),
+  fomo_entry: z.boolean(),
+  overtrading: z.boolean(),
+  rule_followed: z.boolean(),
+  scores: z.record(z.number().min(0).max(10)),
+  evaluation_notes: z.string().optional(),
+  reflection: z.string().min(1),
+  date: z.string().optional(),
+  mood: z.enum(['happy', 'neutral', 'stressed', 'angry']).optional(),
+});
+
+// ===================================================
+// SECTION 2: Node.js to Fetch API wrapper
+// ===================================================
 function toNodeHandler(handlerFn) {
   return async (req, res) => {
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const fullUrl = `${protocol}://${host}${req.url}`;
 
-    // ---------- Handle multipart file upload directly (busboy) ----------
+    // ---------- Multipart file upload handling ----------
     if (req.method === 'POST' && req.url.startsWith('/api/setup/admin/upload-image')) {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
-        res.writeHead(401, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+        res.writeHead(401, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
         res.end(JSON.stringify({ error: 'Authentication required' }));
         return;
       }
@@ -306,25 +362,25 @@ function toNodeHandler(handlerFn) {
         const token = authHeader.replace('Bearer ', '');
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (!decoded.role || decoded.role !== 'admin') {
-          res.writeHead(403, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+          res.writeHead(403, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
           res.end(JSON.stringify({ error: 'Forbidden' }));
           return;
         }
       } catch {
-        res.writeHead(401, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+        res.writeHead(401, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
         res.end(JSON.stringify({ error: 'Invalid token' }));
         return;
       }
 
       const contentType = req.headers['content-type'];
       if (!contentType || !contentType.startsWith('multipart/form-data')) {
-        res.writeHead(400, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+        res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
         res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
         return;
       }
 
       try {
-        const bb = busboy({ headers: { 'content-type': contentType }, limits: { fileSize: MAX_UPLOAD_SIZE } });
+        const bb = busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 5 * 1024 * 1024 } });
         const files = [];
         let aborted = false;
 
@@ -342,19 +398,17 @@ function toNodeHandler(handlerFn) {
             if (aborted) return;
             const buffer = Buffer.concat(chunks);
             let finalUrl = '';
-
-            // ---------- Vercel Blob try, fallback to Base64 ----------
             try {
               const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
               finalUrl = blob.url;
               await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
             } catch (blobError) {
               console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
+              Sentry.captureException(blobError);
               const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
               finalUrl = base64;
               await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
             }
-
             files.push(finalUrl);
           });
         });
@@ -362,21 +416,22 @@ function toNodeHandler(handlerFn) {
         bb.on('finish', () => {
           if (aborted) return;
           if (files.length === 0) {
-            res.writeHead(400, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+            res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
             res.end(JSON.stringify({ error: 'No file uploaded' }));
             return;
           }
           res.writeHead(200, {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': CORS_ORIGIN
+            'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0]
           });
           res.end(JSON.stringify({ url: files[0] }));
         });
 
         bb.on('error', (err) => {
           console.error('Busboy error:', err);
+          Sentry.captureException(err);
           if (!res.headersSent) {
-            res.writeHead(400, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+            res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
             res.end(JSON.stringify({ error: err.message }));
           }
         });
@@ -384,14 +439,14 @@ function toNodeHandler(handlerFn) {
         req.pipe(bb);
         return;
       } catch (err) {
-        console.error(err);
-        res.writeHead(500, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
+        Sentry.captureException(err);
+        res.writeHead(500, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
         res.end(JSON.stringify({ error: 'Internal server error' }));
         return;
       }
     }
 
-    // ---------- Normal Fetch API conversion for other routes ----------
+    // ---------- Normal Fetch API conversion ----------
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
       if (value) {
@@ -407,16 +462,10 @@ function toNodeHandler(handlerFn) {
         req.on('data', (chunk) => chunks.push(chunk));
         body = await new Promise((resolve, reject) => {
           req.on('end', () => resolve(Buffer.concat(chunks)));
-          req.on('error', (err) => {
-            console.error('Body parse error:', err);
-            resolve(null);
-          });
+          req.on('error', (err) => { Sentry.captureException(err); resolve(null); });
           setTimeout(() => resolve(null), 10000);
         });
-      } catch(e) {
-        console.error('Body parse exception:', e);
-        body = null;
-      }
+      } catch (e) { Sentry.captureException(e); }
     }
 
     const request = new Request(fullUrl, {
@@ -428,22 +477,17 @@ function toNodeHandler(handlerFn) {
     try {
       const response = await handlerFn(request);
       const responseHeaders = {
-        'Access-Control-Allow-Origin': CORS_ORIGIN,
+        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       };
-      response.headers.forEach((value, key) => {
-        responseHeaders[key] = value;
-      });
+      response.headers.forEach((value, key) => { responseHeaders[key] = value; });
       res.writeHead(response.status, responseHeaders);
       if (response.body) {
         const reader = response.body.getReader();
         const pump = async () => {
           const { done, value } = await reader.read();
-          if (done) {
-            res.end();
-            return;
-          }
+          if (done) { res.end(); return; }
           res.write(value);
           await pump();
         };
@@ -452,33 +496,35 @@ function toNodeHandler(handlerFn) {
         res.end();
       }
     } catch (err) {
-      console.error('Handler error:', err);
+      Sentry.captureException(err);
       res.writeHead(500, {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': CORS_ORIGIN
+        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0]
       });
       res.end(JSON.stringify({ error: 'Internal server error' }));
     }
   };
 }
 
-// ====================== Main API Handler ======================
+// ===================================================
+// SECTION 3: Main API Handler
+// ===================================================
 async function apiHandler(req) {
-  // Rate limiting (global 100 req/min per IP)
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
-  if (!rateLimiter(ip, 100, 60000)) {
+  if (!(await rateLimiter(ip, 100, 60000))) {
     return json({ error: 'Too many requests' }, 429);
   }
 
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: {
-        'Access-Control-Allow-Origin': CORS_ORIGIN,
+        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       }
     });
   }
+
   const host = req.headers.get('host') || 'localhost';
   const protocol = req.headers.get('x-forwarded-proto') || 'http';
   const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
@@ -493,7 +539,7 @@ async function apiHandler(req) {
   }
 
   try {
-    // ==================== DB Init & Seed (PROTECTED) ====================
+    // ==================== DB Init & Seed ====================
     if (path === '/init-db' && req.method === 'POST') {
       if (process.env.ALLOW_INIT_DB !== 'true') {
         return errorJson('Init DB is disabled in production', 403);
@@ -504,7 +550,6 @@ async function apiHandler(req) {
       const { admin_secret } = body;
       if (admin_secret !== ADMIN_SECRET) return errorJson('Forbidden', 403);
 
-      // Check if tables already exist (optional safety)
       const [{ exists }] = await sql`SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users')`;
       if (exists) {
         return errorJson('Database already initialized. To re-init, drop all tables first.', 400);
@@ -872,7 +917,19 @@ async function apiHandler(req) {
         uploaded_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
-      // Seed data
+      // ----- ADD INDEXES -----
+      await sql`CREATE INDEX IF NOT EXISTS idx_daily_journals_user_date ON daily_journals(user_id, date)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_badges_user ON badges(user_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_chapters_course ON chapters(course_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_user_chapter_progress_user ON user_chapter_progress(user_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_community_posts_user ON community_posts(user_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_habits_logs_user_date ON habit_logs(user_id, date)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_mood_logs_user_date ON mood_logs(user_id, date)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_portfolio_user_date ON portfolio_performance(user_id, date)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_daily_quests_user_date ON daily_quests(user_id, quest_date)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_chapter_quiz_questions_chapter ON chapter_quiz_questions(chapter_id)`;
+
+      // ----- Seed data -----
       const [adminExists] = await sql`SELECT id FROM admin_users WHERE email = 'admin@alamquant.com'`;
       if (!adminExists) {
         const tempPassword = uuidv4().slice(0, 12);
@@ -934,10 +991,10 @@ async function apiHandler(req) {
           ('কমিউনিটি সাপোর্ট', 'সফল ট্রেডারদের সাথে অভিজ্ঞতা বিনিময়ের সুযোগ', '🤝')`;
       }
 
-      return json({ message: 'Database initialized successfully. Please note the temporary admin password shown in server logs.' });
+      return json({ message: 'Database initialized successfully. Indexes and seed data created. Please note the temporary admin password shown in server logs.' });
     }
 
-    // ---------------- PUBLIC ROUTES (no auth required) ----------------
+    // ==================== PUBLIC ROUTES (no auth required) ====================
     if (path === '/auto-login' && req.method === 'GET') {
       const tokenParam = url.searchParams.get('token');
       if (!tokenParam) return errorJson('No token', 400);
@@ -969,6 +1026,7 @@ async function apiHandler(req) {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
         return json({ token, user: sanitizeUser(user) });
       } catch (e) {
+        Sentry.captureException(e);
         return errorJson('Invalid Google token', 401);
       }
     }
@@ -991,14 +1049,31 @@ async function apiHandler(req) {
 
     if (path === '/register' && req.method === 'POST') {
       const body = await req.json();
-      const { email, password, display_name, avatar_emoji } = body;
-      if (!email || !password || password.length < 6) return errorJson('Invalid input', 400);
+      const parsed = registerSchema.safeParse(body);
+      if (!parsed.success) return json({ error: parsed.error.issues }, 400);
+      const { email, password, display_name, avatar_emoji } = parsed.data;
       const [existing] = await sql`SELECT id FROM users WHERE email = ${email}`;
       if (existing) return errorJson('Email already registered', 409);
       const hash = await bcrypt.hash(password, 12);
       const verificationToken = uuidv4();
       const name = display_name || email.split('@')[0];
-      const [user] = await sql`INSERT INTO users (email, password_hash, display_name, avatar_emoji, verification_token) VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}) RETURNING id, email, display_name, identity_level, xp, level, avatar_emoji, email_verified`;
+      const [user] = await sql`INSERT INTO users (email, password_hash, display_name, avatar_emoji, verification_token) VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}) RETURNING *`;
+      
+      // Send verification email
+      if (resend) {
+        const verifyLink = `${protocol}://${host}/api/setup/verify-email?token=${verificationToken}`;
+        try {
+          await resend.emails.send({
+            from: 'AlamQuant ATTS <noreply@alamquant.com>',
+            to: email,
+            subject: 'ইমেইল যাচাইকরণ',
+            html: `<p>ইমেইল যাচাই করতে এখানে ক্লিক করুন:</p><a href="${verifyLink}">${verifyLink}</a>`
+          });
+        } catch (e) {
+          Sentry.captureException(e);
+        }
+      }
+      
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
       return json({ token, user: sanitizeUser(user), message: 'Registration successful. Please verify your email.' });
     }
@@ -1014,7 +1089,9 @@ async function apiHandler(req) {
 
     if (path === '/login' && req.method === 'POST') {
       const body = await req.json();
-      const { email, password, display_name } = body;
+      const parsed = loginSchema.safeParse(body);
+      if (!parsed.success) return json({ error: parsed.error.issues }, 400);
+      const { email, password, display_name } = parsed.data;
       const [user] = await sql`SELECT * FROM users WHERE email = ${email}`;
       if (!user || !(await bcrypt.compare(password, user.password_hash))) return errorJson('Invalid credentials', 401);
       if (!user.email_verified) return errorJson('Please verify your email first', 403);
@@ -1033,6 +1110,19 @@ async function apiHandler(req) {
       if (!user) return json({ message: 'If the email exists, a reset link has been sent.' });
       const resetToken = uuidv4();
       await sql`UPDATE users SET verification_token = ${resetToken} WHERE id = ${user.id}`;
+      if (resend) {
+        const resetLink = `${protocol}://${host}/api/setup/reset-password?token=${resetToken}`;
+        try {
+          await resend.emails.send({
+            from: 'AlamQuant ATTS <noreply@alamquant.com>',
+            to: email,
+            subject: 'পাসওয়ার্ড রিসেট',
+            html: `<p>পাসওয়ার্ড রিসেট করতে ক্লিক করুন:</p><a href="${resetLink}">${resetLink}</a>`
+          });
+        } catch (e) {
+          Sentry.captureException(e);
+        }
+      }
       return json({ message: 'If the email exists, a reset link has been sent.' });
     }
 
@@ -1119,7 +1209,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // Vercel Blob URL manually add (for media library)
+    // Vercel Blob URL manually add
     if (path === '/admin/media/url' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1172,17 +1262,26 @@ async function apiHandler(req) {
       return json({ totalUsers, dailyActiveUsers: dau, totalJournals, totalChapters, completedTrainings, completionRate: totalUsers ? Math.round(completedTrainings/totalUsers*100) : 0 });
     }
 
+    // ------------------ PAGINATED USERS ------------------
     if (path === '/admin/users' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const limit = 20;
+      const offset = (page - 1) * limit;
       const search = url.searchParams.get('search') || '';
-      let users;
+
+      let baseQuery = sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji, email_verified FROM users`;
       if (search) {
-        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji, email_verified FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'} ORDER BY created_at DESC LIMIT 50`;
-      } else {
-        users = await sql`SELECT id, email, display_name, identity_level, xp, level, avatar_emoji, email_verified FROM users ORDER BY created_at DESC LIMIT 50`;
+        baseQuery = sql`${baseQuery} WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'}`;
       }
-      return json(users);
+      const countQuery = search ? 
+        sql`SELECT COUNT(*)::int FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'}` :
+        sql`SELECT COUNT(*)::int FROM users`;
+      
+      const total = (await countQuery)[0].count;
+      const users = await sql`${baseQuery} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+      return json({ users, total, page, totalPages: Math.ceil(total / limit) });
     }
 
     if (path.match(/^\/admin\/user\/(.+)$/) && req.method === 'DELETE') {
@@ -1319,7 +1418,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // Admin Simulate Days (FIXED: removed admin_secret, now only admin auth)
+    // Admin Simulate Days
     if (path === '/admin/simulate-day' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1378,11 +1477,25 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // Admin content management (lessons, quizzes, videos)
-    if (path === '/admin/content' && req.method === 'POST') {
-      const body = await req.json();
+    // ------------------ ADMIN CONTENT DELETE (SQL injection fix) ------------------
+    if (path.match(/^\/admin\/content\/(lesson|quiz|video)\/(\d+)$/) && req.method === 'DELETE') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
+      const [type, idStr] = path.split('/').slice(-2);
+      const id = parseInt(idStr);
+      const tableMap = { lesson: 'lessons', quiz: 'quizzes', video: 'video_library' };
+      const table = tableMap[type];
+      if (!table) return errorJson('Invalid type', 400);
+      // table is from a strict whitelist, safe to interpolate
+      await sql`DELETE FROM ${sql(table)} WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_delete', ${JSON.stringify({type, id})})`;
+      return json({ success: true });
+    }
+
+    if (path === '/admin/content' && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const body = await req.json();
       const { type } = body;
       if (type === 'lesson') {
         const { day, phase, title, content } = body;
@@ -1435,93 +1548,6 @@ async function apiHandler(req) {
       }
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_update', ${JSON.stringify({type, id})})`;
       return json({ success: true });
-    }
-
-    if (path.match(/^\/admin\/content\/(lesson|quiz|video)\/(\d+)$/) && req.method === 'DELETE') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const [type, idStr] = path.split('/').slice(-2);
-      const id = parseInt(idStr);
-      const tableMap = { lesson: 'lessons', quiz: 'quizzes', video: 'video_library' };
-      await sql`DELETE FROM ${sql(tableMap[type])} WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_delete', ${JSON.stringify({type, id})})`;
-      return json({ success: true });
-    }
-
-    // Admin assessment/benefits editing
-    if (path.match(/^\/admin\/assessment\/(\d+)$/) && req.method === 'PUT') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const id = parseInt(path.split('/')[3]);
-      const body = await req.json();
-      const { question, category } = body;
-      await sql`UPDATE assessment_questions SET question = ${question}, category = ${category} WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_update', ${JSON.stringify({id})})`;
-      return json({ success: true });
-    }
-
-    if (path === '/admin/assessment-question' && req.method === 'POST') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const body = await req.json();
-      const { question, category } = body;
-      if (!question) return errorJson('Question required', 400);
-      const [q] = await sql`INSERT INTO assessment_questions (question, category, order_index) VALUES (${question}, ${category || ''}, 99) RETURNING *`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_add', ${JSON.stringify(q)})`;
-      return json(q, 201);
-    }
-
-    if (path.match(/^\/admin\/assessment\/(\d+)$/) && req.method === 'DELETE') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const id = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM assessment_questions WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_delete', ${JSON.stringify({id})})`;
-      return json({ success: true });
-    }
-
-    if (path === '/admin/benefit' && req.method === 'POST') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const body = await req.json();
-      const { title, description, icon } = body;
-      if (!title) return errorJson('Title required', 400);
-      const [b] = await sql`INSERT INTO benefits (title, description, icon) VALUES (${title}, ${description || ''}, ${icon || '🎁'}) RETURNING *`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_add', ${JSON.stringify(b)})`;
-      return json(b, 201);
-    }
-
-    if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'PUT') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const id = parseInt(path.split('/')[3]);
-      const body = await req.json();
-      const { title, description, icon } = body;
-      await sql`UPDATE benefits SET title = ${title}, description = ${description}, icon = ${icon} WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_update', ${JSON.stringify({id})})`;
-      return json({ success: true });
-    }
-
-    if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'DELETE') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const id = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM benefits WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_delete', ${JSON.stringify({id})})`;
-      return json({ success: true });
-    }
-
-    if (path === '/admin/analytics/retention' && req.method === 'GET') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const dailyActive = await sql`
-        SELECT date, COUNT(DISTINCT user_id)::int as active_users
-        FROM daily_journals
-        WHERE date > CURRENT_DATE - INTERVAL '7 days'
-        GROUP BY date
-        ORDER BY date
-      `;
-      return json(dailyActive);
     }
 
     // ---------------- COURSE CRUD ----------------
@@ -1601,11 +1627,11 @@ async function apiHandler(req) {
       });
     }
 
-    // ---------------- AUTH REQUIRED ROUTES (user authenticated) ----------------
+    // ==================== AUTH REQUIRED USER ROUTES ====================
     const user = await authenticate(req);
     if (!user) return errorJson('Authentication required', 401);
 
-    // ==================== USER ENDPOINTS ====================
+    // --- Mood ---
     if (path === '/mood' && req.method === 'POST') {
       const body = await req.json();
       const { mood, date } = body;
@@ -1613,6 +1639,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Daily Quest ---
     if (path === '/daily-quest' && req.method === 'GET') {
       const today = new Date().toISOString().slice(0,10);
       let [quest] = await sql`SELECT * FROM daily_quests WHERE user_id = ${user.id} AND quest_date = ${today}`;
@@ -1648,6 +1675,7 @@ async function apiHandler(req) {
       return json({ success: true, xp: 15 });
     }
 
+    // --- Streak Freeze ---
     if (path === '/use-streak-freeze' && req.method === 'POST') {
       const [item] = await sql`SELECT quantity FROM streak_freeze_items WHERE user_id = ${user.id}`;
       if (!item || item.quantity < 1) return errorJson('No freeze available', 400);
@@ -1655,16 +1683,19 @@ async function apiHandler(req) {
       return json({ success: true, remaining: item.quantity - 1 });
     }
 
+    // --- Portfolio ---
     if (path === '/portfolio' && req.method === 'GET') {
       const rows = await sql`SELECT * FROM portfolio_performance WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 30`;
       return json(rows);
     }
 
+    // --- Latest Feedback ---
     if (path === '/latest-feedback' && req.method === 'GET') {
       const [journal] = await sql`SELECT feedback FROM daily_journals WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 1`;
       return json({ feedback: journal?.feedback || null });
     }
 
+    // --- Daily Reward ---
     if (path === '/daily-reward' && req.method === 'POST') {
       const [exists] = await sql`SELECT * FROM daily_rewards WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       if (!exists) {
@@ -1675,6 +1706,7 @@ async function apiHandler(req) {
       return json({ claimed: false, message: 'আজকের বোনাস নেওয়া হয়ে গেছে' });
     }
 
+    // --- Mystery Box ---
     if (path === '/open-box' && req.method === 'POST') {
       const [box] = await sql`SELECT * FROM mystery_boxes WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       if (box?.opened) return json({ opened: false, message: 'আজ বক্স খোলা হয়ে গেছে' });
@@ -1693,6 +1725,7 @@ async function apiHandler(req) {
       return json({ reward });
     }
 
+    // --- Community Reactions ---
     if (path === '/reaction' && req.method === 'POST') {
       const body = await req.json();
       const { post_id, reaction } = body;
@@ -1701,6 +1734,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Profile ---
     if (path === '/profile' && req.method === 'GET') {
       const [today] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
       const { count: total } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0];
@@ -1740,6 +1774,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Checkin ---
     if (path === '/checkin' && req.method === 'POST') {
       const body = await req.json();
       const { mindfulness_done, commitment, date } = body;
@@ -1748,9 +1783,12 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Evaluation (with Zod) ---
     if (path === '/evaluation' && req.method === 'POST') {
       const body = await req.json();
-      const { trades_count, stop_loss_moved, plan_deviation, revenge_trade, fomo_entry, overtrading, rule_followed, scores, evaluation_notes, reflection, date, mood } = body;
+      const parsed = evaluationSchema.safeParse(body);
+      if (!parsed.success) return json({ error: parsed.error.issues }, 400);
+      const { trades_count, stop_loss_moved, plan_deviation, revenge_trade, fomo_entry, overtrading, rule_followed, scores, evaluation_notes, reflection, date, mood } = parsed.data;
       const effectiveDate = date || new Date().toISOString().slice(0,10);
       const [existing] = await sql`SELECT * FROM daily_journals WHERE user_id = ${user.id} AND date = ${effectiveDate}`;
       if (!existing) return errorJson('Morning checkin first', 400);
@@ -1795,6 +1833,7 @@ async function apiHandler(req) {
       return json({ feedback, mission, badges, identity_level: phase, streak, disciplineStreak, totalDays: total, xp: newXp, level, radar_scores: radar, xpGain, bonus, box_available: !box || !box.opened });
     }
 
+    // --- Progress ---
     if (path === '/progress' && req.method === 'GET') {
       const days = await sql`SELECT date, scores, radar_scores FROM daily_journals WHERE user_id = ${user.id} ORDER BY date ASC`;
       const badges = await sql`SELECT badge_type FROM badges WHERE user_id = ${user.id}`;
@@ -1807,6 +1846,7 @@ async function apiHandler(req) {
       return json({ days, badges: badges.map(b => b.badge_type), streak, totalDays, identity_level: computeIdentityPhase(totalDays), disciplineStreak, radar_today: todayRadar, radar_yesterday: yesterdayRadar });
     }
 
+    // --- Insights ---
     if (path === '/insights' && req.method === 'GET') {
       const totalJournals = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0].count;
       const currentStreak = await computeDisciplineStreak(user.id);
@@ -1818,6 +1858,7 @@ async function apiHandler(req) {
       return json({ totalJournals, currentStreak, topMistake: topMistake[1] > 0 ? topMistake[0] : 'কোনো ভুল নেই!', avgDiscipline });
     }
 
+    // --- Lessons ---
     if (path === '/lessons' && req.method === 'GET') {
       const lessons = await sql`SELECT l.*, ul.completed_at FROM lessons l LEFT JOIN user_lessons ul ON l.id = ul.lesson_id AND ul.user_id = ${user.id} ORDER BY l.day`;
       return json(lessons);
@@ -1830,6 +1871,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Community ---
     if (path === '/community' && req.method === 'GET') {
       const posts = await sql`SELECT cp.*, u.email as author, u.display_name, u.avatar_emoji FROM community_posts cp JOIN users u ON cp.user_id = u.id WHERE cp.is_hidden = false ORDER BY cp.created_at DESC LIMIT 50`;
       return json(posts.map(p => ({ ...p, author: maskEmail(p.author), display_name: p.display_name || p.author.split('@')[0] })));
@@ -1859,11 +1901,13 @@ async function apiHandler(req) {
       return json(replies.map(r => ({ ...r, email: maskEmail(r.email), display_name: r.display_name || r.email.split('@')[0] })));
     }
 
+    // --- Leaderboard ---
     if (path === '/leaderboard' && req.method === 'GET') {
       const lb = await sql`SELECT u.id as user_id, u.email, u.display_name, u.avatar_emoji, AVG((daily_journals.scores->>'q6')::int)::float as avg_discipline FROM daily_journals JOIN users u ON daily_journals.user_id = u.id WHERE daily_journals.date > CURRENT_DATE - INTERVAL '7 days' GROUP BY u.id, u.email, u.display_name, u.avatar_emoji ORDER BY avg_discipline DESC LIMIT 10`;
       return json(lb.map(u => ({ ...u, user_id: u.user_id, email: maskEmail(u.email), display_name: u.display_name || u.email.split('@')[0] })));
     }
 
+    // --- Quiz ---
     if (path === '/quiz' && req.method === 'GET') {
       const [quiz] = await sql`SELECT * FROM quizzes WHERE active = true ORDER BY RANDOM() LIMIT 1`;
       if (!quiz) return json({ question: null });
@@ -1882,6 +1926,7 @@ async function apiHandler(req) {
       return json({ correct: false, message: 'Wrong answer' });
     }
 
+    // --- Notification Settings ---
     if (path === '/notif-settings' && req.method === 'GET') {
       const [s] = await sql`SELECT * FROM notif_settings WHERE user_id = ${user.id}`;
       return json(s || { email_enabled: true, push_enabled: true });
@@ -1892,7 +1937,6 @@ async function apiHandler(req) {
       await sql`INSERT INTO notif_settings (user_id, email_enabled, push_enabled, push_subscription) VALUES (${user.id}, ${email ?? true}, ${push ?? true}, ${subscription ?? null}) ON CONFLICT (user_id) DO UPDATE SET email_enabled = ${email ?? true}, push_enabled = ${push ?? true}, push_subscription = COALESCE(${subscription ?? null}, notif_settings.push_subscription)`;
       return json({ success: true });
     }
-
     if (path === '/save-subscription' && req.method === 'POST') {
       const body = await req.json();
       const { subscription } = body;
@@ -1901,11 +1945,13 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Videos ---
     if (path === '/videos' && req.method === 'GET') {
       const videos = await sql`SELECT * FROM video_library ORDER BY category, id`;
       return json(videos);
     }
 
+    // --- Weekly Challenge ---
     if (path === '/weekly-challenge' && req.method === 'GET') {
       const startOfWeek = new Date();
       const day = startOfWeek.getDay();
@@ -1973,7 +2019,7 @@ async function apiHandler(req) {
     // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
     if (path === '/training/chapters' && req.method === 'GET') {
       const courseId = url.searchParams.get('course_id') || 1;
-      const lang = url.searchParams.get('lang') || 'bn'; // language filter
+      const lang = url.searchParams.get('lang') || 'bn';
       const chapters = await sql`
         SELECT c.*, 
                COALESCE(ucp.passed, false) as passed, 
@@ -2169,6 +2215,7 @@ async function apiHandler(req) {
       return json({ current_energy: energy.current_energy, max_energy: energy.max_energy });
     }
 
+    // --- Simulator ---
     if (path === '/simulator/scenario' && req.method === 'GET') {
       const scenarios = [
         { market_condition: 'Bullish Trend', chart_description: 'Nifty 50 has been rising for 3 days. RSI 72.', options: ['Buy with full position','Buy half','Wait for pullback','Short sell'], correct_index: 2, explanation: 'RSI overbought, pullback likely.' },
@@ -2178,7 +2225,6 @@ async function apiHandler(req) {
       const [saved] = await sql`INSERT INTO trading_simulator (user_id, scenario) VALUES (${user.id}, ${JSON.stringify(scenario)}) RETURNING id`;
       return json({ id: saved.id, ...scenario });
     }
-
     if (path === '/simulator/answer' && req.method === 'POST') {
       const body = await req.json();
       const { scenario_id, selected_index } = body;
@@ -2191,7 +2237,7 @@ async function apiHandler(req) {
       return json({ is_correct: isCorrect, explanation: sim.scenario.explanation, xp_earned: xpEarned });
     }
 
-    // ==================== ASSESSMENT SUBMIT (authenticated) ====================
+    // --- Assessment Submit ---
     if (path === '/assessment/submit' && req.method === 'POST') {
       const body = await req.json();
       const { answers } = body;
@@ -2206,7 +2252,7 @@ async function apiHandler(req) {
       return json({ yesCount, total: answers.length, recommendation });
     }
 
-    // ==================== AI COACH ====================
+    // --- AI Coach ---
     if (path === '/ai/coach' && req.method === 'POST') {
       if (OPENAI_API_KEY) {
         const journals = await sql`SELECT scores, stop_loss_moved, revenge_trade, fomo_entry FROM daily_journals WHERE user_id = ${user.id} ORDER BY date DESC LIMIT 7`;
@@ -2227,12 +2273,11 @@ async function apiHandler(req) {
     // Fallback
     return errorJson('Not found', 404);
   } catch (error) {
-    console.error('Unhandled error:', error);
+    Sentry.captureException(error);
     return errorJson('Internal server error', 500);
   }
 }
 
-// Helper to sanitize user object (remove sensitive fields)
 function sanitizeUser(user) {
   if (!user) return null;
   const { password_hash, verification_token, ...safe } = user;
