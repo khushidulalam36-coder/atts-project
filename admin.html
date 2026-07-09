@@ -147,14 +147,28 @@
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterEditor()">✕</button>
       <h3 id="chapter-editor-title">চ্যাপ্টার সম্পাদনা</h3>
       <div class="grid-2">
-        <div><label>শিরোনাম</label><input type="text" id="ch-title"></div>
-        <div><label>ক্রম</label><input type="number" id="ch-order" min="1"></div>
+        <div><label>শিরোনাম</label><input type="text" id="ch-title" required></div>
+        <div><label>ক্রম</label><input type="number" id="ch-order" min="1" required></div>
       </div>
       <label>বিষয়বস্তু (HTML)</label>
       <div id="chapter-quill-editor" style="height:250px;"></div>
-      <div class="grid-2" style="margin-top:12px;">
-        <div><label>ছবির URL (কমা দিয়ে)</label><input type="text" id="ch-images" placeholder="url1,url2"></div>
-        <div><label>ভিডিও URL (কমা দিয়ে)</label><input type="text" id="ch-videos" placeholder="url1,url2"></div>
+      <div style="margin-top:12px;">
+        <h4>ছবি</h4>
+        <div id="images-container">
+          <div class="flex" style="margin-bottom:4px;">
+            <input type="text" class="ch-image-url" placeholder="ছবির URL">
+            <button class="btn btn-sm" onclick="addImageField()">+</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <h4>ভিডিও</h4>
+        <div id="videos-container">
+          <div class="flex" style="margin-bottom:4px;">
+            <input type="text" class="ch-video-url" placeholder="ভিডিও URL (YouTube/embed)">
+            <button class="btn btn-sm" onclick="addVideoField()">+</button>
+          </div>
+        </div>
       </div>
       <div class="grid-2">
         <div><label>পাসিং স্কোর (%)</label><input type="number" id="ch-passing" value="90"></div>
@@ -279,13 +293,7 @@
       switch(tab) {
         case 'stats': loadStats(); break;
         case 'users': loadUsers(); break;
-        case 'simulate': panel.innerHTML = `
-          <div class="card"><h3>🧪 সিমুলেট ইউজার</h3>
-            <input type="text" id="sim-email" placeholder="ইউজার ইমেইল">
-            <input type="number" id="sim-days" placeholder="দিন (1-30)" value="7">
-            <input type="number" id="sim-start" placeholder="শুরু দিন" value="1">
-            <button class="btn" onclick="simulateUser()">সিমুলেট</button>
-          </div>`; break;
+        case 'simulate': loadSimulate(); break;
         case 'chapters': loadChapters(); break;
         case 'courses': loadCourses(); break;
         case 'content': loadContentManager(); break;
@@ -370,6 +378,16 @@
     }
 
     // ==================== SIMULATE ====================
+    function loadSimulate() {
+      document.getElementById('panel-screen').innerHTML = `
+        <div class="card"><h3>🧪 সিমুলেট ইউজার</h3>
+          <input type="text" id="sim-email" placeholder="ইউজার ইমেইল">
+          <input type="number" id="sim-days" placeholder="দিন (1-30)" value="7">
+          <input type="number" id="sim-start" placeholder="শুরু দিন" value="1">
+          <button class="btn" onclick="simulateUser()">সিমুলেট</button>
+        </div>`;
+    }
+
     async function simulateUser() {
       const email = document.getElementById('sim-email').value.trim();
       const days = document.getElementById('sim-days').value;
@@ -400,8 +418,17 @@
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
       if (!quillEditor) {
-        quillEditor = new Quill('#chapter-quill-editor', { theme: 'snow' });
+        quillEditor = new Quill('#chapter-quill-editor', {
+          theme: 'snow',
+          modules: {
+            clipboard: { matchVisual: false } // allows pasting any text
+          }
+        });
       }
+      // Reset dynamic fields
+      document.getElementById('images-container').innerHTML = `<div class="flex" style="margin-bottom:4px;"><input type="text" class="ch-image-url" placeholder="ছবির URL"><button class="btn btn-sm" onclick="addImageField()">+</button></div>`;
+      document.getElementById('videos-container').innerHTML = `<div class="flex" style="margin-bottom:4px;"><input type="text" class="ch-video-url" placeholder="ভিডিও URL"><button class="btn btn-sm" onclick="addVideoField()">+</button></div>`;
+      
       if (id) {
         const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
         const ch = chapters.find(c => c.id == id);
@@ -410,23 +437,60 @@
           document.getElementById('ch-order').value = ch.order_index;
           document.getElementById('ch-passing').value = ch.passing_score || 90;
           document.getElementById('ch-language').value = ch.language || 'bn';
-          document.getElementById('ch-images').value = (ch.images || []).join(',');
-          document.getElementById('ch-videos').value = (ch.videos || []).join(',');
           quillEditor.root.innerHTML = ch.content_text || '';
           document.getElementById('ch-edit-id').value = ch.id;
           document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা';
+          // Populate images/videos
+          if (ch.images && ch.images.length) {
+            const container = document.getElementById('images-container');
+            container.innerHTML = '';
+            ch.images.forEach((url, i) => {
+              const div = document.createElement('div');
+              div.className = 'flex';
+              div.style.marginBottom = '4px';
+              div.innerHTML = `<input type="text" class="ch-image-url" value="${escapeHtml(url)}"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+              container.appendChild(div);
+            });
+          }
+          if (ch.videos && ch.videos.length) {
+            const container = document.getElementById('videos-container');
+            container.innerHTML = '';
+            ch.videos.forEach((url, i) => {
+              const div = document.createElement('div');
+              div.className = 'flex';
+              div.style.marginBottom = '4px';
+              div.innerHTML = `<input type="text" class="ch-video-url" value="${escapeHtml(url)}"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+              container.appendChild(div);
+            });
+          }
         }
       } else {
         document.getElementById('ch-title').value = '';
         document.getElementById('ch-order').value = '';
         document.getElementById('ch-passing').value = 90;
         document.getElementById('ch-language').value = 'bn';
-        document.getElementById('ch-images').value = '';
-        document.getElementById('ch-videos').value = '';
         quillEditor.root.innerHTML = '';
         document.getElementById('ch-edit-id').value = '';
         document.getElementById('chapter-editor-title').textContent = 'নতুন চ্যাপ্টার';
       }
+    }
+
+    function addImageField() {
+      const container = document.getElementById('images-container');
+      const div = document.createElement('div');
+      div.className = 'flex';
+      div.style.marginBottom = '4px';
+      div.innerHTML = `<input type="text" class="ch-image-url" placeholder="ছবির URL"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(div);
+    }
+
+    function addVideoField() {
+      const container = document.getElementById('videos-container');
+      const div = document.createElement('div');
+      div.className = 'flex';
+      div.style.marginBottom = '4px';
+      div.innerHTML = `<input type="text" class="ch-video-url" placeholder="ভিডিও URL"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(div);
     }
 
     function closeChapterEditor() {
@@ -434,13 +498,15 @@
     }
 
     async function saveChapter() {
+      const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
+      const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
       const data = {
         course_id: 1,
         title: document.getElementById('ch-title').value,
         order_index: parseInt(document.getElementById('ch-order').value),
         content_text: quillEditor.root.innerHTML,
-        images: document.getElementById('ch-images').value.split(',').map(s=>s.trim()).filter(s=>s),
-        videos: document.getElementById('ch-videos').value.split(',').map(s=>s.trim()).filter(s=>s),
+        images,
+        videos,
         passing_score: parseInt(document.getElementById('ch-passing').value),
         language: document.getElementById('ch-language').value
       };
@@ -494,13 +560,20 @@
       `).join('');
     }
 
-    function openQuestionForm() {
+    function openQuestionForm(q = null) {
       document.getElementById('qm-question-form').classList.remove('hidden');
       document.getElementById('qm-edit-qid').value = '';
       document.getElementById('qm-question-text').value = '';
       for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = '';
       document.getElementById('qm-correct').value = 0;
       document.getElementById('qm-explanation').value = '';
+      if (q) {
+        document.getElementById('qm-edit-qid').value = q.id;
+        document.getElementById('qm-question-text').value = q.question;
+        q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt);
+        document.getElementById('qm-correct').value = q.correct_index;
+        document.getElementById('qm-explanation').value = q.explanation || '';
+      }
     }
 
     function cancelQuestionEdit() {
@@ -510,13 +583,7 @@
     async function editQuestion(qId, chapterId) {
       const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
       const q = questions.find(q => q.id == qId);
-      if (!q) return;
-      document.getElementById('qm-edit-qid').value = q.id;
-      document.getElementById('qm-question-text').value = q.question;
-      q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt);
-      document.getElementById('qm-correct').value = q.correct_index;
-      document.getElementById('qm-explanation').value = q.explanation || '';
-      document.getElementById('qm-question-form').classList.remove('hidden');
+      if (q) openQuestionForm(q);
     }
 
     async function saveQuestion() {
@@ -528,7 +595,8 @@
         correct_index: parseInt(document.getElementById('qm-correct').value),
         explanation: document.getElementById('qm-explanation').value
       };
-      if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index)) return showToast('সব ফিল্ড পূরণ করুন');
+      if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index))
+        return showToast('সব ফিল্ড পূরণ করুন');
       if (qId) {
         await adminApiCall('PUT', `/admin/question/${qId}`, data);
       } else {
@@ -630,7 +698,7 @@
           <h4 style="margin-top:20px;">ইমেজ আপলোড (Vercel Blob)</h4>
           <input type="file" id="image-upload" accept="image/*" style="margin-top:6px;">
           <button class="btn btn-sm" onclick="uploadImage()">আপলোড</button>
-          <div id="upload-status" style="margin-top:6px;"></div>
+          <span id="upload-status" style="margin-left:10px; font-size:0.9rem;"></span>
         </div>
       `;
       setupContentForm();
@@ -702,14 +770,14 @@
       loadContentList();
     }
 
-    // Image upload with resize
+    // ---------- Image Upload with compression & fallback ----------
     async function uploadImage() {
       const file = document.getElementById('image-upload').files[0];
-      if (!file) return;
-      document.getElementById('upload-status').innerHTML = 'ছবি সংকোচন করা হচ্ছে...';
+      if (!file) return showToast('ফাইল সিলেক্ট করুন');
+      document.getElementById('upload-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
       try {
         const resizedFile = await resizeImage(file, 1200);
-        document.getElementById('upload-status').innerHTML = 'আপলোড হচ্ছে...';
+        document.getElementById('upload-status').textContent = 'আপলোড হচ্ছে...';
         const formData = new FormData();
         formData.append('image', resizedFile);
         const res = await fetch(`${API}/admin/upload-image`, {
@@ -719,15 +787,15 @@
         });
         const data = await res.json();
         if (data.url) {
-          document.getElementById('upload-status').innerHTML = `✅ সফল! URL: ${data.url}`;
+          document.getElementById('upload-status').textContent = `✅ সফল! URL: ${data.url}`;
           navigator.clipboard.writeText(data.url);
           showToast('ইমেজ আপলোড সফল, URL কপি হয়েছে');
           loadMediaLibrary(); // refresh media if visible
         } else {
-          document.getElementById('upload-status').innerHTML = 'আপলোড ব্যর্থ';
+          document.getElementById('upload-status').textContent = 'আপলোড ব্যর্থ';
         }
       } catch(e) {
-        document.getElementById('upload-status').innerHTML = 'ত্রুটি';
+        document.getElementById('upload-status').textContent = 'ত্রুটি';
       }
     }
 
@@ -801,12 +869,17 @@
     // ==================== MEDIA LIBRARY ====================
     async function loadMediaLibrary() {
       const res = await adminApiCall('GET', '/admin/media');
-      let html = `<div class="card"><h3>🖼️ মিডিয়া লাইব্রেরি (Vercel Blob)</h3>
+      let html = `<div class="card"><h3>🖼️ মিডিয়া লাইব্রেরি (Vercel Blob / Local)</h3>
         <div class="flex" style="margin-bottom:12px;">
           <input type="text" id="media-url-input" placeholder="https://..." style="flex:1;">
           <button class="btn btn-sm" onclick="addMediaUrl()">URL যোগ</button>
         </div>
-        <div id="media-list" style="display:flex; flex-wrap:wrap; gap:10px;">`;
+        <div style="margin-bottom:12px;">
+          <input type="file" id="media-upload" accept="image/*" style="display:inline-block; width:auto;">
+          <button class="btn btn-sm" onclick="uploadMedia()">আপলোড</button>
+          <span id="upload-media-status" style="margin-left:10px; font-size:0.9rem;"></span>
+        </div>
+        <div id="media-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">`;
       if (res) {
         res.forEach(m => {
           html += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; display:flex; align-items:center;">
@@ -826,6 +899,33 @@
       await adminApiCall('POST', '/admin/media/url', { url });
       loadMediaLibrary();
       showToast('✅ ইউআরএল যোগ হয়েছে');
+    }
+
+    async function uploadMedia() {
+      const file = document.getElementById('media-upload').files[0];
+      if (!file) return showToast('ফাইল সিলেক্ট করুন');
+      document.getElementById('upload-media-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
+      try {
+        const resizedFile = await resizeImage(file, 1200);
+        document.getElementById('upload-media-status').textContent = 'আপলোড হচ্ছে...';
+        const formData = new FormData();
+        formData.append('image', resizedFile);
+        const res = await fetch(`${API}/admin/upload-image`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminToken}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.url) {
+          document.getElementById('upload-media-status').textContent = `✅ সফল! URL: ${data.url}`;
+          navigator.clipboard.writeText(data.url);
+          loadMediaLibrary();
+        } else {
+          document.getElementById('upload-media-status').textContent = 'আপলোড ব্যর্থ';
+        }
+      } catch(e) {
+        document.getElementById('upload-media-status').textContent = 'ত্রুটি';
+      }
     }
 
     async function deleteMedia(id) {

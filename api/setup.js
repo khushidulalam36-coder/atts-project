@@ -1,6 +1,6 @@
 // ===================================================
 // AlamQuant ATTS - api/setup.js (Enterprise-Grade v3.0)
-// Complete Production-Ready API Handler
+// Final Production-Ready API Handler
 // Sections:
 //  1. Dependencies & Config
 //  2. Database Init & Seed (site_settings, media_files, language columns)
@@ -341,17 +341,21 @@ function toNodeHandler(handlerFn) {
           fileStream.on('end', async () => {
             if (aborted) return;
             const buffer = Buffer.concat(chunks);
+            let finalUrl = '';
+
+            // ---------- Vercel Blob try, fallback to Base64 ----------
             try {
               const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
-              // Also insert into media_files
-              await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${filename})`;
-              files.push(blob.url);
-            } catch (err) {
-              console.error('Blob upload error:', err);
-              res.writeHead(500, { 'Access-Control-Allow-Origin': CORS_ORIGIN });
-              res.end(JSON.stringify({ error: 'Upload failed' }));
-              return;
+              finalUrl = blob.url;
+              await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
+            } catch (blobError) {
+              console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
+              const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
+              finalUrl = base64;
+              await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
             }
+
+            files.push(finalUrl);
           });
         });
 
@@ -1088,9 +1092,6 @@ async function apiHandler(req) {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
       const body = await req.json();
-      // body can contain an object with key-value pairs for settings
-      // e.g., { '--gold': '#ff0000', 'site_title': 'MyApp' }
-      // We'll also handle theme colors from settings object
       if (body && typeof body === 'object') {
         for (const [k, v] of Object.entries(body)) {
           await sql`INSERT INTO site_settings (key, value) VALUES (${k}, ${String(v)}) ON CONFLICT (key) DO UPDATE SET value = ${String(v)}`;
@@ -1113,13 +1114,12 @@ async function apiHandler(req) {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
       const mediaId = parseInt(path.split('/')[3]);
-      // Optionally delete from Vercel Blob, but for now just remove record
       await sql`DELETE FROM media_files WHERE id = ${mediaId}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'delete_media', ${JSON.stringify({media_id: mediaId})})`;
       return json({ success: true });
     }
 
-        // Vercel Blob URL manually add (for media library)
+    // Vercel Blob URL manually add (for media library)
     if (path === '/admin/media/url' && req.method === 'POST') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
