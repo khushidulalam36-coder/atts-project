@@ -41,7 +41,7 @@ $vercelJson = @'
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/setup" },
-    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin", "destination": "/index.html" },
     { "source": "/verify", "destination": "/verify.html" }
   ]
 }

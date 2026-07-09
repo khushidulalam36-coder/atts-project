@@ -1019,6 +1019,15 @@
     (function(){const canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d');let stars=[],shootingStars=[];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}function createStars(n){stars=[];for(let i=0;i<n;i++)stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+0.5,o:Math.random()*0.6+0.2,speed:0.02+Math.random()*0.08});}function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);const grd=ctx.createRadialGradient(canvas.width*0.2,canvas.height*0.3,0,canvas.width*0.5,canvas.height*0.5,canvas.width);grd.addColorStop(0,'rgba(100,0,150,0.05)');grd.addColorStop(0.5,'rgba(0,100,200,0.03)');grd.addColorStop(1,'transparent');ctx.fillStyle=grd;ctx.fillRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{ctx.fillStyle=`rgba(255,255,255,${s.o})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();s.y-=s.speed;if(s.y<-5){s.y=canvas.height+5;s.x=Math.random()*canvas.width;}});if(Math.random()<0.02){const sx=Math.random()*canvas.width,sy=Math.random()*canvas.height*0.5;shootingStars.push({x:sx,y:sy,life:1.0});}shootingStars.forEach((s,idx)=>{ctx.strokeStyle=`rgba(255,255,255,${s.life})`;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x+80,s.y-50);ctx.stroke();s.life-=0.02;s.x+=4;s.y-=2.5;if(s.life<=0)shootingStars.splice(idx,1);});requestAnimationFrame(animate);}window.addEventListener('resize',()=>{resize();createStars(150);});resize();createStars(150);animate();})();
     // On load
     window.addEventListener('load',async()=>{await i18n.init();await loadTheme();const params=new URLSearchParams(window.location.search);const autoToken=params.get('token');if(autoToken){const data=await fetch(`${API}/auto-login?token=${encodeURIComponent(autoToken)}`).then(r=>r.json());if(data.token){token=data.token;localStorage.setItem('token',token);window.history.replaceState({},document.title,window.location.pathname);initDashboard(data.user||data);}}else if(token){const data=await apiCall('GET','/profile');if(data)initDashboard(data.user);else logout();}else{document.getElementById('loading-screen').style.display='none';document.getElementById('auth-screen').classList.remove('hidden');}});
+
+    // Auto-open admin panel when visiting /admin
+    if (window.location.pathname === '/admin') {
+      window.addEventListener('load', () => {
+        if (token && currentUser?.is_admin) {
+          openAdminPanel();
+        }
+      });
+    }
   </script>
 </body>
 </html>
