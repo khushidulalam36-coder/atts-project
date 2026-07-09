@@ -1,6 +1,12 @@
 // ===================================================
-// AlamQuant ATTS - api/setup.js
-// Enterprise-Grade Production Ready (v2.0)
+// AlamQuant ATTS - api/setup.js (Enterprise-Grade v3.0)
+// Complete Production-Ready API Handler
+// Sections:
+//  1. Dependencies & Config
+//  2. Database Init & Seed (site_settings, media_files, language columns)
+//  3. Public Endpoints (auth, verify, theme, assessment questions, benefits, translations)
+//  4. Admin Endpoints (dashboard, users, impersonate, settings, media, chapters, courses, activity, etc.)
+//  5. Authenticated User Endpoints (profile, journal, training, community, simulator, etc.)
 // ===================================================
 
 import dotenv from 'dotenv';
@@ -337,6 +343,8 @@ function toNodeHandler(handlerFn) {
             const buffer = Buffer.concat(chunks);
             try {
               const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
+              // Also insert into media_files
+              await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${filename})`;
               files.push(blob.url);
             } catch (err) {
               console.error('Blob upload error:', err);
@@ -387,7 +395,7 @@ function toNodeHandler(handlerFn) {
         else headers.set(key, value);
       }
     }
-    
+
     let body = null;
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       try {
@@ -399,7 +407,6 @@ function toNodeHandler(handlerFn) {
             console.error('Body parse error:', err);
             resolve(null);
           });
-          // Timeout after 10 seconds
           setTimeout(() => resolve(null), 10000);
         });
       } catch(e) {
@@ -407,13 +414,13 @@ function toNodeHandler(handlerFn) {
         body = null;
       }
     }
-    
+
     const request = new Request(fullUrl, {
       method: req.method,
       headers: headers,
       body: body,
     });
-    
+
     try {
       const response = await handlerFn(request);
       const responseHeaders = {
@@ -721,10 +728,13 @@ async function apiHandler(req) {
         content_text TEXT,
         image_url TEXT,
         video_url TEXT,
+        images JSONB DEFAULT '[]',
+        videos JSONB DEFAULT '[]',
+        language VARCHAR(10) DEFAULT 'bn',
         passing_score INT DEFAULT 90,
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(course_id, order_index)
+        UNIQUE(course_id, order_index, language)
       )`;
 
       await sql`CREATE TABLE IF NOT EXISTS chapter_quiz_questions (
@@ -734,6 +744,7 @@ async function apiHandler(req) {
         options JSONB NOT NULL,
         correct_index INT NOT NULL,
         explanation TEXT,
+        language VARCHAR(10) DEFAULT 'bn',
         order_index INT DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
@@ -845,6 +856,18 @@ async function apiHandler(req) {
         expires_at TIMESTAMPTZ NOT NULL
       )`;
 
+      await sql`CREATE TABLE IF NOT EXISTS site_settings (
+        key VARCHAR(100) PRIMARY KEY,
+        value TEXT
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS media_files (
+        id SERIAL PRIMARY KEY,
+        url TEXT NOT NULL,
+        filename TEXT,
+        uploaded_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
       // Seed data
       const [adminExists] = await sql`SELECT id FROM admin_users WHERE email = 'admin@alamquant.com'`;
       if (!adminExists) {
@@ -859,24 +882,24 @@ async function apiHandler(req) {
         console.log('---------------------------------------------------');
       }
 
-      const [courseExists] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
+      const [courseExists] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation' AND is_active = true`;
       if (!courseExists) {
         await sql`INSERT INTO courses (title, description) VALUES ('Professional Trader Transformation', 'Complete 30-day transformation from amateur to professional trader')`;
         const [course] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
         const courseId = course.id;
         const chaptersSeed = [
-          { title: 'FOMO (Fear Of Missing Out) – সম্পূর্ণ গাইড', order_index: 1, content_text: `<h2>FOMO কি?</h2><p>FOMO বা Fear Of Missing Out হল একটি মানসিক অবস্থা...</p>`, image_url: null, video_url: null, passing_score: 90 },
-          { title: 'Risk Management – ঝুঁকি ব্যবস্থাপনার মূলনীতি', order_index: 2, content_text: `<h2>Risk Management কেন জরুরি?</h2><p>...</p>`, image_url: null, video_url: null, passing_score: 90 }
+          { title: 'FOMO (Fear Of Missing Out) – সম্পূর্ণ গাইড', order_index: 1, content_text: `<h2>FOMO কি?</h2><p>FOMO বা Fear Of Missing Out হল একটি মানসিক অবস্থা...</p>`, language: 'bn' },
+          { title: 'Risk Management – ঝুঁকি ব্যবস্থাপনার মূলনীতি', order_index: 2, content_text: `<h2>Risk Management কেন জরুরি?</h2><p>...</p>`, language: 'bn' }
         ];
         for (const ch of chaptersSeed) {
-          const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${courseId}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.image_url}, ${ch.video_url}, ${ch.passing_score}) RETURNING id`;
+          const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score, language) VALUES (${courseId}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${null}, ${null}, ${90}, ${ch.language}) RETURNING id`;
           if (ch.order_index === 1) {
             const quizQuestions = [
-              { question: 'FOMO এর পূর্ণরূপ কি?', options: ['Fear Of Missing Out','Fast Order Management','Free Online Market','Future Options Market'], correct_index: 0, explanation: 'FOMO = Fear Of Missing Out' },
-              { question: 'FOMO এড়াতে ট্রেডের আগে কতক্ষণ বিশ্লেষণ?', options: ['১ মিনিট','২ মিনিট','৩ মিনিট','৫ মিনিট'], correct_index: 2, explanation: 'ন্যূনতম ৩ মিনিট' }
+              { question: 'FOMO এর পূর্ণরূপ কি?', options: ['Fear Of Missing Out','Fast Order Management','Free Online Market','Future Options Market'], correct_index: 0, explanation: 'FOMO = Fear Of Missing Out', language: 'bn' },
+              { question: 'FOMO এড়াতে ট্রেডের আগে কতক্ষণ বিশ্লেষণ?', options: ['১ মিনিট','২ মিনিট','৩ মিনিট','৫ মিনিট'], correct_index: 2, explanation: 'ন্যূনতম ৩ মিনিট', language: 'bn' }
             ];
             for (const q of quizQuestions) {
-              await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation) VALUES (${chapter.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation})`;
+              await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, language) VALUES (${chapter.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation}, ${q.language})`;
             }
           }
         }
@@ -1052,7 +1075,50 @@ async function apiHandler(req) {
       });
     }
 
+    // ---------------- SITE SETTINGS (PUBLIC GET) ----------------
+    if (path === '/admin/settings' && req.method === 'GET') {
+      const rows = await sql`SELECT * FROM site_settings`;
+      const map = {};
+      rows.forEach(r => map[r.key] = r.value);
+      return json(map);
+    }
+
     // ==================== ADMIN ENDPOINTS (require admin auth) ====================
+    if (path === '/admin/settings' && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const body = await req.json();
+      // body can contain an object with key-value pairs for settings
+      // e.g., { '--gold': '#ff0000', 'site_title': 'MyApp' }
+      // We'll also handle theme colors from settings object
+      if (body && typeof body === 'object') {
+        for (const [k, v] of Object.entries(body)) {
+          await sql`INSERT INTO site_settings (key, value) VALUES (${k}, ${String(v)}) ON CONFLICT (key) DO UPDATE SET value = ${String(v)}`;
+        }
+        await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'update_site_settings', ${JSON.stringify(body)})`;
+        return json({ success: true });
+      } else {
+        return errorJson('Invalid settings format', 400);
+      }
+    }
+
+    if (path === '/admin/media' && req.method === 'GET') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const files = await sql`SELECT id, url, filename, uploaded_at FROM media_files ORDER BY uploaded_at DESC`;
+      return json(files);
+    }
+
+    if (path.match(/^\/admin\/media\/(\d+)$/) && req.method === 'DELETE') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const mediaId = parseInt(path.split('/')[3]);
+      // Optionally delete from Vercel Blob, but for now just remove record
+      await sql`DELETE FROM media_files WHERE id = ${mediaId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'delete_media', ${JSON.stringify({media_id: mediaId})})`;
+      return json({ success: true });
+    }
+
     if (path === '/admin/translations' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1143,16 +1209,30 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // Admin Chapters CRUD
+    // ---------------- IMPERSONATE ----------------
+    if (path === '/admin/impersonate' && req.method === 'POST') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const body = await req.json();
+      const { user_id } = body;
+      const [user] = await sql`SELECT * FROM users WHERE id = ${user_id}`;
+      if (!user) return errorJson('User not found', 404);
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'impersonate', ${JSON.stringify({impersonated_user_id: user_id})})`;
+      return json({ token, user: sanitizeUser(user) });
+    }
+
+    // Admin Chapters CRUD (with language support)
     if (path === '/admin/chapters' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
       const courseId = url.searchParams.get('course_id') || 1;
+      const lang = url.searchParams.get('lang') || 'bn';
       const chapters = await sql`
         SELECT c.*, 
                (SELECT COUNT(*)::int FROM chapter_quiz_questions WHERE chapter_id = c.id) as question_count,
                (SELECT COUNT(*)::int FROM user_chapter_progress WHERE chapter_id = c.id AND passed = true) as passed_count
-        FROM chapters c WHERE c.course_id = ${courseId} ORDER BY c.order_index
+        FROM chapters c WHERE c.course_id = ${courseId} AND c.language = ${lang} ORDER BY c.order_index
       `;
       return json(chapters);
     }
@@ -1161,8 +1241,9 @@ async function apiHandler(req) {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
       const body = await req.json();
-      const { course_id, title, order_index, content_text, image_url, video_url, passing_score } = body;
-      const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score) VALUES (${course_id}, ${title}, ${order_index}, ${content_text}, ${image_url}, ${video_url}, ${passing_score || 90}) RETURNING *`;
+      const { course_id, title, order_index, content_text, image_url, video_url, images, videos, passing_score, language } = body;
+      const lang = language || 'bn';
+      const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, images, videos, passing_score, language) VALUES (${course_id}, ${title}, ${order_index}, ${content_text}, ${image_url}, ${video_url}, ${JSON.stringify(images || [])}, ${JSON.stringify(videos || [])}, ${passing_score || 90}, ${lang}) RETURNING *`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'chapter_create', ${JSON.stringify(chapter)})`;
       return json(chapter, 201);
     }
@@ -1172,8 +1253,8 @@ async function apiHandler(req) {
       if (!adminUser) return errorJson('Forbidden', 403);
       const chapterId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { title, order_index, content_text, image_url, video_url, passing_score, is_active } = body;
-      await sql`UPDATE chapters SET title=COALESCE(${title}, title), order_index=COALESCE(${order_index}, order_index), content_text=COALESCE(${content_text}, content_text), image_url=COALESCE(${image_url}, image_url), video_url=COALESCE(${video_url}, video_url), passing_score=COALESCE(${passing_score}, passing_score), is_active=COALESCE(${is_active}, is_active) WHERE id=${chapterId}`;
+      const { title, order_index, content_text, image_url, video_url, images, videos, passing_score, is_active, language } = body;
+      await sql`UPDATE chapters SET title=COALESCE(${title}, title), order_index=COALESCE(${order_index}, order_index), content_text=COALESCE(${content_text}, content_text), image_url=COALESCE(${image_url}, image_url), video_url=COALESCE(${video_url}, video_url), images=COALESCE(${images ? JSON.stringify(images) : null}::jsonb, images), videos=COALESCE(${videos ? JSON.stringify(videos) : null}::jsonb, videos), passing_score=COALESCE(${passing_score}, passing_score), is_active=COALESCE(${is_active}, is_active), language=COALESCE(${language}, language) WHERE id=${chapterId}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'chapter_update', ${JSON.stringify({chapter_id: chapterId})})`;
       return json({ success: true });
     }
@@ -1200,8 +1281,9 @@ async function apiHandler(req) {
       if (!adminUser) return errorJson('Forbidden', 403);
       const chapterId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { question, options, correct_index, explanation, order_index } = body;
-      const [q] = await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, order_index) VALUES (${chapterId}, ${question}, ${JSON.stringify(options)}, ${correct_index}, ${explanation}, ${order_index || 0}) RETURNING *`;
+      const { question, options, correct_index, explanation, order_index, language } = body;
+      const lang = language || 'bn';
+      const [q] = await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, order_index, language) VALUES (${chapterId}, ${question}, ${JSON.stringify(options)}, ${correct_index}, ${explanation}, ${order_index || 0}, ${lang}) RETURNING *`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'question_create', ${JSON.stringify(q)})`;
       return json(q, 201);
     }
@@ -1211,8 +1293,8 @@ async function apiHandler(req) {
       if (!adminUser) return errorJson('Forbidden', 403);
       const questionId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { question, options, correct_index, explanation, order_index } = body;
-      await sql`UPDATE chapter_quiz_questions SET question=COALESCE(${question}, question), options=COALESCE(${JSON.stringify(options)}::jsonb, options), correct_index=COALESCE(${correct_index}, correct_index), explanation=COALESCE(${explanation}, explanation), order_index=COALESCE(${order_index}, order_index) WHERE id=${questionId}`;
+      const { question, options, correct_index, explanation, order_index, language } = body;
+      await sql`UPDATE chapter_quiz_questions SET question=COALESCE(${question}, question), options=COALESCE(${JSON.stringify(options)}::jsonb, options), correct_index=COALESCE(${correct_index}, correct_index), explanation=COALESCE(${explanation}, explanation), order_index=COALESCE(${order_index}, order_index), language=COALESCE(${language}, language) WHERE id=${questionId}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'question_update', ${JSON.stringify({question_id: questionId})})`;
       return json({ success: true });
     }
@@ -1285,7 +1367,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // Admin content management with listing/editing of quizzes and videos
+    // Admin content management (lessons, quizzes, videos)
     if (path === '/admin/content' && req.method === 'POST') {
       const body = await req.json();
       const adminUser = await authenticateAdmin(req);
@@ -1350,13 +1432,12 @@ async function apiHandler(req) {
       const [type, idStr] = path.split('/').slice(-2);
       const id = parseInt(idStr);
       const tableMap = { lesson: 'lessons', quiz: 'quizzes', video: 'video_library' };
-      const allowedTables = ['lessons', 'quizzes', 'video_library'];
-      if (!allowedTables.includes(tableMap[type])) return errorJson('Invalid table', 400);
       await sql`DELETE FROM ${sql(tableMap[type])} WHERE id = ${id}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'content_delete', ${JSON.stringify({type, id})})`;
       return json({ success: true });
     }
 
+    // Admin assessment/benefits editing
     if (path.match(/^\/admin\/assessment\/(\d+)$/) && req.method === 'PUT') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1365,17 +1446,6 @@ async function apiHandler(req) {
       const { question, category } = body;
       await sql`UPDATE assessment_questions SET question = ${question}, category = ${category} WHERE id = ${id}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'assessment_update', ${JSON.stringify({id})})`;
-      return json({ success: true });
-    }
-
-    if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'PUT') {
-      const adminUser = await authenticateAdmin(req);
-      if (!adminUser) return errorJson('Forbidden', 403);
-      const id = parseInt(path.split('/')[3]);
-      const body = await req.json();
-      const { title, description, icon } = body;
-      await sql`UPDATE benefits SET title = ${title}, description = ${description}, icon = ${icon} WHERE id = ${id}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_update', ${JSON.stringify({id})})`;
       return json({ success: true });
     }
 
@@ -1410,6 +1480,17 @@ async function apiHandler(req) {
       return json(b, 201);
     }
 
+    if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'PUT') {
+      const adminUser = await authenticateAdmin(req);
+      if (!adminUser) return errorJson('Forbidden', 403);
+      const id = parseInt(path.split('/')[3]);
+      const body = await req.json();
+      const { title, description, icon } = body;
+      await sql`UPDATE benefits SET title = ${title}, description = ${description}, icon = ${icon} WHERE id = ${id}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${adminUser.id}, 'benefit_update', ${JSON.stringify({id})})`;
+      return json({ success: true });
+    }
+
     if (path.match(/^\/admin\/benefit\/(\d+)$/) && req.method === 'DELETE') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1432,8 +1513,7 @@ async function apiHandler(req) {
       return json(dailyActive);
     }
 
-    // ==================== NEW ENTERPRISE ENDPOINTS ====================
-    // Course CRUD
+    // ---------------- COURSE CRUD ----------------
     if (path === '/admin/courses' && req.method === 'GET') {
       const adminUser = await authenticateAdmin(req);
       if (!adminUser) return errorJson('Forbidden', 403);
@@ -1882,6 +1962,7 @@ async function apiHandler(req) {
     // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
     if (path === '/training/chapters' && req.method === 'GET') {
       const courseId = url.searchParams.get('course_id') || 1;
+      const lang = url.searchParams.get('lang') || 'bn'; // language filter
       const chapters = await sql`
         SELECT c.*, 
                COALESCE(ucp.passed, false) as passed, 
@@ -1890,7 +1971,7 @@ async function apiHandler(req) {
                ucp.completed_at
         FROM chapters c
         LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-        WHERE c.course_id = ${courseId} AND c.is_active = true
+        WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = ${lang}
         ORDER BY c.order_index
       `;
       return json(chapters);
@@ -1898,9 +1979,10 @@ async function apiHandler(req) {
 
     if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
       const chapterId = parseInt(path.split('/')[3]);
-      const [chapter] = await sql`SELECT * FROM chapters WHERE id = ${chapterId} AND is_active = true`;
+      const lang = url.searchParams.get('lang') || 'bn';
+      const [chapter] = await sql`SELECT * FROM chapters WHERE id = ${chapterId} AND is_active = true AND language = ${lang}`;
       if (!chapter) return errorJson('Chapter not found', 404);
-      const questions = await sql`SELECT id, question, options, order_index FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY order_index, id`;
+      const questions = await sql`SELECT id, question, options, order_index FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} AND language = ${lang} ORDER BY order_index, id`;
       const [progress] = await sql`SELECT * FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${chapterId}`;
       const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
       return json({ ...chapter, questions, user_progress: progress || null, energy: energy?.current_energy || 50 });

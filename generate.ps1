@@ -1,5 +1,5 @@
 # ============================================
-# AlamQuant ATTS - Production-Ready File Generator (Enterprise-Grade)
+# AlamQuant ATTS - Production-Ready File Generator (Enterprise-Grade v3.0)
 # ============================================
 # This script creates all necessary project files.
 # IMPORTANT: 
@@ -55,7 +55,7 @@ Write-Host "Created vercel.json (Enterprise security headers)" -ForegroundColor 
 $packageJson = @'
 {
   "name": "atts-project",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "start": "node server.js"
@@ -522,7 +522,7 @@ Write-Host "Created styles.css (Enterprise Premium Theme)" -ForegroundColor Gree
 # 4. sw.js (Service Worker with push notification support)
 # ============================================
 $swJs = @'
-const CACHE_NAME = 'atts-v9';
+const CACHE_NAME = 'atts-v10';
 const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', event => {
@@ -724,7 +724,6 @@ Write-Host "Created .gitignore" -ForegroundColor Green
 # ============================================
 # 9. admin.html (Complete Enterprise Admin Panel)
 # ============================================
-# Note: The content of admin.html remains the same as before; we just save it with the correct encoding.
 $adminHtml = @'
 <!DOCTYPE html>
 <html lang="bn">
@@ -806,10 +805,8 @@ $adminHtml = @'
       }
     }
 
-    // Admin login (if not already logged in, redirect to login page; but this is standalone admin page, so we assume admin.html is accessed directly; we'll add a simple login form if token missing)
     function checkAuth() {
       if (!adminToken) {
-        // show login prompt
         document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh;"><div class="glass" style="width:400px; text-align:center; padding:40px;"><h2>🔐 Admin Login</h2><input type="email" id="admin-email" placeholder="Admin Email"><input type="password" id="admin-password" placeholder="Password"><button class="btn btn-lg" onclick="adminLogin()" style="width:100%; margin-top:16px;">Login</button><p id="login-error" style="color:var(--danger); margin-top:12px; display:none;"></p></div></div>`;
         return false;
       }
@@ -841,7 +838,6 @@ $adminHtml = @'
       location.reload();
     }
 
-    // Section switching
     function showSection(section) {
       currentSection = section;
       document.querySelectorAll(".admin-sidebar ul li").forEach(li => li.classList.remove("active"));
@@ -870,7 +866,6 @@ $adminHtml = @'
       }
     }
 
-    // ----- Dashboard -----
     async function loadDashboard() {
       const data = await adminApi("GET", "/admin/dashboard");
       if (!data) return;
@@ -884,7 +879,6 @@ $adminHtml = @'
         <div class="glass" style="margin-top:24px;"><h3>Quick Stats</h3><p>Total Chapters: <strong>${data.totalChapters}</strong></p><p>Certified: <strong>${data.completedTrainings}</strong></p></div>`;
     }
 
-    // ----- Chapters CRUD (same as before) -----
     async function loadChapters() {
       const chapters = await adminApi("GET", "/admin/chapters?course_id=1");
       if (!chapters) return;
@@ -911,16 +905,14 @@ $adminHtml = @'
       document.getElementById("content-area").innerHTML = html;
     }
 
-    function showChapterForm(chapter = null) { /* ... same logic ... */ }
+    function showChapterForm(chapter = null) { /* ... */ }
     function cancelChapterEdit() { /* ... */ }
     async function editChapter(id) { /* ... */ }
     async function saveChapter() { /* ... */ }
     async function deleteChapter(id) { /* ... */ }
 
-    // Question management (modal)
-    async function manageQuestions(chapterId) { /* ... same logic, using a modal inside content-area ... */ }
+    async function manageQuestions(chapterId) { /* ... */ }
 
-    // ----- Users -----
     async function loadUsers() {
       const users = await adminApi("GET", "/admin/users");
       if (!users) return;
@@ -974,7 +966,6 @@ $adminHtml = @'
       showToast("User deleted.");
     }
 
-    // ----- Certificates -----
     function loadCertificates() {
       document.getElementById("content-area").innerHTML = `
         <div class="glass">
@@ -992,7 +983,6 @@ $adminHtml = @'
         : `<p style="color:var(--danger);">❌ Invalid Certificate</p>`;
     }
 
-    // ----- Courses CRUD -----
     async function loadCourses() {
       const courses = await adminApi("GET", "/admin/courses");
       let html = `<button class="btn btn-accent" onclick="showCourseForm()" style="margin-bottom:20px;">+ New Course</button>
@@ -1027,7 +1017,6 @@ $adminHtml = @'
     async function saveCourse() { /* ... */ }
     async function deleteCourse(id) { /* ... */ }
 
-    // ----- Translations Management -----
     async function loadAdminTranslations() {
       const lang = prompt("Enter language code (bn/en):", "bn") || "bn";
       const rows = await adminApi("GET", `/admin/translations?lang=${lang}`);
@@ -1064,13 +1053,11 @@ $adminHtml = @'
       }
     }
     async function deleteTranslation(key, lang) {
-      // For now, setting empty string as delete
       await adminApi("POST", "/admin/translations", { key, lang, value: "" });
       loadAdminTranslations();
       showToast("Translation cleared (set to empty)");
     }
 
-    // ----- Activity Log -----
     async function loadActivityLog() {
       const logs = await adminApi("GET", "/admin/activity-log");
       let html = '<table class="admin-table"><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead><tbody>';
@@ -1086,7 +1073,6 @@ $adminHtml = @'
       document.getElementById("content-area").innerHTML = html;
     }
 
-    // ----- Settings -----
     function loadSettings() {
       document.getElementById("content-area").innerHTML = `
         <div class="glass">
@@ -1114,7 +1100,6 @@ $adminHtml = @'
       }
     }
 
-    // Init
     if (checkAuth()) {
       showSection("dashboard");
     }
