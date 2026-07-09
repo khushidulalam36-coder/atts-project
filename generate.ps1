@@ -1,5 +1,5 @@
-# ============================================
-# AlamQuant ATTS - Production-Ready File Generator (Enterprise-Grade v3.0)
+﻿# ============================================
+# AlamQuant ATTS - Production-Ready File Generator (Enterprise-Grade)
 # ============================================
 # This script creates all necessary project files.
 # IMPORTANT: 
@@ -41,7 +41,7 @@ $vercelJson = @'
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/setup" },
-    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/admin.html" },
     { "source": "/verify", "destination": "/verify.html" }
   ]
 }
@@ -55,7 +55,7 @@ Write-Host "Created vercel.json (Enterprise security headers)" -ForegroundColor 
 $packageJson = @'
 {
   "name": "atts-project",
-  "version": "3.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "start": "node server.js"
@@ -82,7 +82,7 @@ $packageJson = @'
 Write-Host "Created package.json" -ForegroundColor Green
 
 # ============================================
-# 3. styles.css (Enterprise Premium Theme – identical to index.html inline styles)
+# 3. styles.css (Enterprise Premium Theme - identical to index.html inline styles)
 # ============================================
 $stylesCss = @'
 /* AlamQuant ATTS Premium Enterprise Styles */
@@ -522,7 +522,7 @@ Write-Host "Created styles.css (Enterprise Premium Theme)" -ForegroundColor Gree
 # 4. sw.js (Service Worker with push notification support)
 # ============================================
 $swJs = @'
-const CACHE_NAME = 'atts-v10';
+const CACHE_NAME = 'atts-v9';
 const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', event => {
@@ -722,396 +722,7 @@ node_modules/
 Write-Host "Created .gitignore" -ForegroundColor Green
 
 # ============================================
-# 9. admin.html (Complete Enterprise Admin Panel)
-# ============================================
-$adminHtml = @'
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlamQuant ATTS - Admin Panel</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="admin-sidebar">
-    <div class="logo">⚙️ ATTS Admin</div>
-    <ul>
-      <li class="active" data-section="dashboard" onclick="showSection('dashboard')">📊 Dashboard</li>
-      <li data-section="chapters" onclick="showSection('chapters')">📚 Chapters</li>
-      <li data-section="users" onclick="showSection('users')">👥 Users</li>
-      <li data-section="certificates" onclick="showSection('certificates')">🏆 Certificates</li>
-      <li data-section="courses" onclick="showSection('courses')">📚 Courses</li>
-      <li data-section="translations" onclick="showSection('translations')">🌐 Translations</li>
-      <li data-section="activity" onclick="showSection('activity')">📋 Activity Log</li>
-      <li data-section="settings" onclick="showSection('settings')">⚙️ Settings</li>
-    </ul>
-    <div style="position:absolute; bottom:20px; left:20px; right:20px;">
-      <button class="btn btn-outline btn-sm" onclick="adminLogout()" style="width:100%;">Logout</button>
-    </div>
-  </div>
-  <main class="admin-main">
-    <div class="admin-header">
-      <h2 id="section-title">📊 Dashboard</h2>
-      <span id="admin-name" style="color:var(--gold-light); font-weight:600;"></span>
-    </div>
-    <div id="content-area"></div>
-  </main>
-  <div id="toast" class="toast"></div>
-  <!-- Password Reset Modal for Users -->
-  <div id="reset-pass-modal" class="modal-overlay hidden" aria-modal="true" role="dialog">
-    <div class="glass modal-content" style="max-width:400px;">
-      <h3>🔑 পাসওয়ার্ড রিসেট</h3>
-      <input type="password" id="new-pass-input" placeholder="নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)">
-      <div style="display:flex; gap:10px; margin-top:16px;">
-        <button class="btn btn-accent" onclick="resetPasswordConfirm()">সংরক্ষণ</button>
-        <button class="btn btn-outline" onclick="closeResetPassModal()">বাতিল</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const API_BASE = "/api/setup";
-    let adminToken = localStorage.getItem("adminToken");
-    let currentSection = "dashboard";
-    let editingChapterId = null;
-    let currentResetUserId = null;
-
-    function showToast(msg) {
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 3000);
-    }
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-
-    async function adminApi(method, path, body = null) {
-      const opts = {
-        method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` }
-      };
-      if (body) opts.body = JSON.stringify(body);
-      try {
-        const res = await fetch(`${API_BASE}${path}`, opts);
-        if (res.status === 401 || res.status === 403) { adminLogout(); return null; }
-        return res.json();
-      } catch(e) {
-        showToast("Network error");
-        return null;
-      }
-    }
-
-    function checkAuth() {
-      if (!adminToken) {
-        document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh;"><div class="glass" style="width:400px; text-align:center; padding:40px;"><h2>🔐 Admin Login</h2><input type="email" id="admin-email" placeholder="Admin Email"><input type="password" id="admin-password" placeholder="Password"><button class="btn btn-lg" onclick="adminLogin()" style="width:100%; margin-top:16px;">Login</button><p id="login-error" style="color:var(--danger); margin-top:12px; display:none;"></p></div></div>`;
-        return false;
-      }
-      return true;
-    }
-
-    async function adminLogin() {
-      const email = document.getElementById("admin-email").value;
-      const password = document.getElementById("admin-password").value;
-      const res = await fetch(`${API_BASE}/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (data.token) {
-        adminToken = data.token;
-        localStorage.setItem("adminToken", adminToken);
-        location.reload();
-      } else {
-        document.getElementById("login-error").textContent = data.error || "Login failed";
-        document.getElementById("login-error").style.display = "block";
-      }
-    }
-
-    function adminLogout() {
-      localStorage.removeItem("adminToken");
-      adminToken = null;
-      location.reload();
-    }
-
-    function showSection(section) {
-      currentSection = section;
-      document.querySelectorAll(".admin-sidebar ul li").forEach(li => li.classList.remove("active"));
-      const li = document.querySelector(`[data-section="${section}"]`);
-      if (li) li.classList.add("active");
-      const titles = {
-        dashboard: "📊 Dashboard",
-        chapters: "📚 Chapters Management",
-        users: "👥 User Management",
-        certificates: "🏆 Certificates",
-        courses: "📚 Courses Management",
-        translations: "🌐 Translations",
-        activity: "📋 Activity Log",
-        settings: "⚙️ Settings"
-      };
-      document.getElementById("section-title").textContent = titles[section] || "";
-      switch(section) {
-        case "dashboard": loadDashboard(); break;
-        case "chapters": loadChapters(); break;
-        case "users": loadUsers(); break;
-        case "certificates": loadCertificates(); break;
-        case "courses": loadCourses(); break;
-        case "translations": loadAdminTranslations(); break;
-        case "activity": loadActivityLog(); break;
-        case "settings": loadSettings(); break;
-      }
-    }
-
-    async function loadDashboard() {
-      const data = await adminApi("GET", "/admin/dashboard");
-      if (!data) return;
-      document.getElementById("content-area").innerHTML = `
-        <div class="grid-4">
-          <div class="stat-card glass"><div class="stat-value">${data.totalUsers}</div><div class="stat-label">Total Users</div></div>
-          <div class="stat-card glass"><div class="stat-value">${data.dailyActiveUsers}</div><div class="stat-label">Today Active</div></div>
-          <div class="stat-card glass"><div class="stat-value">${data.totalJournals}</div><div class="stat-label">Total Journals</div></div>
-          <div class="stat-card glass"><div class="stat-value">${data.completionRate}%</div><div class="stat-label">Training Completed</div></div>
-        </div>
-        <div class="glass" style="margin-top:24px;"><h3>Quick Stats</h3><p>Total Chapters: <strong>${data.totalChapters}</strong></p><p>Certified: <strong>${data.completedTrainings}</strong></p></div>`;
-    }
-
-    async function loadChapters() {
-      const chapters = await adminApi("GET", "/admin/chapters?course_id=1");
-      if (!chapters) return;
-      let html = `<button class="btn btn-accent" onclick="showChapterForm()" style="margin-bottom:20px;">+ New Chapter</button>
-        <div id="chapter-form" class="chapter-editor hidden">
-          <h4 id="chapter-form-title">New Chapter</h4>
-          <div class="grid-2"><input type="text" id="ch-title" placeholder="Title"><input type="number" id="ch-order" placeholder="Order" min="1"></div>
-          <textarea id="ch-content" rows="6" placeholder="HTML Content"></textarea>
-          <div class="grid-2"><input type="url" id="ch-image" placeholder="Image URL"><input type="url" id="ch-video" placeholder="Video URL"></div>
-          <input type="number" id="ch-passing" placeholder="Passing Score (%)" value="90" min="0" max="100">
-          <div style="margin-top:12px; display:flex; gap:8px;"><button class="btn btn-accent" onclick="saveChapter()">Save</button><button class="btn btn-outline" onclick="cancelChapterEdit()">Cancel</button></div>
-        </div>
-        <div id="chapters-list">`;
-      chapters.forEach(ch => {
-        html += `<div class="glass" style="margin:12px 0; padding:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><strong>#${ch.order_index} ${escapeHtml(ch.title)}</strong><div style="font-size:0.85rem; color:var(--text-secondary);">Questions: ${ch.question_count} | Passed: ${ch.passed_count} | Passing: ${ch.passing_score}%</div></div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-sm btn-outline" onclick="editChapter(${ch.id})">Edit</button>
-              <button class="btn btn-sm btn-outline" onclick="manageQuestions(${ch.id})">Questions</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteChapter(${ch.id})">Delete</button></div></div></div>`;
-      });
-      html += "</div>";
-      document.getElementById("content-area").innerHTML = html;
-    }
-
-    function showChapterForm(chapter = null) { /* ... */ }
-    function cancelChapterEdit() { /* ... */ }
-    async function editChapter(id) { /* ... */ }
-    async function saveChapter() { /* ... */ }
-    async function deleteChapter(id) { /* ... */ }
-
-    async function manageQuestions(chapterId) { /* ... */ }
-
-    async function loadUsers() {
-      const users = await adminApi("GET", "/admin/users");
-      if (!users) return;
-      let html = `<input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:16px;"><div id="users-list">`;
-      users.forEach(u => {
-        html += `<div class="user-card flex" style="justify-content:space-between; align-items:center;">
-          <span>${escapeHtml(u.avatar_emoji||"🙂")} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lv.${u.level} | ${escapeHtml(u.identity_level)}</span>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <span class="badge">${u.xp} XP</span>
-            <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
-          </div>
-        </div>`;
-      });
-      html += "</div>";
-      document.getElementById("content-area").innerHTML = html;
-    }
-    async function searchUsers() {
-      const q = document.getElementById("user-search").value;
-      const users = await adminApi("GET", `/admin/users?search=${encodeURIComponent(q)}`);
-      const list = document.getElementById("users-list");
-      list.innerHTML = users.map(u => `
-        <div class="user-card flex" style="justify-content:space-between; align-items:center;">
-          <span>${escapeHtml(u.avatar_emoji||"🙂")} <strong>${escapeHtml(u.display_name||u.email)}</strong> - Lv.${u.level} | ${escapeHtml(u.identity_level)}</span>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <span class="badge">${u.xp} XP</span>
-            <button class="btn btn-sm btn-outline" onclick="resetUserPasswordUI('${u.id}')">🔑</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
-          </div>
-        </div>`).join("");
-    }
-    function resetUserPasswordUI(userId) {
-      currentResetUserId = userId;
-      document.getElementById("reset-pass-modal").classList.remove("hidden");
-    }
-    async function resetPasswordConfirm() {
-      const pass = document.getElementById("new-pass-input").value;
-      if (pass.length < 6) return showToast("Password must be at least 6 characters");
-      await adminApi("POST", "/admin/reset-password", { user_id: currentResetUserId, new_password: pass });
-      document.getElementById("reset-pass-modal").classList.add("hidden");
-      document.getElementById("new-pass-input").value = "";
-      showToast("Password reset successfully");
-    }
-    function closeResetPassModal() {
-      document.getElementById("reset-pass-modal").classList.add("hidden");
-    }
-    async function deleteUser(userId) {
-      if (!confirm("Delete this user? This cannot be undone.")) return;
-      await adminApi("DELETE", `/admin/user/${userId}`);
-      loadUsers();
-      showToast("User deleted.");
-    }
-
-    function loadCertificates() {
-      document.getElementById("content-area").innerHTML = `
-        <div class="glass">
-          <h3>🏆 Certificate Verification</h3>
-          <input type="text" id="verify-code" placeholder="Verification Code">
-          <button class="btn btn-accent btn-sm" onclick="verifyCertificate()">Verify</button>
-          <div id="verify-result" style="margin-top:16px;"></div>
-        </div>`;
-    }
-    async function verifyCertificate() {
-      const code = document.getElementById("verify-code").value;
-      const res = await fetch(`/api/setup/verify/${code}`).then(r=>r.json());
-      document.getElementById("verify-result").innerHTML = res.valid
-        ? `<p style="color:var(--success);">✅ Valid Certificate | User: ${res.user}</p>`
-        : `<p style="color:var(--danger);">❌ Invalid Certificate</p>`;
-    }
-
-    async function loadCourses() {
-      const courses = await adminApi("GET", "/admin/courses");
-      let html = `<button class="btn btn-accent" onclick="showCourseForm()" style="margin-bottom:20px;">+ New Course</button>
-        <div id="course-form" class="chapter-editor hidden">
-          <h4>New Course</h4>
-          <div class="form-group"><label>Title</label><input type="text" id="course-title"></div>
-          <div class="form-group"><label>Description</label><textarea id="course-desc"></textarea></div>
-          <button class="btn btn-accent btn-sm" onclick="saveCourse()">Save</button>
-          <button class="btn btn-outline btn-sm" onclick="cancelCourseForm()">Cancel</button>
-          <input type="hidden" id="course-edit-id" value="">
-        </div>
-        <table class="admin-table">
-          <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Actions</th></tr></thead>
-          <tbody>`;
-      courses.forEach(c => {
-        html += `<tr>
-          <td>${c.id}</td>
-          <td>${escapeHtml(c.title)}</td>
-          <td>${escapeHtml(c.description || '')}</td>
-          <td>
-            <button class="btn btn-sm btn-outline" onclick="editCourse(${c.id}, '${escapeHtml(c.title)}', '${escapeHtml(c.description||'')}')">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteCourse(${c.id})">Delete</button>
-          </td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      document.getElementById("content-area").innerHTML = html;
-    }
-    function showCourseForm() { /* ... */ }
-    function cancelCourseForm() { /* ... */ }
-    function editCourse(id, title, desc) { /* ... */ }
-    async function saveCourse() { /* ... */ }
-    async function deleteCourse(id) { /* ... */ }
-
-    async function loadAdminTranslations() {
-      const lang = prompt("Enter language code (bn/en):", "bn") || "bn";
-      const rows = await adminApi("GET", `/admin/translations?lang=${lang}`);
-      let html = `<h4>Translations (${lang})</h4><button class="btn btn-sm btn-accent" onclick="addTranslation('${lang}')">+ Add</button><div id="trans-list">`;
-      if (rows && !rows.error) {
-        rows.forEach(t => {
-          html += `<div class="flex" style="justify-content:space-between; align-items:center; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:8px;">
-            <span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span>
-            <div>
-              <button class="btn btn-sm btn-outline" onclick="editTranslation('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteTranslation('${t.key}','${lang}')">🗑</button>
-            </div>
-          </div>`;
-        });
-      }
-      html += '</div>';
-      document.getElementById("content-area").innerHTML = html;
-    }
-    function addTranslation(lang) {
-      const key = prompt("Key:");
-      if (!key) return;
-      const value = prompt("Value:");
-      if (value) {
-        adminApi("POST", "/admin/translations", { key, lang, value });
-        loadAdminTranslations();
-        showToast("Translation added");
-      }
-    }
-    function editTranslation(key, lang, currentValue) {
-      const newValue = prompt("New value:", currentValue);
-      if (newValue !== null) {
-        adminApi("POST", "/admin/translations", { key, lang, value: newValue });
-        loadAdminTranslations();
-      }
-    }
-    async function deleteTranslation(key, lang) {
-      await adminApi("POST", "/admin/translations", { key, lang, value: "" });
-      loadAdminTranslations();
-      showToast("Translation cleared (set to empty)");
-    }
-
-    async function loadActivityLog() {
-      const logs = await adminApi("GET", "/admin/activity-log");
-      let html = '<table class="admin-table"><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead><tbody>';
-      logs.forEach(log => {
-        html += `<tr>
-          <td>${new Date(log.created_at).toLocaleString()}</td>
-          <td>${log.admin_name || log.admin_email}</td>
-          <td>${log.action}</td>
-          <td>${JSON.stringify(log.details || {}).substring(0,60)}</td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      document.getElementById("content-area").innerHTML = html;
-    }
-
-    function loadSettings() {
-      document.getElementById("content-area").innerHTML = `
-        <div class="glass">
-          <h3>⚙️ Admin Settings</h3>
-          <div class="form-group"><label>Current Password</label><input type="password" id="current-password"></div>
-          <div class="form-group"><label>New Password</label><input type="password" id="new-password"></div>
-          <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirm-password"></div>
-          <button class="btn btn-accent" onclick="changeAdminPassword()">Change Password</button>
-          <div id="settings-message" style="margin-top:12px;"></div>
-        </div>`;
-    }
-
-    async function changeAdminPassword() {
-      const current = document.getElementById("current-password").value;
-      const newPass = document.getElementById("new-password").value;
-      const confirm = document.getElementById("confirm-password").value;
-      if (newPass !== confirm) return showToast("Passwords do not match");
-      if (newPass.length < 6) return showToast("Password must be at least 6 characters");
-      const res = await adminApi("PUT", "/admin/change-password", { current_password: current, new_password: newPass });
-      if (res.success) {
-        showToast("✅ Password changed successfully");
-        document.getElementById("settings-message").innerHTML = '<p style="color:var(--success);">Password updated</p>';
-      } else {
-        document.getElementById("settings-message").innerHTML = `<p style="color:var(--danger);">${res.error || 'Error'}</p>`;
-      }
-    }
-
-    if (checkAuth()) {
-      showSection("dashboard");
-    }
-  </script>
-</body>
-</html>
-'@
-[System.IO.File]::WriteAllText("$projectRoot\admin.html", $adminHtml, $Utf8NoBom)
-Write-Host "Created admin.html (Enterprise Grade)" -ForegroundColor Green
-
-# ============================================
-# 10. verify.html (Public Certificate Verification)
+# 9. verify.html (Public Certificate Verification)
 # ============================================
 $verifyHtml = @'
 <!DOCTYPE html>
@@ -1163,7 +774,27 @@ $verifyHtml = @'
 Write-Host "Created verify.html" -ForegroundColor Green
 
 # ============================================
-# 11. index.html (PLACEHOLDER – Replace with the final enterprise index.html)
+# 10. admin.html (Placeholder - Admin panel is now integrated into the main index.html)
+# ============================================
+$adminHtmlPlaceholder = @'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h2>Admin Panel</h2>
+  <p>The admin panel is integrated into the main app. Open the app and click the gear icon to access administration features.</p>
+</body>
+</html>
+'@
+[System.IO.File]::WriteAllText("$projectRoot\admin.html", $adminHtmlPlaceholder, $Utf8NoBom)
+Write-Host "Created admin.html (placeholder - admin panel is integrated in index.html)" -ForegroundColor Yellow
+
+# ============================================
+# 11. index.html (PLACEHOLDER - Replace with the final enterprise index.html)
 # ============================================
 $indexHtmlPlaceholder = @'
 <!DOCTYPE html>
@@ -1182,7 +813,7 @@ $indexHtmlPlaceholder = @'
 Write-Host "Created placeholder index.html (REPLACE with final enterprise version)" -ForegroundColor Yellow
 
 # ============================================
-# 12. api/setup.js (PLACEHOLDER – Replace with the final enterprise api/setup.js)
+# 12. api/setup.js (PLACEHOLDER - Replace with the final enterprise api/setup.js)
 # ============================================
 $setupJsPlaceholder = @'
 // ===================================================

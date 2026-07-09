@@ -12,7 +12,7 @@
 </head>
 <body>
   <div class="glass verify-container">
-    <h2>ðŸ” Certificate Verification</h2>
+    <h2>🔍 Certificate Verification</h2>
     <input type="text" id="verify-input" placeholder="Enter verification code">
     <button class="btn" onclick="verify()">Verify</button>
     <div id="result" style="margin-top:20px;"></div>
@@ -25,7 +25,7 @@
       const resultDiv = document.getElementById('result');
       if (res.valid) {
         resultDiv.innerHTML = `<div style="color: var(--success);">
-          <p style="font-size:3rem;">âœ…</p>
+          <p style="font-size:3rem;">✅</p>
           <h3>Valid Certificate</h3>
           <p><strong>Name:</strong> ${res.display_name || res.user}</p>
           <p><strong>Issued:</strong> ${new Date(res.issued_at).toLocaleDateString('bn-BD')}</p>
@@ -33,7 +33,7 @@
         </div>`;
       } else {
         resultDiv.innerHTML = `<div style="color: var(--danger);">
-          <p style="font-size:3rem;">âŒ</p>
+          <p style="font-size:3rem;">❌</p>
           <h3>Invalid Certificate</h3>
           <p>This code was not found in the system.</p>
         </div>`;
