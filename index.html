@@ -1,1050 +1,765 @@
 <!DOCTYPE html>
-<html lang="bn" data-theme="dark">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <meta name="theme-color" content="#0B1220">
-  <title>AlamQuant ATTS – Professional Trader Transformation</title>
+  <title id="app-title">AlamQuant ATTS – Professional Trader Transformation</title>
   <meta name="google-client-id" content="">
   <meta name="vapid-public-key" content="">
   <meta name="app-url" content="https://your-domain.vercel.app">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+  <link rel="manifest" href="/manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1">
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer>
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
   <style>
+    /* ==================== Theme Variables ==================== */
     :root {
-      --bg: #0B1220; --surface: rgba(17,24,39,0.92); --gold: #C8A75B; --gold-bright: #E8C97A;
-      --gold-light: #F6E4B5; --accent: #2563EB; --accent-bright: #60A5FA; --accent2: #7C3AED;
-      --purple: #8B5CF6; --cyan: #22D3EE; --orange: #F59E0B; --text: #F9FAFB;
-      --text-secondary: #9CA3AF; --danger: #EF4444; --success: #22C55E; --warning: #F59E0B;
-      --border-gold: rgba(200,167,91,0.35); --border-accent: rgba(37,99,235,0.30);
-      --radius: 16px; --radius-sm: 10px; --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
-      --glow-gold: 0 0 30px rgba(200,167,91,0.5); --glow-accent: 0 0 25px rgba(37,99,235,0.5);
+      --bg: #0B1220;
+      --surface: rgba(17,24,39,0.92);
+      --gold: #C8A75B;
+      --gold-bright: #E8C97A;
+      --gold-light: #F6E4B5;
+      --accent: #2563EB;
+      --accent-bright: #60A5FA;
+      --accent2: #7C3AED;
+      --purple: #8B5CF6;
+      --cyan: #22D3EE;
+      --orange: #F59E0B;
+      --text: #F9FAFB;
+      --text-secondary: #9CA3AF;
+      --danger: #EF4444;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --border-gold: rgba(200,167,91,0.35);
+      --border-accent: rgba(37,99,235,0.30);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+      --glow-gold: 0 0 30px rgba(200,167,91,0.5), 0 0 60px rgba(200,167,91,0.15);
+      --glow-accent: 0 0 25px rgba(37,99,235,0.5), 0 0 50px rgba(37,99,235,0.15);
       --bg-gradient: linear-gradient(135deg, #0B1220 0%, #111827 30%, #0B1220 70%, #0B1220 100%);
       --font-en: 'Inter', sans-serif;
     }
-    :root[data-theme="light"] {
-      --bg: #f8fafc; --surface: rgba(255,255,255,0.88); --gold: #b8860b; --gold-bright: #daa520;
-      --gold-light: #f5e6b8; --accent: #2563EB; --accent-bright: #3b82f6; --text: #0f172a;
-      --text-secondary: #475569; --border-gold: rgba(184,134,11,0.4); --border-accent: rgba(37,99,235,0.3);
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      --glow-gold: 0 0 20px rgba(184,134,11,0.4); --glow-accent: 0 0 20px rgba(37,99,235,0.4);
+    [data-theme="light"] {
+      --bg: #f0f4ff;
+      --surface: rgba(255,255,255,0.85);
+      --text: #1e293b;
+      --text-secondary: #475569;
+      --border-gold: rgba(200,167,91,0.5);
+      --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #eef2ff 100%);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
+    @keyframes spin { 100% { transform:rotate(360deg); } }
+    @keyframes bounceIn { 0% { transform:scale(0); opacity:0; } 60% { transform:scale(1.15); opacity:1; } 100% { transform:scale(1); } }
+    @keyframes float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-10px); } }
+    @keyframes bgSlide { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+    @keyframes shine { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes floatUp { 0% { opacity:1; transform:translate(-50%,0) scale(0.5); } 100% { opacity:0; transform:translate(-50%,-80px) scale(1.2); } }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes goldShine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+    @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     body {
       font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
-      background: var(--bg-gradient); background-size: 400% 400%;
-      animation: bgSlide 30s ease infinite; color: var(--text);
-      min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
+      background: var(--bg-gradient);
+      background-size: 400% 400%;
+      animation: bgSlide 30s ease infinite;
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
     }
-    @keyframes spin{100%{transform:rotate(360deg)}} 
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    @keyframes bgSlide{0%{background-position:0% 50%}100%{background-position:0% 50%}}
-    @keyframes goldShine{0%{background-position:0% center}100%{background-position:200% center}}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    @keyframes floatUp{0%{opacity:1;transform:translate(-50%,0) scale(0.5)}100%{opacity:0;transform:translate(-50%,-80px) scale(1.2)}}
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 20%, rgba(200,167,91, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(37,99,235, 0.05) 0%, transparent 50%);
+      animation: rotate 30s linear infinite;
+      z-index: 0; pointer-events: none;
+    }
+    /* ==================== Sidebar (Desktop/Tablet) ==================== */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 260px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-gold);
+      padding: 24px 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+      transition: transform 0.3s;
+    }
+    .sidebar .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--gold);
+      padding: 0 24px 20px;
+      border-bottom: 1px solid var(--border-gold);
+      margin-bottom: 8px;
+    }
+    .sidebar nav { flex: 1; overflow-y: auto; }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: rgba(200,167,91,0.12);
+      color: var(--gold-bright);
+      border-left-color: var(--gold);
+    }
+    .sidebar nav a.logout-btn { color: var(--danger); margin-top: auto; }
+    .sidebar nav a.logout-btn:hover { background: rgba(239,68,68,0.1); border-left-color: var(--danger); }
+    hr { border-color: var(--border-gold); margin: 8px 24px; }
+    /* ==================== Mobile Top Bar ==================== */
+    .mobile-topbar {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-gold);
+      align-items: center;
+      padding: 0 16px;
+      z-index: 100;
+      gap: 12px;
+    }
+    .mobile-topbar .logo { font-size: 1.2rem; font-weight: 700; color: var(--gold); }
+    .hamburger-btn { background: none; border: none; color: var(--text); font-size: 1.8rem; cursor: pointer; line-height: 1; }
+    /* ==================== Mobile Drawer ==================== */
+    .mobile-drawer {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 280px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      z-index: 200;
+      padding: 24px 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-gold);
+    }
+    .mobile-drawer.open { transform: translateX(0); }
+    .mobile-drawer nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 24px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .mobile-drawer nav a:hover,
+    .mobile-drawer nav a.active { background: rgba(200,167,91,0.15); color: var(--gold-bright); }
+    .drawer-overlay {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6); z-index: 150;
+      display: none;
+    }
+    .drawer-overlay.show { display: block; }
+    /* ==================== Main Content ==================== */
+    main#main-content {
+      flex: 1;
+      padding: 30px;
+      margin-left: 260px;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    .page-content { display: block; }
+    .page-content.hidden { display: none !important; }
+    /* ==================== Glassmorphism Card ==================== */
     .glass {
-      background: var(--surface); backdrop-filter: blur(24px) saturate(200%);
+      background: rgba(17,24,39, 0.65);
+      backdrop-filter: blur(24px) saturate(200%);
       -webkit-backdrop-filter: blur(24px) saturate(200%);
       border: 1px solid var(--border-gold);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.03);
-      border-radius: var(--radius); padding: 20px; margin-bottom: 18px;
-      transition: all var(--transition); word-wrap: break-word; overflow-wrap: break-word;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.03);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      transition: all var(--transition);
+      overflow: hidden;
+      max-width: 100%;
+      word-wrap: break-word;
     }
-    .glass:hover { border-color: var(--gold-bright); box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold); }
-    h1,h2,h3,h4 {
-      background: linear-gradient(135deg, var(--gold-bright), var(--gold-light));
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-      font-weight: 800; margin-bottom: 12px; animation: goldShine 4s linear infinite;
+    .glass:hover { border-color: var(--gold-bright); box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold); transform: translateY(-4px); }
+    h1, h2, h3, h4 {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold-light), var(--gold));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 12px;
+      animation: goldShine 4s linear infinite;
     }
+    h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
+    /* ==================== Buttons ==================== */
     .btn {
-      background: linear-gradient(135deg, var(--accent), #1d4ed8); color: #fff; border:none;
-      padding:10px 22px; border-radius:30px; font-weight:600; cursor:pointer; transition:0.25s;
-      font-size:0.9rem; box-shadow:0 4px 15px rgba(37,99,235,0.4); letter-spacing:0.5px;
-      display:inline-flex; align-items:center; gap:6px; font-family:inherit;
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      color: #fff; border:none; padding:10px 22px; border-radius:30px;
+      font-weight:600; cursor:pointer; transition: all 0.25s ease; font-size:0.9rem;
+      box-shadow: 0 4px 15px rgba(37,99,235,0.4); letter-spacing:0.5px;
+      position:relative; overflow:hidden; z-index:1; font-family:var(--font-en), 'Inter', sans-serif;
     }
-    .btn:hover { background: linear-gradient(135deg, var(--accent-bright), var(--accent)); transform:translateY(-2px); }
+    .btn:hover { background: linear-gradient(135deg, var(--accent-bright), var(--accent)); box-shadow: 0 6px 20px rgba(37,99,235,0.7); transform:translateY(-2px); }
+    .btn:active { transform:scale(0.97); }
     .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
     .btn-outline:hover { background:rgba(200,167,91,0.1); }
+    .btn-accent { background: linear-gradient(135deg, var(--accent), #1d4ed8); }
     .btn-danger { background: linear-gradient(135deg, var(--danger), #dc2626); }
     .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
-    .btn-lg { padding:14px 28px; font-size:1rem; border-radius:40px; }
+    .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
+    /* ==================== Form Elements ==================== */
     input, textarea, select {
       background: rgba(255,255,255,0.08); border: 1px solid var(--border-gold);
       color: var(--text); padding: 10px 16px; border-radius: var(--radius-sm);
       width:100%; margin:6px 0; font-family:inherit; transition: var(--transition); outline:none; font-size:0.95rem;
     }
-    input:focus, textarea:focus, select:focus { border-color: var(--accent-bright); box-shadow:0 0 0 3px rgba(37,99,235,0.2); background:rgba(255,255,255,0.12); }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent-bright); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); background: rgba(255,255,255,0.12); }
+    textarea { resize:vertical; min-height:60px; }
     .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
     .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .hidden { display:none !important; }
-    .badge { background:linear-gradient(135deg,var(--gold),var(--gold-bright)); color:#020617; padding:4px 12px; border-radius:20px; font-weight:700; font-size:12px; }
-    .progress-bar { background:rgba(255,255,255,0.1); border-radius:20px; height:14px; overflow:hidden; margin:10px 0; }
-    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-bright)); border-radius:20px; box-shadow:0 0 10px var(--accent); width:0%; transition:width 1.2s; }
-    .chart-container { margin-top:20px; max-height:280px; position:relative; }
-    .phase-tag { background:var(--gold); color:#020617; padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem; }
-    .xp-bar-container { background:rgba(255,255,255,0.05); border-radius:30px; height:24px; overflow:hidden; margin:10px 0; }
-    .xp-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-bright)); background-size:200% 100%; animation:shimmer 3s linear infinite; border-radius:30px; display:flex; align-items:center; justify-content:center; transition:width 0.8s; }
-    .toast { position:fixed; top:20px; right:20px; background:var(--accent); color:#fff; padding:14px 22px; border-radius:30px; z-index:9999; font-weight:700; opacity:0; transform:translateX(120%); transition:0.4s; }
+    /* ==================== Components ==================== */
+    .badge { background:linear-gradient(135deg, var(--gold), var(--gold-bright)); color:#020617; padding:4px 12px; border-radius:20px; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:4px; }
+    .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
+    .progress-bar { background: rgba(255,255,255,0.1); border-radius:20px; height:14px; overflow:hidden; margin:10px 0; }
+    .progress-fill { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); border-radius: 20px; box-shadow: 0 0 10px var(--accent); width:0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
+    .phase-tag { background:var(--gold); color:#020617; padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem; display:inline-block; }
+    .post { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); padding:16px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.05); transition:var(--transition); }
+    .post:hover { background:rgba(255,255,255,0.06); }
+    .slider-item { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0; }
+    .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
+    .slider-item input[type="range"] { flex:3; accent-color:var(--accent); }
+    .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
+    .xp-bar-container { background: rgba(255,255,255,0.05); border-radius: 30px; height: 24px; overflow: hidden; position: relative; margin: 10px 0; }
+    .xp-bar-fill { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); background-size: 200% 100%; animation: shine 3s linear infinite; border-radius: 30px; display: flex; align-items: center; justify-content: center; transition: width 0.8s; }
+    .xp-text { color: #fff; font-weight: bold; font-size: 0.75rem; z-index: 1; }
+    .float-xp { position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: 900; color: var(--gold-bright); text-shadow: 0 0 20px black; animation: floatUp 2s ease-out forwards; z-index: 9999; pointer-events: none; }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+    .habit-card { transition: all 0.3s; margin-bottom:12px; }
+    .habit-time-slot { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 12px; margin: 4px; cursor: pointer; transition: 0.2s; font-size:0.9rem; }
+    .habit-time-slot.done { background: rgba(16,185,129,0.2); border: 1px solid #10b981; }
+    .toast { position:fixed; top:20px; right:20px; background:var(--accent); color:#fff; padding:14px 22px; border-radius:30px; z-index:9999; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.6); opacity:0; transform:translateX(120%); transition:0.4s cubic-bezier(0.4,0,0.2,1); }
     .toast.show { opacity:1; transform:translateX(0); }
+    .mini-stat { background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px; border:1px solid var(--border-gold); backdrop-filter:blur(5px); display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+    .streak-fire { background: linear-gradient(135deg, #ff9100, #ff3d00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight:900; animation: pulse 1.5s infinite; }
     .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:10000; backdrop-filter:blur(4px); }
     .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
-    .app-header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--surface); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-gold); position:sticky; top:0; z-index:1100; }
-    .logo { color:var(--gold-bright); font-weight:800; font-size:1.2rem; }
-    .desktop-nav { display:none; gap:8px; }
-    .desktop-nav a { color:var(--text-secondary); text-decoration:none; padding:8px 12px; border-radius:20px; transition:0.2s; }
-    .desktop-nav a:hover, .desktop-nav a.active { background:rgba(200,167,91,0.1); color:var(--gold-bright); }
-    .hamburger, .hamburger-right { background:none; border:none; color:var(--text); font-size:1.6rem; cursor:pointer; }
-    .mobile-menu { position:fixed; top:0; left:0; bottom:0; width:280px; background:var(--surface); z-index:2000; transform:translateX(-100%); transition:transform 0.3s; padding:20px; overflow-y:auto; border-right:1px solid var(--border-gold); display:flex; flex-direction:column; gap:8px; }
-    .mobile-menu.open { transform:translateX(0); }
-    .mobile-menu a, .mobile-menu button { display:block; background:none; border:none; color:var(--text-secondary); padding:10px; text-align:left; font-size:1rem; border-radius:8px; cursor:pointer; width:100%; }
-    .mobile-menu a:hover, .mobile-menu button:hover { background:rgba(37,99,235,0.1); color:var(--accent-bright); }
-    .menu-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1500; display:none; }
-    .menu-overlay.show { display:block; }
-    .main-content { flex:1; padding:20px; max-width:1100px; width:100%; margin:0 auto; }
-    .page { display:none; }
-    .page.active { display:block; }
-    .dropdown-menu { position:absolute; right:20px; top:60px; background:var(--surface); backdrop-filter:blur(24px); border:1px solid var(--border-gold); border-radius:12px; padding:8px; display:none; flex-direction:column; min-width:160px; z-index:1200; }
-    .dropdown-menu.show { display:flex; }
-    .dropdown-menu button, .dropdown-menu a { background:none; border:none; color:var(--text-secondary); padding:8px 16px; text-decoration:none; text-align:left; cursor:pointer; border-radius:8px; }
-    .dropdown-menu button:hover, .dropdown-menu a:hover { background:rgba(37,99,235,0.15); color:var(--accent-bright); }
-    @media (min-width:768px) { .desktop-nav { display:flex; } .hamburger { display:none; } }
-    @media (max-width:767px) { .main-content { padding:16px; } .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; } }
+    .gold-text { background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%); -webkit-background-clip:text; background-clip: text; -webkit-text-fill-color:transparent; }
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+    .quest-card { border: 1px solid var(--gold-bright); background: radial-gradient(circle at top left, rgba(200,167,91,0.15), rgba(12,14,34,0.8)); }
+    .quest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .xp-reward { color: var(--gold-bright); font-weight: bold; }
+    .quest-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .fab { position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px; background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold)); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(200,167,91,0.5); cursor: pointer; font-size: 28px; z-index: 2000; transition: transform 0.3s; }
+    .fab:hover { transform: scale(1.1); }
+    .drawer { position: fixed; bottom: 150px; right: 20px; width: 280px; background: rgba(12,14,34,0.95); backdrop-filter: blur(20px); border-radius: 16px; padding: 16px; border: 1px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1500; }
+    .mood-picker { display: flex; align-items: center; gap: 8px; margin: 16px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+    .mood-emoji { font-size: 28px; cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 50%; }
+    .mood-emoji.selected { transform: scale(1.3); background: rgba(200,167,91,0.2); box-shadow: 0 0 12px var(--gold); }
+    .evolution-tree { display: flex; justify-content: space-between; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; }
+    .evolution-tree .stage { text-align: center; padding: 8px; border-radius: 8px; opacity: 0.4; transition: 0.3s; }
+    .evolution-tree .stage.active { opacity: 1; background: rgba(37,99,235,0.2); box-shadow: 0 0 15px var(--accent); }
+    .chapter-card { cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .chapter-card:hover:not(.locked) { transform: translateY(-5px); box-shadow: var(--glow-gold); }
+    .chapter-card.locked { opacity:0.5; pointer-events: none; }
+    .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm); height: 80px; }
+    .video-card { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; transition: var(--transition); }
+    .video-card iframe { aspect-ratio: 16 / 9; width: 100%; height: auto; border: 0; }
+    .video-info { padding: 12px; }
+    .reply-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin: 6px 0; font-size: 0.9rem; }
+    .quiz-option { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+    .quiz-option input[type="radio"] { width: auto; margin: 0; accent-color: var(--gold); }
+    .quiz-option label { flex: 1; cursor: pointer; color: var(--text); }
+    .question-block { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px; }
+    .drop-zone {
+      border: 2px dashed var(--border-gold);
+      border-radius: var(--radius);
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      background: rgba(255,255,255,0.02);
+      margin: 12px 0;
+    }
+    .drop-zone.dragover { border-color: var(--gold-bright); background: rgba(200,167,91,0.1); }
+    /* ==================== Responsive ==================== */
+    @media (max-width: 767px) {
+      .sidebar { display: none; }
+      .mobile-topbar { display: flex; }
+      main#main-content { margin-left: 0; padding: 70px 12px 16px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .sidebar { width: 200px; }
+      .sidebar nav a { padding: 10px 16px; font-size: 0.85rem; }
+      main#main-content { margin-left: 200px; padding: 20px; }
+    }
   </style>
 </head>
 <body>
-<header class="app-header">
-  <button class="hamburger" onclick="toggleMenu()">☰</button>
-  <span class="logo">AlamQuant ATTS</span>
-  <nav class="desktop-nav">
-    <a href="#/journey" class="nav-link" data-page="journey" data-i18n="nav.journey">📅 যাত্রা</a>
-    <a href="#/training" class="nav-link" data-page="training" data-i18n="nav.training">📚 প্রশিক্ষণ</a>
-    <a href="#/habits" class="nav-link" data-page="habits" data-i18n="nav.habits">🎯 অভ্যাস</a>
-    <a href="#/progress" class="nav-link" data-page="progress" data-i18n="nav.progress">📈 অগ্রগতি</a>
-    <a href="#/community" class="nav-link" data-page="community" data-i18n="nav.community">🌍 কমিউনিটি</a>
-    <a href="#/profile" class="nav-link" data-page="profile" data-i18n="nav.profile">👤 প্রোফাইল</a>
-  </nav>
-  <button class="hamburger-right" onclick="toggleExtraMenu()">⚙️</button>
-  <div class="dropdown-menu" id="extra-menu">
-    <button onclick="toggleTheme()">🌓 <span data-i18n="theme">থিম পরিবর্তন</span></button>
-    <select id="desktop-lang-select" onchange="changeLanguage(this.value)" style="width:100%;">
-      <option value="bn">বাংলা</option><option value="en">English</option>
-    </select>
-    <button onclick="openHelp()">❓ <span data-i18n="help">সাহায্য</span></button>
-    <button onclick="openContact()">📞 <span data-i18n="contact">যোগাযোগ</span></button>
-    <button onclick="logout()">🚪 <span data-i18n="logout">লগআউট</span></button>
-  </div>
-</header>
-<div class="menu-overlay" id="menu-overlay" onclick="closeMobileMenu()"></div>
-<nav class="mobile-menu" id="mobile-menu">
-  <a href="#/journey" onclick="navigateTo('journey')" data-i18n="nav.journey">📅 যাত্রা</a>
-  <a href="#/training" onclick="navigateTo('training')" data-i18n="nav.training">📚 প্রশিক্ষণ</a>
-  <a href="#/habits" onclick="navigateTo('habits')" data-i18n="nav.habits">🎯 অভ্যাস</a>
-  <a href="#/progress" onclick="navigateTo('progress')" data-i18n="nav.progress">📈 অগ্রগতি</a>
-  <a href="#/community" onclick="navigateTo('community')" data-i18n="nav.community">🌍 কমিউনিটি</a>
-  <a href="#/profile" onclick="navigateTo('profile')" data-i18n="nav.profile">👤 প্রোফাইল</a>
-  <hr style="border-color:var(--border-gold); margin:8px 0;">
-  <button onclick="toggleTheme()">🌓 <span data-i18n="theme">থিম পরিবর্তন</span></button>
-  <select id="mobile-lang-select" onchange="changeLanguage(this.value)" style="width:100%;"><option value="bn">বাংলা</option><option value="en">English</option></select>
-  <a href="#" onclick="openHelp()">❓ <span data-i18n="help">সাহায্য</span></a>
-  <a href="#" onclick="openContact()">📞 <span data-i18n="contact">যোগাযোগ</span></a>
-  <a href="#" onclick="logout()">🚪 <span data-i18n="logout">লগআউট</span></a>
-</nav>
-<div id="toast" class="toast"></div>
-<div class="main-content" id="app">
-  <!-- Journey Page -->
-  <div id="page-journey" class="page active">
-    <div class="glass quest-card">
-      <div class="flex" style="justify-content:space-between;"><span data-i18n="quest.title">🎯 আজকের লক্ষ্য</span><span class="xp-reward">+15 XP</span></div>
-      <p id="quest-desc" data-i18n="quest.loading">লোড হচ্ছে...</p>
-      <div class="progress-bar"><div id="quest-fill" class="progress-fill"></div></div>
-      <button id="claim-quest-btn" class="btn btn-sm" disabled onclick="claimQuestReward()" data-i18n="quest.claim">পুরস্কার নাও</button>
-    </div>
-    <div class="glass">
-      <div class="flex" style="justify-content:space-between;">
-        <div><span id="user-avatar" style="font-size:40px;">🙂</span> <strong id="user-display-name"></strong> <span class="phase-tag" id="user-identity"></span></div>
-        <div class="flex"><span>⭐ <span id="xp-display">0</span></span><span>🔥<span id="streak-count">0</span></span></div>
-      </div>
-      <div class="xp-bar-container"><div id="xp-bar-fill" class="xp-bar-fill"><span id="user-level-bar"></span></div></div>
-    </div>
-    <div id="assessment-prompt" class="glass" style="text-align:center;"><button class="btn btn-accent" onclick="showAssessment()" data-i18n="assessment.prompt">📋 আপনার অবস্থা যাচাই করুন</button></div>
-    <div id="assessment-screen" class="glass hidden"></div>
-    <div class="glass">
-      <h3 data-i18n="journey.title">আজকের যাত্রা (Day <span id="day-count">1</span>)</h3>
-      <div id="morning-section">
-        <p data-i18n="journey.mindfulness">🌅 মর্নিং মাইন্ডফুলনেস</p>
-        <iframe width="100%" height="60" src="https://www.youtube.com/embed/inpok4MKVLM" allowfullscreen></iframe>
-        <label><input type="checkbox" id="mindfulness-done"> <span data-i18n="journey.mindfulness_done">সম্পন্ন করেছি</span></label>
-        <p data-i18n="journey.commitment">✍️ আজকের প্রতিজ্ঞা:</p>
-        <textarea id="commitment" rows="2" data-i18n-placeholder="journey.commitment_placeholder" placeholder="আমি আজ নিয়ম মেনে ট্রেড করবো..."></textarea>
-        <button class="btn" onclick="submitCheckin()" data-i18n="journey.checkin">✅ চেক-ইন সম্পন্ন</button>
-      </div>
-      <div id="checkin-done-msg" class="hidden" data-i18n="journey.checkin_done">✅ চেক-ইন সম্পন্ন</div>
-      <div id="evaluation-section" class="hidden">
-        <div class="mood-picker"><span data-i18n="journey.mood">আজকের ট্রেডিং মুড:</span><span class="mood-emoji" data-mood="happy">😊</span><span class="mood-emoji" data-mood="neutral">😐</span><span class="mood-emoji" data-mood="stressed">😰</span><span class="mood-emoji" data-mood="angry">😡</span></div>
-        <h4 data-i18n="journey.evaluation">📊 ট্রেডিং সেশন ইভ্যালুয়েশন</h4>
-        <div id="score-sliders"></div>
-        <div class="grid-2">
-          <label data-i18n="journey.trades">ট্রেড সংখ্যা <input type="number" id="trades-count" min="0" value="0"></label>
-          <label data-i18n="journey.stop_loss">স্টপ লস সরিয়েছ? <select id="stop-loss-moved"><option value="false">না</option><option value="true">হ্যাঁ</option></select></label>
-          <label data-i18n="journey.plan_deviation">প্ল্যানের বাইরে? <select id="plan-deviation"><option value="false">না</option><option value="true">হ্যাঁ</option></select></label>
-          <label data-i18n="journey.revenge">রিভেঞ্জ ট্রেড? <select id="revenge-trade"><option value="false">না</option><option value="true">হ্যাঁ</option></select></label>
-          <label data-i18n="journey.fomo">FOMO? <select id="fomo-entry"><option value="false">না</option><option value="true">হ্যাঁ</option></select></label>
-          <label data-i18n="journey.overtrading">ওভারট্রেডিং? <select id="overtrading"><option value="false">না</option><option value="true">হ্যাঁ</option></select></label>
-          <label data-i18n="journey.rule_followed">নিয়ম মেনেছি? <select id="rule-followed"><option value="true">হ্যাঁ</option><option value="false">না</option></select></label>
-        </div>
-        <textarea id="evaluation-notes" data-i18n-placeholder="journey.notes_placeholder" placeholder="নোট"></textarea>
-        <textarea id="reflection" data-i18n-placeholder="journey.reflection_placeholder" placeholder="আজকের শিক্ষা"></textarea>
-        <button class="btn" onclick="submitEvaluation()" data-i18n="journey.submit_eval">ইভ্যালুয়েশন সাবমিট</button>
-      </div>
-      <div id="feedback-area" class="hidden">
-        <h4 data-i18n="journey.feedback_title">🧠 AI Coach ফিডব্যাক</h4>
-        <p id="feedback-text"></p>
-        <p><strong data-i18n="journey.mission">📌 আগামীকালের মিশন:</strong> <span id="tomorrow-mission"></span></p>
-        <div id="new-badges"></div>
-        <button id="mystery-box-btn" class="btn btn-accent hidden" onclick="openMysteryBox()" data-i18n="journey.mystery_box">🎁 মিস্ট্রি বক্স</button>
-      </div>
-    </div>
-  </div>
-  <!-- Training Page -->
-  <div id="page-training" class="page">
-    <div class="glass"><div style="display:flex; justify-content:space-between;"><span data-i18n="training.energy">⚡ এনার্জি</span><strong id="energy-current">50</strong>/<span id="energy-max">50</span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill"></div></div></div>
-    <div class="glass"><h2 data-i18n="training.title">📚 ট্রেডার ট্রেনিং একাডেমি</h2><div id="chapter-list" class="grid-2"></div></div>
-    <div class="glass"><h3 data-i18n="training.lessons">📚 লার্নিং পাথ</h3><div id="lessons-list"></div></div>
-    <div class="glass"><h3 data-i18n="training.videos">🎥 শিক্ষামূলক ভিডিও</h3><div id="video-grid"></div></div>
-  </div>
-  <!-- Habits Page -->
-  <div id="page-habits" class="page">
-    <div class="glass" style="text-align:right;"><button class="btn btn-sm" onclick="showAddHabitForm()" data-i18n="habits.add">+ নতুন অভ্যাস</button></div>
-    <div id="habits-list"></div>
-    <div id="add-habit-modal" class="modal-overlay hidden">
-      <div class="glass modal-content">
-        <h3 data-i18n="habits.new_title">নতুন অভ্যাস</h3>
-        <input type="text" id="new-habit-title" data-i18n-placeholder="habits.name_placeholder" placeholder="নাম">
-        <div class="flex"><select id="new-habit-icon"><option value="🧘">🧘</option><option value="🏃">🏃</option><option value="📖">📖</option></select><input type="color" id="new-habit-color" value="#C8A75B" style="width:50px;"></div>
-        <input type="text" id="new-habit-times" data-i18n-placeholder="habits.times_placeholder" placeholder="06:00,12:00">
-        <button class="btn btn-lg" onclick="saveHabit()" data-i18n="habits.save">সংরক্ষণ</button>
-      </div>
-    </div>
-  </div>
-  <!-- Progress Page -->
-  <div id="page-progress" class="page">
-    <div class="glass">
-      <h3 data-i18n="progress.title">📈 অগ্রগতি</h3>
-      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-      <p><span data-i18n="progress.30days">৩০ দিনের জার্নি:</span> <strong id="progress-text">0%</strong></p>
-      <p><span data-i18n="progress.discipline_streak">ডিসিপ্লিন স্ট্রিক:</span> <strong id="discipline-streak-text">0</strong> দিন</p>
-      <div id="badges-list"></div>
-      <canvas id="radarChart" class="chart-container"></canvas>
-      <canvas id="scoresChart" class="chart-container"></canvas>
-      <p><span id="identity-phase-text" class="phase-tag">Beginner</span></p>
-      <button id="certificate-btn" class="btn btn-accent hidden" onclick="downloadCertificate()" data-i18n="progress.certificate">🏆 সার্টিফিকেট</button>
-    </div>
-    <div class="glass"><h3 data-i18n="progress.insights">📊 ইনসাইটস</h3><div id="insights-content"></div></div>
-    <div class="glass"><h3 data-i18n="progress.leaderboard">🏆 লিডারবোর্ড</h3><div id="leaderboard-list"></div></div>
-  </div>
-  <!-- Community Page -->
-  <div id="page-community" class="page">
-    <div class="glass">
-      <div class="flex">
-        <select id="post-type">
-          <option value="lesson" data-i18n="community.lesson">শিক্ষা</option>
-          <option value="mistake" data-i18n="community.mistake">ভুল</option>
-        </select>
-        <textarea id="post-content" rows="1" data-i18n-placeholder="community.share_placeholder" placeholder="শেয়ার করুন..."></textarea>
-        <input type="file" id="post-image-upload" accept="image/*" onchange="previewImage(event,'post-image-preview')">
-        <select id="image-category"><option value="general" data-i18n="community.image_general">সাধারণ</option><option value="chart" data-i18n="community.image_chart">চার্ট</option></select>
-        <img id="post-image-preview" style="max-width:80px; display:none;">
-        <button class="btn btn-sm" onclick="submitPost()" data-i18n="community.post">পোস্ট</button>
-      </div>
-    </div>
-    <div id="posts-container"></div>
-  </div>
-  <!-- Profile Page -->
-  <div id="page-profile" class="page">
-    <div class="glass">
-      <h3 data-i18n="profile.title">👤 প্রোফাইল</h3>
-      <p id="profile-name"></p><p id="profile-email"></p>
-      <div class="flex">
-        <span id="profile-avatar" style="font-size:40px;"></span>
-        <select id="avatar-select"><option>🙂</option><option>🧠</option></select>
-        <button class="btn btn-sm" onclick="changeAvatar()" data-i18n="profile.update">আপডেট</button>
-      </div>
-      <div class="evolution-tree">
-        <span class="stage" data-phase="Awareness">🌱</span><span class="stage" data-phase="Discipline">🌿</span>
-        <span class="stage" data-phase="Consistency">🌳</span><span class="stage" data-phase="Psychology">🧠</span>
-        <span class="stage" data-phase="Professional">💼</span><span class="stage" data-phase="Institutional">🏛️</span>
-      </div>
-      <div id="profile-badges"></div>
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- ==================== SIDEBAR (Desktop/Tablet) ==================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">AlamQuant ATTS</div>
+    <nav>
+      <a class="nav-item active" data-page="journey">📅 যাত্রা</a>
+      <a class="nav-item" data-page="training">📚 প্রশিক্ষণ</a>
+      <a class="nav-item" data-page="habits">🎯 অভ্যাস</a>
+      <a class="nav-item" data-page="progress">📈 অগ্রগতি</a>
+      <a class="nav-item" data-page="community">🌍 কমিউনিটি</a>
+      <a class="nav-item" data-page="profile">👤 প্রোফাইল</a>
       <hr>
-      <h4 data-i18n="profile.reminder">⏰ রিমাইন্ডার</h4>
-      <input type="time" id="reminder-time" value="08:00"><button class="btn btn-sm" onclick="saveReminderTime()">সেভ</button>
-      <h4 data-i18n="profile.notifications">⚙️ নোটিফিকেশন</h4>
-      <label><input type="checkbox" id="notif-email" checked> <span data-i18n="profile.email_notif">ইমেইল</span></label>
-      <label><input type="checkbox" id="notif-push" checked> <span data-i18n="profile.push_notif">পুশ</span></label>
-      <button class="btn btn-sm" onclick="updateNotifSettings()">সেভ</button>
-      <button class="btn btn-outline" style="width:100%; margin-top:20px;" onclick="logout()" data-i18n="logout">লগআউট</button>
+      <a class="nav-item" data-page="leaderboard">🏆 লিডারবোর্ড</a>
+      <a class="nav-item" data-page="lessons">📚 লেসন</a>
+      <a class="nav-item" data-page="videos">🎥 ভিডিও</a>
+      <a class="nav-item" data-page="insights">📊 ইনসাইটস</a>
+      <hr>
+      <a class="nav-item" data-page="settings">⚙️ সেটিংস</a>
+      <a class="nav-item" data-page="theme-toggle">🌙 Dark Mode</a>
+      <a class="nav-item" data-page="help">❓ সহায়তা</a>
+      <a class="nav-item logout-btn" onclick="logout()">🚪 লগআউট</a>
+    </nav>
+  </aside>
+
+  <!-- ==================== MOBILE TOP BAR ==================== -->
+  <div class="mobile-topbar">
+    <button class="hamburger-btn" id="mobileHamburger" aria-label="মেনু">☰</button>
+    <span class="logo">AlamQuant ATTS</span>
+  </div>
+
+  <!-- ==================== MOBILE DRAWER ==================== -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <nav>
+      <a class="nav-item active" data-page="journey">📅 যাত্রা</a>
+      <a class="nav-item" data-page="training">📚 প্রশিক্ষণ</a>
+      <a class="nav-item" data-page="habits">🎯 অভ্যাস</a>
+      <a class="nav-item" data-page="progress">📈 অগ্রগতি</a>
+      <a class="nav-item" data-page="community">🌍 কমিউনিটি</a>
+      <a class="nav-item" data-page="profile">👤 প্রোফাইল</a>
+      <hr>
+      <a class="nav-item" data-page="leaderboard">🏆 লিডারবোর্ড</a>
+      <a class="nav-item" data-page="lessons">📚 লেসন</a>
+      <a class="nav-item" data-page="videos">🎥 ভিডিও</a>
+      <a class="nav-item" data-page="insights">📊 ইনসাইটস</a>
+      <hr>
+      <a class="nav-item" data-page="settings">⚙️ সেটিংস</a>
+      <a class="nav-item" data-page="theme-toggle">🌙 Dark Mode</a>
+      <a class="nav-item" data-page="help">❓ সহায়তা</a>
+      <a class="nav-item" onclick="logout()" style="color: var(--danger);">🚪 লগআউট</a>
+    </nav>
+  </div>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main id="main-content">
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="page-content" style="max-width:500px; margin:40px auto;">
+      <div class="glass" style="text-align:center;">
+        <div style="font-size:60px; margin-bottom:12px; animation:float 3s infinite;">📈</div>
+        <h1 class="gold-text" style="font-size:2.4rem;">AlamQuant <span style="color:var(--gold-bright);">ATTS</span></h1>
+        <p style="color:var(--text-secondary); margin-bottom:24px; font-family:'Hind Siliguri', sans-serif;">"ধনী হওয়ার প্রতিশ্রুতি নয়, একজন শৃঙ্খলাবদ্ধ ট্রেডারে পরিণত হওয়ার যাত্রা।"</p>
+        <div class="flex" style="justify-content:center; margin-bottom:12px;">
+          <label style="color:var(--text-secondary); margin-right:6px;">🌐</label>
+          <select id="login-lang" onchange="i18n.load(this.value)" style="width:auto; padding:6px 12px;">
+            <option value="en" selected>English</option>
+            <option value="bn">বাংলা</option>
+          </select>
+        </div>
+        <div id="login-form">
+          <input type="text" id="login-name" placeholder="তোমার নাম" required>
+          <input type="email" id="login-email" placeholder="ইমেইল" required>
+          <input type="password" id="login-password" placeholder="পাসওয়ার্ড" required>
+          <button class="btn btn-lg" onclick="login()" style="width:100%; margin-top:8px;">লগইন</button>
+          <button class="btn btn-outline btn-sm" onclick="showRegister()" style="width:100%; margin-top:8px;">নতুন অ্যাকাউন্ট</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.remove('hidden')" style="width:100%; margin-top:8px;">পাসওয়ার্ড ভুলে গেছেন?</button>
+          <div style="margin:16px 0; color:var(--text-secondary);">— অথবা —</div>
+          <div id="google-signin-btn" style="display:flex; justify-content:center;"></div>
+        </div>
+        <div id="register-form" class="hidden">
+          <input type="text" id="reg-name" placeholder="তোমার নাম" required>
+          <input type="email" id="reg-email" placeholder="ইমেইল" required>
+          <input type="password" id="reg-password" placeholder="পাসওয়ার্ড (সর্বনিম্ন ৬)" required>
+          <div class="flex" style="gap:4px; justify-content:center;">
+            <label style="color:white;">অ্যাভাটার:</label>
+            <select id="reg-avatar" style="width:auto;">
+              <option value="🙂">🙂 শিক্ষার্থী</option><option value="🧠">🧠 চিন্তাবিদ</option><option value="🦅">🦅 ঈগল</option><option value="🐺">🐺 ওলভস</option><option value="💹">💹 চার্টিস্ট</option><option value="🛡️">🛡️ রক্ষক</option>
+            </select>
+          </div>
+          <button class="btn btn-lg" onclick="register()" style="width:100%; margin-top:8px;">অ্যাকাউন্ট খুলুন</button>
+          <button class="btn btn-outline btn-sm" onclick="showLogin()" style="width:100%; margin-top:8px;">ইতিমধ্যে অ্যাকাউন্ট আছে?</button>
+        </div>
+      </div>
     </div>
+
+    <!-- Dashboard (after login) -->
+    <div id="dashboard" class="hidden" style="display:contents;">
+
+      <!-- ===== PAGE: JOURNEY ===== -->
+      <div id="page-journey" class="page-content">
+        <div id="daily-quest-card" class="glass quest-card">
+          <div class="quest-header"><span>🎯 আজকের লক্ষ্য</span><span class="xp-reward">+15 XP</span></div>
+          <p id="quest-desc">লোড হচ্ছে...</p>
+          <div class="quest-progress"><div class="progress-bar" style="flex:1;"><div id="quest-fill" class="progress-fill" style="width:0%"></div></div><button id="claim-quest-btn" class="btn btn-sm btn-accent" disabled onclick="claimQuestReward()">পুরস্কার নাও</button></div>
+        </div>
+        <div class="glass" style="padding:18px 22px;">
+          <div class="flex" style="justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div class="flex" style="gap:10px;"><span id="user-avatar" style="font-size:42px;">🙂</span><div><strong id="user-display-name" style="color:var(--gold-light);"></strong><div style="font-size:12px; color:var(--text-secondary);">Lv. <span id="user-level">1</span> · <span id="user-identity" class="phase-tag">Beginner</span></div></div></div>
+            <div class="flex" style="gap:8px;"><div class="mini-stat"><span class="streak-fire">🔥 <span id="streak-count">0</span></span></div><div class="mini-stat">⭐ <span id="xp-display">0 XP</span></div></div>
+          </div>
+          <div class="xp-bar-container"><div id="xp-bar-fill" class="xp-bar-fill" style="width:0%"><span class="xp-text">Lv. <span id="user-level-bar">1</span></span></div></div>
+        </div>
+        <div class="glass" id="assessment-prompt" style="text-align:center;"><button class="btn btn-accent btn-lg" onclick="showAssessment()">📋 আপনার অবস্থা যাচাই করুন</button></div>
+        <div id="assessment-screen" class="glass hidden">
+          <h2>🧭 ট্রেডিং মানসিকতা নিরীক্ষণ</h2><div id="assessment-questions"></div><button class="btn btn-accent" onclick="submitAssessment()">বিশ্লেষণ দেখুন</button><div id="assessment-result" class="hidden"></div>
+        </div>
+        <div class="glass" id="weekly-challenge-card"></div>
+        <div class="glass"><h3>আজকের যাত্রা (Day <span id="day-count">1</span>)</h3><div id="morning-section"><p style="color:var(--accent-bright);">🌅 মর্নিং মাইন্ডফুলনেস</p><iframe width="100%" height="60" src="https://www.youtube.com/embed/inpok4MKVLM" style="border-radius:12px; margin:12px 0;" allowfullscreen></iframe><label class="flex"><input type="checkbox" id="mindfulness-done"> সম্পন্ন করেছি</label><p style="margin-top:8px;">✍️ আজকের প্রতিজ্ঞা:</p><textarea id="commitment" rows="2" placeholder="আমি আজ নিয়ম মেনে ট্রেড করবো..." required></textarea><button class="btn btn-lg" onclick="submitCheckin()" style="margin-top:8px;">✅ চেক-ইন সম্পন্ন</button></div><div id="checkin-done-msg" class="hidden" style="color:var(--success);">✅ চেক-ইন সম্পন্ন</div><div id="evaluation-section" class="hidden"><div id="mood-picker" class="mood-picker"><span>আজকের ট্রেডিং মুড:</span><span class="mood-emoji" data-mood="happy">😊</span><span class="mood-emoji" data-mood="neutral">😐</span><span class="mood-emoji" data-mood="stressed">😰</span><span class="mood-emoji" data-mood="angry">😡</span></div><hr style="border-color:var(--border-gold);"><h4>📊 ট্রেডিং সেশন ইভ্যালুয়েশন</h4><div id="score-sliders"></div><div class="grid-2" style="margin-top:12px;"><div><label>ট্রেড সংখ্যা</label><input type="number" id="trades-count" value="0" min="0" required></div><div><label>স্টপ লস সরিয়েছ?</label><select id="stop-loss-moved" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>প্ল্যানের বাইরে?</label><select id="plan-deviation" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>রিভেঞ্জ ট্রেড?</label><select id="revenge-trade" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>FOMO?</label><select id="fomo-entry" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>ওভারট্রেডিং?</label><select id="overtrading" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>নিয়ম মেনেছি?</label><select id="rule-followed" required><option value="true">হ্যাঁ</option><option value="false">না</option></select></div></div><textarea id="evaluation-notes" rows="1" placeholder="নোট"></textarea><textarea id="reflection" rows="2" placeholder="আজকের শিক্ষা" required></textarea><div id="reflection-prompts" style="color:var(--accent-bright); font-style:italic;"></div><button class="btn btn-lg" onclick="submitEvaluation()">ইভ্যালুয়েশন সাবমিট</button></div><div id="feedback-area" class="hidden"><hr><h4>🧠 AI Coach ফিডব্যাক</h4><p id="feedback-text" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; border-left:4px solid var(--accent-bright);"></p><p><strong style="color:var(--gold);">📌 আগামীকালের মিশন:</strong> <span id="tomorrow-mission"></span></p><div id="new-badges" class="flex"></div><button id="mystery-box-btn" class="btn btn-accent hidden" onclick="showMysteryBox()">🎁 মিস্ট্রি বক্স</button></div></div></div>
+      </div>
+
+      <!-- ===== PAGE: TRAINING ===== -->
+      <div id="page-training" class="page-content hidden">
+        <div class="glass"><div style="display:flex; justify-content:space-between;"><span>⚡ এনার্জি</span><span><strong id="energy-current">50</strong>/<span id="energy-max">50</span></span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill" style="width:100%;"></div></div></div>
+        <div class="glass"><h2>📚 ট্রেডার ট্রেনিং একাডেমি</h2><div id="chapter-list" class="grid-2"></div></div>
+        <div id="final-exam-section" class="glass hidden" style="text-align:center;"><h3>🏆 ফাইনাল পরীক্ষা</h3><button class="btn btn-accent btn-lg" onclick="startFinalExam()">শুরু</button></div>
+      </div>
+
+      <!-- ===== PAGE: HABITS ===== -->
+      <div id="page-habits" class="page-content hidden">
+        <div class="glass" style="text-align:right;"><button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ নতুন অভ্যাস</button></div>
+        <div id="habits-list"></div>
+        <div id="add-habit-modal" class="modal-overlay hidden"><div class="glass modal-content"><h3>নতুন অভ্যাস</h3><input type="text" id="new-habit-title" placeholder="নাম"><div class="flex"><select id="new-habit-icon"><option value="🧘">🧘</option><option value="🏃">🏃</option><option value="📖">📖</option></select><input type="color" id="new-habit-color" value="#C8A75B" style="width:50px;"></div><input type="text" id="new-habit-times" placeholder="06:00,12:00"><button class="btn btn-lg" onclick="saveHabit()">সংরক্ষণ</button></div></div>
+      </div>
+
+      <!-- ===== PAGE: PROGRESS ===== -->
+      <div id="page-progress" class="page-content hidden">
+        <div class="glass"><h3>📈 অগ্রগতি</h3><div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div><p>৩০ দিনের জার্নি: <strong id="progress-text">0%</strong></p><div class="timeline" id="journey-timeline"></div><p>ডিসিপ্লিন স্ট্রিক: <strong id="discipline-streak-text">0</strong> দিন</p><div id="heatmap" class="flex" style="gap:4px; overflow-x:auto;"></div><div id="badges-list" class="flex"></div><canvas id="radarChart" class="chart-container"></canvas><canvas id="scoresChart" class="chart-container"></canvas><p><span id="identity-phase-text" class="phase-tag">Beginner</span></p><button id="certificate-btn" class="btn btn-accent hidden" onclick="downloadCertificate()">🏆 সার্টিফিকেট</button></div>
+      </div>
+
+      <!-- ===== PAGE: COMMUNITY ===== -->
+      <div id="page-community" class="page-content hidden">
+        <div class="glass"><div class="flex"><select id="post-type"><option value="lesson">শিক্ষা</option><option value="mistake">ভুল</option></select><textarea id="post-content" rows="1" placeholder="শেয়ার করুন..."></textarea><button class="btn btn-sm" onclick="submitPost()">পোস্ট</button></div><div id="posts-container"></div></div>
+      </div>
+
+      <!-- ===== PAGE: PROFILE ===== -->
+      <div id="page-profile" class="page-content hidden">
+        <div class="glass"><h3>👤 প্রোফাইল</h3><p><span id="profile-name"></span></p><p><span id="profile-email"></span></p>
+          <div class="flex"><span id="profile-avatar" style="font-size:40px;"></span><select id="avatar-select"><option>🙂</option><option>🧠</option></select><button class="btn btn-sm" onclick="changeAvatar()">আপডেট</button></div>
+          <div class="evolution-tree" id="avatar-evolution"><div class="stage" data-phase="Awareness">🌱</div><div class="stage" data-phase="Discipline">🌿</div><div class="stage" data-phase="Consistency">🌳</div><div class="stage" data-phase="Psychology">🧠</div><div class="stage" data-phase="Professional">💼</div><div class="stage" data-phase="Institutional">🏛️</div></div>
+          <div id="profile-badges" class="flex"></div>
+          <hr>
+          <h4>⏰ রিমাইন্ডার</h4><input type="time" id="reminder-time" value="08:00"><button class="btn btn-sm" onclick="saveReminderTime()">সেভ</button>
+          <h4>⚙️ নোটিফিকেশন</h4><label class="flex"><input type="checkbox" id="notif-email" checked> ইমেইল</label><label class="flex"><input type="checkbox" id="notif-push" checked> পুশ</label><button class="btn btn-sm" onclick="updateNotifSettings()">সেভ</button>
+          <div style="margin-top:16px;"><label>🌐 ভাষা:</label><select id="lang-select" onchange="i18n.load(this.value)"><option value="en">English</option><option value="bn">বাংলা</option></select></div>
+          <!-- Profile Image Upload with Drag & Drop -->
+          <div style="margin-top:16px;"><h4>🖼️ প্রোফাইল ছবি আপলোড</h4>
+            <div class="drop-zone" id="profile-drop-zone">
+              <p>📁 এখানে ছবি টেনে আনুন অথবা ক্লিক করুন</p>
+              <input type="file" id="profile-image-upload" accept="image/*" style="display:none;" multiple>
+            </div>
+            <span id="profile-upload-status" style="font-size:0.9rem;"></span>
+          </div>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:20px;" onclick="logout()">লগআউট</button>
+        </div>
+      </div>
+
+      <!-- ===== PAGE: LEADERBOARD ===== -->
+      <div id="page-leaderboard" class="page-content hidden">
+        <div class="glass"><h3>🏆 লিডারবোর্ড</h3><div id="leaderboard-list"></div></div>
+      </div>
+
+      <!-- ===== PAGE: LESSONS ===== -->
+      <div id="page-lessons" class="page-content hidden">
+        <div class="glass"><h3>📚 লার্নিং পাথ</h3><div id="lessons-list"></div></div>
+      </div>
+
+      <!-- ===== PAGE: VIDEOS ===== -->
+      <div id="page-videos" class="page-content hidden">
+        <div class="glass"><h3>🎥 শিক্ষামূলক ভিডিও</h3><div id="video-grid" class="video-grid"></div></div>
+      </div>
+
+      <!-- ===== PAGE: INSIGHTS ===== -->
+      <div id="page-insights" class="page-content hidden">
+        <div class="glass"><h3>📊 ইনসাইটস</h3><div id="insights-content"></div></div>
+      </div>
+
+      <!-- ===== PAGE: SETTINGS ===== -->
+      <div id="page-settings" class="page-content hidden">
+        <div class="glass"><h3>⚙️ সেটিংস</h3>
+          <label>🌐 ভাষা:</label><select id="settings-lang-select" onchange="i18n.load(this.value)"><option value="en">English</option><option value="bn">বাংলা</option></select>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="toggleTheme()">🌙 ডার্ক/লাইট মোড</button>
+        </div>
+      </div>
+
+    </div><!-- /#dashboard -->
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+  <div id="level-up-modal" class="modal-overlay hidden">
+    <div class="glass modal-content" style="text-align:center;"><h2 id="level-up-title">🎉 লেভেল আপ!</h2><button class="btn btn-lg btn-accent" onclick="document.getElementById('level-up-modal').classList.add('hidden')">দারুণ!</button></div>
   </div>
-</div>
-<!-- Modals -->
-<div id="chapter-modal" class="modal-overlay hidden">
-  <div class="glass modal-content" style="max-width:800px;">
-    <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button>
-    <h2 id="chapter-modal-title"></h2>
-    <div id="chapter-modal-content"></div>
-    <hr><h3 data-i18n="training.quiz">🧪 কুইজ</h3>
-    <div id="quiz-container"></div>
-    <div id="quiz-result" class="hidden"></div>
-    <button class="btn btn-lg" onclick="submitChapterQuiz()" data-i18n="training.submit_quiz">উত্তর জমা দিন</button>
+  <div id="mystery-box-modal" class="modal-overlay hidden">
+    <div class="glass modal-content"><h3>🎁 মিস্ট্রি বক্স</h3><button class="btn btn-lg btn-accent" onclick="openMysteryBox()">খুলুন!</button><p id="mystery-result"></p><button class="btn btn-sm btn-outline" onclick="document.getElementById('mystery-box-modal').classList.add('hidden')">বন্ধ</button></div>
   </div>
-</div>
-<div id="final-exam-modal" class="modal-overlay hidden">
-  <div class="glass modal-content" style="max-width:800px;">
-    <h2>🏆 <span data-i18n="training.final_exam">ফাইনাল পরীক্ষা</span></h2>
-    <p>⏳ <span id="overall-timer">20:00</span></p>
-    <div id="final-exam-questions"></div>
-    <button class="btn btn-lg" onclick="submitFinalExam()" data-i18n="training.submit_exam">জমা দিন</button>
-    <div id="final-exam-result" class="hidden"></div>
+  <div id="forgot-password-modal" class="modal-overlay hidden">
+    <div class="glass modal-content"><h3>🔑 পাসওয়ার্ড রিসেট</h3><input type="email" id="reset-email" placeholder="আপনার ইমেইল"><button class="btn" onclick="requestPasswordReset()">লিংক পাঠান</button><button class="btn btn-outline" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')">বন্ধ</button></div>
   </div>
-</div>
-<div id="forgot-password-modal" class="modal-overlay hidden">
-  <div class="glass modal-content">
-    <h3 data-i18n="auth.reset_title">পাসওয়ার্ড রিসেট</h3>
-    <input type="email" id="reset-email" placeholder="ইমেইল">
-    <button class="btn" onclick="requestPasswordReset()" data-i18n="auth.send_reset">রিসেট লিংক পাঠান</button>
-    <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')" data-i18n="cancel">বাতিল</button>
-  </div>
-</div>
-<div id="mystery-box-modal" class="modal-overlay hidden">
-  <div class="glass modal-content">
-    <h3>🎁 <span data-i18n="journey.mystery_box">মিস্ট্রি বক্স</span></h3>
-    <p id="mystery-result"></p>
-    <button class="btn" onclick="openMysteryBox()" data-i18n="journey.open_box">খুলুন</button>
-  </div>
-</div>
-<div id="help-modal" class="modal-overlay hidden">
-  <div class="glass modal-content">
-    <h3>❓ <span data-i18n="help">সাহায্য</span></h3>
-    <p data-i18n="help.text">সাধারণ জিজ্ঞাসা ও সমাধানের জন্য আমাদের ডকুমেন্টেশন দেখুন। জরুরি সহায়তায় ইমেইল করুন: support@alamquant.com</p>
-    <button class="btn btn-sm btn-outline" onclick="document.getElementById('help-modal').classList.add('hidden')" data-i18n="close">বন্ধ করুন</button>
-  </div>
-</div>
-<div id="contact-modal" class="modal-overlay hidden">
-  <div class="glass modal-content">
-    <h3>📞 <span data-i18n="contact">যোগাযোগ</span></h3>
-    <p><span data-i18n="contact.email">ইমেইল:</span> support@alamquant.com<br><span data-i18n="contact.phone">ফোন:</span> +8801700000000</p>
-    <button class="btn btn-sm btn-outline" onclick="document.getElementById('contact-modal').classList.add('hidden')" data-i18n="close">বন্ধ করুন</button>
-  </div>
-</div>
-<!-- Auth screen -->
-<div id="auth-screen" class="glass" style="text-align:center; display:none;">
-  <div style="font-size:60px;">📈</div>
-  <h1>AlamQuant <span>ATTS</span></h1>
-  <p data-i18n="auth.tagline">"ধনী হওয়ার প্রতিশ্রুতি নয়, একজন শৃঙ্খলাবদ্ধ ট্রেডারে পরিণত হওয়ার যাত্রা।"</p>
-  <div id="login-form">
-    <input type="text" id="login-name" data-i18n-placeholder="auth.name_placeholder" placeholder="তোমার নাম">
-    <input type="email" id="login-email" data-i18n-placeholder="auth.email_placeholder" placeholder="ইমেইল">
-    <input type="password" id="login-password" data-i18n-placeholder="auth.password_placeholder" placeholder="পাসওয়ার্ড">
-    <button class="btn btn-lg" onclick="login()" style="width:100%;" data-i18n="auth.login">লগইন</button>
-    <button class="btn btn-outline btn-sm" onclick="showRegister()" style="width:100%;" data-i18n="auth.new_account">নতুন অ্যাকাউন্ট</button>
-    <button class="btn btn-outline btn-sm" onclick="document.getElementById('forgot-password-modal').classList.remove('hidden')" style="width:100%;" data-i18n="auth.forgot_password">পাসওয়ার্ড ভুলে গেছেন?</button>
-  </div>
-  <div id="register-form" class="hidden">
-    <input type="text" id="reg-name" data-i18n-placeholder="auth.name_placeholder" placeholder="তোমার নাম">
-    <input type="email" id="reg-email" data-i18n-placeholder="auth.email_placeholder" placeholder="ইমেইল">
-    <input type="password" id="reg-password" data-i18n-placeholder="auth.password_placeholder" placeholder="পাসওয়ার্ড (সর্বনিম্ন ৬)">
-    <select id="reg-avatar"><option>🙂</option><option>🧠</option></select>
-    <button class="btn btn-lg" onclick="register()" style="width:100%;" data-i18n="auth.register">অ্যাকাউন্ট খুলুন</button>
-    <button class="btn btn-outline btn-sm" onclick="showLogin()" style="width:100%;" data-i18n="auth.existing_account">ইতিমধ্যে অ্যাকাউন্ট আছে?</button>
-  </div>
-</div>
-<div id="loading-screen" style="position:fixed; inset:0; background:#0B1220; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999;">
-  <div style="border:4px solid rgba(200,167,91,0.15); border-top:4px solid #C8A75B; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div>
-  <span style="color:var(--gold-bright); margin-top:12px;">AlamQuant ATTS</span>
-</div>
+  <div id="chapter-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button><h2 id="chapter-modal-title"></h2><div id="chapter-images-gallery" class="flex" style="gap:10px; flex-wrap:wrap;"></div><div id="chapter-modal-video-container"></div><div id="chapter-modal-content" style="line-height:1.8;"></div><hr><div style="display:flex; justify-content:space-between;"><h3>🧪 কুইজ</h3><select id="quiz-mode-select" onchange="setQuizMode()" style="width:auto;"><option value="learning">Learning</option><option value="practice">Practice</option></select></div><div id="practice-timer" style="color:var(--accent-bright);"></div><div id="quiz-container"></div><div id="quiz-result" class="hidden"></div><button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()">উত্তর জমা দিন</button></div></div>
+  <div id="final-exam-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><h2>🏆 ফাইনাল পরীক্ষা</h2><p>⏳ <span id="overall-timer">20:00</span></p><div id="final-exam-questions"></div><button class="btn btn-accent btn-lg" onclick="submitFinalExam()">জমা দিন</button><div id="final-exam-result" class="hidden"></div></div></div>
+  <div id="toast" class="toast"></div>
+  <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#0B1220; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;"><div style="border:4px solid rgba(200,167,91,0.15); border-top:4px solid #C8A75B; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div><span style="color:var(--gold-bright); font-weight:700; font-size:1.1rem;">AlamQuant ATTS</span></div>
 
-<script src="router.js"></script>
-<script src="theme.js"></script>
-<script>
-  // ==================== GLOBALS & CONFIG ====================
-  const API = '/api/setup';
-  let token = localStorage.getItem('token');
-  let currentUser = null, selectedMood = null, currentChapterId = null, currentChapterQuestions = [];
-  let chart, radarChart;
-  let communityPollInterval = null; // for real-time community polling
+  <script>
+    // ==================== Global Configuration ====================
+    const API = '/api/setup';
+    let token = localStorage.getItem('token');
+    let currentUser = null;
+    let previousLevel = null;
+    let chart = null, radarChart = null;
+    let quizData = null;
+    let selectedMood = null;
+    let currentChapterId = null, currentChapterQuestions = [];
+    let currentQuizMode = 'learning', practiceTimerInterval = null;
+    window.GOOGLE_CLIENT_ID = document.querySelector('meta[name="google-client-id"]')?.content || '';
+    const VAPID_PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.content || '';
+    let habitDefinitions = [];
+    let todayLogs = [];
+    let reminderInterval = null;
 
-  // ==================== i18n ====================
-  const i18n = {
-    lang: localStorage.getItem('lang') || 'bn',
-    translations: {},
-    async load(l) {
-      try {
-        const r = await fetch(`${API}/translations?lang=${l}`);
-        this.translations = await r.json();
-      } catch(e) { this.translations = {}; }
-      this.lang = l;
-      localStorage.setItem('lang', l);
-      this.apply();
-      // Update select elements
-      document.querySelectorAll('#mobile-lang-select, #desktop-lang-select').forEach(s => {
-        if(s) s.value = l;
-      });
-    },
-    t(key, fallback = '') {
-      return this.translations[key] || fallback;
-    },
-    apply() {
-      // Elements with data-i18n attribute (text content)
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (key) el.textContent = this.t(key, el.textContent);
-      });
-      // Elements with data-i18n-placeholder (input/textarea)
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (key) el.placeholder = this.t(key, el.placeholder);
-      });
-    }
-  };
-
-  async function changeLanguage(l) {
-    await i18n.load(l);
-    // Re-render sliders because they are dynamically generated
-    renderSliders();
-  }
-
-  // ==================== UTILS ====================
-  function showToast(msg, d = 3000) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), d);
-  }
-  function celebrate(msg) {
-    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-    showToast(msg || '🎉');
-  }
-  function apiCall(method, path, body, showError = true) {
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    return fetch(`${API}${path}`, { method, headers, body: body ? JSON.stringify(body) : null })
-      .then(r => {
-        if (r.status === 401) { logout(); return null; }
-        return r.json();
-      })
-      .then(d => {
-        if (d?.error && showError) showToast(d.error);
-        return d;
-      })
-      .catch(() => {
-        if (showError) showToast('Network error');
-        return null;
-      });
-  }
-
-  function showLogin() { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); }
-  function showRegister() { document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); }
-  async function login() {
-    const d = await apiCall('POST', '/login', {
-      email: document.getElementById('login-email').value,
-      password: document.getElementById('login-password').value,
-      display_name: document.getElementById('login-name').value
-    });
-    if (d?.token) { token = d.token; localStorage.setItem('token', token); initApp(d.user); }
-  }
-  async function register() {
-    const d = await apiCall('POST', '/register', {
-      email: document.getElementById('reg-email').value,
-      password: document.getElementById('reg-password').value,
-      display_name: document.getElementById('reg-name').value,
-      avatar_emoji: document.getElementById('reg-avatar').value
-    });
-    if (d?.token) { token = d.token; localStorage.setItem('token', token); initApp(d.user); }
-  }
-  function logout() {
-    localStorage.removeItem('token');
-    token = null;
-    if (communityPollInterval) clearInterval(communityPollInterval);
-    location.reload();
-  }
-
-  // ==================== NAVIGATION & PAGES ====================
-  function toggleMenu() {
-    document.getElementById('mobile-menu').classList.toggle('open');
-    document.getElementById('menu-overlay').classList.toggle('show');
-  }
-  function closeMobileMenu() {
-    document.getElementById('mobile-menu').classList.remove('open');
-    document.getElementById('menu-overlay').classList.remove('show');
-  }
-  function toggleExtraMenu() { document.getElementById('extra-menu').classList.toggle('show'); }
-  function openHelp() { document.getElementById('help-modal').classList.remove('hidden'); closeMobileMenu(); }
-  function openContact() { document.getElementById('contact-modal').classList.remove('hidden'); closeMobileMenu(); }
-  function navigateTo(p) { location.hash = `#/${p}`; closeMobileMenu(); }
-
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const pageEl = document.getElementById('page-' + name);
-    if (pageEl) pageEl.classList.add('active');
-    // Stop community poll if leaving community page
-    if (name !== 'community' && communityPollInterval) {
-      clearInterval(communityPollInterval);
-      communityPollInterval = null;
-    }
-    if (name === 'training') loadTrainingTab();
-    if (name === 'habits') loadHabits();
-    if (name === 'progress') loadProgress();
-    if (name === 'community') {
-      loadCommunity();
-      // Start real-time polling for community
-      if (!communityPollInterval) {
-        communityPollInterval = setInterval(() => {
-          // Reload community only if the page is active
-          if (document.getElementById('page-community').classList.contains('active')) {
-            loadCommunity(true); // silent refresh
-          }
-        }, 30000); // every 30 seconds
-      }
-    }
-    if (name === 'profile') loadProfilePage();
-    updateActiveNav();
-  }
-  window.addEventListener('hashchange', () => { showPage(location.hash.replace('#/', '') || 'journey'); });
-  function updateActiveNav() {
-    const current = location.hash.replace('#/', '') || 'journey';
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.page === current));
-  }
-
-  // ==================== PUSH NOTIFICATION / SERVICE WORKER ====================
-  async function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered');
-        return registration;
-      } catch (e) {
-        console.error('SW registration failed', e);
-      }
-    }
-    return null;
-  }
-
-  async function subscribeToPush(registration) {
-    if (!registration) return;
-    try {
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
-      await apiCall('POST', '/save-subscription', { subscription });
-      showToast('পুশ নোটিফিকেশন চালু হয়েছে');
-    } catch (e) {
-      console.error('Push subscription failed', e);
-      showToast('পুশ নোটিফিকেশন সেটআপ করা যায়নি');
-    }
-  }
-
-  function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  }
-
-  async function initPushNotifications() {
-    const reg = await registerServiceWorker();
-    if (!reg) return;
-    const perm = await Notification.requestPermission();
-    if (perm === 'granted') {
-      await subscribeToPush(reg);
-    }
-  }
-
-  // ==================== APP INIT ====================
-  async function initApp(user) {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'none';
-    currentUser = user;
-    showPage('journey');
-    await loadProfile();
-    // Initialize push notifications if enabled in settings (check after profile)
-    // We'll call it after loading notif settings
-    await initPushNotifications();
-  }
-
-  // ==================== PROFILE & DATA ====================
-  async function loadProfile() {
-    const d = await apiCall('GET', '/profile');
-    if (!d) return;
-    const { user, today_entry, totalDays, streak } = d;
-    currentUser = user;
-    document.getElementById('user-avatar').textContent = user.avatar_emoji || '🙂';
-    document.getElementById('user-display-name').textContent = user.display_name || user.email.split('@')[0];
-    document.getElementById('user-identity').textContent = user.identity_level;
-    document.getElementById('day-count').textContent = totalDays;
-    document.getElementById('streak-count').textContent = streak;
-    document.getElementById('xp-display').textContent = `⭐ ${user.xp} XP`;
-    document.getElementById('xp-bar-fill').style.width = Math.min(100, Math.max(0, ((user.xp - (user.level - 1) * 75) / 75) * 100)) + '%';
-    document.getElementById('user-level-bar').textContent = `Lv. ${user.level}`;
-
-    if (today_entry) {
-      document.getElementById('morning-section').classList.add('hidden');
-      document.getElementById('checkin-done-msg').classList.remove('hidden');
-      if (today_entry.feedback) {
-        document.getElementById('evaluation-section').classList.add('hidden');
-        showFeedback({ feedback: today_entry.feedback, mission: today_entry.tomorrow_mission, badges: [] });
-      } else {
-        document.getElementById('evaluation-section').classList.remove('hidden');
-        document.getElementById('feedback-area').classList.add('hidden');
-      }
-    } else {
-      document.getElementById('morning-section').classList.remove('hidden');
-      document.getElementById('checkin-done-msg').classList.add('hidden');
-      document.getElementById('evaluation-section').classList.add('hidden');
-      document.getElementById('feedback-area').classList.add('hidden');
-    }
-    loadDailyQuest();
-    renderSliders();
-
-    // Load notif settings from API and set checkboxes, then push setup
-    const settings = await apiCall('GET', '/notif-settings');
-    if (settings) {
-      document.getElementById('notif-email').checked = settings.email_enabled !== false;
-      document.getElementById('notif-push').checked = settings.push_enabled !== false;
-    }
-  }
-
-  function showFeedback(fb) {
-    document.getElementById('feedback-text').textContent = fb.feedback;
-    document.getElementById('tomorrow-mission').textContent = fb.mission || '';
-    document.getElementById('new-badges').innerHTML = (fb.badges || []).map(b => `<span class="badge">${b}</span>`).join('');
-    document.getElementById('feedback-area').classList.remove('hidden');
-  }
-
-  function renderSliders() {
-    const qs = [
-      { id: 'q1', s: i18n.t('slider.planning', 'পরিকল্পনা') },
-      { id: 'q2', s: i18n.t('slider.setup', 'সেটআপ') },
-      { id: 'q3', s: i18n.t('slider.risk', 'রিস্ক') },
-      { id: 'q4', s: i18n.t('slider.execution', 'এক্সিকিউশন') },
-      { id: 'q5', s: i18n.t('slider.exit', 'এক্সিট') },
-      { id: 'q6', s: i18n.t('slider.discipline', 'শৃঙ্খলা') },
-      { id: 'q7', s: i18n.t('slider.emotion', 'আবেগ') },
-      { id: 'q8', s: i18n.t('slider.patience', 'ধৈর্য') },
-      { id: 'q9', s: i18n.t('slider.review', 'পর্যালোচনা') },
-      { id: 'q10', s: i18n.t('slider.improvement', 'উন্নতি') }
-    ];
-    document.getElementById('score-sliders').innerHTML = qs.map(q =>
-      `<div class="slider-item"><label>${q.s}</label><input type="range" min="0" max="10" value="8" data-q="${q.id}"><span>8</span></div>`
-    ).join('');
-    document.querySelectorAll('#score-sliders input').forEach(i =>
-      i.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value)
-    );
-  }
-
-  async function loadDailyQuest() {
-    const q = await apiCall('GET', '/daily-quest');
-    if (q) {
-      const questNames = {
-        no_revenge: i18n.t('quest.no_revenge', 'রিভেঞ্জ ট্রেড নয়'),
-        no_fomo: i18n.t('quest.no_fomo', 'FOMO নয়'),
-        q6_8plus: i18n.t('quest.q6_8plus', 'Q6 ≥ 8'),
-        mindfulness: i18n.t('quest.mindfulness', 'মাইন্ডফুলনেস'),
-        habit_complete: i18n.t('quest.habit_complete', 'হ্যাবিট সম্পন্ন')
-      };
-      document.getElementById('quest-desc').textContent = questNames[q.quest_type] || '';
-      document.getElementById('quest-fill').style.width = (q.completed ? 100 : (q.progress / q.target) * 100) + '%';
-      document.getElementById('claim-quest-btn').disabled = !(q.completed && !q.claimed);
-    }
-  }
-
-  async function claimQuestReward() {
-    const r = await apiCall('POST', '/claim-quest-reward');
-    if (r?.success) { celebrate('+15 XP!'); loadProfile(); }
-  }
-
-  async function submitCheckin() {
-    if (!document.getElementById('mindfulness-done').checked) return showToast(i18n.t('journey.mindfulness_required', 'মাইন্ডফুলনেস সম্পন্ন করো'));
-    await apiCall('POST', '/checkin', {
-      mindfulness_done: true,
-      commitment: document.getElementById('commitment').value,
-      date: new Date().toISOString().slice(0, 10)
-    });
-    document.getElementById('morning-section').classList.add('hidden');
-    document.getElementById('checkin-done-msg').classList.remove('hidden');
-    setTimeout(() => document.getElementById('evaluation-section').classList.remove('hidden'), 1000);
-  }
-
-  async function submitEvaluation() {
-    if (!selectedMood) return showToast(i18n.t('journey.mood_required', 'মুড নির্বাচন করো'));
-    const scores = {};
-    document.querySelectorAll('#score-sliders input').forEach(i => scores[i.dataset.q] = parseInt(i.value));
-    const body = {
-      trades_count: parseInt(document.getElementById('trades-count').value),
-      stop_loss_moved: document.getElementById('stop-loss-moved').value === 'true',
-      plan_deviation: document.getElementById('plan-deviation').value === 'true',
-      revenge_trade: document.getElementById('revenge-trade').value === 'true',
-      fomo_entry: document.getElementById('fomo-entry').value === 'true',
-      overtrading: document.getElementById('overtrading').value === 'true',
-      rule_followed: document.getElementById('rule-followed').value === 'true',
-      scores,
-      evaluation_notes: document.getElementById('evaluation-notes').value,
-      reflection: document.getElementById('reflection').value,
-      mood: selectedMood,
-      date: new Date().toISOString().slice(0, 10)
+    // ==================== Utility Functions ====================
+    function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
+    function showToast(msg, d=3000) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), d); }
+    function celebrate(msg) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#C8A75B','#F6E4B5','#2563EB','#7C3AED'] }); if (msg) showToast(msg); }
+    function showFloatingXp(xp) { const e = document.createElement('div'); e.className = 'float-xp'; e.textContent = `+${xp} XP`; document.body.appendChild(e); setTimeout(() => e.remove(), 2000); }
+    function validateForm(sel) { const inputs = document.querySelectorAll(sel + ' input:not([type="checkbox"]), ' + sel + ' textarea, ' + sel + ' select'); let v = true, first = null; inputs.forEach(i => { if(!i.value.trim()) { v = false; i.style.borderColor = 'var(--danger)'; if(!first) first = i; } else i.style.borderColor = ''; }); if(!v && first) { first.focus(); showToast('সব আবশ্যক ক্ষেত্র পূরণ করুন।'); } return v; }
+    const i18n = {
+      lang: localStorage.getItem('lang') || 'en',
+      translations: {},
+      async init() { await this.load(this.lang); },
+      async load(l) {
+        try { const r = await fetch(`${API}/translations?lang=${l}`); this.translations = await r.json(); } catch(e) { this.translations = {}; }
+        this.lang = l; localStorage.setItem('lang', l);
+        const s = document.getElementById('lang-select'); if(s) s.value = l;
+        const ls = document.getElementById('login-lang'); if(ls) ls.value = l;
+        const ss = document.getElementById('settings-lang-select'); if(ss) ss.value = l;
+        this.apply();
+      },
+      t(k, f='') { return this.translations[k] || f; },
+      apply() { document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = this.t(e.dataset.i18n, e.textContent)); }
     };
-    const d = await apiCall('POST', '/evaluation', body);
-    if (d) {
-      document.getElementById('evaluation-section').classList.add('hidden');
-      showFeedback(d);
-      celebrate(`+${d.xpGain} XP`);
-      selectedMood = null;
-      document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected'));
-      loadProfile();
-    }
-  }
-
-  document.addEventListener('click', e => {
-    if (e.target.classList.contains('mood-emoji')) {
-      selectedMood = e.target.dataset.mood;
-      document.querySelectorAll('.mood-emoji').forEach(m => m.classList.toggle('selected', m === e.target));
-    }
-  });
-
-  async function showAssessment() {
-    document.getElementById('assessment-screen').classList.remove('hidden');
-    document.getElementById('assessment-prompt').classList.add('hidden');
-    const qs = await apiCall('GET', '/assessment/questions');
-    document.getElementById('assessment-screen').innerHTML = qs.map(q =>
-      `<div><input type="radio" name="assess_${q.id}" value="true">✅ <span data-i18n="assessment.yes">হ্যাঁ</span> <input type="radio" name="assess_${q.id}" value="false">❌ <span data-i18n="assessment.no">না</span> ${q.question}</div>`
-    ).join('') + '<button class="btn" onclick="submitAssessment()">বিশ্লেষণ</button>';
-  }
-
-  async function submitAssessment() {
-    const ans = [];
-    document.querySelectorAll('#assessment-screen input:checked').forEach(r => ans.push({
-      question_id: parseInt(r.name.split('_')[1]),
-      answer: r.value === 'true'
-    }));
-    const r = await apiCall('POST', '/assessment/submit', { answers: ans });
-    document.getElementById('assessment-screen').innerHTML +=
-      `<div class="glass"><p>স্কোর: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`;
-  }
-
-  async function requestPasswordReset() {
-    await apiCall('POST', '/request-password-reset', { email: document.getElementById('reset-email').value });
-    showToast(i18n.t('auth.reset_sent', 'ইমেইল পাঠানো হয়েছে'));
-  }
-
-  // Training
-  async function loadTrainingTab() {
-    await loadEnergy();
-    const chapters = await apiCall('GET', '/training/chapters?course_id=1');
-    if (chapters) {
-      document.getElementById('chapter-list').innerHTML = chapters.map((ch, i) =>
-        `<div class="glass chapter-card ${i > 0 && !chapters[i - 1].passed ? 'locked' : ''}" onclick="${i > 0 && !chapters[i - 1].passed ? '' : `openChapterModal(${ch.id})`}">
-          <strong>${ch.title}</strong>${ch.passed ? ' <span class="badge badge-accent">' + i18n.t('training.passed', 'পাশ') + '</span>' : ''}
-        </div>`
-      ).join('');
-    }
-    loadLessons();
-    loadVideos();
-  }
-
-  async function loadEnergy() {
-    const e = await apiCall('GET', '/energy');
-    if (e) {
-      document.getElementById('energy-current').textContent = e.current_energy;
-      document.getElementById('energy-fill').style.width = (e.current_energy / e.max_energy * 100) + '%';
-    }
-  }
-
-  async function openChapterModal(id) {
-    currentChapterId = id;
-    const d = await apiCall('GET', `/training/chapter/${id}`);
-    document.getElementById('chapter-modal-title').textContent = d.title;
-    document.getElementById('chapter-modal-content').innerHTML = d.content_text || '';
-    currentChapterQuestions = d.questions || [];
-    document.getElementById('quiz-container').innerHTML = d.user_progress?.passed
-      ? `<p>✅ ${i18n.t('training.passed_with_score', 'পাস!')} ${d.user_progress.best_score}%</p>`
-      : currentChapterQuestions.map((q, i) =>
-          `<div class="question-block"><p>${i + 1}. ${q.question}</p>${q.options.map((o, j) => `<label><input type="radio" name="q_${q.id}" value="${j}">${o}</label>`).join('')}</div>`
-        ).join('');
-    document.getElementById('chapter-modal').classList.remove('hidden');
-  }
-
-  function closeChapterModal() {
-    document.getElementById('chapter-modal').classList.add('hidden');
-    loadTrainingTab();
-  }
-
-  async function submitChapterQuiz() {
-    const answers = currentChapterQuestions.map(q => {
-      const r = document.querySelector(`input[name="q_${q.id}"]:checked`);
-      return r ? { question_id: q.id, selected_index: parseInt(r.value) } : null;
-    }).filter(a => a);
-    if (answers.length !== currentChapterQuestions.length) return showToast(i18n.t('training.answer_all', 'সব উত্তর দিন'));
-    const r = await apiCall('POST', `/training/chapter/${currentChapterId}/quiz`, { answers });
-    if (r) {
-      document.getElementById('quiz-result').innerHTML = `<div><h4 style="color:${r.passed ? 'var(--success)' : 'var(--danger)'};">${r.passed ? '✅ পাস!' : '❌ ফেল'}</h4><p>${r.score.toFixed(0)}%</p></div>`;
-      document.getElementById('quiz-result').classList.remove('hidden');
-      loadProfile();
-    }
-  }
-
-  async function startFinalExam() {
-    const d = await apiCall('GET', '/training/final-exam');
-    if (!d || d.passed) return showToast(d?.passed ? 'ইতিমধ্যে উত্তীর্ণ!' : 'ত্রুটি');
-    window._examSessionId = d.session_id;
-    const timer = document.getElementById('overall-timer');
-    const expiry = new Date(d.expiry).getTime();
-    window._finalExamTimer = setInterval(() => {
-      const diff = expiry - Date.now();
-      if (diff <= 0) { clearInterval(window._finalExamTimer); submitFinalExam(); }
-      const mins = Math.floor(diff / 60000), secs = Math.floor((diff % 60000) / 1000);
-      timer.textContent = `${mins}:${secs}`;
-    }, 1000);
-    document.getElementById('final-exam-questions').innerHTML = d.questions.map((q, i) =>
-      `<div class="question-block"><p>${i + 1}. ${q.question}</p>${q.options.map((o, j) => `<label><input type="radio" name="feq_${q.id}" value="${j}">${o}</label>`).join('')}</div>`
-    ).join('');
-    document.getElementById('final-exam-modal').classList.remove('hidden');
-  }
-
-  async function submitFinalExam() {
-    clearInterval(window._finalExamTimer);
-    const answers = [];
-    document.querySelectorAll('#final-exam-questions input:checked').forEach(r => answers.push({
-      question_id: parseInt(r.name.replace('feq_', '')),
-      selected_index: parseInt(r.value)
-    }));
-    const r = await apiCall('POST', '/training/final-exam', { session_id: window._examSessionId, answers });
-    if (r) {
-      document.getElementById('final-exam-result').innerHTML = `<div><h3>${r.passed ? '🏆 পাস!' : '❌ ফেল'}</h3><p>${r.score.toFixed(0)}%</p></div>`;
-      document.getElementById('final-exam-result').classList.remove('hidden');
-    }
-  }
-
-  async function loadLessons() {
-    const ls = await apiCall('GET', '/lessons');
-    document.getElementById('lessons-list').innerHTML = ls.map(l =>
-      `<div class="flex" style="justify-content:space-between;"><span>${l.title}</span><button class="btn btn-sm" onclick="completeLesson(${l.id})">${l.completed_at ? '✅' : 'সম্পন্ন'}</button></div>`
-    ).join('');
-  }
-
-  async function completeLesson(id) {
-    await apiCall('POST', '/complete-lesson', { lesson_id: id });
-    loadLessons();
-    showToast('+3 XP!');
-  }
-
-  async function loadVideos() {
-    const vs = await apiCall('GET', '/videos');
-    document.getElementById('video-grid').innerHTML = vs.map(v =>
-      `<div class="video-card">${v.youtube_id ? `<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>` : ''}<div class="video-info">${v.title}</div></div>`
-    ).join('');
-  }
-
-  // Habits
-  async function loadHabits() {
-    const date = new Date().toISOString().slice(0, 10);
-    const defs = await fetch(`${API}/habits/definitions`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json());
-    const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json());
-    document.getElementById('habits-list').innerHTML = defs.map(h => {
-      const log = logs.find(l => l.habit_id === h.id);
-      return `<div class="glass habit-card"><strong>${h.icon} ${h.title}</strong><div class="habit-times-grid">${(h.reminder_times || []).map(t => `<span class="habit-time-slot ${log?.completed_times?.[t] ? 'done' : ''}" onclick="toggleHabitTime('${h.id}','${t}')">${t}</span>`).join('')}</div></div>`;
-    }).join('');
-  }
-
-  async function toggleHabitTime(habitId, time) {
-    const date = new Date().toISOString().slice(0, 10);
-    const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json());
-    const log = logs.find(l => l.habit_id === habitId);
-    const completed = !(log?.completed_times?.[time] ?? false);
-    await fetch(`${API}/habits/logs`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ habit_id: habitId, date, time, completed })
-    });
-    loadHabits();
-  }
-
-  function showAddHabitForm() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
-
-  async function saveHabit() {
-    const title = document.getElementById('new-habit-title').value.trim();
-    if (!title) return showToast(i18n.t('habits.name_required', 'নাম দিন'));
-    await apiCall('POST', '/habits/definitions', {
-      title,
-      icon: document.getElementById('new-habit-icon').value,
-      color: document.getElementById('new-habit-color').value,
-      reminder_times: document.getElementById('new-habit-times').value.split(',').map(t => t.trim()).filter(t => t)
-    });
-    document.getElementById('add-habit-modal').classList.add('hidden');
-    loadHabits();
-  }
-
-  // Progress & leaderboard
-  async function loadProgress() {
-    const d = await apiCall('GET', '/progress');
-    if (!d) return;
-    document.getElementById('progress-fill').style.width = Math.round(d.totalDays / 30 * 100) + '%';
-    document.getElementById('progress-text').textContent = Math.round(d.totalDays / 30 * 100) + '%';
-    document.getElementById('identity-phase-text').textContent = d.identity_level;
-    document.getElementById('discipline-streak-text').textContent = d.disciplineStreak;
-    document.getElementById('badges-list').innerHTML = d.badges.map(b => `<span class="badge">${b}</span>`).join('');
-    if (radarChart) radarChart.destroy();
-    if (d.radar_today) {
-      const ctx = document.getElementById('radarChart').getContext('2d');
-      radarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['পরিকল্পনা', 'এক্সিকিউশন', 'রিস্ক', 'মনোবিজ্ঞান', 'উন্নতি'],
-          datasets: [{
-            label: 'আজ',
-            data: [d.radar_today.planning, d.radar_today.execution, d.radar_today.risk, d.radar_today.psychology, d.radar_today.improvement]
-          }]
-        },
-        options: { scales: { r: { min: 0, max: 20 } } }
-      });
-    }
-    if (chart) chart.destroy();
-    const ctx2 = document.getElementById('scoresChart').getContext('2d');
-    chart = new Chart(ctx2, {
-      type: 'line',
-      data: {
-        labels: d.days.map(d => d.date.slice(5)),
-        datasets: [{ label: 'Discipline', data: d.days.map(d => d.scores?.q6), borderColor: '#2563EB' }]
-      }
-    });
-    document.getElementById('certificate-btn').classList.toggle('hidden', d.totalDays < 30);
-    loadInsights();
-    loadLeaderboard();
-  }
-
-  async function loadInsights() {
-    const r = await apiCall('GET', '/insights');
-    document.getElementById('insights-content').innerHTML = r ? `মোট জার্নাল: ${r.totalJournals}, স্ট্রিক: ${r.currentStreak}, টপ ভুল: ${r.topMistake}` : '';
-  }
-
-  async function loadLeaderboard() {
-    const d = await apiCall('GET', '/leaderboard');
-    document.getElementById('leaderboard-list').innerHTML = d.map((u, i) => `<div>${i + 1}. ${u.display_name || u.email} - ${u.avg_discipline?.toFixed(1)}</div>`).join('');
-  }
-
-  async function downloadCertificate() {
-    const res = await fetch(`${API}/certificate`, { headers: { 'Authorization': `Bearer ${token}` } });
-    if (!res.ok) return showToast(i18n.t('progress.cert_30days', 'প্রথমে ৩০ দিন সম্পন্ন করো'));
-    const blob = await res.blob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'certificate.svg';
-    a.click();
-    celebrate('🏆 ডাউনলোড');
-  }
-
-  // Community (with silent refresh option)
-  async function loadCommunity(silent = false) {
-    try {
-      const ps = await apiCall('GET', '/community', null, !silent);
-      if (ps) {
-        document.getElementById('posts-container').innerHTML = ps.map(p =>
-          `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name || p.author}</small><p>${p.content}</p></div>`
-        ).join('');
-      }
-    } catch (e) { /* silent */ }
-  }
-
-  async function submitPost() {
-    const c = document.getElementById('post-content').value;
-    if (!c.trim()) return showToast(i18n.t('community.content_required', 'কন্টেন্ট লিখুন'));
-    const fileInput = document.getElementById('post-image-upload');
-    if (fileInput.files[0]) {
-      const formData = new FormData();
-      formData.append('image', fileInput.files[0]);
-      formData.append('category', document.getElementById('image-category').value);
+    async function apiCall(m, p, b, showErr=true) {
+      const h = {'Content-Type':'application/json'}; if(token) h['Authorization'] = `Bearer ${token}`;
       try {
-        await fetch(`${API}/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-      } catch (e) { console.error(e); }
+        const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
+        if(r.status === 401) { logout(); return null; }
+        const d = await r.json();
+        if(d.error && showErr) showToast(d.error);
+        return d;
+      } catch(e) { if(showErr) showToast('Network error'); return null; }
     }
-    await apiCall('POST', '/community', { content: c, post_type: document.getElementById('post-type').value });
-    document.getElementById('post-content').value = '';
-    document.getElementById('post-image-preview').style.display = 'none';
-    loadCommunity();
-  }
 
-  function previewImage(event, previewId) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.getElementById(previewId).src = e.target.result;
-        document.getElementById(previewId).style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  // Profile Page
-  async function loadProfilePage() {
-    const d = await apiCall('GET', '/profile');
-    if (!d) return;
-    document.getElementById('profile-name').textContent = d.user.display_name;
-    document.getElementById('profile-email').textContent = d.user.email;
-    document.getElementById('profile-avatar').textContent = d.user.avatar_emoji;
-    document.getElementById('avatar-select').value = d.user.avatar_emoji;
-    const prog = await apiCall('GET', '/progress');
-    document.getElementById('profile-badges').innerHTML = prog.badges.map(b => `<span class="badge">${b}</span>`).join('');
-  }
-
-  async function changeAvatar() {
-    const e = document.getElementById('avatar-select').value;
-    await apiCall('POST', '/profile', { avatar_emoji: e });
-    document.getElementById('profile-avatar').textContent = e;
-    document.getElementById('user-avatar').textContent = e;
-  }
-
-  async function updateNotifSettings() {
-    await apiCall('POST', '/notif-settings', {
-      email: document.getElementById('notif-email').checked,
-      push: document.getElementById('notif-push').checked
+    // ==================== SIDEBAR & MOBILE DRAWER ====================
+    function openMobileDrawer() { document.getElementById('mobileDrawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('show'); }
+    function closeMobileDrawer() { document.getElementById('mobileDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('show'); }
+    document.getElementById('mobileHamburger').addEventListener('click', openMobileDrawer);
+    document.getElementById('drawerOverlay').addEventListener('click', closeMobileDrawer);
+    document.querySelectorAll('.nav-item[data-page]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = link.dataset.page;
+        if (page === 'theme-toggle') { toggleTheme(); closeMobileDrawer(); return; }
+        showPage(page);
+        if(window.innerWidth < 768) closeMobileDrawer();
+      });
     });
-    showToast('সেভ হয়েছে');
-  }
 
-  function saveReminderTime() {
-    localStorage.setItem('reminderTime', document.getElementById('reminder-time').value);
-    showToast('রিমাইন্ডার সেভ');
-  }
-
-  async function openMysteryBox() {
-    const r = await apiCall('POST', '/open-box');
-    document.getElementById('mystery-result').textContent = r?.reward ? `🎁 ${r.reward}` : 'কিছু নেই';
-  }
-
-  // ==================== INITIAL LOAD ====================
-  window.addEventListener('load', async () => {
-    await i18n.load(i18n.lang);
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-    if (token) {
-      const d = await apiCall('GET', '/profile');
-      if (d) initApp(d.user);
-      else {
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('auth-screen').style.display = 'block';
+    function showPage(pageName) {
+      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+      const pageEl = document.getElementById('page-' + pageName);
+      if(pageEl) pageEl.classList.remove('hidden');
+      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll(`.nav-item[data-page="${pageName}"]`).forEach(a => a.classList.add('active'));
+      switch(pageName) {
+        case 'journey': loadJourneyPage(); break;
+        case 'training': loadTrainingTab(); break;
+        case 'habits': loadHabits(); break;
+        case 'progress': loadProgress(); break;
+        case 'community': loadCommunity(); break;
+        case 'profile': loadProfilePage(); break;
+        case 'leaderboard': loadLeaderboard(); break;
+        case 'lessons': loadLessons(); break;
+        case 'videos': loadVideos(); break;
+        case 'insights': loadInsights(); break;
+        case 'settings': break;
       }
-    } else {
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('auth-screen').style.display = 'block';
     }
-  });
-</script>
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? '' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      showToast(next ? 'লাইট মোড' : 'ডার্ক মোড');
+    }
+    (function(){ const saved = localStorage.getItem('theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); })();
+
+    // ==================== Auth & Registration ====================
+    function showRegister() { document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); }
+    function showLogin() { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); }
+    async function login() { if(!validateForm('#login-form')) return; const d = await apiCall('POST', '/login', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value, display_name: document.getElementById('login-name').value }); if(d?.token) { token = d.token; localStorage.setItem('token', token); initDashboard(d.user); } }
+    async function register() { if(!validateForm('#register-form')) return; const d = await apiCall('POST', '/register', { email: document.getElementById('reg-email').value, password: document.getElementById('reg-password').value, display_name: document.getElementById('reg-name').value, avatar_emoji: document.getElementById('reg-avatar').value }); if(d?.token) { token = d.token; localStorage.setItem('token', token); initDashboard(d.user); } }
+    async function logout() { localStorage.removeItem('token'); token = null; clearAllReminders(); document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
+
+    function initGoogleSignIn() {
+      if (window.google && window.GOOGLE_CLIENT_ID) {
+        google.accounts.id.initialize({ client_id: window.GOOGLE_CLIENT_ID, callback: handleGoogleSignIn });
+        google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme: 'outline', size: 'large' });
+      }
+    }
+    async function handleGoogleSignIn(response) {
+      const res = await fetch(`${API}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ credential: response.credential }) });
+      const data = await res.json();
+      if (data.token) { token = data.token; localStorage.setItem('token', token); initDashboard(data.user); }
+    }
+
+    // ==================== PWA Service Worker ====================
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').then(reg => { console.log('SW registered'); }); }); }
+
+    // ==================== Canvas Particle Background ====================
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function initParticles() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = []; for (let i = 0; i < 80; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 0.5, speed: Math.random() * 0.5 + 0.1, color: `rgba(200,167,91,${Math.random() * 0.5 + 0.2})` }); } }
+    function drawParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); p.y -= p.speed; if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; } }); requestAnimationFrame(drawParticles); }
+    window.addEventListener('resize', initParticles);
+    initParticles(); drawParticles();
+
+    // ==================== Profile & Dashboard ====================
+    async function loadProfile() { /* same as before */ const d = await apiCall('GET', '/profile'); if(!d) return; const { user, today_entry, totalDays, streak } = d; currentUser = user; previousLevel = previousLevel || user.level; document.getElementById('user-avatar').textContent = user.avatar_emoji||'🙂'; document.getElementById('user-display-name').textContent = user.display_name||user.email.split('@')[0]; document.getElementById('user-identity').textContent = user.identity_level; document.getElementById('day-count').textContent = totalDays; document.getElementById('streak-count').textContent = streak; document.getElementById('xp-display').textContent = `⭐ ${user.xp} XP`; document.getElementById('user-level').textContent = user.level; document.getElementById('user-level-bar').textContent = user.level; updateXpBar(user.xp, user.level); updateEvolutionTree(user.identity_level); if(user.level > previousLevel) showLevelUp(user.level); previousLevel = user.level; if(today_entry) { document.getElementById('morning-section').classList.add('hidden'); document.getElementById('checkin-done-msg').classList.remove('hidden'); if(today_entry.feedback) { document.getElementById('evaluation-section').classList.add('hidden'); showFeedback({ feedback: today_entry.feedback, mission: today_entry.tomorrow_mission, badges: [] }); } else { document.getElementById('evaluation-section').classList.remove('hidden'); document.getElementById('feedback-area').classList.add('hidden'); } } else { document.getElementById('morning-section').classList.remove('hidden'); document.getElementById('checkin-done-msg').classList.add('hidden'); document.getElementById('evaluation-section').classList.add('hidden'); document.getElementById('feedback-area').classList.add('hidden'); } loadDailyQuest(); i18n.apply(); }
+    function updateXpBar(xp, lv) { const p = Math.min(100, Math.max(0, ((xp - (lv-1)*75) / 75) * 100)); document.getElementById('xp-bar-fill').style.width = p + '%'; }
+    function showLevelUp(nl) { document.getElementById('level-up-title').innerHTML = `লেভেল ${nl}!`; document.getElementById('level-up-modal').classList.remove('hidden'); confetti(); }
+    function updateEvolutionTree(phase) { document.querySelectorAll('.evolution-tree .stage').forEach(e => { e.classList.remove('active'); if(e.dataset.phase === phase) e.classList.add('active'); }); }
+    function showAssessment() { document.getElementById('assessment-screen').classList.remove('hidden'); document.getElementById('assessment-prompt').classList.add('hidden'); loadAssessmentQuestions(); }
+    async function loadAssessmentQuestions() { const qs = await apiCall('GET', '/assessment/questions'); const c = document.getElementById('assessment-questions'); c.innerHTML = qs.map(q => `<div class="assessment-option"><input type="radio" name="assess_${q.id}" value="true">✅ হ্যাঁ <input type="radio" name="assess_${q.id}" value="false">❌ না <span>${escapeHtml(q.question)}</span></div>`).join(''); }
+    async function submitAssessment() { const ans = []; document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r.name.split('_')[1]), answer: r.value === 'true' })); const r = await apiCall('POST', '/assessment/submit', { answers: ans }); document.getElementById('assessment-result').innerHTML = `<div class="glass"><p>স্কোর: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`; document.getElementById('assessment-screen').classList.add('hidden'); document.getElementById('assessment-prompt').classList.remove('hidden'); }
+    function showFeedback(fb) { document.getElementById('feedback-text').textContent = fb.feedback; document.getElementById('tomorrow-mission').textContent = fb.mission || ''; document.getElementById('new-badges').innerHTML = (fb.badges||[]).map(b => `<span class="badge">${b}</span>`).join(''); document.getElementById('feedback-area').classList.remove('hidden'); }
+    async function submitCheckin() { if(!document.getElementById('mindfulness-done').checked) return showToast('Mindfulness সম্পন্ন করো'); const cm = document.getElementById('commitment').value.trim(); if(!cm) return showToast('প্রতিজ্ঞা লেখো'); await apiCall('POST', '/checkin', { mindfulness_done:true, commitment:cm, date: new Date().toLocaleDateString('en-CA') }); document.getElementById('morning-section').classList.add('hidden'); document.getElementById('checkin-done-msg').classList.remove('hidden'); setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); }, 1000); }
+    document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.mood-emoji').forEach(emoji => { emoji.addEventListener('click', function() { document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected')); this.classList.add('selected'); selectedMood = this.dataset.mood; }); }); });
+    async function submitEvaluation() { if(!validateForm('#evaluation-section')) return; if(!selectedMood) return showToast('মুড নির্বাচন করো'); const scores = {}; document.querySelectorAll('#score-sliders input').forEach(i => scores[i.dataset.q] = parseInt(i.value)); const body = { trades_count: parseInt(document.getElementById('trades-count').value), stop_loss_moved: document.getElementById('stop-loss-moved').value==='true', plan_deviation: document.getElementById('plan-deviation').value==='true', revenge_trade: document.getElementById('revenge-trade').value==='true', fomo_entry: document.getElementById('fomo-entry').value==='true', overtrading: document.getElementById('overtrading').value==='true', rule_followed: document.getElementById('rule-followed').value==='true', scores, evaluation_notes: document.getElementById('evaluation-notes').value, reflection: document.getElementById('reflection').value, mood: selectedMood, date: new Date().toLocaleDateString('en-CA') }; const d = await apiCall('POST', '/evaluation', body); if(d && !d.error) { document.getElementById('evaluation-section').classList.add('hidden'); showFeedback(d); celebrate(`+${d.xpGain} XP`); selectedMood = null; document.querySelectorAll('.mood-emoji').forEach(e=>e.classList.remove('selected')); await loadProfile(); } }
+    function renderSliders() { const qs = [{id:'q1',s:'পরিকল্পনা'},{id:'q2',s:'সেটআপ'},{id:'q3',s:'রিস্ক'},{id:'q4',s:'এক্সিকিউশন'},{id:'q5',s:'এক্সিট'},{id:'q6',s:'শৃঙ্খলা'},{id:'q7',s:'আবেগ'},{id:'q8',s:'ধৈর্য'},{id:'q9',s:'পর্যালোচনা'},{id:'q10',s:'উন্নতি'}]; document.getElementById('score-sliders').innerHTML = qs.map(q => `<div class="slider-item"><label>${q.s}</label><input type="range" min="0" max="10" value="8" data-q="${q.id}"><span>8</span></div>`).join(''); document.querySelectorAll('#score-sliders input').forEach(i => i.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value)); }
+    async function loadDailyQuest() { const q = await apiCall('GET', '/daily-quest'); if(!q) return; const m = { no_revenge:'রিভেঞ্জ ট্রেড নয়', no_fomo:'FOMO নয়', q6_8plus:'Q6 ≥ 8', mindfulness:'মাইন্ডফুলনেস', habit_complete:'হ্যাবিট সম্পন্ন' }; document.getElementById('quest-desc').textContent = m[q.quest_type] || 'আজকের মিশন'; document.getElementById('quest-fill').style.width = (q.completed ? 100 : (q.progress/q.target)*100) + '%'; const btn = document.getElementById('claim-quest-btn'); btn.disabled = !(q.completed && !q.claimed); }
+    async function claimQuestReward() { const r = await apiCall('POST', '/claim-quest-reward'); if(r?.success) { celebrate('+15 XP!'); showFloatingXp(15); loadDailyQuest(); loadProfile(); } }
+    function loadJourneyPage() { renderSliders(); loadProfile(); }
+    async function loadProgress() { const d = await apiCall('GET', '/progress'); if(!d) return; document.getElementById('progress-fill').style.width = Math.round(d.totalDays/30*100)+'%'; document.getElementById('progress-text').textContent = Math.round(d.totalDays/30*100)+'%'; document.getElementById('identity-phase-text').textContent = d.identity_level; document.getElementById('discipline-streak-text').textContent = d.disciplineStreak; document.getElementById('badges-list').innerHTML = d.badges.map(b => `<span class="badge">${b}</span>`).join(''); if(radarChart) radarChart.destroy(); if(d.radar_today) { const ctx = document.getElementById('radarChart').getContext('2d'); radarChart = new Chart(ctx, { type:'radar', data:{ labels:['পরিকল্পনা','এক্সিকিউশন','রিস্ক','মনোবিজ্ঞান','উন্নতি'], datasets:[{ label:'আজ', data:[d.radar_today.planning,d.radar_today.execution,d.radar_today.risk,d.radar_today.psychology,d.radar_today.improvement], backgroundColor:'rgba(200,167,91,0.25)', borderColor:'#C8A75B' }] }, options:{ scales:{ r:{ min:0, max:20 } } } }); } if(chart) chart.destroy(); const ctx2 = document.getElementById('scoresChart').getContext('2d'); chart = new Chart(ctx2, { type:'line', data:{ labels:d.days.map(d=>d.date.slice(5)), datasets:[{ label:'Discipline', data:d.days.map(d=>d.scores?.q6), borderColor:'#2563EB' }] } }); document.getElementById('certificate-btn').classList.toggle('hidden', d.totalDays < 30); }
+    async function loadInsights() { const r = await apiCall('GET', '/insights'); document.getElementById('insights-content').innerHTML = r ? `মোট জার্নাল: ${r.totalJournals}, স্ট্রিক: ${r.currentStreak}, টপ ভুল: ${r.topMistake}` : ''; }
+    async function loadLessons() { const ls = await apiCall('GET', '/lessons'); document.getElementById('lessons-list').innerHTML = ls.map(l => `<div class="flex" style="justify-content:space-between;"><span>${escapeHtml(l.title)}</span><button class="btn btn-sm" onclick="completeLesson(${l.id})">${l.completed_at?'✅':'সম্পন্ন'}</button></div>`).join(''); }
+    async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); showToast('+3 XP!'); }
+    async function loadVideos() { const vs = await apiCall('GET', '/videos'); document.getElementById('video-grid').innerHTML = vs.map(v => `<div class="video-card">${v.youtube_id ? `<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>` : ''}<div class="video-info">${escapeHtml(v.title)}</div></div>`).join(''); }
+    async function loadCommunity() { const ps = await apiCall('GET', '/community'); document.getElementById('posts-container').innerHTML = ps.map(p => `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><p>${escapeHtml(p.content)}</p><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`).join(''); }
+    async function submitPost() { const c = document.getElementById('post-content').value; if(!c.trim()) return; await apiCall('POST', '/community', { content:c, post_type: document.getElementById('post-type').value }); document.getElementById('post-content').value = ''; loadCommunity(); }
+    async function likePost(id) { await apiCall('POST', '/like-post', { post_id:id }); loadCommunity(); }
+    async function toggleReply(postId) { const container = document.getElementById('replies-' + postId); container.classList.toggle('hidden'); if (!container.classList.contains('hidden') && !container.dataset.loaded) { container.dataset.loaded = 'true'; const replies = await apiCall('GET', `/replies?post_id=${postId}`); container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join(''); } }
+    async function loadLeaderboard() { const d = await apiCall('GET', '/leaderboard'); document.getElementById('leaderboard-list').innerHTML = d.map((u,i) => `<div>${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}</div>`).join(''); }
+    async function loadProfilePage() { const d = await apiCall('GET', '/profile'); if(!d) return; document.getElementById('profile-name').textContent = d.user.display_name; document.getElementById('profile-email').textContent = d.user.email; document.getElementById('profile-avatar').textContent = d.user.avatar_emoji; document.getElementById('avatar-select').value = d.user.avatar_emoji; const prog = await apiCall('GET', '/progress'); document.getElementById('profile-badges').innerHTML = prog.badges.map(b => `<span class="badge">${b}</span>`).join(''); updateEvolutionTree(d.user.identity_level); }
+    async function changeAvatar() { const e = document.getElementById('avatar-select').value; await apiCall('POST', '/profile', { avatar_emoji:e }); document.getElementById('profile-avatar').textContent = e; document.getElementById('user-avatar').textContent = e; }
+    async function updateNotifSettings() { await apiCall('POST', '/notif-settings', { email: document.getElementById('notif-email').checked, push: document.getElementById('notif-push').checked }); showToast('সেভ হয়েছে'); }
+    async function saveReminderTime() { localStorage.setItem('reminderTime', document.getElementById('reminder-time').value); showToast('রিমাইন্ডার সেভ'); }
+    async function downloadCertificate() { const res = await fetch(`${API}/certificate`, { headers:{'Authorization':`Bearer ${token}`} }); if(!res.ok) return showToast('প্রথমে ৩০ দিন সম্পন্ন করো'); const blob = await res.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'certificate.svg'; a.click(); celebrate('🏆 ডাউনলোড'); }
+    async function loadTrainingTab() { await loadEnergy(); const chapters = await apiCall('GET', '/training/chapters?course_id=1'); if(!chapters) return; const container = document.getElementById('chapter-list'); container.innerHTML = chapters.map((ch, i) => `<div class="glass chapter-card ${i>0 && !chapters[i-1].passed ? 'locked' : ''}" onclick="${i>0 && !chapters[i-1].passed ? '' : `openChapterModal(${ch.id})`}"><div style="font-size:2rem;">${i>0 && !chapters[i-1].passed ? '🔒' : ch.passed ? '✅' : '📖'}</div><strong>${escapeHtml(ch.title)}</strong>${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : ''}</div>`).join(''); }
+    async function loadEnergy() { const e = await apiCall('GET', '/energy'); if(e) { document.getElementById('energy-current').textContent = e.current_energy; document.getElementById('energy-max').textContent = e.max_energy; document.getElementById('energy-fill').style.width = (e.current_energy/e.max_energy*100)+'%'; } }
+    async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return; document.getElementById('chapter-modal-title').textContent = d.title; document.getElementById('chapter-modal-content').innerHTML = d.content_text || ''; document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join(''); document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join(''); currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ পাস করেছেন! স্কোর: ${d.user_progress.best_score}%</p>`; document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById('submit-quiz-btn').classList.remove('hidden'); document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); } document.getElementById('chapter-modal').classList.remove('hidden'); document.getElementById('practice-timer').classList.add('hidden'); }
+    function closeChapterModal() { document.getElementById('chapter-modal').classList.add('hidden'); clearInterval(practiceTimerInterval); loadTrainingTab(); }
+    function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode === 'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval); document.getElementById('practice-timer').classList.add('hidden'); } }
+    function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining = totalSeconds; timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const secs = remaining % 60; timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0) { clearInterval(practiceTimerInterval); submitChapterQuiz(); } remaining--; }; update(); clearInterval(practiceTimerInterval); practiceTimerInterval = setInterval(update, 1000); }
+    async function submitChapterQuiz() { const answers = currentChapterQuestions.map(q => { const r = document.querySelector(`input[name="q_${q.id}"]:checked`); return r ? { question_id: q.id, selected_index: parseInt(r.value) } : null; }).filter(a => a); if(answers.length !== currentChapterQuestions.length) return showToast('সব উত্তর দিন'); const r = await apiCall('POST', `/training/chapter/${currentChapterId}/quiz`, { answers }); if(!r) return; document.getElementById('quiz-result').innerHTML = `<div class="glass"><h4 style="color:${r.passed ? 'var(--success)' : 'var(--danger)'};">${r.passed ? '✅ পাস!' : '❌ ফেল'}</h4><p>স্কোর: ${r.score.toFixed(0)}%</p>${!r.passed ? '<button onclick="closeChapterModal()">পুনরায় পড়ুন</button>' : ''}</div>`; document.getElementById('quiz-result').classList.remove('hidden'); clearInterval(practiceTimerInterval); document.getElementById('submit-quiz-btn').classList.add('hidden'); await loadProfile(); }
+    async function startFinalExam() { const d = await apiCall('GET', '/training/final-exam'); if(!d || d.passed) return showToast(d?.passed ? 'ইতিমধ্যে উত্তীর্ণ!' : 'ত্রুটি'); window._examSessionId = d.session_id; const timer = document.getElementById('overall-timer'); const expiry = new Date(d.expiry).getTime(); window._finalExamTimer = setInterval(() => { const diff = expiry - Date.now(); if(diff <= 0) { clearInterval(window._finalExamTimer); submitFinalExam(); } const mins = Math.floor(diff/60000), secs = Math.floor((diff%60000)/1000); timer.textContent = `${mins}:${secs}`; }, 1000); document.getElementById('final-exam-questions').innerHTML = d.questions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="feq_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); document.getElementById('final-exam-modal').classList.remove('hidden'); }
+    async function submitFinalExam() { clearInterval(window._finalExamTimer); const answers = []; document.querySelectorAll('#final-exam-questions input:checked').forEach(r => answers.push({ question_id: parseInt(r.name.replace('feq_','')), selected_index: parseInt(r.value) })); const r = await apiCall('POST', '/training/final-exam', { session_id: window._examSessionId, answers }); if(r) { document.getElementById('final-exam-result').innerHTML = `<div class="glass"><h3>${r.passed ? '🏆 পাস!' : '❌ ফেল'}</h3><p>স্কোর: ${r.score.toFixed(0)}%</p></div>`; document.getElementById('final-exam-result').classList.remove('hidden'); } }
+    // Habits
+    async function loadHabits() { const date = new Date().toLocaleDateString('en-CA'); const defs = await fetch(`${API}/habits/definitions`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()); const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()); habitDefinitions = defs; todayLogs = logs; document.getElementById('habits-list').innerHTML = defs.map(h => { const log = logs.find(l => l.habit_id === h.id); const times = (h.reminder_times || []); return `<div class="glass habit-card" style="border-left:4px solid ${h.color};"><div class="flex"><span style="font-size:24px;">${h.icon}</span> <strong>${escapeHtml(h.title)}</strong></div><div class="habit-times-grid">${times.map(t => `<div class="habit-time-slot ${log?.completed_times?.[t] ? 'done' : ''}" onclick="toggleHabitTime('${h.id}','${t}')">${t} ${log?.completed_times?.[t]?'✅':'⏳'}</div>`).join('')}</div></div>`; }).join(''); }
+    function showAddHabitForm() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
+    async function saveHabit() { const title = document.getElementById('new-habit-title').value.trim(); if(!title) return showToast('নাম দিন'); await apiCall('POST', '/habits/definitions', { title, icon: document.getElementById('new-habit-icon').value, color: document.getElementById('new-habit-color').value, reminder_times: document.getElementById('new-habit-times').value.split(',').map(t=>t.trim()).filter(t=>t) }); document.getElementById('add-habit-modal').classList.add('hidden'); loadHabits(); }
+    async function toggleHabitTime(habitId, time) { const date = new Date().toLocaleDateString('en-CA'); const log = todayLogs.find(l => l.habit_id === habitId); const completed = !(log?.completed_times?.[time] ?? false); await fetch(`${API}/habits/logs`, { method:'POST', headers:{'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}, body:JSON.stringify({habit_id:habitId, date, time, completed}) }); loadHabits(); }
+    function showMysteryBox() { document.getElementById('mystery-box-modal').classList.remove('hidden'); }
+    async function openMysteryBox() { const r = await apiCall('POST', '/open-box', null, false); document.getElementById('mystery-result').textContent = r?.reward ? `🎁 ${r.reward}` : r?.message || 'কিছু নেই'; }
+    function startReminderScheduler() { if(reminderInterval) clearInterval(reminderInterval); reminderInterval = setInterval(() => { if(!currentUser) return; const now = new Date(); const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`; habitDefinitions.forEach(h => { if(h.reminder_times && h.reminder_times.includes(time)) { if(Notification.permission === 'granted') new Notification(`🧩 ${h.title}`, { body: `এখন ${time} টায় অভ্যাস করার সময়` }); showToast(`⏰ ${h.title} করার সময়!`); } }); }, 60000); }
+    function clearAllReminders() { if(reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; } }
+
+    // ==================== Profile Image Upload with Drag & Drop ====================
+    function initProfileDropZone() {
+      const dropZone = document.getElementById('profile-drop-zone');
+      const fileInput = document.getElementById('profile-image-upload');
+      if (!dropZone || !fileInput) return;
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length) handleProfileImageUpload(files[0]); });
+      fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleProfileImageUpload(e.target.files[0]); });
+    }
+    async function handleProfileImageUpload(file) {
+      document.getElementById('profile-upload-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
+      try {
+        const resizedFile = await resizeImage(file, 400);
+        document.getElementById('profile-upload-status').textContent = 'আপলোড হচ্ছে...';
+        const formData = new FormData(); formData.append('image', resizedFile);
+        const res = await fetch(`${API}/admin/upload-image`, { method:'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+        const data = await res.json();
+        if (data.url) {
+          await apiCall('POST', '/profile', { avatar_emoji: data.url });
+          document.getElementById('profile-avatar').textContent = '';
+          document.getElementById('profile-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
+          document.getElementById('user-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
+          document.getElementById('profile-upload-status').textContent = '✅ আপলোড সফল!';
+        } else { document.getElementById('profile-upload-status').textContent = 'আপলোড ব্যর্থ'; }
+      } catch(e) { document.getElementById('profile-upload-status').textContent = 'ত্রুটি'; }
+    }
+    async function resizeImage(file, maxWidth) { const img = await createImageBitmap(file); const canvas = document.createElement('canvas'); const ratio = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * ratio; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8)); return new File([blob], file.name, { type: 'image/jpeg' }); }
+
+    // ==================== Init ====================
+    async function initDashboard(user) {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      currentUser = user; previousLevel = user.level;
+      showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone();
+    }
+    window.addEventListener('load', async () => {
+      await i18n.init();
+      initGoogleSignIn();
+      try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
+      if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }
+      else { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }
+    });
+  </script>
 </body>
 </html>
