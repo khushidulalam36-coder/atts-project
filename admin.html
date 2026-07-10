@@ -185,19 +185,13 @@
       <div style="margin-top:12px;">
         <h4>ছবি</h4>
         <div id="images-container">
-          <div class="flex" style="margin-bottom:4px;">
-            <input type="text" class="ch-image-url" placeholder="ছবির URL">
-            <button class="btn btn-sm" onclick="addImageField()">+</button>
-          </div>
+          <!-- Dynamic image fields -->
         </div>
       </div>
       <div style="margin-top:12px;">
         <h4>ভিডিও</h4>
         <div id="videos-container">
-          <div class="flex" style="margin-bottom:4px;">
-            <input type="text" class="ch-video-url" placeholder="ভিডিও URL (YouTube/embed)">
-            <button class="btn btn-sm" onclick="addVideoField()">+</button>
-          </div>
+          <!-- Dynamic video fields -->
         </div>
       </div>
       <div class="grid-2">
@@ -440,7 +434,7 @@
       else showToast(res?.error || 'ব্যর্থ');
     }
 
-    // ==================== CHAPTERS ====================
+    // ==================== CHAPTERS (with image/video upload) ====================
     async function loadChapters() {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       if (!chapters) return;
@@ -460,13 +454,10 @@
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
       if (!quillEditor) {
-        quillEditor = new Quill('#chapter-quill-editor', {
-          theme: 'snow',
-          modules: { clipboard: { matchVisual: false } }
-        });
+        quillEditor = new Quill('#chapter-quill-editor', { theme: 'snow', modules: { clipboard: { matchVisual: false } } });
       }
-      document.getElementById('images-container').innerHTML = `<div class="flex" style="margin-bottom:4px;"><input type="text" class="ch-image-url" placeholder="ছবির URL"><button class="btn btn-sm" onclick="addImageField()">+</button></div>`;
-      document.getElementById('videos-container').innerHTML = `<div class="flex" style="margin-bottom:4px;"><input type="text" class="ch-video-url" placeholder="ভিডিও URL"><button class="btn btn-sm" onclick="addVideoField()">+</button></div>`;
+      document.getElementById('images-container').innerHTML = '';
+      document.getElementById('videos-container').innerHTML = '';
       
       if (id) {
         const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
@@ -480,26 +471,10 @@
           document.getElementById('ch-edit-id').value = ch.id;
           document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা';
           if (ch.images && ch.images.length) {
-            const container = document.getElementById('images-container');
-            container.innerHTML = '';
-            ch.images.forEach((url, i) => {
-              const div = document.createElement('div');
-              div.className = 'flex';
-              div.style.marginBottom = '4px';
-              div.innerHTML = `<input type="text" class="ch-image-url" value="${escapeHtml(url)}"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
-              container.appendChild(div);
-            });
+            ch.images.forEach(url => addImageField(url));
           }
           if (ch.videos && ch.videos.length) {
-            const container = document.getElementById('videos-container');
-            container.innerHTML = '';
-            ch.videos.forEach((url, i) => {
-              const div = document.createElement('div');
-              div.className = 'flex';
-              div.style.marginBottom = '4px';
-              div.innerHTML = `<input type="text" class="ch-video-url" value="${escapeHtml(url)}"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
-              container.appendChild(div);
-            });
+            ch.videos.forEach(url => addVideoField(url));
           }
         }
       } else {
@@ -510,25 +485,75 @@
         quillEditor.root.innerHTML = '';
         document.getElementById('ch-edit-id').value = '';
         document.getElementById('chapter-editor-title').textContent = 'নতুন চ্যাপ্টার';
+        addImageField();
+        addVideoField();
       }
     }
 
-    function addImageField() {
+    function addImageField(url = '') {
       const container = document.getElementById('images-container');
       const div = document.createElement('div');
       div.className = 'flex';
       div.style.marginBottom = '4px';
-      div.innerHTML = `<input type="text" class="ch-image-url" placeholder="ছবির URL"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+      div.innerHTML = `
+        <input type="text" class="ch-image-url" placeholder="ছবির URL" value="${escapeHtml(url)}">
+        <input type="file" class="ch-image-upload" accept="image/*" style="display:none;">
+        <button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button>
+        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
+      `;
       container.appendChild(div);
     }
 
-    function addVideoField() {
+    function addVideoField(url = '') {
       const container = document.getElementById('videos-container');
       const div = document.createElement('div');
       div.className = 'flex';
       div.style.marginBottom = '4px';
-      div.innerHTML = `<input type="text" class="ch-video-url" placeholder="ভিডিও URL"><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+      div.innerHTML = `
+        <input type="text" class="ch-video-url" placeholder="ভিডিও URL" value="${escapeHtml(url)}">
+        <input type="file" class="ch-video-upload" accept="video/*" style="display:none;">
+        <button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button>
+        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
+      `;
       container.appendChild(div);
+    }
+
+    async function triggerChapterImageUpload(btn) {
+      const fileInput = btn.parentElement.querySelector('.ch-image-upload');
+      fileInput.click();
+      fileInput.addEventListener('change', async function handler(e) {
+        fileInput.removeEventListener('change', handler);
+        const file = e.target.files[0];
+        if (!file) return;
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        const url = await uploadSingleMedia(file);
+        if (url) {
+          btn.parentElement.querySelector('.ch-image-url').value = url;
+          showToast('ছবি আপলোড হয়েছে, URL বসানো হয়েছে');
+        }
+        btn.disabled = false;
+        btn.textContent = '📷';
+      });
+    }
+
+    async function triggerChapterVideoUpload(btn) {
+      const fileInput = btn.parentElement.querySelector('.ch-video-upload');
+      fileInput.click();
+      fileInput.addEventListener('change', async function handler(e) {
+        fileInput.removeEventListener('change', handler);
+        const file = e.target.files[0];
+        if (!file) return;
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        const url = await uploadSingleMedia(file, true);
+        if (url) {
+          btn.parentElement.querySelector('.ch-video-url').value = url;
+          showToast('ভিডিও আপলোড হয়েছে, URL বসানো হয়েছে');
+        }
+        btn.disabled = false;
+        btn.textContent = '🎬';
+      });
     }
 
     function closeChapterEditor() {
@@ -566,6 +591,7 @@
       loadChapters();
     }
 
+    // ==================== QUESTION MANAGER ====================
     let currentQmChapterId;
     async function manageQuestions(chapterId, title) {
       currentQmChapterId = chapterId;
@@ -713,7 +739,7 @@
       loadCourses();
     }
 
-    // ==================== CONTENT (Lessons/Quizzes/Videos) ====================
+    // ==================== CONTENT (Lessons/Quizzes/Videos) with Edit Modal ====================
     async function loadContentManager() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card">
@@ -787,14 +813,7 @@
       }
     }
 
-    async function deleteContent(type, id) {
-      if (!confirm('মুছে ফেলবেন?')) return;
-      await adminApiCall('DELETE', `/admin/content/${type}/${id}`);
-      loadContentList();
-    }
-
-    // ===== Content Edit Modal Functions =====
-    function openContentEditModal(type, id) {
+    async function openContentEditModal(type, id) {
       document.getElementById('content-edit-modal').classList.remove('hidden');
       document.getElementById('ce-id').value = id;
       document.getElementById('ce-type').value = type;
@@ -818,11 +837,35 @@
           <input type="text" id="ce-duration" placeholder="সময়">
           <input type="text" id="ce-category" placeholder="ক্যাটাগরি">`;
       }
+
+      // Pre-fill from API
+      try {
+        const res = await adminApiCall('GET', `/admin/content/list?type=${type}`, null, false);
+        if (res) {
+          const item = res.find(x => x.id == id);
+          if (item) {
+            if (type === 'lesson') {
+              document.getElementById('ce-day').value = item.day || '';
+              document.getElementById('ce-phase').value = item.phase || '';
+              document.getElementById('ce-title').value = item.title || '';
+              document.getElementById('ce-content').value = item.content || '';
+            } else if (type === 'quiz') {
+              document.getElementById('ce-question').value = item.question || '';
+              document.getElementById('ce-options').value = JSON.stringify(item.options) || '';
+              document.getElementById('ce-correct').value = item.correct || 0;
+            } else if (type === 'video') {
+              document.getElementById('ce-vtitle').value = item.title || '';
+              document.getElementById('ce-vdesc').value = item.description || '';
+              document.getElementById('ce-ytid').value = item.youtube_id || '';
+              document.getElementById('ce-duration').value = item.duration || '';
+              document.getElementById('ce-category').value = item.category || '';
+            }
+          }
+        }
+      } catch(e) { /* keep form empty */ }
     }
 
-    function closeContentEditModal() {
-      document.getElementById('content-edit-modal').classList.add('hidden');
-    }
+    function closeContentEditModal() { document.getElementById('content-edit-modal').classList.add('hidden'); }
 
     async function saveContentEdit() {
       const type = document.getElementById('ce-type').value;
@@ -841,27 +884,10 @@
       showToast('কন্টেন্ট আপডেট হয়েছে');
     }
 
-    async function uploadImage() {
-      const file = document.getElementById('image-upload').files[0];
-      if (!file) return showToast('ফাইল সিলেক্ট করুন');
-      document.getElementById('upload-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
-      try {
-        const resizedFile = await resizeImage(file, 1200);
-        document.getElementById('upload-status').textContent = 'আপলোড হচ্ছে...';
-        const formData = new FormData(); formData.append('image', resizedFile);
-        const res = await fetch(`${API}/admin/upload-image`, { method:'POST', headers: { 'Authorization': `Bearer ${adminToken}` }, body: formData });
-        const data = await res.json();
-        if (data.url) {
-          document.getElementById('upload-status').textContent = `✅ সফল! URL: ${data.url}`;
-          navigator.clipboard.writeText(data.url);
-          showToast('ইমেজ আপলোড সফল, URL কপি হয়েছে');
-          loadMediaLibrary();
-        } else {
-          document.getElementById('upload-status').textContent = 'আপলোড ব্যর্থ';
-        }
-      } catch(e) {
-        document.getElementById('upload-status').textContent = 'ত্রুটি';
-      }
+    async function deleteContent(type, id) {
+      if (!confirm('মুছে ফেলবেন?')) return;
+      await adminApiCall('DELETE', `/admin/content/${type}/${id}`);
+      loadContentList();
     }
 
     // ==================== THEME EDITOR ====================
@@ -919,13 +945,13 @@
       adminApiCall('PUT', '/admin/settings', defaults);
     }
 
-    // ==================== MEDIA LIBRARY ====================
+    // ==================== MEDIA LIBRARY (with Drop Zone & Folder Upload + video thumbnail) ====================
     async function loadMediaLibrary() {
       const res = await adminApiCall('GET', '/admin/media');
       let html = `<div class="card"><h3>🖼️ মিডিয়া লাইব্রেরি</h3>
         <div class="drop-zone" id="media-drop-zone">
-          <p>📁 এখানে ছবি টেনে আনুন অথবা ক্লিক করুন</p>
-          <input type="file" id="media-file-input" accept="image/*" multiple style="display:none;">
+          <p>📁 এখানে ছবি/ভিডিও টেনে আনুন অথবা ক্লিক করুন</p>
+          <input type="file" id="media-file-input" accept="image/*,video/*" multiple style="display:none;">
         </div>
         <div class="flex" style="gap:8px; margin-bottom:12px;">
           <button class="btn btn-sm" onclick="document.getElementById('media-folder-input').click()">📂 ফোল্ডার আপলোড</button>
@@ -936,11 +962,19 @@
         <div id="media-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">`;
       if (res) {
         res.forEach(m => {
-          html += `<div class="media-item">
-            <img src="${m.url}" class="media-thumb" onerror="this.style.display='none'">
-            <span class="url-text">${m.url}</span>
-            <button class="btn btn-sm btn-danger" onclick="deleteMedia(${m.id})">🗑</button>
-          </div>`;
+          if (m.url.match(/\.(mp4|webm|mov)$/i)) {
+            html += `<div class="media-item">
+              <video src="${m.url}" class="media-thumb" muted></video>
+              <span class="url-text">${m.url}</span>
+              <button class="btn btn-sm btn-danger" onclick="deleteMedia(${m.id})">🗑</button>
+            </div>`;
+          } else {
+            html += `<div class="media-item">
+              <img src="${m.url}" class="media-thumb" onerror="this.style.display='none'">
+              <span class="url-text">${m.url}</span>
+              <button class="btn btn-sm btn-danger" onclick="deleteMedia(${m.id})">🗑</button>
+            </div>`;
+          }
         });
       }
       html += '</div></div>';
@@ -968,11 +1002,19 @@
       });
     }
 
-    async function uploadSingleMedia(file) {
+    async function uploadSingleMedia(file, allowVideo = false) {
       try {
-        const resizedFile = await resizeImage(file, 1200);
+        const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
+        if (!validTypes.includes(file.type)) {
+          showToast('ফাইল টাইপ সমর্থিত নয়');
+          return null;
+        }
+        let processedFile = file;
+        if (file.type.startsWith('image/')) {
+          processedFile = await resizeImage(file, 1200);
+        }
         const formData = new FormData();
-        formData.append('image', resizedFile);
+        formData.append('image', processedFile);
         const res = await fetch(`${API}/admin/upload-image`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${adminToken}` },
@@ -982,17 +1024,20 @@
         if (data.url) {
           showToast('✅ আপলোড সফল');
           loadMediaLibrary();
+          return data.url;
         } else {
           showToast('আপলোড ব্যর্থ');
+          return null;
         }
       } catch(e) {
         showToast('ত্রুটি');
+        return null;
       }
     }
 
     async function uploadFolderFiles(fileList) {
       for (let file of fileList) {
-        await uploadSingleMedia(file);
+        await uploadSingleMedia(file, true);
       }
     }
 
@@ -1023,9 +1068,9 @@
 
     // ==================== TRANSLATIONS ====================
     async function loadTranslations() {
-      const lang = prompt('ভাষা কোড (bn/en):', 'bn') || 'bn';
+      const lang = prompt('ভাষা কোড (bn/en/hi):', 'bn') || 'bn';
       const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
-      let html = `<div class="card"><h3>🌐 অনুবাদ (${lang})</h3><select id="trans-lang" onchange="loadTranslations()"><option>bn</option><option>en</option></select><div id="trans-list" style="margin-top:12px;">`;
+      let html = `<div class="card"><h3>🌐 অনুবাদ (${lang})</h3><select id="trans-lang" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`;
       if (rows) {
         rows.forEach(t => {
           html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span>
@@ -1068,7 +1113,7 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    // ==================== SETTINGS ====================
+    // ==================== SETTINGS (Admin Password + Site Config) ====================
     function loadSettings() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card"><h3>⚙️ অ্যাডমিন সেটিংস</h3>
@@ -1078,7 +1123,27 @@
           <button class="btn" onclick="changeAdminPassword()">পাসওয়ার্ড পরিবর্তন</button>
           <div id="settings-message" style="margin-top:12px;"></div>
         </div>
+        <div class="card" style="margin-top:16px;"><h3>🌐 সাইট কনফিগারেশন</h3>
+          <label>সাইট টাইটেল</label>
+          <input type="text" id="site-title" placeholder="AlamQuant ATTS">
+          <label>CORS অরিজিন (কমা দিয়ে আলাদা)</label>
+          <input type="text" id="cors-origin" placeholder="https://your-domain.vercel.app">
+          <label>Vercel Blob URL (যদি প্রয়োজন)</label>
+          <input type="text" id="blob-url" placeholder="https://...">
+          <button class="btn" onclick="saveSiteConfig()">সাইট কনফিগ সংরক্ষণ</button>
+          <div id="config-message" style="margin-top:12px;"></div>
+        </div>
       `;
+      loadCurrentSiteConfig();
+    }
+
+    async function loadCurrentSiteConfig() {
+      const settings = await adminApiCall('GET', '/admin/settings', null, false);
+      if (settings) {
+        document.getElementById('site-title').value = settings.site_title || '';
+        document.getElementById('cors-origin').value = settings.cors_origin || '';
+        document.getElementById('blob-url').value = settings.blob_url || '';
+      }
     }
 
     async function changeAdminPassword() {
@@ -1093,6 +1158,51 @@
         document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">সফল</span>';
       } else {
         document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'ত্রুটি'}</span>`;
+      }
+    }
+
+    async function saveSiteConfig() {
+      const siteTitle = document.getElementById('site-title').value.trim();
+      const corsOrigin = document.getElementById('cors-origin').value.trim();
+      const blobUrl = document.getElementById('blob-url').value.trim();
+      const body = {};
+      if (siteTitle) body.site_title = siteTitle;
+      if (corsOrigin) body.cors_origin = corsOrigin;
+      if (blobUrl) body.blob_url = blobUrl;
+      const res = await adminApiCall('PUT', '/admin/settings', body);
+      if (res?.success) {
+        document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">সাইট কনফিগ সংরক্ষিত</span>';
+      } else {
+        document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'ত্রুটি'}</span>`;
+      }
+    }
+
+    // ==================== UPLOAD IMAGE (for content tab) ====================
+    async function uploadImage() {
+      const file = document.getElementById('image-upload').files[0];
+      if (!file) return showToast('ফাইল সিলেক্ট করুন');
+      document.getElementById('upload-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
+      try {
+        const resizedFile = await resizeImage(file, 1200);
+        document.getElementById('upload-status').textContent = 'আপলোড হচ্ছে...';
+        const formData = new FormData();
+        formData.append('image', resizedFile);
+        const res = await fetch(`${API}/admin/upload-image`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminToken}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.url) {
+          document.getElementById('upload-status').textContent = `✅ সফল! URL: ${data.url}`;
+          navigator.clipboard.writeText(data.url);
+          showToast('ইমেজ আপলোড সফল, URL কপি হয়েছে');
+          loadMediaLibrary();
+        } else {
+          document.getElementById('upload-status').textContent = 'আপলোড ব্যর্থ';
+        }
+      } catch (e) {
+        document.getElementById('upload-status').textContent = 'ত্রুটি';
       }
     }
 
