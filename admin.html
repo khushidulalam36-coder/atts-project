@@ -246,6 +246,22 @@
     </div>
   </div>
 
+  <!-- Translation Add Modal -->
+<div id="translation-add-modal" class="modal-overlay hidden">
+  <div class="modal-content" style="max-width:400px;">
+    <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeTransAddModal()">✕</button>
+    <h3>নতুন অনুবাদ যোগ</h3>
+    <input type="text" id="trans-key" placeholder="Key">
+    <input type="text" id="trans-value" placeholder="Value">
+    <select id="trans-lang">
+      <option value="bn">বাংলা</option>
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+    </select>
+    <button class="btn" onclick="saveNewTranslation()">সংরক্ষণ</button>
+  </div>
+</div>
+
   <script>
     // ==================== CONFIG ====================
     const API = '/api/setup';
@@ -1077,20 +1093,26 @@
             <button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`;
         });
       }
-      html += `<button class="btn btn-sm" onclick="addTrans()">+ নতুন</button></div></div>`;
+      html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ নতুন</button></div></div>`;
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    function addTrans() {
-      const key = prompt('Key:');
-      if (!key) return;
-      const value = prompt('Value:');
-      const lang = document.getElementById('trans-lang')?.value || 'bn';
-      if (value) {
-        adminApiCall('POST', '/admin/translations', { key, lang, value });
-        loadTranslations();
-      }
-    }
+    function openTransAddModal() {
+  document.getElementById('translation-add-modal').classList.remove('hidden');
+}
+function closeTransAddModal() {
+  document.getElementById('translation-add-modal').classList.add('hidden');
+}
+async function saveNewTranslation() {
+  const key = document.getElementById('trans-key').value.trim();
+  const value = document.getElementById('trans-value').value.trim();
+  const lang = document.getElementById('trans-lang').value;
+  if (!key || !value) return showToast('সব ফিল্ড পূরণ করুন');
+  await adminApiCall('POST', '/admin/translations', { key, lang, value });
+  closeTransAddModal();
+  loadTranslations();
+  showToast('অনুবাদ যোগ হয়েছে');
+}
 
     function editTrans(key, lang, current) {
       const newVal = prompt('নতুন মান:', current);

@@ -1072,6 +1072,11 @@ async function apiHandler(req) {
     }
 
     if (path === '/register' && req.method === 'POST') {
+
+       // ⬇️ নিচের দুটি লাইন এখানে যোগ করুন (try ব্লকের আগে)
+  console.log('=== REGISTER ROUTE HIT ===');
+  console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'MISSING');
+
       try {
         const body = await req.json();
         const parsed = registerSchema.safeParse(body);
@@ -1082,8 +1087,12 @@ async function apiHandler(req) {
         const hash = await bcrypt.hash(password, 12);
         const verificationToken = uuidv4();
         const name = display_name || email.split('@')[0];
-        const [user] = await sql`INSERT INTO users (email, password_hash, display_name, avatar_emoji, verification_token) VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}) RETURNING *`;
-        
+        const [user] = await sql`
+  INSERT INTO users (email, password_hash, display_name, avatar_emoji, verification_token, email_verified)
+  VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}, true)
+  RETURNING *
+`;
+
         if (resend) {
           const verifyLink = `${protocol}://${host}/api/setup/verify-email?token=${verificationToken}`;
           try {
@@ -1097,11 +1106,12 @@ async function apiHandler(req) {
             Sentry.captureException(e);
           }
         }
-        
+
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
         await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'register', ${JSON.stringify({email})}, ${ip})`;
         return json({ token, user: sanitizeUser(user), message: 'Registration successful. Please verify your email.' });
       } catch (err) {
+        console.error('REGISTRATION ERROR:', err);
         Sentry.captureException(err);
         return errorJson('Internal server error during registration', 500);
       }
@@ -1133,9 +1143,10 @@ async function apiHandler(req) {
         await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'login', ${JSON.stringify({email})}, ${ip})`;
         return json({ token, user: sanitizeUser(user) });
       } catch (err) {
-        Sentry.captureException(err);
-        return errorJson('Internal server error during login', 500);
-      }
+  console.error('LOGIN ERROR:', err);   // এই লাইন যোগ করুন
+  Sentry.captureException(err);
+  return errorJson('Internal server error during login', 500);
+}
     }
 
     if (path === '/request-password-reset' && req.method === 'POST') {
@@ -1185,12 +1196,17 @@ async function apiHandler(req) {
     }
 
     if (path === '/translations' && req.method === 'GET') {
-      const lang = url.searchParams.get('lang') || 'en';
-      const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
-      const result = {};
-      rows.forEach(r => result[r.key] = r.value);
-      return json(result);
-    }
+  try {
+    const lang = url.searchParams.get('lang') || 'en';
+    const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
+    const result = {};
+    rows.forEach(r => result[r.key] = r.value);
+    return json(result);
+  } catch (err) {
+    console.error('TRANSLATIONS ERROR:', err);
+    return errorJson('Internal server error in translations', 500);
+  }
+}
 
     // ---------------- VERIFY CERTIFICATE (PUBLIC) ----------------
     if (path.startsWith('/verify/') && req.method === 'GET') {
@@ -1237,7 +1253,6 @@ async function apiHandler(req) {
     if (!user) return errorJson('Authentication required', 401);
 
     // --- User image upload (non-admin) ---
-    // Already handled in multipart section, but just in case we return success if reached via JSON (not multipart)
     if (path === '/upload-image' && req.method === 'POST') {
       return json({ message: 'Please use multipart/form-data for file uploads.' });
     }
@@ -1649,39 +1664,34 @@ async function apiHandler(req) {
 
     // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
     if (path === '/training/chapters' && req.method === 'GET') {
-  const courseId = url.searchParams.get('course_id') || 1;
-  const requestedLang = url.searchParams.get('lang') || 'en'; // ইউজারের চাওয়া ভাষা
-
-  // প্রথমে চেষ্টা করো ইউজারের ভাষায় চ্যাপ্টার খুঁজতে
-  let chapters = await sql`
-    SELECT c.*, 
-           COALESCE(ucp.passed, false) as passed, 
-           COALESCE(ucp.best_score, 0) as best_score,
-           COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
-           ucp.completed_at
-    FROM chapters c
-    LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-    WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = ${requestedLang}
-    ORDER BY c.order_index
-  `;
-
-  // যদি কিছু না পাওয়া যায়, তাহলে ডিফল্ট ভাষা (বাংলা) দিয়ে আবার চেষ্টা করো
-  if (chapters.length === 0) {
-    chapters = await sql`
-      SELECT c.*, 
-             COALESCE(ucp.passed, false) as passed, 
-             COALESCE(ucp.best_score, 0) as best_score,
-             COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
-             ucp.completed_at
-      FROM chapters c
-      LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-      WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = 'bn'
-      ORDER BY c.order_index
-    `;
-  }
-
-  return json(chapters);
-}
+      const courseId = url.searchParams.get('course_id') || 1;
+      const requestedLang = url.searchParams.get('lang') || 'en';
+      let chapters = await sql`
+        SELECT c.*, 
+               COALESCE(ucp.passed, false) as passed, 
+               COALESCE(ucp.best_score, 0) as best_score,
+               COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
+               ucp.completed_at
+        FROM chapters c
+        LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
+        WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = ${requestedLang}
+        ORDER BY c.order_index
+      `;
+      if (chapters.length === 0) {
+        chapters = await sql`
+          SELECT c.*, 
+                 COALESCE(ucp.passed, false) as passed, 
+                 COALESCE(ucp.best_score, 0) as best_score,
+                 COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
+                 ucp.completed_at
+          FROM chapters c
+          LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
+          WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = 'bn'
+          ORDER BY c.order_index
+        `;
+      }
+      return json(chapters);
+    }
 
     if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
       const chapterId = parseInt(path.split('/')[3]);

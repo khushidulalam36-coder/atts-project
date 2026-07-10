@@ -9,6 +9,7 @@
   <meta name="vapid-public-key" content="">
   <meta name="app-url" content="https://your-domain.vercel.app">
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icon-192.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -380,10 +381,15 @@
         <div class="glass">
           <div class="flex"><select id="post-type"><option value="lesson">শিক্ষা</option><option value="mistake">ভুল</option></select><textarea id="post-content" rows="1" placeholder="শেয়ার করুন..."></textarea><button class="btn btn-sm" onclick="submitPost()">পোস্ট</button></div>
           <div class="flex" style="margin-top:8px;">
-            <input type="file" id="post-image" accept="image/*" multiple style="display:none;">
-            <button class="btn btn-sm" onclick="document.getElementById('post-image').click()">📷 ছবি যোগ</button>
-            <span id="post-image-preview"></span>
-          </div>
+  <input type="file" id="post-image" accept="image/*" multiple style="display:none;">
+  <button class="btn btn-sm" onclick="document.getElementById('post-image').click()">📷 ছবি যোগ</button>
+  
+  <!-- নতুন ভিডিও ইনপুট -->
+  <input type="file" id="post-video" accept="video/*" multiple style="display:none;">
+  <button class="btn btn-sm" onclick="document.getElementById('post-video').click()">🎬 ভিডিও যোগ</button>
+  
+  <span id="post-image-preview"></span>
+</div>
           <div id="posts-container"></div>
         </div>
       </div>
@@ -520,16 +526,17 @@
 
     // ==================== Text to Speech ====================
     function speakText(text, lang = null) {
-      if (!('speechSynthesis' in window)) return;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang || (i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US');
-      utterance.rate = 0.9;
-      const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v => v.name.includes('Female') && v.lang.startsWith(utterance.lang)) ||
-                          voices.find(v => v.lang.startsWith(utterance.lang));
-      if (femaleVoice) utterance.voice = femaleVoice;
-      speechSynthesis.speak(utterance);
-    }
+  // ... (ভাষা নির্ধারণ, utterance তৈরি ইত্যাদি)
+  const voices = speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v => v.name.includes('Female') && v.lang.startsWith(utterance.lang)) ||
+                      voices.find(v => v.lang.startsWith(utterance.lang));
+  if (femaleVoice) {
+    utterance.voice = femaleVoice;
+  } else {
+    showToast('⚠️ আপনার ডিভাইসে ফিমেল ভয়েস নেই, ডিফল্ট ভয়েস ব্যবহার করা হচ্ছে।');
+  }
+  speechSynthesis.speak(utterance);
+}
     function attachTTSButtons() {
       document.querySelectorAll('.tts-target').forEach(el => {
         if (!el.querySelector('.tts-btn')) {
@@ -699,20 +706,30 @@
     // ==================== Community ====================
     async function loadCommunity() { const ps = await apiCall('GET', '/community'); document.getElementById('posts-container').innerHTML = ps.map(p => `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><p>${escapeHtml(p.content)}</p><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`).join(''); }
     async function submitPost() {
-      const content = document.getElementById('post-content').value.trim();
-      if (!content && postImages.length === 0) return showToast('কিছু লিখুন বা ছবি যোগ করুন');
-      const imageUrls = [];
-      for (let file of postImages) {
-        const url = await uploadMedia(file);
-        if (url) imageUrls.push(url);
-      }
-      const finalContent = content + ' ' + imageUrls.map(u => `<img src="${u}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`).join(' ');
-      await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
-      document.getElementById('post-content').value = '';
-      postImages = [];
-      document.getElementById('post-image-preview').innerHTML = '';
-      loadCommunity();
-    }
+  const content = document.getElementById('post-content').value.trim();
+  const videoFiles = document.getElementById('post-video').files;
+  const allFiles = [...postImages, ...videoFiles];
+  if (!content && allFiles.length === 0) return showToast('কিছু লিখুন বা মিডিয়া যোগ করুন');
+  
+  const mediaUrls = [];
+  for (let file of allFiles) {
+    const url = await uploadMedia(file);  // uploadMedia ইমেজ ও ভিডিও উভয়ই আপলোড করতে পারে
+    if (url) mediaUrls.push({ url, type: file.type.startsWith('image/') ? 'image' : 'video' });
+  }
+  
+  let finalContent = content;
+  mediaUrls.forEach(m => {
+    if (m.type === 'image') finalContent += ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
+    else finalContent += ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
+  });
+  
+  await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
+  // রিসেট অংশ...
+  postImages = [];
+  document.getElementById('post-video').value = '';
+  document.getElementById('post-image-preview').innerHTML = '';
+  loadCommunity();
+}
     async function likePost(id) { await apiCall('POST', '/like-post', { post_id:id }); loadCommunity(); }
     async function toggleReply(postId) { const container = document.getElementById('replies-' + postId); container.classList.toggle('hidden'); if (!container.classList.contains('hidden') && !container.dataset.loaded) { container.dataset.loaded = 'true'; const replies = await apiCall('GET', `/replies?post_id=${postId}`); container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join(''); } }
     async function uploadMedia(file) {
