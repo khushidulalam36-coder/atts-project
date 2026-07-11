@@ -549,11 +549,19 @@ async function apiHandler(req) {
     });
   }
 
-  const host = req.headers.get('host') || 'localhost';
+    const host = req.headers.get('host') || 'localhost';
   const protocol = req.headers.get('x-forwarded-proto') || 'http';
-  const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
-  const url = new URL(fullUrl);
-  let path = url.pathname;
+  // Vercel rewrite-এর আসল পাথ ব্যবহার করা (forwarded header থাকলে)
+  const forwardedPath = req.headers.get('x-forwarded-path');
+  let path;
+  if (forwardedPath) {
+    const originalUrl = new URL(forwardedPath, `http://${host}`);
+    path = originalUrl.pathname;
+  } else {
+    const fullUrl = req.url.startsWith('http') ? req.url : `${protocol}://${host}${req.url}`;
+    const url = new URL(fullUrl);
+    path = url.pathname;
+  }
 
   // Normalize path
   if (path.startsWith('/api/setup')) {
