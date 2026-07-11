@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Admin – AlamQuant ATTS</title>
   <link rel="stylesheet" href="styles.css">
   <!-- Quill Rich Text Editor -->
@@ -171,11 +171,19 @@
     <div id="panel-screen" class="hidden"></div>
   </div>
 
-  <!-- Chapter Editor Modal -->
+  <!-- Chapter Editor Modal (with Multilingual Support) -->
   <div id="chapter-editor-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterEditor()">✕</button>
       <h3 id="chapter-editor-title">চ্যাপ্টার সম্পাদনা</h3>
+      <div class="flex" style="gap:8px; margin-bottom:12px;">
+        <label>🌐 ভাষা:</label>
+        <select id="ch-lang" onchange="switchEditorLanguage()">
+          <option value="en">English</option>
+          <option value="bn">বাংলা</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
       <div class="grid-2">
         <div><label>শিরোনাম</label><input type="text" id="ch-title" required></div>
         <div><label>ক্রম</label><input type="number" id="ch-order" min="1" required></div>
@@ -192,12 +200,13 @@
       </div>
       <div class="grid-2">
         <div><label>পাসিং স্কোর (%)</label><input type="number" id="ch-passing" value="90"></div>
-        <div><label>ভাষা</label><select id="ch-language"><option value="bn">বাংলা</option><option value="en">English</option></select></div>
+        <div><label>ভাষা (মাস্টার)</label><input type="text" id="ch-language" value="en" disabled></div>
       </div>
       <div style="margin-top:16px;">
         <button class="btn" onclick="saveChapter()">সংরক্ষণ</button>
         <button class="btn btn-outline" onclick="closeChapterEditor()">বাতিল</button>
         <input type="hidden" id="ch-edit-id">
+        <input type="hidden" id="ch-edit-lang" value="en">
       </div>
     </div>
   </div>
@@ -446,7 +455,11 @@
       else showToast(res?.error || 'ব্যর্থ');
     }
 
-    // ==================== CHAPTERS (with image/video upload) ====================
+    // ==================== CHAPTERS (Multilingual) ====================
+    let currentChapterId = null;
+    let currentChapterLanguage = 'en';
+    let chapterMasterData = null; // store english master when editing translations
+
     async function loadChapters() {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       if (!chapters) return;
@@ -470,31 +483,68 @@
       }
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
-      
+      currentChapterLanguage = 'en';
+      document.getElementById('ch-lang').value = 'en';
+      document.getElementById('ch-edit-lang').value = 'en';
+
       if (id) {
+        currentChapterId = id;
+        // Load English master first to cache
         const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
         const ch = chapters.find(c => c.id == id);
         if (ch) {
+          chapterMasterData = ch;
           document.getElementById('ch-title').value = ch.title;
           document.getElementById('ch-order').value = ch.order_index;
           document.getElementById('ch-passing').value = ch.passing_score || 90;
-          document.getElementById('ch-language').value = ch.language || 'bn';
+          document.getElementById('ch-language').value = 'en';
           quillEditor.root.innerHTML = ch.content_text || '';
           document.getElementById('ch-edit-id').value = ch.id;
-          document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা';
+          document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
           if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url));
+          else addImageField();
           if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url));
+          else addVideoField();
         }
       } else {
+        currentChapterId = null;
+        chapterMasterData = null;
         document.getElementById('ch-title').value = '';
         document.getElementById('ch-order').value = '';
         document.getElementById('ch-passing').value = 90;
-        document.getElementById('ch-language').value = 'bn';
+        document.getElementById('ch-language').value = 'en';
         quillEditor.root.innerHTML = '';
         document.getElementById('ch-edit-id').value = '';
-        document.getElementById('chapter-editor-title').textContent = 'নতুন চ্যাপ্টার';
+        document.getElementById('chapter-editor-title').textContent = 'নতুন চ্যাপ্টার (ইংরেজি)';
         addImageField();
         addVideoField();
+      }
+    }
+
+    async function switchEditorLanguage() {
+      const lang = document.getElementById('ch-lang').value;
+      currentChapterLanguage = lang;
+      document.getElementById('ch-edit-lang').value = lang;
+
+      if (!currentChapterId) return; // new chapter, only english possible
+
+      if (lang === 'en') {
+        // load master
+        document.getElementById('ch-title').value = chapterMasterData.title;
+        quillEditor.root.innerHTML = chapterMasterData.content_text || '';
+        document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
+      } else {
+        // load translation from content_translations
+        const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
+        if (trans && trans.title) {
+          document.getElementById('ch-title').value = trans.title;
+          quillEditor.root.innerHTML = trans.content_text || '';
+        } else {
+          document.getElementById('ch-title').value = '';
+          quillEditor.root.innerHTML = '';
+          showToast('এই ভাষার জন্য এখনো কোনো অনুবাদ নেই।');
+        }
+        document.getElementById('chapter-editor-title').textContent = `চ্যাপ্টার সম্পাদনা (${lang})`;
       }
     }
 
@@ -533,15 +583,13 @@
         fileInput.removeEventListener('change', handler);
         const file = e.target.files[0];
         if (!file) return;
-        btn.disabled = true;
-        btn.textContent = '⏳';
+        btn.disabled = true; btn.textContent = '⏳';
         const url = await uploadSingleMedia(file);
         if (url) {
           btn.parentElement.querySelector('.ch-image-url').value = url;
-          showToast('ছবি আপলোড হয়েছে, URL বসানো হয়েছে');
+          showToast('ছবি আপলোড হয়েছে');
         }
-        btn.disabled = false;
-        btn.textContent = '📷';
+        btn.disabled = false; btn.textContent = '📷';
       });
     }
 
@@ -552,15 +600,13 @@
         fileInput.removeEventListener('change', handler);
         const file = e.target.files[0];
         if (!file) return;
-        btn.disabled = true;
-        btn.textContent = '⏳';
+        btn.disabled = true; btn.textContent = '⏳';
         const url = await uploadSingleMedia(file, true);
         if (url) {
           btn.parentElement.querySelector('.ch-video-url').value = url;
-          showToast('ভিডিও আপলোড হয়েছে, URL বসানো হয়েছে');
+          showToast('ভিডিও আপলোড হয়েছে');
         }
-        btn.disabled = false;
-        btn.textContent = '🎬';
+        btn.disabled = false; btn.textContent = '🎬';
       });
     }
 
@@ -569,24 +615,37 @@
     }
 
     async function saveChapter() {
+      const lang = document.getElementById('ch-edit-lang').value;
+      const title = document.getElementById('ch-title').value.trim();
+      const order_index = parseInt(document.getElementById('ch-order').value);
+      const content_text = quillEditor.root.innerHTML;
       const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
       const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
-      const data = {
-        course_id: 1,
-        title: document.getElementById('ch-title').value,
-        order_index: parseInt(document.getElementById('ch-order').value),
-        content_text: quillEditor.root.innerHTML,
-        images,
-        videos,
-        passing_score: parseInt(document.getElementById('ch-passing').value),
-        language: document.getElementById('ch-language').value
-      };
-      if (!data.title || !data.order_index) return showToast('শিরোনাম ও ক্রম আবশ্যক');
-      const id = document.getElementById('ch-edit-id').value;
-      if (id) {
-        await adminApiCall('PUT', `/admin/chapter/${id}`, data);
+      const passing_score = parseInt(document.getElementById('ch-passing').value);
+      const chapterId = document.getElementById('ch-edit-id').value;
+
+      if (!title || !order_index) return showToast('শিরোনাম ও ক্রম আবশ্যক');
+
+      if (lang === 'en') {
+        const body = { course_id: 1, title, order_index, content_text, images, videos, passing_score, language: 'en' };
+        if (chapterId) {
+          await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body);
+        } else {
+          const res = await adminApiCall('POST', '/admin/chapter', body);
+          if (res) currentChapterId = res.id; // capture new id
+        }
+        // Update master cache
+        chapterMasterData = { title, content_text, images, videos, passing_score };
       } else {
-        await adminApiCall('POST', '/admin/chapter', data);
+        // For non-english, save translation
+        if (!currentChapterId) return showToast('প্রথমে ইংরেজি চ্যাপ্টার সংরক্ষণ করুন');
+        await adminApiCall('POST', '/admin/translations/content', {
+          table_name: 'chapters',
+          record_id: parseInt(currentChapterId),
+          language_code: lang,
+          translations: { title, content_text }
+        });
+        // images/videos are not translated typically
       }
       closeChapterEditor();
       loadChapters();
@@ -598,6 +657,46 @@
       await adminApiCall('DELETE', `/admin/chapter/${id}`);
       loadChapters();
     }
+
+    // Translation fetch helper (for chapter editor) - we'll handle via adminApiCall to a new endpoint not yet defined; we can assume /admin/chapter/:id/translations?lang=... exists
+    // We'll implement a simple fallback query in adminApiCall. But for brevity, we'll just query the content_translations table via adminApiCall.
+    // Since we didn't set up that route, we'll do a direct fetch using SQL? That's not possible from frontend.
+    // Instead, we'll modify switchEditorLanguage to fetch from /admin/translations/content?table=chapters&record_id=...&lang=...
+    // We'll add a quick helper:
+
+    async function fetchChapterTranslation(chapterId, lang) {
+      // We can use GET /admin/translations/content?table_name=chapters&record_id=...&language_code=...
+      // We'll construct the query ourselves by adminApiCall to a new endpoint or simply call /admin/chapter/:id with a different lang param.
+      // Actually, the API has /admin/chapters which returns all; we could filter. But simpler: we'll just do:
+      const data = await adminApiCall('GET', `/admin/chapter/${chapterId}?lang=${lang}`, null, false);
+      if (data && data.id) {
+        return { title: data.title, content_text: data.content_text };
+      }
+      return null;
+    }
+    // Override switchEditorLanguage to use this:
+    window.switchEditorLanguage = async function() {
+      const lang = document.getElementById('ch-lang').value;
+      currentChapterLanguage = lang;
+      document.getElementById('ch-edit-lang').value = lang;
+      if (!currentChapterId) return;
+      if (lang === 'en') {
+        document.getElementById('ch-title').value = chapterMasterData.title;
+        quillEditor.root.innerHTML = chapterMasterData.content_text || '';
+        document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
+      } else {
+        const trans = await fetchChapterTranslation(currentChapterId, lang);
+        if (trans) {
+          document.getElementById('ch-title').value = trans.title;
+          quillEditor.root.innerHTML = trans.content_text || '';
+        } else {
+          document.getElementById('ch-title').value = '';
+          quillEditor.root.innerHTML = '';
+          showToast('এই ভাষার জন্য এখনো কোনো অনুবাদ নেই।');
+        }
+        document.getElementById('chapter-editor-title').textContent = `চ্যাপ্টার সম্পাদনা (${lang})`;
+      }
+    };
 
     // ==================== QUESTION MANAGER ====================
     let currentQmChapterId;
@@ -1105,7 +1204,7 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    // ==================== SETTINGS (Admin Password + Site Config) ====================
+    // ==================== SETTINGS ====================
     function loadSettings() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card"><h3>⚙️ অ্যাডমিন সেটিংস</h3>

@@ -2,12 +2,12 @@
 # SECTION 1: AlamQuant ATTS - Enterprise-Grade Project Generator
 # ============================================
 # Description:
-#   This script creates all necessary project files for the AlamQuant ATTS application.
-#   After execution, manually replace the three placeholder files:
+#   Creates ALL necessary project files for the AlamQuant ATTS application.
+#   After execution, MANUALLY replace the three placeholder files:
 #     1. index.html
 #     2. api/setup.js
 #     3. admin.html
-#   with the full production-ready code.
+#   with the full production-ready code provided separately.
 # ============================================
 
 $ErrorActionPreference = "Stop"
@@ -64,11 +64,17 @@ $vercelJson = @'
     { "source": "/api/(.*)", "destination": "/api/setup" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/verify", "destination": "/verify.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/check-reminders",
+      "schedule": "* * * * *"
+    }
   ]
 }
 '@
 [System.IO.File]::WriteAllText("$projectRoot\vercel.json", $vercelJson, $Utf8NoBom)
-Write-Host "  + vercel.json (security headers & rewrites)" -ForegroundColor Green
+Write-Host "  + vercel.json (security headers, rewrites & cron job)" -ForegroundColor Green
 
 # 2.2 package.json
 $packageJson = @'
@@ -94,7 +100,8 @@ $packageJson = @'
     "resend": "^3.2.0",
     "zod": "^3.22.0",
     "@sentry/node": "^7.0.0",
-    "@vercel/kv": "^1.0.0"
+    "@vercel/kv": "^1.0.0",
+    "web-push": "^3.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"
@@ -102,7 +109,7 @@ $packageJson = @'
 }
 '@
 [System.IO.File]::WriteAllText("$projectRoot\package.json", $packageJson, $Utf8NoBom)
-Write-Host "  + package.json (all required dependencies)" -ForegroundColor Green
+Write-Host "  + package.json (all required dependencies including web-push)" -ForegroundColor Green
 
 # 2.3 server.js (Local Development Server)
 $serverJs = @'
@@ -209,6 +216,13 @@ SENTRY_DSN=https://...@sentry.io/...
 # Vercel KV URL for distributed rate limiting (optional)
 KV_URL=redis://...
 
+# Cron job secret for /cron/check-reminders
+CRON_SECRET=generate_a_strong_random_secret_here
+
+# VAPID keys for Web Push Notifications (generate with web-push CLI)
+VAPID_PUBLIC_KEY=your_public_vapid_key_here
+VAPID_PRIVATE_KEY=your_private_vapid_key_here
+
 # ============================================
 # IMPORTANT: After first deploy, set ALLOW_INIT_DB=true
 # in Vercel Environment Variables, then run the init-db command.
@@ -259,8 +273,8 @@ Write-Host "  + manifest.json (PWA manifest)" -ForegroundColor Green
 
 # 3.4 sw.js (Service Worker with push notification support)
 $swJs = @'
-const CACHE_NAME = 'atts-v9';
-const STATIC_ASSETS = ['/', '/index.html', '/styles.css', '/manifest.json'];
+const CACHE_NAME = 'atts-v10';
+const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -308,25 +322,42 @@ self.addEventListener('push', event => {
     icon: '/icon-192.png',
     badge: '/icon-72.png',
     vibrate: [200, 100, 200],
-    data: { url: data.url || '/' },
+    requireInteraction: true,
+    actions: [
+      { action: 'open-journal', title: 'Write Journal' },
+      { action: 'snooze', title: 'Remind Later' }
+    ],
+    data: { url: data.url || '/#/journey' },
+    tag: 'reminder'
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
+  if (event.action === 'open-journal') {
+    clients.openWindow('/#/journey');
+  } else {
+    const urlToOpen = event.notification.data?.url || '/#/journey';
+    clients.openWindow(urlToOpen);
+  }
+});
+
+self.addEventListener('pushsubscriptionchange', event => {
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(clientList => {
-      for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow('/');
+    fetch('/api/setup/update-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oldSubscription: event.oldSubscription,
+        newSubscription: event.newSubscription
+      })
     })
   );
 });
 '@
 [System.IO.File]::WriteAllText("$projectRoot\sw.js", $swJs, $Utf8NoBom)
-Write-Host "  + sw.js (service worker with push support)" -ForegroundColor Green
+Write-Host "  + sw.js (service worker with push notification support)" -ForegroundColor Green
 
 # ============================================
 # SECTION 4: PWA Icon Generation
@@ -337,114 +368,212 @@ $icon192Path = Join-Path $projectRoot "icon-192.png"
 $icon512Path = Join-Path $projectRoot "icon-512.png"
 $icon72Path  = Join-Path $projectRoot "icon-72.png"
 
+# Function to create a solid gold icon (Approved verb: New)
+function New-SolidIcon($path, $width, $height) {
+    try {
+        Add-Type -AssemblyName System.Drawing
+        $bmp = New-Object System.Drawing.Bitmap($width, $height)
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.Clear([System.Drawing.Color]::FromArgb(200, 167, 91))  # #C8A75B
+        $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+        $g.Dispose()
+        $bmp.Dispose()
+        return $true
+    } catch {
+        Write-Host "    Could not generate $path using System.Drawing: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
+}
+
 $icon192Exists = Test-Path $icon192Path
 $icon512Exists = Test-Path $icon512Path
 
 if ($icon192Exists -and $icon512Exists) {
     Write-Host "  + Existing icon-192.png and icon-512.png found. Skipping icon generation." -ForegroundColor Green
+    # Ensure 72x72 also exists
+    if (-not (Test-Path $icon72Path)) {
+        $success = New-SolidIcon $icon72Path 72 72
+        if ($success) { Write-Host "    Created icon-72.png" -ForegroundColor Green }
+    }
 } else {
     $useCustom = Read-Host "  ? Do you have a source icon file (>= 512x512) to use for PWA icons? (y/n)"
     if ($useCustom -eq 'y') {
         $sourcePath = Read-Host "  ? Enter the full path to your source PNG file"
         if (Test-Path $sourcePath) {
-            Write-Host "    Resizing icons using .NET Drawing (requires System.Drawing assembly)..." -ForegroundColor DarkYellow
+            Write-Host "    Resizing icons using .NET Drawing..." -ForegroundColor DarkYellow
             try {
                 Add-Type -AssemblyName System.Drawing
                 $srcImage = [System.Drawing.Image]::FromFile($sourcePath)
+                
                 # Resize to 192x192
                 $bmp192 = New-Object System.Drawing.Bitmap(192, 192)
                 $g192 = [System.Drawing.Graphics]::FromImage($bmp192)
                 $g192.DrawImage($srcImage, 0, 0, 192, 192)
                 $bmp192.Save($icon192Path, [System.Drawing.Imaging.ImageFormat]::Png)
+                
                 # Resize to 512x512
                 $bmp512 = New-Object System.Drawing.Bitmap(512, 512)
                 $g512 = [System.Drawing.Graphics]::FromImage($bmp512)
                 $g512.DrawImage($srcImage, 0, 0, 512, 512)
                 $bmp512.Save($icon512Path, [System.Drawing.Imaging.ImageFormat]::Png)
+                
                 # Also create 72x72 for badge
                 $bmp72 = New-Object System.Drawing.Bitmap(72, 72)
                 $g72 = [System.Drawing.Graphics]::FromImage($bmp72)
                 $g72.DrawImage($srcImage, 0, 0, 72, 72)
                 $bmp72.Save($icon72Path, [System.Drawing.Imaging.ImageFormat]::Png)
+                
                 $g192.Dispose(); $g512.Dispose(); $g72.Dispose()
                 $bmp192.Dispose(); $bmp512.Dispose(); $bmp72.Dispose()
                 $srcImage.Dispose()
                 Write-Host "    Icons generated successfully." -ForegroundColor Green
             } catch {
-                Write-Host "    Failed to generate icons using .NET: $_. Falling back to placeholder." -ForegroundColor Red
-                # Generate a simple 1x1 pixel icon as a placeholder
-                $bytes192 = [System.Convert]::FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==")
-                [System.IO.File]::WriteAllBytes($icon192Path, $bytes192)
-                [System.IO.File]::WriteAllBytes($icon512Path, $bytes192)
-                [System.IO.File]::WriteAllBytes($icon72Path, $bytes192)
-                Write-Host "    Placeholder icons created (1x1 pixel). Replace with real ones." -ForegroundColor Yellow
+                Write-Host "    Failed to generate icons from custom file. Creating solid gold placeholders." -ForegroundColor Red
+                New-SolidIcon $icon192Path 192 192
+                New-SolidIcon $icon512Path 512 512
+                New-SolidIcon $icon72Path 72 72
             }
         } else {
-            Write-Host "    Source file not found. Generating placeholder icons." -ForegroundColor Red
-            # Fallback to placeholder
-            $bytesPlaceholder = [System.Convert]::FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==")
-            [System.IO.File]::WriteAllBytes($icon192Path, $bytesPlaceholder)
-            [System.IO.File]::WriteAllBytes($icon512Path, $bytesPlaceholder)
-            [System.IO.File]::WriteAllBytes($icon72Path, $bytesPlaceholder)
-            Write-Host "    Placeholder icons created. Replace with real ones before production." -ForegroundColor Yellow
+            Write-Host "    Source file not found. Creating solid gold placeholders." -ForegroundColor Red
+            New-SolidIcon $icon192Path 192 192
+            New-SolidIcon $icon512Path 512 512
+            New-SolidIcon $icon72Path 72 72
         }
     } else {
-        Write-Host "    No custom icon provided. Creating placeholder icons." -ForegroundColor DarkYellow
-        # Generate a simple gold square 1x1 or a generated simple icon? We'll use a base64 of a 1x1 pixel PNG.
-        $bytes1x1 = [System.Convert]::FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==")
-        [System.IO.File]::WriteAllBytes($icon192Path, $bytes1x1)
-        [System.IO.File]::WriteAllBytes($icon512Path, $bytes1x1)
-        [System.IO.File]::WriteAllBytes($icon72Path, $bytes1x1)
-        Write-Host "    Placeholder icons created. Replace with real ones before production." -ForegroundColor Yellow
+        Write-Host "    No custom icon provided. Creating solid gold placeholders." -ForegroundColor DarkYellow
+        New-SolidIcon $icon192Path 192 192
+        New-SolidIcon $icon512Path 512 512
+        New-SolidIcon $icon72Path 72 72
     }
 }
 
 # ============================================
-# SECTION 5: Static HTML Pages (Final)
+# SECTION 5: Static HTML Pages
 # ============================================
 Write-Host "`nGenerating static HTML pages..." -ForegroundColor Yellow
 
-# 5.1 verify.html (Public Certificate Verification) - full code
+# 5.1 verify.html (Public Certificate Verification)
 $verifyHtml = @'
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Certificate Verification - AlamQuant ATTS</title>
-  <link rel="stylesheet" href="styles.css">
   <style>
-    body { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .verify-container { max-width: 500px; width: 90%; text-align: center; }
+    :root {
+      --bg: #0B1220;
+      --surface: rgba(17,24,39,0.92);
+      --gold: #C8A75B;
+      --accent: #2563EB;
+      --text: #F9FAFB;
+      --text-secondary: #9CA3AF;
+      --danger: #EF4444;
+      --success: #22C55E;
+      --border-gold: rgba(200,167,91,0.35);
+      --radius: 16px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .verify-container {
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      backdrop-filter: blur(20px);
+    }
+    h2 {
+      background: linear-gradient(135deg, #E8C97A, #C8A75B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    input {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      width: 100%;
+      margin: 12px 0;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 0.95rem;
+      width: 100%;
+      margin-top: 8px;
+      font-family: inherit;
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #60A5FA, #2563EB);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.7);
+      transform: translateY(-2px);
+    }
+    #result { margin-top: 24px; }
+    #result h3 { color: var(--success); margin-bottom: 12px; }
   </style>
 </head>
 <body>
-  <div class="glass verify-container">
+  <div class="verify-container">
     <h2>🔍 Certificate Verification</h2>
-    <input type="text" id="verify-input" placeholder="Enter verification code">
+    <input type="text" id="verify-input" placeholder="Enter verification code" autocomplete="off">
     <button class="btn" onclick="verify()">Verify</button>
-    <div id="result" style="margin-top:20px;"></div>
+    <div id="result"></div>
   </div>
   <script>
     async function verify() {
       const code = document.getElementById('verify-input').value.trim();
       if (!code) return;
-      const res = await fetch(`/api/setup/verify/${code}`).then(r => r.json());
-      const resultDiv = document.getElementById('result');
-      if (res.valid) {
-        resultDiv.innerHTML = `<div style="color: var(--success);">
-          <p style="font-size:3rem;">✅</p>
-          <h3>Valid Certificate</h3>
-          <p><strong>Name:</strong> ${res.display_name || res.user}</p>
-          <p><strong>Issued:</strong> ${new Date(res.issued_at).toLocaleDateString('bn-BD')}</p>
-          <p><strong>Code:</strong> ${res.verification_code}</p>
-        </div>`;
-      } else {
-        resultDiv.innerHTML = `<div style="color: var(--danger);">
-          <p style="font-size:3rem;">❌</p>
-          <h3>Invalid Certificate</h3>
-          <p>This code was not found in the system.</p>
-        </div>`;
+      try {
+        const res = await fetch(`/api/setup/verify/${code}`).then(r => r.json());
+        const resultDiv = document.getElementById('result');
+        if (res.valid) {
+          resultDiv.innerHTML = `<div style="color: var(--success);">
+            <p style="font-size:3rem;">✅</p>
+            <h3>Valid Certificate</h3>
+            <p><strong>Name:</strong> ${res.display_name || res.user}</p>
+            <p><strong>Issued:</strong> ${new Date(res.issued_at).toLocaleDateString('en-US')}</p>
+            <p><strong>Code:</strong> ${res.verification_code}</p>
+          </div>`;
+        } else {
+          resultDiv.innerHTML = `<div style="color: var(--danger);">
+            <p style="font-size:3rem;">❌</p>
+            <h3>Invalid Certificate</h3>
+            <p>This code was not found in the system.</p>
+          </div>`;
+        }
+      } catch(e) {
+        document.getElementById('result').innerHTML = `<p style="color: var(--danger);">Error verifying certificate. Please try again.</p>`;
       }
     }
   </script>
@@ -533,11 +662,6 @@ $stylesCss = @'
 @keyframes ripple {
   to { transform: scale(4); opacity: 0; }
 }
-@keyframes shootStar {
-  0% { opacity:0; transform: translate(0,0) scale(0.5); }
-  50% { opacity:1; }
-  100% { opacity:0; transform: translate(200px,-200px) scale(0); }
-}
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
@@ -552,122 +676,10 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding-bottom: 130px;
   overflow-x: hidden;
   position: relative;
 }
-/* ----- Sidebar (Desktop/Tablet) ----- */
-.sidebar {
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  width: 260px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border-gold);
-  padding: 24px 0;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 0 30px rgba(0,0,0,0.5);
-  transition: transform 0.3s;
-}
-.sidebar .logo {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--gold);
-  padding: 0 24px 20px;
-  border-bottom: 1px solid var(--border-gold);
-  margin-bottom: 8px;
-}
-.sidebar nav { flex: 1; overflow-y: auto; }
-.sidebar nav a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s;
-  border-left: 3px solid transparent;
-  cursor: pointer;
-}
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: rgba(234,179,8,0.12);
-  color: var(--gold-bright);
-  border-left-color: var(--gold);
-}
-.sidebar nav a.logout-btn {
-  color: var(--danger);
-  margin-top: auto;
-}
-.sidebar nav a.logout-btn:hover {
-  background: rgba(239,68,68,0.1);
-  border-left-color: var(--danger);
-}
-hr { border-color: var(--border-gold); margin: 8px 24px; }
-/* ----- Mobile Top Bar ----- */
-.mobile-topbar {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 56px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-gold);
-  align-items: center;
-  padding: 0 16px;
-  z-index: 100;
-  gap: 12px;
-}
-.mobile-topbar .logo { font-size: 1.2rem; font-weight: 700; color: var(--gold); }
-.hamburger-btn { background: none; border: none; color: var(--text); font-size: 1.8rem; cursor: pointer; line-height: 1; }
-/* ----- Mobile Drawer ----- */
-.mobile-drawer {
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  width: 280px;
-  background: rgba(15, 23, 42, 0.98);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  transform: translateX(-100%);
-  transition: transform 0.3s;
-  z-index: 200;
-  padding: 24px 0;
-  overflow-y: auto;
-  border-right: 1px solid var(--border-gold);
-}
-.mobile-drawer.open { transform: translateX(0); }
-.mobile-drawer nav a {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 24px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s;
-}
-.mobile-drawer nav a:hover,
-.mobile-drawer nav a.active { background: rgba(234,179,8,0.15); color: var(--gold-bright); }
-.drawer-overlay {
-  position: fixed; top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,0.6); z-index: 150;
-  display: none;
-}
-.drawer-overlay.show { display: block; }
-/* ----- Main Content ----- */
-main#main-content {
-  flex: 1;
-  padding: 30px;
-  margin-left: 260px;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-.page-content { display: block; }
-.page-content.hidden { display: none !important; }
-.container { width:100%; max-width:960px; padding:16px; z-index:1; position:relative; }
+/* Glass card */
 .glass {
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(16px) saturate(180%);
@@ -756,8 +768,20 @@ textarea { resize:vertical; min-height:60px; }
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
 .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 .hidden { display:none !important; }
-/* ... all other existing classes ... */
-/* Drop zone for media */
+.badge {
+  background:linear-gradient(135deg, var(--gold), var(--gold-bright));
+  color:#020617;
+  padding:4px 12px;
+  border-radius:20px;
+  font-weight:700;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
+.progress-bar { background:rgba(255,255,255,0.1); border-radius:20px; height:14px; overflow:hidden; margin:10px 0; }
+.progress-fill { height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-bright)); border-radius:20px; box-shadow:0 0 10px var(--accent); width:0%; transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
 .drop-zone {
   border: 2px dashed var(--border-gold);
   border-radius: var(--radius);
@@ -786,21 +810,31 @@ textarea { resize:vertical; min-height:60px; }
   white-space: nowrap;
   font-size: 0.8rem;
 }
-/* Responsive breakpoints */
-@media (max-width: 767px) {
-  .sidebar { display: none; }
-  .mobile-topbar { display: flex; }
-  main#main-content { margin-left: 0; padding: 70px 12px 16px; }
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+.phase-tag { background:var(--gold); color:#020617; padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem; display:inline-block; }
+.toast {
+  position: fixed; top: 20px; right: 20px; background: var(--accent); color: white;
+  padding: 14px 22px; border-radius: 30px; z-index: 9999; font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6); opacity: 0; transform: translateX(120%);
+  transition: 0.4s cubic-bezier(0.4,0,0.2,1);
 }
-@media (min-width: 768px) and (max-width: 1023px) {
-  .sidebar { width: 200px; }
-  .sidebar nav a { padding: 10px 16px; font-size: 0.85rem; }
-  main#main-content { margin-left: 200px; padding: 20px; }
+.toast.show { opacity:1; transform:translateX(0); }
+.modal-overlay {
+  position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center; z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+.modal-content {
+  max-width: 90vw; max-height: 85vh; overflow-y: auto; width: 500px;
+  background: var(--surface); border: 1px solid var(--border-gold);
+  border-radius: var(--radius); padding: 24px;
+}
+/* Responsive */
+@media (max-width: 767px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
 }
 '@
 [System.IO.File]::WriteAllText("$projectRoot\styles.css", $stylesCss, $Utf8NoBom)
-Write-Host "  + styles.css (enterprise premium theme with responsive sidebar/drawer)" -ForegroundColor Green
+Write-Host "  + styles.css (enterprise premium theme)" -ForegroundColor Green
 
 # ============================================
 # SECTION 7: API Setup EMPTY PLACEHOLDER
@@ -823,14 +857,17 @@ Write-Host "NEXT STEPS (IMPORTANT):" -ForegroundColor Yellow
 Write-Host "1. Replace placeholder 'index.html' with the final enterprise index.html." -ForegroundColor Yellow
 Write-Host "2. Replace placeholder 'api/setup.js' with the final enterprise api/setup.js." -ForegroundColor Yellow
 Write-Host "3. Replace placeholder 'admin.html' with the final enterprise admin.html." -ForegroundColor Yellow
-Write-Host "4. Set environment variables in Vercel (DATABASE_URL, JWT_SECRET, etc.)" -ForegroundColor Yellow
+Write-Host "4. Set environment variables in Vercel (DATABASE_URL, JWT_SECRET, VAPID_*, CRON_SECRET, etc.)" -ForegroundColor Yellow
 Write-Host "5. Run 'npm install' then 'npm start' for local development." -ForegroundColor Yellow
 Write-Host "6. For production, deploy to Vercel." -ForegroundColor Yellow
-Write-Host "7. Set ALLOW_INIT_DB=true in Vercel environment variables." -ForegroundColor Yellow
+Write-Host "7. Set ALLOW_INIT_DB=true in Vercel environment variables (temporarily)." -ForegroundColor Yellow
 Write-Host "8. Initialize the database by running:" -ForegroundColor Yellow
 Write-Host "   Invoke-RestMethod -Uri https://<your-project>.vercel.app/api/setup/init-db -Method POST -ContentType 'application/json' -Body '{\"admin_secret\":\"your_admin_secret\"}'" -ForegroundColor Cyan
-Write-Host "9. Default admin login: admin@alamquant.com (temporary password from Vercel function logs, change immediately)." -ForegroundColor Yellow
-Write-Host "10. Ensure all PWA icons (icon-192.png, icon-512.png) are valid. Placeholder icons were generated if not present." -ForegroundColor Yellow
+Write-Host "9. Default admin login: admin@alamquant.com (temporary password from Vercel function logs)." -ForegroundColor Yellow
+Write-Host "10. Remove ALLOW_INIT_DB env variable after DB initialization." -ForegroundColor Yellow
+Write-Host "11. Ensure all PWA icons (icon-192.png, icon-512.png) are valid. Placeholder solid gold icons were generated if not present." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "⚠️  REMINDER: The generated .env.local file contains dummy values. You MUST update it with your real credentials!" -ForegroundColor Red
+Write-Host ""
+Write-Host "🎉 Happy Trading Transformation! - AlamQuant ATTS" -ForegroundColor Magenta
 Write-Host ""

@@ -149,7 +149,6 @@
       color: var(--gold-bright);
       background: rgba(200,167,91,0.12);
     }
-    /* Mobile tabs row (second header) */
     .mobile-tabs {
       display: none;
       overflow-x: auto;
@@ -164,7 +163,6 @@
       display: inline-flex;
       margin: 0 4px;
     }
-    /* Drawer (slide-out from left) */
     .drawer {
       position: fixed;
       top: 0; left: 0; bottom: 0;
@@ -197,7 +195,6 @@
       display: none;
     }
     .drawer-overlay.show { display: block; }
-    /* Main content after header */
     main#main-content {
       margin-top: calc(var(--navbar-height) + var(--tabs-height) + 8px);
       padding: 20px;
@@ -208,7 +205,6 @@
     }
     .page-content { display: block; }
     .page-content.hidden { display: none !important; }
-    /* Responsive */
     @media (max-width: 767px) {
       .desktop-nav { display: none; }
       .mobile-tabs { display: flex; }
@@ -218,7 +214,6 @@
       .mobile-tabs { display: none; }
       main#main-content { margin-top: calc(var(--navbar-height) + 8px); }
     }
-    /* Rest of the styles from original index.html (glass, buttons, etc.) */
     .glass {
       background: rgba(17,24,39,0.65); backdrop-filter:blur(24px) saturate(200%); -webkit-backdrop-filter:blur(24px) saturate(200%);
       border:1px solid var(--border-gold); box-shadow:0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.03);
@@ -312,6 +307,90 @@
       background: none; border: none; color: var(--accent-bright); cursor: pointer; font-size: 1.2rem; margin-left: 8px; vertical-align: middle;
     }
     .post-content img, .post-content video { max-width:100%; border-radius:8px; margin-top:8px; }
+    /* Assessment Radio Fix */
+    .assessment-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.03);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .assessment-option span {
+      flex: 1;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .assessment-option .radio-group {
+      display: flex;
+      gap: 20px;
+      white-space: nowrap;
+    }
+    .assessment-option .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .assessment-option input[type="radio"] {
+      width: auto;
+      margin: 0;
+      accent-color: var(--gold);
+    }
+    /* Multiple Time Picker */
+    .habit-time-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 6px 10px;
+      margin-bottom: 4px;
+    }
+    .habit-time-block input[type="number"] {
+      width: 45px;
+      padding: 5px;
+      text-align: center;
+      font-size: 0.85rem;
+      margin: 0;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+    }
+    .mini-ampm-btn {
+      padding: 4px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border-gold);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      min-width: 36px;
+      text-align: center;
+    }
+    .mini-ampm-btn.active {
+      background: var(--gold);
+      color: #020617;
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 10px var(--gold), 0 0 18px var(--gold-bright);
+      font-weight: 700;
+    }
+    .remove-time-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 2px;
+    }
     @media (max-width: 600px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
     }
@@ -320,7 +399,7 @@
 <body>
   <canvas id="bgCanvas"></canvas>
 
-  <!-- ==================== FIXED HEADER ==================== -->
+  <!-- Fixed Header -->
   <header id="main-header">
     <div class="top-bar">
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="মেনু">☰</button>
@@ -344,7 +423,7 @@
     </div>
   </header>
 
-  <!-- ==================== DRAWER ==================== -->
+  <!-- Drawer -->
   <div class="drawer" id="drawer">
     <nav>
       <a data-page="journey" class="active">📅 যাত্রা</a>
@@ -366,7 +445,7 @@
   </div>
   <div class="drawer-overlay" id="drawerOverlay"></div>
 
-  <!-- ==================== MAIN CONTENT ==================== -->
+  <!-- Main Content -->
   <main id="main-content">
     <!-- Auth Screen -->
     <div id="auth-screen" class="page-content" style="max-width:500px; margin:40px auto;">
@@ -413,7 +492,7 @@
     <!-- Dashboard (after login) -->
     <div id="dashboard" class="hidden" style="display:contents;">
 
-      <!-- ===== PAGE: JOURNEY ===== -->
+      <!-- Page: Journey -->
       <div id="page-journey" class="page-content">
         <div id="daily-quest-card" class="glass quest-card">
           <div class="quest-header"><span>🎯 আজকের লক্ষ্য</span><span class="xp-reward">+15 XP</span></div>
@@ -435,26 +514,26 @@
         <div class="glass"><h3>আজকের যাত্রা (Day <span id="day-count">1</span>)</h3><div id="morning-section"><p style="color:var(--accent-bright);">🌅 মর্নিং মাইন্ডফুলনেস</p><iframe width="100%" height="60" src="https://www.youtube.com/embed/inpok4MKVLM" style="border-radius:12px; margin:12px 0;" allowfullscreen></iframe><label class="flex"><input type="checkbox" id="mindfulness-done"> সম্পন্ন করেছি</label><p style="margin-top:8px;">✍️ আজকের প্রতিজ্ঞা:</p><textarea id="commitment" rows="2" placeholder="আমি আজ নিয়ম মেনে ট্রেড করবো..." required></textarea><button class="btn btn-lg" onclick="submitCheckin()" style="margin-top:8px;">✅ চেক-ইন সম্পন্ন</button></div><div id="checkin-done-msg" class="hidden" style="color:var(--success);">✅ চেক-ইন সম্পন্ন</div><div id="evaluation-section" class="hidden"><div id="mood-picker" class="mood-picker"><span>আজকের ট্রেডিং মুড:</span><span class="mood-emoji" data-mood="happy">😊</span><span class="mood-emoji" data-mood="neutral">😐</span><span class="mood-emoji" data-mood="stressed">😰</span><span class="mood-emoji" data-mood="angry">😡</span></div><hr style="border-color:var(--border-gold);"><h4>📊 ট্রেডিং সেশন ইভ্যালুয়েশন</h4><div id="score-sliders"></div><div class="grid-2" style="margin-top:12px;"><div><label>ট্রেড সংখ্যা</label><input type="number" id="trades-count" value="0" min="0" required></div><div><label>স্টপ লস সরিয়েছ?</label><select id="stop-loss-moved" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>প্ল্যানের বাইরে?</label><select id="plan-deviation" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>রিভেঞ্জ ট্রেড?</label><select id="revenge-trade" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>FOMO?</label><select id="fomo-entry" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>ওভারট্রেডিং?</label><select id="overtrading" required><option value="false">না</option><option value="true">হ্যাঁ</option></select></div><div><label>নিয়ম মেনেছি?</label><select id="rule-followed" required><option value="true">হ্যাঁ</option><option value="false">না</option></select></div></div><textarea id="evaluation-notes" rows="1" placeholder="নোট"></textarea><textarea id="reflection" rows="2" placeholder="আজকের শিক্ষা" required></textarea><div id="reflection-prompts" style="color:var(--accent-bright); font-style:italic;"></div><button class="btn btn-lg" onclick="submitEvaluation()">ইভ্যালুয়েশন সাবমিট</button></div><div id="feedback-area" class="hidden"><hr><h4>🧠 AI Coach ফিডব্যাক</h4><p id="feedback-text" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; border-left:4px solid var(--accent-bright);"></p><p><strong style="color:var(--gold);">📌 আগামীকালের মিশন:</strong> <span id="tomorrow-mission"></span></p><div id="new-badges" class="flex"></div><button id="mystery-box-btn" class="btn btn-accent hidden" onclick="showMysteryBox()">🎁 মিস্ট্রি বক্স</button></div></div></div>
       </div>
 
-      <!-- ===== PAGE: TRAINING ===== -->
+      <!-- Page: Training -->
       <div id="page-training" class="page-content hidden">
         <div class="glass"><div style="display:flex; justify-content:space-between;"><span>⚡ এনার্জি</span><span><strong id="energy-current">50</strong>/<span id="energy-max">50</span></span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill" style="width:100%;"></div></div></div>
         <div class="glass"><h2>📚 ট্রেডার ট্রেনিং একাডেমি</h2><div id="chapter-list" class="grid-2"></div></div>
         <div id="final-exam-section" class="glass hidden" style="text-align:center;"><h3>🏆 ফাইনাল পরীক্ষা</h3><button class="btn btn-accent btn-lg" onclick="startFinalExam()">শুরু</button></div>
       </div>
 
-      <!-- ===== PAGE: HABITS ===== -->
+      <!-- Page: Habits -->
       <div id="page-habits" class="page-content hidden">
         <div class="glass" style="text-align:right;"><button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ নতুন অভ্যাস</button></div>
         <div id="habits-list"></div>
         <div id="add-habit-modal" class="modal-overlay hidden"><div class="glass modal-content"><h3>নতুন অভ্যাস</h3><input type="text" id="new-habit-title" placeholder="নাম"><div class="flex"><select id="new-habit-icon"><option value="🧘">🧘</option><option value="🏃">🏃</option><option value="📖">📖</option></select><input type="color" id="new-habit-color" value="#C8A75B" style="width:50px;"></div><input type="text" id="new-habit-times" placeholder="06:00,12:00"><button class="btn btn-lg" onclick="saveHabit()">সংরক্ষণ</button></div></div>
       </div>
 
-      <!-- ===== PAGE: PROGRESS ===== -->
+      <!-- Page: Progress -->
       <div id="page-progress" class="page-content hidden">
         <div class="glass"><h3>📈 অগ্রগতি</h3><div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div><p>৩০ দিনের জার্নি: <strong id="progress-text">0%</strong></p><div class="timeline" id="journey-timeline"></div><p>ডিসিপ্লিন স্ট্রিক: <strong id="discipline-streak-text">0</strong> দিন</p><div id="heatmap" class="flex" style="gap:4px; overflow-x:auto;"></div><div id="badges-list" class="flex"></div><canvas id="radarChart" class="chart-container"></canvas><canvas id="scoresChart" class="chart-container"></canvas><p><span id="identity-phase-text" class="phase-tag">Beginner</span></p><button id="certificate-btn" class="btn btn-accent hidden" onclick="downloadCertificate()">🏆 সার্টিফিকেট</button></div>
       </div>
 
-      <!-- ===== PAGE: COMMUNITY ===== -->
+      <!-- Page: Community -->
       <div id="page-community" class="page-content hidden">
         <div class="glass">
           <div class="flex"><select id="post-type"><option value="lesson">শিক্ষা</option><option value="mistake">ভুল</option></select><textarea id="post-content" rows="1" placeholder="শেয়ার করুন..."></textarea><button class="btn btn-sm" onclick="submitPost()">পোস্ট</button></div>
@@ -463,7 +542,6 @@
             <button class="btn btn-sm" onclick="document.getElementById('post-image').click()">📷 ছবি যোগ</button>
             <input type="file" id="post-video" accept="video/*" multiple style="display:none;">
             <button class="btn btn-sm" onclick="document.getElementById('post-video').click()">🎬 ভিডিও যোগ</button>
-            <!-- Folder upload for images -->
             <input type="file" id="post-image-folder" webkitdirectory style="display:none;" onchange="handleFolderUpload(event, 'image')">
             <button class="btn btn-sm" onclick="document.getElementById('post-image-folder').click()">📁 ফোল্ডার</button>
             <span id="post-image-preview"></span>
@@ -472,7 +550,7 @@
         </div>
       </div>
 
-      <!-- ===== PAGE: PROFILE ===== -->
+      <!-- Page: Profile -->
       <div id="page-profile" class="page-content hidden">
         <div class="glass">
           <h3>👤 প্রোফাইল</h3>
@@ -482,9 +560,24 @@
           <div class="evolution-tree" id="avatar-evolution"><div class="stage" data-phase="Awareness">🌱</div><div class="stage" data-phase="Discipline">🌿</div><div class="stage" data-phase="Consistency">🌳</div><div class="stage" data-phase="Psychology">🧠</div><div class="stage" data-phase="Professional">💼</div><div class="stage" data-phase="Institutional">🏛️</div></div>
           <div id="profile-badges" class="flex"></div>
           <hr>
-          <h4>⏰ রিমাইন্ডার</h4><input type="time" id="reminder-time" value="08:00"><button class="btn btn-sm" onclick="saveReminderTime()">সেভ</button>
-          <h4>⚙️ নোটিফিকেশন</h4><label class="flex"><input type="checkbox" id="notif-email" checked> ইমেইল</label><label class="flex"><input type="checkbox" id="notif-push" checked> পুশ</label><button class="btn btn-sm" onclick="updateNotifSettings()">সেভ</button>
-          <div style="margin-top:16px;"><label>🌐 ভাষা:</label><select id="lang-select" onchange="i18n.load(this.value)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></div>
+          <!-- Multiple Time Picker for Reminders -->
+          <h4>⏰ রিমাইন্ডার সময় (একাধিক)</h4>
+          <div id="habit-times-container" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;"></div>
+          <button class="btn btn-sm btn-outline" onclick="addTimeBlock()">➕ আরেকটি সময় যোগ করুন</button>
+          <input type="hidden" id="habit-times-data" value="[]">
+          <hr>
+          <h4>⚙️ রিমাইন্ডার সেটিংস</h4>
+          <label class="flex"><input type="checkbox" id="reminder-enabled" onchange="toggleReminderFields()"> রিমাইন্ডার চালু করুন</label>
+          <div id="reminder-fields">
+            <label>কীভাবে পাবেন?</label>
+            <label class="flex"><input type="checkbox" id="reminder-email" checked onchange="saveReminderSettings()"> ইমেইল</label>
+            <label class="flex"><input type="checkbox" id="reminder-push" checked onchange="saveReminderSettings()"> পুশ</label>
+            <label class="flex"><input type="checkbox" id="reminder-whatsapp" onchange="saveReminderSettings()"> হোয়াটসঅ্যাপ</label>
+            <input type="tel" id="whatsapp-number" placeholder="8801XXXXXXXXX" onchange="saveReminderSettings()">
+            <button class="btn btn-sm" onclick="requestPushPermission()" style="margin-top:12px;">🔔 পুশ চালু করুন</button>
+            <span id="push-status" style="font-size:0.9rem; margin-left:10px;"></span>
+          </div>
+          <div style="margin-top:16px;"><label>🌐 ভাষা:</label><select id="lang-select" onchange="changeLanguage(this.value)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></div>
           <div style="margin-top:16px;">
             <h4>🖼️ প্রোফাইল ছবি আপলোড</h4>
             <div class="drop-zone" id="profile-drop-zone">
@@ -497,30 +590,30 @@
         </div>
       </div>
 
-      <!-- ===== PAGE: LEADERBOARD ===== -->
+      <!-- Page: Leaderboard -->
       <div id="page-leaderboard" class="page-content hidden">
         <div class="glass"><h3>🏆 লিডারবোর্ড</h3><div id="leaderboard-list"></div></div>
       </div>
 
-      <!-- ===== PAGE: LESSONS ===== -->
+      <!-- Page: Lessons -->
       <div id="page-lessons" class="page-content hidden">
         <div class="glass"><h3>📚 লার্নিং পাথ</h3><div id="lessons-list"></div></div>
       </div>
 
-      <!-- ===== PAGE: VIDEOS ===== -->
+      <!-- Page: Videos -->
       <div id="page-videos" class="page-content hidden">
         <div class="glass"><h3>🎥 শিক্ষামূলক ভিডিও</h3><div id="video-grid" class="video-grid"></div></div>
       </div>
 
-      <!-- ===== PAGE: INSIGHTS ===== -->
+      <!-- Page: Insights -->
       <div id="page-insights" class="page-content hidden">
         <div class="glass"><h3>📊 ইনসাইটস</h3><div id="insights-content"></div></div>
       </div>
 
-      <!-- ===== PAGE: SETTINGS ===== -->
+      <!-- Page: Settings -->
       <div id="page-settings" class="page-content hidden">
         <div class="glass"><h3>⚙️ সেটিংস</h3>
-          <label>🌐 ভাষা:</label><select id="settings-lang-select" onchange="i18n.load(this.value)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select>
+          <label>🌐 ভাষা:</label><select id="settings-lang-select" onchange="changeLanguage(this.value)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select>
           <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="toggleTheme()">🌙 ডার্ক/লাইট মোড</button>
         </div>
       </div>
@@ -528,7 +621,7 @@
     </div><!-- /#dashboard -->
   </main>
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- Modals -->
   <div id="level-up-modal" class="modal-overlay hidden">
     <div class="glass modal-content" style="text-align:center;"><h2 id="level-up-title">🎉 লেভেল আপ!</h2><button class="btn btn-lg btn-accent" onclick="document.getElementById('level-up-modal').classList.add('hidden')">দারুণ!</button></div>
   </div>
@@ -560,7 +653,7 @@
     let habitDefinitions = [];
     let todayLogs = [];
     let reminderInterval = null;
-    let postImages = []; // for community post image upload
+    let postImages = [];
 
     // ==================== Utility Functions ====================
     function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
@@ -579,7 +672,7 @@
       } catch(e) { if(showErr) showToast('Network error'); return null; }
     }
 
-    // ==================== i18n Enhanced ====================
+    // ==================== i18n ====================
     const i18n = {
       lang: localStorage.getItem('lang') || 'en',
       translations: {},
@@ -587,58 +680,148 @@
       async load(l) {
         try { const r = await fetch(`${API}/translations?lang=${l}`); this.translations = await r.json(); } catch(e) { this.translations = {}; }
         this.lang = l; localStorage.setItem('lang', l);
-        document.querySelectorAll('[id$="-lang"]').forEach(s => { if (s.id !== 'login-lang' && s.id !== 'settings-lang-select') s.value = l; });
+        document.querySelectorAll('select[id$="-lang"], #lang-select, #settings-lang-select').forEach(s => s.value = l);
         this.apply();
         if (currentPage) showPage(currentPage);
       },
       t(k, f='') { return this.translations[k] || f; },
       apply() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          el.textContent = this.t(el.dataset.i18n, el.textContent);
-        });
-        document.querySelectorAll('[data-i18n-title]').forEach(el => {
-          el.title = this.t(el.dataset.i18nTitle, '');
-        });
+        document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = this.t(el.dataset.i18n, el.textContent));
+        document.querySelectorAll('[data-i18n-title]').forEach(el => el.title = this.t(el.dataset.i18nTitle, ''));
       }
     };
 
-    // ==================== Text to Speech ====================
-    function speakText(text, lang = null) {
-      if (!('speechSynthesis' in window)) return;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang || document.documentElement.lang || 'bn-BD';
-      utterance.rate = 0.9;
-      const voices = window.speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v => v.name.includes('Female') && v.lang.startsWith(utterance.lang)) ||
-                          voices.find(v => v.lang.startsWith(utterance.lang));
-      if (femaleVoice) utterance.voice = femaleVoice;
-      window.speechSynthesis.speak(utterance);
-    }
-    function attachTTSButtons() {
-      document.querySelectorAll('.tts-target').forEach(el => {
-        if (!el.querySelector('.tts-btn')) {
-          const btn = document.createElement('button');
-          btn.className = 'tts-btn';
-          btn.innerHTML = '🔊';
-          btn.onclick = () => speakText(el.innerText);
-          el.appendChild(btn);
+    // ==================== Push & Reminder ====================
+    async function requestPushPermission() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        showToast('পুশ নোটিফিকেশন সমর্থিত নয়');
+        return;
+      }
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
         }
+        await apiCall('POST', '/save-subscription', { subscription: sub });
+        document.getElementById('push-status').textContent = '✅ পুশ চালু আছে';
+        document.getElementById('reminder-push').checked = true;
+        saveReminderSettings();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('push-status').textContent = '❌ পুশ সেটআপ ব্যর্থ';
+      }
+    }
+
+    function urlBase64ToUint8Array(b64) {
+      const padding = '='.repeat((4 - b64.length % 4) % 4);
+      const base64 = (b64 + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const raw = window.atob(base64);
+      const arr = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+      return arr;
+    }
+
+    function toggleReminderFields() {
+      document.getElementById('reminder-fields').style.display = document.getElementById('reminder-enabled').checked ? 'block' : 'none';
+    }
+
+    async function saveReminderSettings() {
+      const settings = {
+        reminder_enabled: document.getElementById('reminder-enabled').checked,
+        reminder_times: getTimesArray(),
+        email_reminder: document.getElementById('reminder-email').checked,
+        push_reminder: document.getElementById('reminder-push').checked,
+        whatsapp_reminder: document.getElementById('reminder-whatsapp').checked,
+        whatsapp_number: document.getElementById('whatsapp-number').value
+      };
+      await apiCall('POST', '/settings', settings);
+    }
+
+    async function loadReminderSettings() {
+      const settings = await apiCall('GET', '/settings');
+      if (!settings) return;
+      document.getElementById('reminder-enabled').checked = settings.reminder_enabled || false;
+      document.getElementById('reminder-email').checked = settings.email_reminder !== false;
+      document.getElementById('reminder-push').checked = settings.push_reminder !== false;
+      document.getElementById('reminder-whatsapp').checked = settings.whatsapp_reminder || false;
+      document.getElementById('whatsapp-number').value = settings.whatsapp_number || '';
+      toggleReminderFields();
+      document.getElementById('habit-times-container').innerHTML = '';
+      if (settings.reminder_times && settings.reminder_times.length) {
+        settings.reminder_times.forEach(t => {
+          const [h,m] = t.split(':');
+          const hour24 = parseInt(h);
+          const period = hour24 < 12 ? 'AM' : 'PM';
+          const displayHour = hour24 % 12 || 12;
+          addTimeBlock(displayHour, m, period);
+        });
+      } else {
+        addTimeBlock(8, 0, 'AM');
+      }
+    }
+
+    // ==================== Multiple Time Picker ====================
+    function addTimeBlock(hour = 8, minute = 0, period = 'AM') {
+      const container = document.getElementById('habit-times-container');
+      if (!container) return;
+      const block = document.createElement('div');
+      block.className = 'habit-time-block';
+      block.innerHTML = `
+        <input type="number" class="habit-hour" min="1" max="12" value="${hour}" onchange="updateTimes()">
+        <span>:</span>
+        <input type="number" class="habit-minute" min="0" max="59" value="${String(minute).padStart(2,'0')}" onchange="updateTimes()">
+        <span class="mini-ampm-btn ${period === 'AM' ? 'active' : ''}" onclick="toggleAmpm(this, 'AM')">AM</span>
+        <span class="mini-ampm-btn ${period === 'PM' ? 'active' : ''}" onclick="toggleAmpm(this, 'PM')">PM</span>
+        <button class="remove-time-btn" onclick="removeTimeBlock(this)">✕</button>
+      `;
+      container.appendChild(block);
+      updateTimes();
+    }
+
+    function toggleAmpm(el, p) {
+      const block = el.parentElement;
+      block.querySelectorAll('.mini-ampm-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      updateTimes();
+    }
+
+    function removeTimeBlock(btn) {
+      btn.parentElement.remove();
+      updateTimes();
+    }
+
+    function updateTimes() {
+      const blocks = document.querySelectorAll('.habit-time-block');
+      const times = [];
+      blocks.forEach(block => {
+        let h = parseInt(block.querySelector('.habit-hour').value) || 8;
+        const m = parseInt(block.querySelector('.habit-minute').value) || 0;
+        const ampm = block.querySelector('.mini-ampm-btn.active')?.textContent.trim() || 'AM';
+        if (ampm === 'PM' && h !== 12) h += 12;
+        if (ampm === 'AM' && h === 12) h = 0;
+        times.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
       });
+      document.getElementById('habit-times-data').value = JSON.stringify(times);
+    }
+
+    function getTimesArray() {
+      const data = document.getElementById('habit-times-data');
+      return data ? JSON.parse(data.value) : [];
     }
 
     // ==================== Navigation ====================
     function showPage(pageName, fromBack = false) {
       if (pageName === 'theme-toggle') { toggleTheme(); return; }
-      if (!fromBack && currentPage) {
-        pageHistory.push(currentPage);
-      }
+      if (!fromBack && currentPage) pageHistory.push(currentPage);
       currentPage = pageName;
-      // Activate nav tabs
-      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll(`.nav-tab[data-page="${pageName}"]`).forEach(tab => tab.classList.add('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll(`.nav-tab[data-page="${pageName}"]`).forEach(t => t.classList.add('active'));
       document.querySelectorAll('.drawer nav a').forEach(a => a.classList.remove('active'));
       document.querySelectorAll(`.drawer nav a[data-page="${pageName}"]`).forEach(a => a.classList.add('active'));
-      // Show/hide pages
       document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
       const pageEl = document.getElementById('page-' + pageName);
       if (pageEl) pageEl.classList.remove('hidden');
@@ -655,24 +838,20 @@
         case 'insights': loadInsights(); break;
         case 'settings': break;
       }
-      attachTTSButtons();
       i18n.apply();
-      // Close drawer on mobile
       if (window.innerWidth < 768) closeDrawer();
     }
 
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const drawer = document.getElementById('drawer');
     const drawerOverlay = document.getElementById('drawerOverlay');
-    function openDrawer() { drawer.classList.add('open'); drawerOverlay.classList.add('show'); }
-    function closeDrawer() { drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); }
     hamburgerBtn.addEventListener('click', openDrawer);
     drawerOverlay.addEventListener('click', closeDrawer);
-    document.querySelectorAll('.nav-tab[data-page]').forEach(tab => {
-      tab.addEventListener('click', () => showPage(tab.dataset.page));
-    });
+    function openDrawer() { drawer.classList.add('open'); drawerOverlay.classList.add('show'); }
+    function closeDrawer() { drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); }
+    document.querySelectorAll('.nav-tab[data-page]').forEach(t => t.addEventListener('click', () => showPage(t.dataset.page)));
     document.querySelectorAll('.drawer nav a[data-page]').forEach(link => {
-      link.addEventListener('click', (e) => {
+      link.addEventListener('click', e => {
         e.preventDefault();
         showPage(link.dataset.page);
         closeDrawer();
@@ -681,100 +860,178 @@
 
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'light' ? '' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      showToast(next ? 'লাইট মোড' : 'ডার্ক মোড');
+      document.documentElement.setAttribute('data-theme', current ? '' : 'light');
+      localStorage.setItem('theme', current ? '' : 'light');
     }
     (function(){ const saved = localStorage.getItem('theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); })();
 
-    // ==================== Auth & Registration ====================
+    // ==================== Auth ====================
     function showRegister() { document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); }
     function showLogin() { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); }
     async function login() {
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
       const name = document.getElementById('login-name').value.trim();
-      if (!email || !password) {
-        document.getElementById('login-error').textContent = 'ইমেইল ও পাসওয়ার্ড প্রয়োজন';
-        document.getElementById('login-error').style.display = 'block';
-        return;
-      }
-      const d = await apiCall('POST', '/login', { email, password, display_name: name }, false);
-      if (d?.token) {
-        token = d.token; localStorage.setItem('token', token);
-        initDashboard(d.user);
-      } else {
-        document.getElementById('login-error').textContent = d?.error || 'লগইন ব্যর্থ';
-        document.getElementById('login-error').style.display = 'block';
-      }
+      if (!email || !password) { document.getElementById('login-error').style.display='block'; return; }
+      const d = await apiCall('POST', '/login', { email, password, display_name: name, language: document.getElementById('login-lang').value }, false);
+      if (d?.token) { token = d.token; localStorage.setItem('token', token); initDashboard(d.user); }
+      else { document.getElementById('login-error').textContent = d?.error || 'Login failed'; document.getElementById('login-error').style.display='block'; }
     }
     async function register() {
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
       const name = document.getElementById('reg-name').value.trim();
       const avatar = document.getElementById('reg-avatar').value;
-      if (!email || !password) {
-        document.getElementById('reg-error').textContent = 'ইমেইল ও পাসওয়ার্ড প্রয়োজন';
-        document.getElementById('reg-error').style.display = 'block';
-        return;
-      }
-      const d = await apiCall('POST', '/register', { email, password, display_name: name, avatar_emoji: avatar }, false);
-      if (d?.token) {
-        token = d.token; localStorage.setItem('token', token);
-        initDashboard(d.user);
-      } else {
-        document.getElementById('reg-error').textContent = d?.error || 'নিবন্ধন ব্যর্থ';
-        document.getElementById('reg-error').style.display = 'block';
-      }
+      if (!email || !password) { document.getElementById('reg-error').style.display='block'; return; }
+      const d = await apiCall('POST', '/register', { email, password, display_name: name, avatar_emoji: avatar, language: document.getElementById('login-lang').value }, false);
+      if (d?.token) { token = d.token; localStorage.setItem('token', token); initDashboard(d.user); }
+      else { document.getElementById('reg-error').textContent = d?.error || 'Registration failed'; document.getElementById('reg-error').style.display='block'; }
     }
-    async function logout() { localStorage.removeItem('token'); token = null; clearAllReminders(); document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
+    function logout() { localStorage.removeItem('token'); token = null; clearAllReminders(); document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
 
     function loadGoogleSignIn() {
       if (window.google && window.google.accounts && window.GOOGLE_CLIENT_ID) {
         google.accounts.id.initialize({ client_id: window.GOOGLE_CLIENT_ID, callback: handleGoogleSignIn });
         google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme: 'outline', size: 'large' });
-      } else {
-        setTimeout(loadGoogleSignIn, 200);
-      }
+      } else setTimeout(loadGoogleSignIn, 200);
     }
     window.addEventListener('load', loadGoogleSignIn);
-
     async function handleGoogleSignIn(response) {
       const res = await fetch(`${API}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ credential: response.credential }) });
       const data = await res.json();
       if (data.token) { token = data.token; localStorage.setItem('token', token); initDashboard(data.user); }
     }
 
-    // ==================== Canvas Particle ====================
+    // ==================== Canvas Particles ====================
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    function initParticles() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = []; for (let i = 0; i < 80; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 0.5, speed: Math.random() * 0.5 + 0.1, color: `rgba(200,167,91,${Math.random() * 0.5 + 0.2})` }); } }
-    function drawParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); p.y -= p.speed; if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; } }); requestAnimationFrame(drawParticles); }
+    function initParticles() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = []; for (let i=0;i<80;i++) particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+0.5, s:Math.random()*0.5+0.1, c:`rgba(200,167,91,${Math.random()*0.5+0.2})` }); }
+    function drawParticles() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.c; ctx.fill(); p.y-=p.s; if(p.y<-10) { p.y=canvas.height+10; p.x=Math.random()*canvas.width; } }); requestAnimationFrame(drawParticles); }
     window.addEventListener('resize', initParticles);
     initParticles(); drawParticles();
 
     // ==================== Profile & Dashboard ====================
-    async function loadProfile() { const d = await apiCall('GET', '/profile'); if(!d) return; const { user, today_entry, totalDays, streak } = d; currentUser = user; previousLevel = previousLevel || user.level; document.getElementById('user-avatar').textContent = user.avatar_emoji||'🙂'; document.getElementById('user-display-name').textContent = user.display_name||user.email.split('@')[0]; document.getElementById('user-identity').textContent = user.identity_level; document.getElementById('day-count').textContent = totalDays; document.getElementById('streak-count').textContent = streak; document.getElementById('xp-display').textContent = `⭐ ${user.xp} XP`; document.getElementById('user-level').textContent = user.level; document.getElementById('user-level-bar').textContent = user.level; updateXpBar(user.xp, user.level); updateEvolutionTree(user.identity_level); if(user.level > previousLevel) showLevelUp(user.level); previousLevel = user.level; if(today_entry) { document.getElementById('morning-section').classList.add('hidden'); document.getElementById('checkin-done-msg').classList.remove('hidden'); if(today_entry.feedback) { document.getElementById('evaluation-section').classList.add('hidden'); showFeedback({ feedback: today_entry.feedback, mission: today_entry.tomorrow_mission, badges: [] }); } else { document.getElementById('evaluation-section').classList.remove('hidden'); document.getElementById('feedback-area').classList.add('hidden'); } } else { document.getElementById('morning-section').classList.remove('hidden'); document.getElementById('checkin-done-msg').classList.add('hidden'); document.getElementById('evaluation-section').classList.add('hidden'); document.getElementById('feedback-area').classList.add('hidden'); } loadDailyQuest(); }
+    async function loadProfile() { 
+      const d = await apiCall('GET', '/profile'); if(!d) return; 
+      const { user, today_entry, totalDays, streak } = d; 
+      currentUser = user; previousLevel = previousLevel || user.level; 
+      document.getElementById('user-avatar').textContent = user.avatar_emoji||'🙂'; 
+      document.getElementById('user-display-name').textContent = user.display_name||user.email.split('@')[0]; 
+      document.getElementById('user-identity').textContent = user.identity_level; 
+      document.getElementById('day-count').textContent = totalDays; 
+      document.getElementById('streak-count').textContent = streak; 
+      document.getElementById('xp-display').textContent = `⭐ ${user.xp} XP`; 
+      document.getElementById('user-level').textContent = user.level; 
+      document.getElementById('user-level-bar').textContent = user.level; 
+      updateXpBar(user.xp, user.level); 
+      updateEvolutionTree(user.identity_level); 
+      if(user.level > previousLevel) showLevelUp(user.level); 
+      previousLevel = user.level; 
+      if(today_entry) { 
+        document.getElementById('morning-section').classList.add('hidden'); 
+        document.getElementById('checkin-done-msg').classList.remove('hidden'); 
+        if(today_entry.feedback) { 
+          document.getElementById('evaluation-section').classList.add('hidden'); 
+          showFeedback({ feedback: today_entry.feedback, mission: today_entry.tomorrow_mission, badges: [] }); 
+        } else { 
+          document.getElementById('evaluation-section').classList.remove('hidden'); 
+          document.getElementById('feedback-area').classList.add('hidden'); 
+        } 
+      } else { 
+        document.getElementById('morning-section').classList.remove('hidden'); 
+        document.getElementById('checkin-done-msg').classList.add('hidden'); 
+        document.getElementById('evaluation-section').classList.add('hidden'); 
+        document.getElementById('feedback-area').classList.add('hidden'); 
+      } 
+      loadDailyQuest(); 
+    }
     function updateXpBar(xp, lv) { const p = Math.min(100, Math.max(0, ((xp - (lv-1)*75) / 75) * 100)); document.getElementById('xp-bar-fill').style.width = p + '%'; }
     function showLevelUp(nl) { document.getElementById('level-up-title').innerHTML = `লেভেল ${nl}!`; document.getElementById('level-up-modal').classList.remove('hidden'); confetti(); }
     function updateEvolutionTree(phase) { document.querySelectorAll('.evolution-tree .stage').forEach(e => { e.classList.remove('active'); if(e.dataset.phase === phase) e.classList.add('active'); }); }
     function showAssessment() { document.getElementById('assessment-screen').classList.remove('hidden'); document.getElementById('assessment-prompt').classList.add('hidden'); loadAssessmentQuestions(); }
-    async function loadAssessmentQuestions() { const qs = await apiCall('GET', '/assessment/questions'); const c = document.getElementById('assessment-questions'); c.innerHTML = qs.map(q => `<div class="assessment-option"><input type="radio" name="assess_${q.id}" value="true">✅ হ্যাঁ <input type="radio" name="assess_${q.id}" value="false">❌ না <span>${escapeHtml(q.question)}</span></div>`).join(''); }
-    async function submitAssessment() { const ans = []; document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r.name.split('_')[1]), answer: r.value === 'true' })); const r = await apiCall('POST', '/assessment/submit', { answers: ans }); document.getElementById('assessment-result').innerHTML = `<div class="glass"><p>স্কোর: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`; document.getElementById('assessment-screen').classList.add('hidden'); document.getElementById('assessment-prompt').classList.remove('hidden'); }
-    function showFeedback(fb) { document.getElementById('feedback-text').textContent = fb.feedback; document.getElementById('tomorrow-mission').textContent = fb.mission || ''; document.getElementById('new-badges').innerHTML = (fb.badges||[]).map(b => `<span class="badge">${b}</span>`).join(''); document.getElementById('feedback-area').classList.remove('hidden'); }
-    async function submitCheckin() { if(!document.getElementById('mindfulness-done').checked) return showToast('Mindfulness সম্পন্ন করো'); const cm = document.getElementById('commitment').value.trim(); if(!cm) return showToast('প্রতিজ্ঞা লেখো'); await apiCall('POST', '/checkin', { mindfulness_done:true, commitment:cm, date: new Date().toLocaleDateString('en-CA') }); document.getElementById('morning-section').classList.add('hidden'); document.getElementById('checkin-done-msg').classList.remove('hidden'); setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); }, 1000); }
+    async function loadAssessmentQuestions() { 
+      const qs = await apiCall('GET', '/assessment/questions'); 
+      const c = document.getElementById('assessment-questions'); 
+      c.innerHTML = qs.map(q => `
+        <div class="assessment-option">
+          <span>${escapeHtml(q.question)}</span>
+          <div class="radio-group">
+            <label><input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ</label>
+            <label><input type="radio" name="assess_${q.id}" value="false"> ❌ না</label>
+          </div>
+        </div>`).join(''); 
+    }
+    async function submitAssessment() { 
+      const ans = []; 
+      document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r.name.split('_')[1]), answer: r.value === 'true' })); 
+      const r = await apiCall('POST', '/assessment/submit', { answers: ans }); 
+      document.getElementById('assessment-result').innerHTML = `<div class="glass"><p>স্কোর: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`; 
+      document.getElementById('assessment-screen').classList.add('hidden'); document.getElementById('assessment-prompt').classList.remove('hidden'); 
+    }
+    function showFeedback(fb) { 
+      document.getElementById('feedback-text').textContent = fb.feedback; 
+      document.getElementById('tomorrow-mission').textContent = fb.mission || ''; 
+      document.getElementById('new-badges').innerHTML = (fb.badges||[]).map(b => `<span class="badge">${b}</span>`).join(''); 
+      document.getElementById('feedback-area').classList.remove('hidden'); 
+    }
+    async function submitCheckin() { 
+      if(!document.getElementById('mindfulness-done').checked) return showToast('Mindfulness সম্পন্ন করো'); 
+      const cm = document.getElementById('commitment').value.trim(); 
+      if(!cm) return showToast('প্রতিজ্ঞা লেখো'); 
+      await apiCall('POST', '/checkin', { mindfulness_done:true, commitment:cm, date: new Date().toLocaleDateString('en-CA') }); 
+      document.getElementById('morning-section').classList.add('hidden'); 
+      document.getElementById('checkin-done-msg').classList.remove('hidden'); 
+      setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); }, 1000); 
+    }
     document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.mood-emoji').forEach(emoji => { emoji.addEventListener('click', function() { document.querySelectorAll('.mood-emoji').forEach(e => e.classList.remove('selected')); this.classList.add('selected'); selectedMood = this.dataset.mood; }); }); });
-    async function submitEvaluation() { if(!validateForm('#evaluation-section')) return; if(!selectedMood) return showToast('মুড নির্বাচন করো'); const scores = {}; document.querySelectorAll('#score-sliders input').forEach(i => scores[i.dataset.q] = parseInt(i.value)); const body = { trades_count: parseInt(document.getElementById('trades-count').value), stop_loss_moved: document.getElementById('stop-loss-moved').value==='true', plan_deviation: document.getElementById('plan-deviation').value==='true', revenge_trade: document.getElementById('revenge-trade').value==='true', fomo_entry: document.getElementById('fomo-entry').value==='true', overtrading: document.getElementById('overtrading').value==='true', rule_followed: document.getElementById('rule-followed').value==='true', scores, evaluation_notes: document.getElementById('evaluation-notes').value, reflection: document.getElementById('reflection').value, mood: selectedMood, date: new Date().toLocaleDateString('en-CA') }; const d = await apiCall('POST', '/evaluation', body); if(d && !d.error) { document.getElementById('evaluation-section').classList.add('hidden'); showFeedback(d); celebrate(`+${d.xpGain} XP`); selectedMood = null; document.querySelectorAll('.mood-emoji').forEach(e=>e.classList.remove('selected')); await loadProfile(); } }
-    function renderSliders() { const qs = [{id:'q1',s:'পরিকল্পনা'},{id:'q2',s:'সেটআপ'},{id:'q3',s:'রিস্ক'},{id:'q4',s:'এক্সিকিউশন'},{id:'q5',s:'এক্সিট'},{id:'q6',s:'শৃঙ্খলা'},{id:'q7',s:'আবেগ'},{id:'q8',s:'ধৈর্য'},{id:'q9',s:'পর্যালোচনা'},{id:'q10',s:'উন্নতি'}]; document.getElementById('score-sliders').innerHTML = qs.map(q => `<div class="slider-item"><label>${q.s}</label><input type="range" min="0" max="10" value="8" data-q="${q.id}"><span>8</span></div>`).join(''); document.querySelectorAll('#score-sliders input').forEach(i => i.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value)); }
-    async function loadDailyQuest() { const q = await apiCall('GET', '/daily-quest'); if(!q) return; const m = { no_revenge:'রিভেঞ্জ ট্রেড নয়', no_fomo:'FOMO নয়', q6_8plus:'Q6 ≥ 8', mindfulness:'মাইন্ডফুলনেস', habit_complete:'হ্যাবিট সম্পন্ন' }; document.getElementById('quest-desc').textContent = m[q.quest_type] || 'আজকের মিশন'; document.getElementById('quest-fill').style.width = (q.completed ? 100 : (q.progress/q.target)*100) + '%'; const btn = document.getElementById('claim-quest-btn'); btn.disabled = !(q.completed && !q.claimed); }
+    async function submitEvaluation() { 
+      if(!validateForm('#evaluation-section')) return; 
+      if(!selectedMood) return showToast('মুড নির্বাচন করো'); 
+      const scores = {}; 
+      document.querySelectorAll('#score-sliders input').forEach(i => scores[i.dataset.q] = parseInt(i.value)); 
+      const body = { 
+        trades_count: parseInt(document.getElementById('trades-count').value), 
+        stop_loss_moved: document.getElementById('stop-loss-moved').value==='true', 
+        plan_deviation: document.getElementById('plan-deviation').value==='true', 
+        revenge_trade: document.getElementById('revenge-trade').value==='true', 
+        fomo_entry: document.getElementById('fomo-entry').value==='true', 
+        overtrading: document.getElementById('overtrading').value==='true', 
+        rule_followed: document.getElementById('rule-followed').value==='true', 
+        scores, 
+        evaluation_notes: document.getElementById('evaluation-notes').value, 
+        reflection: document.getElementById('reflection').value, 
+        mood: selectedMood, 
+        date: new Date().toLocaleDateString('en-CA') 
+      }; 
+      const d = await apiCall('POST', '/evaluation', body); 
+      if(d && !d.error) { 
+        document.getElementById('evaluation-section').classList.add('hidden'); 
+        showFeedback(d); celebrate(`+${d.xpGain} XP`); 
+        selectedMood = null; 
+        document.querySelectorAll('.mood-emoji').forEach(e=>e.classList.remove('selected')); 
+        await loadProfile(); 
+      } 
+    }
+    function renderSliders() { 
+      const qs = [{id:'q1',s:'পরিকল্পনা'},{id:'q2',s:'সেটআপ'},{id:'q3',s:'রিস্ক'},{id:'q4',s:'এক্সিকিউশন'},{id:'q5',s:'এক্সিট'},{id:'q6',s:'শৃঙ্খলা'},{id:'q7',s:'আবেগ'},{id:'q8',s:'ধৈর্য'},{id:'q9',s:'পর্যালোচনা'},{id:'q10',s:'উন্নতি'}]; 
+      document.getElementById('score-sliders').innerHTML = qs.map(q => `<div class="slider-item"><label>${q.s}</label><input type="range" min="0" max="10" value="8" data-q="${q.id}"><span>8</span></div>`).join(''); 
+      document.querySelectorAll('#score-sliders input').forEach(i => i.addEventListener('input', e => e.target.parentElement.querySelector('span').textContent = e.target.value)); 
+    }
+    async function loadDailyQuest() { 
+      const q = await apiCall('GET', '/daily-quest'); if(!q) return; 
+      const m = { no_revenge:'রিভেঞ্জ ট্রেড নয়', no_fomo:'FOMO নয়', q6_8plus:'Q6 ≥ 8', mindfulness:'মাইন্ডফুলনেস', habit_complete:'হ্যাবিট সম্পন্ন' }; 
+      document.getElementById('quest-desc').textContent = m[q.quest_type] || 'আজকের মিশন'; 
+      document.getElementById('quest-fill').style.width = (q.completed ? 100 : (q.progress/q.target)*100) + '%'; 
+      const btn = document.getElementById('claim-quest-btn'); 
+      btn.disabled = !(q.completed && !q.claimed); 
+    }
     async function claimQuestReward() { const r = await apiCall('POST', '/claim-quest-reward'); if(r?.success) { celebrate('+15 XP!'); showFloatingXp(15); loadDailyQuest(); loadProfile(); } }
 
     // ==================== Training ====================
     async function loadTrainingTab() { await loadEnergy(); const chapters = await apiCall('GET', '/training/chapters?course_id=1'); if(!chapters) return; const container = document.getElementById('chapter-list'); container.innerHTML = chapters.map((ch, i) => `<div class="glass chapter-card ${i>0 && !chapters[i-1].passed ? 'locked' : ''}" onclick="${i>0 && !chapters[i-1].passed ? '' : `openChapterModal(${ch.id})`}"><div style="font-size:2rem;">${i>0 && !chapters[i-1].passed ? '🔒' : ch.passed ? '✅' : '📖'}</div><strong>${escapeHtml(ch.title)}</strong>${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : ''}</div>`).join(''); }
     async function loadEnergy() { const e = await apiCall('GET', '/energy'); if(e) { document.getElementById('energy-current').textContent = e.current_energy; document.getElementById('energy-max').textContent = e.max_energy; document.getElementById('energy-fill').style.width = (e.current_energy/e.max_energy*100)+'%'; } }
-    async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return; document.getElementById('chapter-modal-title').textContent = d.title; document.getElementById('chapter-modal-content').innerHTML = DOMPurify.sanitize(d.content_text || ''); document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join(''); document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join(''); currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ পাস করেছেন! স্কোর: ${d.user_progress.best_score}%</p>`; document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById('submit-quiz-btn').classList.remove('hidden'); document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); } document.getElementById('chapter-modal').classList.remove('hidden'); document.getElementById('practice-timer').classList.add('hidden'); }
+    async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return; document.getElementById('chapter-modal-title').textContent = d.title; document.getElementById('chapter-modal-content').innerHTML = DOMPurify.sanitize(d.content_text || ''); document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join(''); document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join(''); currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ পাস করেছেন! স্কোর: ${d.user_progress.best_score}%</p>`; document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById('submit-quiz-btn').classList.remove('hidden'); document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); } document.getElementById('chapter-modal').classList.remove('hidden'); }
     function closeChapterModal() { document.getElementById('chapter-modal').classList.add('hidden'); clearInterval(practiceTimerInterval); loadTrainingTab(); }
     function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode === 'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval); document.getElementById('practice-timer').classList.add('hidden'); } }
     function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining = totalSeconds; timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const secs = remaining % 60; timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0) { clearInterval(practiceTimerInterval); submitChapterQuiz(); } remaining--; }; update(); clearInterval(practiceTimerInterval); practiceTimerInterval = setInterval(update, 1000); }
@@ -788,7 +1045,7 @@
     async function saveHabit() { const title = document.getElementById('new-habit-title').value.trim(); if(!title) return showToast('নাম দিন'); await apiCall('POST', '/habits/definitions', { title, icon: document.getElementById('new-habit-icon').value, color: document.getElementById('new-habit-color').value, reminder_times: document.getElementById('new-habit-times').value.split(',').map(t=>t.trim()).filter(t=>t) }); document.getElementById('add-habit-modal').classList.add('hidden'); loadHabits(); }
     async function toggleHabitTime(habitId, time) { const date = new Date().toLocaleDateString('en-CA'); const log = todayLogs.find(l => l.habit_id === habitId); const completed = !(log?.completed_times?.[time] ?? false); await fetch(`${API}/habits/logs`, { method:'POST', headers:{'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}, body:JSON.stringify({habit_id:habitId, date, time, completed}) }); loadHabits(); }
 
-    // ==================== Community with HTML rendering and folder upload ====================
+    // ==================== Community ====================
     async function loadCommunity() { const ps = await apiCall('GET', '/community'); document.getElementById('posts-container').innerHTML = ps.map(p => `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><div class="post-content">${DOMPurify.sanitize(p.content)}</div><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`).join(''); }
     async function submitPost() {
       const content = document.getElementById('post-content').value.trim();
@@ -855,7 +1112,7 @@
     async function loadVideos() { const vs = await apiCall('GET', '/videos'); document.getElementById('video-grid').innerHTML = vs.map(v => `<div class="video-card">${v.youtube_id ? `<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>` : ''}<div class="video-info">${escapeHtml(v.title)}</div></div>`).join(''); }
     async function loadInsights() { const r = await apiCall('GET', '/insights'); document.getElementById('insights-content').innerHTML = r ? `মোট জার্নাল: ${r.totalJournals}, স্ট্রিক: ${r.currentStreak}, টপ ভুল: ${r.topMistake}` : ''; }
 
-    // ==================== Progress (Newly Added) ====================
+    // ==================== Progress ====================
     async function loadProgress() {
       const d = await apiCall('GET', '/progress');
       if (!d) return;
@@ -864,7 +1121,6 @@
       document.getElementById('discipline-streak-text').textContent = d.disciplineStreak;
       document.getElementById('identity-phase-text').textContent = d.identity_level;
       document.getElementById('identity-phase-text').className = 'phase-tag';
-      // Heatmap
       const heatmapDiv = document.getElementById('heatmap');
       heatmapDiv.innerHTML = '';
       const days = d.days || [];
@@ -885,10 +1141,8 @@
         box.title = day.date;
         heatmapDiv.appendChild(box);
       });
-      // Badges
       const badgesDiv = document.getElementById('badges-list');
       badgesDiv.innerHTML = (d.badges || []).map(b => `<span class="badge">${b}</span>`).join('');
-      // Radar chart
       if (radarChart) radarChart.destroy();
       const ctx = document.getElementById('radarChart').getContext('2d');
       const radarToday = d.radar_today || {};
@@ -905,11 +1159,8 @@
         options: { scales: { r: { suggestedMin: 0, suggestedMax: 20 } } }
       });
       const certBtn = document.getElementById('certificate-btn');
-      if (d.totalDays >= 30) {
-        certBtn.classList.remove('hidden');
-      } else {
-        certBtn.classList.add('hidden');
-      }
+      if (d.totalDays >= 30) certBtn.classList.remove('hidden');
+      else certBtn.classList.add('hidden');
     }
 
     // ==================== Profile Page ====================
@@ -923,10 +1174,10 @@
       document.getElementById('profile-badges').innerHTML = prog.badges.map(b => `<span class="badge">${b}</span>`).join('');
       updateEvolutionTree(d.user.identity_level);
       initProfileDropZone();
+      loadReminderSettings();
     }
     async function changeAvatar() { const e = document.getElementById('avatar-select').value; await apiCall('POST', '/profile', { avatar_emoji:e }); document.getElementById('profile-avatar').textContent = e; document.getElementById('user-avatar').textContent = e; }
-    async function updateNotifSettings() { await apiCall('POST', '/notif-settings', { email: document.getElementById('notif-email').checked, push: document.getElementById('notif-push').checked }); showToast('সেভ হয়েছে'); }
-    async function saveReminderTime() { localStorage.setItem('reminderTime', document.getElementById('reminder-time').value); showToast('রিমাইন্ডার সেভ'); }
+    async function changeLanguage(lang) { await apiCall('POST', '/settings', { language: lang }); i18n.load(lang); }
     function initProfileDropZone() {
       const dropZone = document.getElementById('profile-drop-zone');
       const fileInput = document.getElementById('profile-image-upload');
@@ -954,7 +1205,7 @@
       } catch(e) { document.getElementById('profile-upload-status').textContent = 'ত্রুটি'; }
     }
 
-    // ==================== Reminder ====================
+    // ==================== Reminder Scheduler ====================
     function startReminderScheduler() { if(reminderInterval) clearInterval(reminderInterval); reminderInterval = setInterval(() => { if(!currentUser) return; const now = new Date(); const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`; habitDefinitions.forEach(h => { if(h.reminder_times && h.reminder_times.includes(time)) { if(Notification.permission === 'granted') new Notification(`🧩 ${h.title}`, { body: `এখন ${time} টায় অভ্যাস করার সময়` }); showToast(`⏰ ${h.title} করার সময়!`); } }); }, 60000); }
     function clearAllReminders() { if(reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; } }
 
@@ -965,8 +1216,16 @@
       document.getElementById('dashboard').classList.remove('hidden');
       currentUser = user; previousLevel = user.level;
       showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone();
+      if (user.language) { i18n.load(user.language); }
     }
     window.addEventListener('load', async () => {
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/sw.js');
+          console.log('Service Worker registered');
+        } catch(e) { console.error('SW registration failed', e); }
+      }
       await i18n.init();
       try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
       if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }

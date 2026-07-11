@@ -1,42 +1,123 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Certificate Verification - AlamQuant ATTS</title>
-  <link rel="stylesheet" href="styles.css">
   <style>
-    body { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .verify-container { max-width: 500px; width: 90%; text-align: center; }
+    :root {
+      --bg: #0B1220;
+      --surface: rgba(17,24,39,0.92);
+      --gold: #C8A75B;
+      --accent: #2563EB;
+      --text: #F9FAFB;
+      --text-secondary: #9CA3AF;
+      --danger: #EF4444;
+      --success: #22C55E;
+      --border-gold: rgba(200,167,91,0.35);
+      --radius: 16px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .verify-container {
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      backdrop-filter: blur(20px);
+    }
+    h2 {
+      background: linear-gradient(135deg, #E8C97A, #C8A75B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    input {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      width: 100%;
+      margin: 12px 0;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-size: 0.95rem;
+      width: 100%;
+      margin-top: 8px;
+      font-family: inherit;
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #60A5FA, #2563EB);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.7);
+      transform: translateY(-2px);
+    }
+    #result { margin-top: 24px; }
+    #result h3 { color: var(--success); margin-bottom: 12px; }
   </style>
 </head>
 <body>
-  <div class="glass verify-container">
+  <div class="verify-container">
     <h2>🔍 Certificate Verification</h2>
-    <input type="text" id="verify-input" placeholder="Enter verification code">
+    <input type="text" id="verify-input" placeholder="Enter verification code" autocomplete="off">
     <button class="btn" onclick="verify()">Verify</button>
-    <div id="result" style="margin-top:20px;"></div>
+    <div id="result"></div>
   </div>
   <script>
     async function verify() {
       const code = document.getElementById('verify-input').value.trim();
       if (!code) return;
-      const res = await fetch(`/api/setup/verify/${code}`).then(r => r.json());
-      const resultDiv = document.getElementById('result');
-      if (res.valid) {
-        resultDiv.innerHTML = `<div style="color: var(--success);">
-          <p style="font-size:3rem;">✅</p>
-          <h3>Valid Certificate</h3>
-          <p><strong>Name:</strong> ${res.display_name || res.user}</p>
-          <p><strong>Issued:</strong> ${new Date(res.issued_at).toLocaleDateString('bn-BD')}</p>
-          <p><strong>Code:</strong> ${res.verification_code}</p>
-        </div>`;
-      } else {
-        resultDiv.innerHTML = `<div style="color: var(--danger);">
-          <p style="font-size:3rem;">❌</p>
-          <h3>Invalid Certificate</h3>
-          <p>This code was not found in the system.</p>
-        </div>`;
+      try {
+        const res = await fetch(`/api/setup/verify/${code}`).then(r => r.json());
+        const resultDiv = document.getElementById('result');
+        if (res.valid) {
+          resultDiv.innerHTML = `<div style="color: var(--success);">
+            <p style="font-size:3rem;">✅</p>
+            <h3>Valid Certificate</h3>
+            <p><strong>Name:</strong> ${res.display_name || res.user}</p>
+            <p><strong>Issued:</strong> ${new Date(res.issued_at).toLocaleDateString('en-US')}</p>
+            <p><strong>Code:</strong> ${res.verification_code}</p>
+          </div>`;
+        } else {
+          resultDiv.innerHTML = `<div style="color: var(--danger);">
+            <p style="font-size:3rem;">❌</p>
+            <h3>Invalid Certificate</h3>
+            <p>This code was not found in the system.</p>
+          </div>`;
+        }
+      } catch(e) {
+        document.getElementById('result').innerHTML = `<p style="color: var(--danger);">Error verifying certificate. Please try again.</p>`;
       }
     }
   </script>

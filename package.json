@@ -20,7 +20,8 @@
     "resend": "^3.2.0",
     "zod": "^3.22.0",
     "@sentry/node": "^7.0.0",
-    "@vercel/kv": "^1.0.0"
+    "@vercel/kv": "^1.0.0",
+    "web-push": "^3.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

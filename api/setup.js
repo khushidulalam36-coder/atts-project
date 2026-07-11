@@ -19,6 +19,7 @@ import busboy from 'busboy';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import * as Sentry from '@sentry/node';
+import webPush from 'web-push';
 
 // ---------- Environment validation ----------
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
@@ -42,6 +43,15 @@ const RATE_LIMIT_KV_URL = process.env.KV_URL || '';
 // Sentry initialization
 if (SENTRY_DSN) {
   Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.1 });
+}
+
+// VAPID configuration
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webPush.setVapidDetails(
+    'mailto:support@alamquant.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
 }
 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -151,6 +161,12 @@ async function authenticateAdmin(req) {
     Sentry.captureException(err);
     return null;
   }
+}
+
+// ---------- Multilingual helper ----------
+async function getUserLanguage(userId) {
+  const [settings] = await sql`SELECT language FROM user_settings WHERE user_id = ${userId}`;
+  return settings?.language || 'en';
 }
 
 // ---------- Business logic helpers ----------
@@ -317,12 +333,14 @@ const registerSchema = z.object({
   password: z.string().min(6),
   display_name: z.string().optional(),
   avatar_emoji: z.string().max(10).optional(),
+  language: z.string().max(10).optional(),
 });
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   display_name: z.string().optional(),
+  language: z.string().max(10).optional(),
 });
 
 const evaluationSchema = z.object({
@@ -933,6 +951,18 @@ async function apiHandler(req) {
         uploaded_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // ----- User Settings (new) -----
+      await sql`CREATE TABLE IF NOT EXISTS user_settings (
+        user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        reminder_enabled BOOLEAN DEFAULT false,
+        reminder_times JSONB DEFAULT '["08:00"]',
+        email_reminder BOOLEAN DEFAULT false,
+        push_reminder BOOLEAN DEFAULT true,
+        whatsapp_reminder BOOLEAN DEFAULT false,
+        whatsapp_number VARCHAR(20),
+        language VARCHAR(10) DEFAULT 'en'
+      )`;
+
       // ----- ADD INDEXES -----
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_journals_user_date ON daily_journals(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_badges_user ON badges(user_id)`;
@@ -1077,7 +1107,7 @@ async function apiHandler(req) {
         const body = await req.json();
         const parsed = registerSchema.safeParse(body);
         if (!parsed.success) return json({ error: parsed.error.issues }, 400);
-        const { email, password, display_name, avatar_emoji } = parsed.data;
+        const { email, password, display_name, avatar_emoji, language } = parsed.data;
         const [existing] = await sql`SELECT id FROM users WHERE email = ${email}`;
         if (existing) return errorJson('Email already registered', 409);
         const hash = await bcrypt.hash(password, 12);
@@ -1088,6 +1118,8 @@ async function apiHandler(req) {
           VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}, true)
           RETURNING *
         `;
+        // Create default user_settings
+        await sql`INSERT INTO user_settings (user_id, language) VALUES (${user.id}, ${language || 'en'}) ON CONFLICT (user_id) DO NOTHING`;
         if (resend) {
           const verifyLink = `${protocol}://${host}/api/setup/verify-email?token=${verificationToken}`;
           try {
@@ -1125,13 +1157,17 @@ async function apiHandler(req) {
         const body = await req.json();
         const parsed = loginSchema.safeParse(body);
         if (!parsed.success) return json({ error: parsed.error.issues }, 400);
-        const { email, password, display_name } = parsed.data;
+        const { email, password, display_name, language } = parsed.data;
         const [user] = await sql`SELECT * FROM users WHERE email = ${email}`;
         if (!user || !(await bcrypt.compare(password, user.password_hash))) return errorJson('Invalid credentials', 401);
         if (!user.email_verified) return errorJson('Please verify your email first', 403);
         if (display_name && !user.display_name) {
           await sql`UPDATE users SET display_name = ${display_name} WHERE id = ${user.id}`;
           user.display_name = display_name;
+        }
+        // Update language if provided
+        if (language) {
+          await sql`INSERT INTO user_settings (user_id, language) VALUES (${user.id}, ${language}) ON CONFLICT (user_id) DO UPDATE SET language = ${language}`;
         }
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
         await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'login', ${JSON.stringify({email})}, ${ip})`;
@@ -1485,7 +1521,7 @@ async function apiHandler(req) {
     if (path.match(/^\/admin\/content\/(.+)\/(\d+)$/) && req.method === 'PUT') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const [, type, id] = path.split('/'); // careful with path split
+      const [, type, id] = path.split('/');
       const body = await req.json();
       if (type === 'lesson') {
         const { day, phase, title, content } = body;
@@ -1538,7 +1574,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Translations ---
+    // --- Translations (UI) ---
     if (path === '/admin/translations' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1552,6 +1588,29 @@ async function apiHandler(req) {
       if (!admin) return errorJson('Forbidden', 403);
       const { key, lang, value } = await req.json();
       await sql`INSERT INTO ui_translations (key, lang, value) VALUES (${key}, ${lang}, ${value}) ON CONFLICT (key, lang) DO UPDATE SET value = ${value}`;
+      return json({ success: true });
+    }
+
+    // --- Content Translations (new) ---
+    if (path === '/admin/translations/content' && req.method === 'POST') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const { table_name, record_id, language_code, translations } = await req.json();
+      for (const [field_name, translated_text] of Object.entries(translations)) {
+        await sql`
+          INSERT INTO content_translations (table_name, record_id, language_code, field_name, translated_text)
+          VALUES (${table_name}, ${record_id}, ${language_code}, ${field_name}, ${translated_text})
+          ON CONFLICT (table_name, record_id, language_code, field_name) DO UPDATE SET translated_text = ${translated_text}
+        `;
+      }
+      return json({ success: true });
+    }
+
+    if (path === '/admin/translations/content' && req.method === 'DELETE') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const { table_name, record_id, language_code } = await req.json();
+      await sql`DELETE FROM content_translations WHERE table_name = ${table_name} AND record_id = ${record_id} AND language_code = ${language_code}`;
       return json({ success: true });
     }
 
@@ -1595,6 +1654,47 @@ async function apiHandler(req) {
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
       return json({ message: 'Please use multipart/form-data for file uploads.' });
+    }
+
+    // --- User Settings (with reminders & language) ---
+    if (path === '/settings' && req.method === 'GET') {
+      const [settings] = await sql`SELECT * FROM user_settings WHERE user_id = ${user.id}`;
+      return json(settings || {
+        reminder_enabled: false,
+        reminder_times: ["08:00"],
+        email_reminder: false,
+        push_reminder: true,
+        whatsapp_reminder: false,
+        whatsapp_number: '',
+        language: 'en'
+      });
+    }
+
+    if (path === '/settings' && req.method === 'POST') {
+      const body = await req.json();
+      await sql`
+        INSERT INTO user_settings (user_id, reminder_enabled, reminder_times, email_reminder, push_reminder, whatsapp_reminder, whatsapp_number, language)
+        VALUES (${user.id}, ${body.reminder_enabled}, ${JSON.stringify(body.reminder_times || ["08:00"])}, ${body.email_reminder}, ${body.push_reminder}, ${body.whatsapp_reminder}, ${body.whatsapp_number}, ${body.language})
+        ON CONFLICT (user_id) DO UPDATE SET
+          reminder_enabled = ${body.reminder_enabled},
+          reminder_times = ${JSON.stringify(body.reminder_times || ["08:00"])},
+          email_reminder = ${body.email_reminder},
+          push_reminder = ${body.push_reminder},
+          whatsapp_reminder = ${body.whatsapp_reminder},
+          whatsapp_number = ${body.whatsapp_number},
+          language = COALESCE(${body.language}, user_settings.language)
+      `;
+      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'update_settings', ${JSON.stringify(body)}, ${ip})`;
+      return json({ success: true });
+    }
+
+    // --- Save Push Subscription ---
+    if (path === '/save-subscription' && req.method === 'POST') {
+      const body = await req.json();
+      const { subscription } = body;
+      if (!subscription) return errorJson('Missing subscription', 400);
+      await sql`INSERT INTO notif_settings (user_id, push_enabled, push_subscription) VALUES (${user.id}, true, ${subscription}) ON CONFLICT (user_id) DO UPDATE SET push_subscription = ${subscription}`;
+      return json({ success: true });
     }
 
     // --- Mood ---
@@ -1719,6 +1819,7 @@ async function apiHandler(req) {
       const streak = streakRes[0]?.cnt || 0;
       const disciplineStreak = await computeDisciplineStreak(user.id);
       const [adminExists] = await sql`SELECT id FROM admin_users WHERE email = ${user.email}`;
+      const [settings] = await sql`SELECT language FROM user_settings WHERE user_id = ${user.id}`;
       const userData = {
         id: user.id,
         email: user.email,
@@ -1727,7 +1828,8 @@ async function apiHandler(req) {
         xp: user.xp,
         level: calculateLevel(user.xp),
         avatar_emoji: user.avatar_emoji,
-        is_admin: !!adminExists
+        is_admin: !!adminExists,
+        language: settings?.language || 'en'
       };
       return json({
         user: userData,
@@ -1919,13 +2021,6 @@ async function apiHandler(req) {
       await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'update_notif_settings', ${JSON.stringify({email_enabled: email, push_enabled: push})}, ${ip})`;
       return json({ success: true });
     }
-    if (path === '/save-subscription' && req.method === 'POST') {
-      const body = await req.json();
-      const { subscription } = body;
-      if (!subscription) return errorJson('Missing subscription', 400);
-      await sql`INSERT INTO notif_settings (user_id, push_enabled, push_subscription) VALUES (${user.id}, true, ${subscription}) ON CONFLICT (user_id) DO UPDATE SET push_subscription = ${subscription}`;
-      return json({ success: true });
-    }
 
     // --- Videos ---
     if (path === '/videos' && req.method === 'GET') {
@@ -2005,16 +2100,20 @@ async function apiHandler(req) {
     // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
     if (path === '/training/chapters' && req.method === 'GET') {
       const courseId = url.searchParams.get('course_id') || 1;
-      const requestedLang = url.searchParams.get('lang') || 'en';
+      const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
       let chapters = await sql`
         SELECT c.*, 
+               COALESCE(ct_title.translated_text, c.title) AS title,
+               COALESCE(ct_content.translated_text, c.content_text) AS content_text,
                COALESCE(ucp.passed, false) as passed, 
                COALESCE(ucp.best_score, 0) as best_score,
                COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
                ucp.completed_at
         FROM chapters c
         LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-        WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = ${requestedLang}
+        LEFT JOIN content_translations ct_title ON ct_title.table_name='chapters' AND ct_title.record_id=c.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
+        LEFT JOIN content_translations ct_content ON ct_content.table_name='chapters' AND ct_content.record_id=c.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
+        WHERE c.course_id = ${courseId} AND c.is_active = true
         ORDER BY c.order_index
       `;
       if (chapters.length === 0) {
@@ -2026,7 +2125,7 @@ async function apiHandler(req) {
                  ucp.completed_at
           FROM chapters c
           LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-          WHERE c.course_id = ${courseId} AND c.is_active = true AND c.language = 'bn'
+          WHERE c.course_id = ${courseId} AND c.is_active = true
           ORDER BY c.order_index
         `;
       }
@@ -2035,10 +2134,24 @@ async function apiHandler(req) {
 
     if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
       const chapterId = parseInt(path.split('/')[3]);
-      const lang = url.searchParams.get('lang') || 'bn';
-      const [chapter] = await sql`SELECT * FROM chapters WHERE id = ${chapterId} AND is_active = true AND language = ${lang}`;
-      if (!chapter) return errorJson('Chapter not found', 404);
-      const questions = await sql`SELECT id, question, options, order_index FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} AND language = ${lang} ORDER BY order_index, id`;
+      const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
+      let chapter = await sql`
+        SELECT c.*, 
+               COALESCE(ct_title.translated_text, c.title) AS title,
+               COALESCE(ct_content.translated_text, c.content_text) AS content_text
+        FROM chapters c
+        LEFT JOIN content_translations ct_title ON ct_title.table_name='chapters' AND ct_title.record_id=c.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
+        LEFT JOIN content_translations ct_content ON ct_content.table_name='chapters' AND ct_content.record_id=c.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
+        WHERE c.id = ${chapterId} AND c.is_active = true
+      `;
+      if (!chapter.length) return errorJson('Chapter not found', 404);
+      chapter = chapter[0];
+      let questions = await sql`
+        SELECT id, question, options, order_index, explanation
+        FROM chapter_quiz_questions
+        WHERE chapter_id = ${chapterId}
+        ORDER BY order_index, id
+      `;
       const [progress] = await sql`SELECT * FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${chapterId}`;
       const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
       return json({ ...chapter, questions, user_progress: progress || null, energy: energy?.current_energy || 50 });
@@ -2284,6 +2397,81 @@ async function apiHandler(req) {
       const profile = { email: user.email, display_name: user.display_name, xp: user.xp, level: calculateLevel(user.xp) };
       await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'export_data', ${JSON.stringify({})}, ${ip})`;
       return json({ profile, journals, badges: badges.map(b => b.badge_type), habits });
+    }
+
+    // ==================== CRON JOB (Reminders) ====================
+    if (path === '/cron/check-reminders' && req.method === 'GET') {
+      const authHeader = req.headers.get('authorization');
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return errorJson('Forbidden', 403);
+      }
+
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      // Select users whose reminder_times array contains currentTime
+      const users = await sql`
+        SELECT u.id, u.email, u.display_name, us.email_reminder, us.push_reminder, us.whatsapp_reminder, us.whatsapp_number
+        FROM user_settings us
+        JOIN users u ON us.user_id = u.id
+        WHERE us.reminder_enabled = true AND us.reminder_times ? ${currentTime}
+      `;
+
+      const results = [];
+
+      for (const user of users) {
+        const userName = user.display_name || user.email.split('@')[0];
+        const message = `🔥 ${userName}, আজকের ট্রেডিং জার্নাল লেখার সময়! শৃঙ্খলা বজায় রাখো।`;
+
+        // Email
+        if (user.email_reminder && resend) {
+          try {
+            await resend.emails.send({
+              from: 'AlamQuant ATTS <noreply@alamquant.com>',
+              to: user.email,
+              subject: '📝 আজকের জার্নাল রিমাইন্ডার',
+              text: message
+            });
+            results.push({ userId: user.id, type: 'email', status: 'sent' });
+          } catch (e) {
+            results.push({ userId: user.id, type: 'email', status: 'failed' });
+          }
+        }
+
+        // Push
+        if (user.push_reminder) {
+          const [sub] = await sql`SELECT push_subscription FROM notif_settings WHERE user_id = ${user.id}`;
+          if (sub?.push_subscription) {
+            try {
+              const payload = JSON.stringify({
+                title: "⏰ জার্নাল রিমাইন্ডার",
+                body: message,
+                icon: "/icon-192.png",
+                badge: "/badge-72.png",
+                actions: [
+                  { action: "open-journal", title: "জার্নাল লিখুন" },
+                  { action: "snooze", title: "পরে মনে করান" }
+                ],
+                data: { url: "/#/journey" }
+              });
+              await webPush.sendNotification(sub.push_subscription, payload);
+              results.push({ userId: user.id, type: 'push', status: 'sent' });
+            } catch (e) {
+              results.push({ userId: user.id, type: 'push', status: 'failed' });
+            }
+          }
+        }
+
+        // WhatsApp (placeholder – would need a provider like Twilio)
+        if (user.whatsapp_reminder && user.whatsapp_number) {
+          // TODO: implement WhatsApp sending via Twilio or similar
+          results.push({ userId: user.id, type: 'whatsapp', status: 'not_implemented' });
+        }
+
+        await sql`INSERT INTO user_activity_log (user_id, action, details) VALUES (${user.id}, 'reminder_sent', ${JSON.stringify({ time: currentTime })})`;
+      }
+
+      return json({ success: true, remindersSent: results.length, details: results });
     }
 
     // Fallback
