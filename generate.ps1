@@ -454,66 +454,19 @@ $verifyHtml = @'
 [System.IO.File]::WriteAllText("$projectRoot\verify.html", $verifyHtml, $Utf8NoBom)
 Write-Host "  + verify.html (public certificate verification)" -ForegroundColor Green
 
-# 5.2 admin.html - PLACEHOLDER (user will replace with final code)
+# 5.2 admin.html - EMPTY PLACEHOLDER (manual replace required)
 $adminHtmlPlaceholder = @'
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - AlamQuant ATTS</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Quill Rich Text Editor -->
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-</head>
-<body>
-  <!-- 
-    ⚠️ PLACEHOLDER ⚠️
-    Replace this file with the complete enterprise admin.html code.
-    The final admin panel includes sidebar navigation, all management tabs,
-    chapter editor, media library with drop zone & folder upload, etc.
-  -->
-  <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:var(--text); background:var(--bg);">
-    <h1>Admin panel coming soon. Replace this file with the final admin.html</h1>
-  </div>
-</body>
-</html>
+<!-- REPLACE THIS FILE WITH THE FINAL admin.html PRODUCTION CODE -->
 '@
 [System.IO.File]::WriteAllText("$projectRoot\admin.html", $adminHtmlPlaceholder, $Utf8NoBom)
-Write-Host "  + admin.html (PLACEHOLDER - you must replace this with the final enterprise admin.html)" -ForegroundColor Red
+Write-Host "  + admin.html (EMPTY placeholder - replace with final enterprise admin.html)" -ForegroundColor Yellow
 
-# 5.3 index.html - PLACEHOLDER (user will replace with final code)
+# 5.3 index.html - EMPTY PLACEHOLDER (manual replace required)
 $indexHtmlPlaceholder = @'
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="theme-color" content="#0B1220">
-  <title>AlamQuant ATTS – Professional Trader Transformation</title>
-  <meta name="google-client-id" content="">
-  <meta name="vapid-public-key" content="">
-  <meta name="app-url" content="https://your-domain.vercel.app">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="styles.css">
-  <!-- 
-    ⚠️ PLACEHOLDER ⚠️
-    Replace this file with the complete enterprise index.html.
-    The final app includes sidebar/drawer navigation, 6+ full pages,
-    journey, training, habits, progress, community, profile,
-    and many interactive features.
-  -->
-</head>
-<body>
-  <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:var(--text); background:var(--bg);">
-    <h1>App is being set up. Replace this file with the final index.html</h1>
-  </div>
-</body>
-</html>
+<!-- REPLACE THIS FILE WITH THE FINAL index.html PRODUCTION CODE -->
 '@
 [System.IO.File]::WriteAllText("$projectRoot\index.html", $indexHtmlPlaceholder, $Utf8NoBom)
-Write-Host "  + index.html (PLACEHOLDER - you must replace this with the final enterprise index.html)" -ForegroundColor Red
+Write-Host "  + index.html (EMPTY placeholder - replace with final enterprise index.html)" -ForegroundColor Yellow
 
 # ============================================
 # SECTION 6: CSS (Enterprise Premium Theme)
@@ -850,21 +803,14 @@ textarea { resize:vertical; min-height:60px; }
 Write-Host "  + styles.css (enterprise premium theme with responsive sidebar/drawer)" -ForegroundColor Green
 
 # ============================================
-# SECTION 7: API Setup Placeholder
+# SECTION 7: API Setup EMPTY PLACEHOLDER
 # ============================================
 Write-Host "`nGenerating api/setup.js placeholder..." -ForegroundColor Yellow
 $setupJsPlaceholder = @'
-// ===================================================
-// AlamQuant ATTS - api/setup.js (PLACEHOLDER)
-// Replace this file with the complete enterprise-ready
-// api/setup.js provided separately.
-// ===================================================
-export default async function handler(req) {
-  return new Response("API not configured yet", { status: 501 });
-}
+// Replace this file with the final api/setup.js production code
 '@
 [System.IO.File]::WriteAllText("$projectRoot\api\setup.js", $setupJsPlaceholder, $Utf8NoBom)
-Write-Host "  + api/setup.js (placeholder - REPLACE with final enterprise version)" -ForegroundColor Red
+Write-Host "  + api/setup.js (EMPTY placeholder - replace with final enterprise version)" -ForegroundColor Yellow
 
 # ============================================
 # SECTION 8: Final Instructions & Next Steps

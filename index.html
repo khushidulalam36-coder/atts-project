@@ -13,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -43,6 +44,8 @@
       --glow-accent: 0 0 25px rgba(37,99,235,0.5), 0 0 50px rgba(37,99,235,0.15);
       --bg-gradient: linear-gradient(135deg, #0B1220 0%, #111827 30%, #0B1220 70%, #0B1220 100%);
       --font-en: 'Inter', sans-serif;
+      --navbar-height: 56px;
+      --tabs-height: 48px;
     }
     [data-theme="light"] {
       --bg: #f0f4ff;
@@ -85,36 +88,137 @@
       animation: rotate 30s linear infinite;
       z-index: 0; pointer-events: none;
     }
-    /* ==================== Sidebar (Desktop/Tablet) ==================== */
-    .sidebar {
-      position: fixed; top:0; left:0; bottom:0; width:260px;
-      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-right: 1px solid var(--border-gold); padding:24px 0; z-index:50;
-      display:flex; flex-direction:column; box-shadow:4px 0 30px rgba(0,0,0,0.5);
+    /* ==================== Fixed Header ==================== */
+    #main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(15,23,42,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-gold);
+      display: flex;
+      flex-direction: column;
     }
-    .sidebar .logo { font-size:1.4rem; font-weight:800; color:var(--gold); padding:0 24px 20px; border-bottom:1px solid var(--border-gold); margin-bottom:8px; }
-    .sidebar nav { flex:1; overflow-y:auto; }
-    .sidebar nav a { display:flex; align-items:center; gap:10px; padding:12px 24px; color:var(--text-secondary); text-decoration:none; font-weight:500; transition:0.2s; border-left:3px solid transparent; cursor:pointer; }
-    .sidebar nav a:hover, .sidebar nav a.active { background:rgba(200,167,91,0.12); color:var(--gold-bright); border-left-color:var(--gold); }
-    .sidebar nav a.logout-btn { color:var(--danger); margin-top:auto; }
-    .sidebar nav a.logout-btn:hover { background:rgba(239,68,68,0.1); border-left-color:var(--danger); }
-    hr { border-color:var(--border-gold); margin:8px 24px; }
-    /* ==================== Mobile Top Bar ==================== */
-    .mobile-topbar { display:none; position:fixed; top:0; left:0; right:0; height:56px; background:rgba(15,23,42,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--border-gold); align-items:center; padding:0 16px; z-index:100; gap:12px; }
-    .mobile-topbar .logo { font-size:1.2rem; font-weight:700; color:var(--gold); }
-    .hamburger-btn { background:none; border:none; color:var(--text); font-size:1.8rem; cursor:pointer; line-height:1; }
-    /* ==================== Mobile Drawer ==================== */
-    .mobile-drawer { position:fixed; top:0; left:0; bottom:0; width:280px; background:rgba(15,23,42,0.98); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); transform:translateX(-100%); transition:transform 0.3s; z-index:200; padding:24px 0; overflow-y:auto; border-right:1px solid var(--border-gold); }
-    .mobile-drawer.open { transform:translateX(0); }
-    .mobile-drawer nav a { display:flex; align-items:center; gap:10px; padding:14px 24px; color:var(--text-secondary); text-decoration:none; font-weight:500; }
-    .mobile-drawer nav a:hover, .mobile-drawer nav a.active { background:rgba(200,167,91,0.15); color:var(--gold-bright); }
-    .drawer-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:150; display:none; }
-    .drawer-overlay.show { display:block; }
-    /* ==================== Main Content ==================== */
-    main#main-content { flex:1; padding:30px; margin-left:260px; max-width:100%; overflow-x:hidden; }
-    .page-content { display:block; }
-    .page-content.hidden { display:none !important; }
-    /* ==================== Glass Card ==================== */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--navbar-height);
+      padding: 0 16px;
+    }
+    .top-bar .logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .hamburger-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 8px;
+    }
+    .desktop-nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+    .desktop-nav .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+    }
+    .desktop-nav .nav-tab:hover,
+    .desktop-nav .nav-tab.active {
+      color: var(--gold-bright);
+      background: rgba(200,167,91,0.12);
+    }
+    /* Mobile tabs row (second header) */
+    .mobile-tabs {
+      display: none;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      border-top: 1px solid var(--border-gold);
+      padding: 0 8px;
+      height: var(--tabs-height);
+      align-items: center;
+    }
+    .mobile-tabs .nav-tab {
+      display: inline-flex;
+      margin: 0 4px;
+    }
+    /* Drawer (slide-out from left) */
+    .drawer {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 280px;
+      background: rgba(15,23,42,0.98);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      z-index: 200;
+      padding: 24px 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-gold);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 24px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .drawer nav a:hover,
+    .drawer nav a.active { background: rgba(200,167,91,0.15); color: var(--gold-bright); }
+    .drawer-overlay {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6); z-index: 150;
+      display: none;
+    }
+    .drawer-overlay.show { display: block; }
+    /* Main content after header */
+    main#main-content {
+      margin-top: calc(var(--navbar-height) + var(--tabs-height) + 8px);
+      padding: 20px;
+      width: 100%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .page-content { display: block; }
+    .page-content.hidden { display: none !important; }
+    /* Responsive */
+    @media (max-width: 767px) {
+      .desktop-nav { display: none; }
+      .mobile-tabs { display: flex; }
+      main#main-content { margin-top: calc(var(--navbar-height) + var(--tabs-height) + 8px); }
+    }
+    @media (min-width: 768px) {
+      .mobile-tabs { display: none; }
+      main#main-content { margin-top: calc(var(--navbar-height) + 8px); }
+    }
+    /* Rest of the styles from original index.html (glass, buttons, etc.) */
     .glass {
       background: rgba(17,24,39,0.65); backdrop-filter:blur(24px) saturate(200%); -webkit-backdrop-filter:blur(24px) saturate(200%);
       border:1px solid var(--border-gold); box-shadow:0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.03);
@@ -128,7 +232,6 @@
       background-clip:text; font-weight:800; margin-bottom:12px; animation:goldShine 4s linear infinite;
     }
     h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
-    /* Buttons */
     .btn { background:linear-gradient(135deg, var(--accent), #1d4ed8); color:#fff; border:none; padding:10px 22px; border-radius:30px; font-weight:600; cursor:pointer; transition:all 0.25s ease; font-size:0.9rem; box-shadow:0 4px 15px rgba(37,99,235,0.4); letter-spacing:0.5px; position:relative; overflow:hidden; z-index:1; font-family:var(--font-en), 'Inter', sans-serif; }
     .btn:hover { background:linear-gradient(135deg, var(--accent-bright), var(--accent)); box-shadow:0 6px 20px rgba(37,99,235,0.7); transform:translateY(-2px); }
     .btn:active { transform:scale(0.97); }
@@ -138,7 +241,6 @@
     .btn-danger { background:linear-gradient(135deg, var(--danger), #dc2626); }
     .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
     .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
-    /* Form elements */
     input, textarea, select {
       background: rgba(255,255,255,0.08); border:1px solid var(--border-gold);
       color: var(--text); padding:10px 16px; border-radius:var(--radius-sm); width:100%; margin:6px 0; font-family:inherit; transition:var(--transition); outline:none; font-size:0.95rem;
@@ -150,7 +252,6 @@
     .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
     .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .hidden { display:none !important; }
-    /* Components */
     .badge { background:linear-gradient(135deg, var(--gold), var(--gold-bright)); color:#020617; padding:4px 12px; border-radius:20px; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:4px; }
     .badge-accent { background:linear-gradient(135deg, var(--accent), var(--accent-bright)); }
     .progress-bar { background:rgba(255,255,255,0.1); border-radius:20px; height:14px; overflow:hidden; margin:10px 0; }
@@ -185,7 +286,6 @@
     .quest-progress { display:flex; align-items:center; gap:10px; margin-top:10px; }
     .fab { position:fixed; bottom:90px; right:20px; width:56px; height:56px; background:radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold)); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(200,167,91,0.5); cursor:pointer; font-size:28px; z-index:2000; transition:transform 0.3s; }
     .fab:hover { transform:scale(1.1); }
-    .drawer { position:fixed; bottom:150px; right:20px; width:280px; background:rgba(12,14,34,0.95); backdrop-filter:blur(20px); border-radius:16px; padding:16px; border:1px solid var(--gold); box-shadow:0 10px 30px rgba(0,0,0,0.8); z-index:1500; }
     .mood-picker { display:flex; align-items:center; gap:8px; margin:16px 0; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; }
     .mood-emoji { font-size:28px; cursor:pointer; transition:transform 0.2s; padding:4px; border-radius:50%; }
     .mood-emoji.selected { transform:scale(1.3); background:rgba(200,167,91,0.2); box-shadow:0 0 12px var(--gold); }
@@ -208,85 +308,63 @@
       border:2px dashed var(--border-gold); border-radius:var(--radius); padding:30px; text-align:center; cursor:pointer; transition:0.3s; background:rgba(255,255,255,0.02); margin:12px 0;
     }
     .drop-zone.dragover { border-color:var(--gold-bright); background:rgba(200,167,91,0.1); }
-    /* Floating Back Button */
-    .floating-back {
-      position:fixed; bottom:20px; left:20px; width:48px; height:48px; background:var(--surface); border:1px solid var(--border-gold);
-      border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:1.5rem; cursor:pointer;
-      z-index:2000; box-shadow:0 4px 15px rgba(0,0,0,0.5); backdrop-filter:blur(12px);
-    }
     .tts-btn {
       background: none; border: none; color: var(--accent-bright); cursor: pointer; font-size: 1.2rem; margin-left: 8px; vertical-align: middle;
     }
-    /* Responsive */
-    @media (max-width: 767px) {
-      .sidebar { display: none; }
-      .mobile-topbar { display: flex; }
-      main#main-content { margin-left:0; padding:70px 12px 16px; }
+    .post-content img, .post-content video { max-width:100%; border-radius:8px; margin-top:8px; }
+    @media (max-width: 600px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-    }
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .sidebar { width:200px; }
-      .sidebar nav a { padding:10px 16px; font-size:0.85rem; }
-      main#main-content { margin-left:200px; padding:20px; }
     }
   </style>
 </head>
 <body>
   <canvas id="bgCanvas"></canvas>
 
-  <!-- ==================== SIDEBAR (Desktop/Tablet) ==================== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="logo">AlamQuant ATTS</div>
-    <nav>
-      <a class="nav-item active" data-page="journey">📅 <span data-i18n="journey">যাত্রা</span></a>
-      <a class="nav-item" data-page="training">📚 <span data-i18n="training">প্রশিক্ষণ</span></a>
-      <a class="nav-item" data-page="habits">🎯 <span data-i18n="habits">অভ্যাস</span></a>
-      <a class="nav-item" data-page="progress">📈 <span data-i18n="progress">অগ্রগতি</span></a>
-      <a class="nav-item" data-page="community">🌍 <span data-i18n="community">কমিউনিটি</span></a>
-      <a class="nav-item" data-page="profile">👤 <span data-i18n="profile">প্রোফাইল</span></a>
-      <hr>
-      <a class="nav-item" data-page="leaderboard">🏆 <span data-i18n="leaderboard">লিডারবোর্ড</span></a>
-      <a class="nav-item" data-page="lessons">📚 <span data-i18n="lessons">লেসন</span></a>
-      <a class="nav-item" data-page="videos">🎥 <span data-i18n="videos">ভিডিও</span></a>
-      <a class="nav-item" data-page="insights">📊 <span data-i18n="insights">ইনসাইটস</span></a>
-      <hr>
-      <a class="nav-item" data-page="settings">⚙️ <span data-i18n="settings">সেটিংস</span></a>
-      <a class="nav-item" data-page="theme-toggle">🌙 <span data-i18n="darkmode">Dark Mode</span></a>
-      <a class="nav-item" data-page="help">❓ <span data-i18n="help">সহায়তা</span></a>
-      <a class="nav-item logout-btn" onclick="logout()">🚪 <span data-i18n="logout">লগআউট</span></a>
-    </nav>
-  </aside>
+  <!-- ==================== FIXED HEADER ==================== -->
+  <header id="main-header">
+    <div class="top-bar">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="মেনু">☰</button>
+      <div class="logo">AlamQuant ATTS</div>
+      <nav class="desktop-nav">
+        <button class="nav-tab active" data-page="journey">📅 যাত্রা</button>
+        <button class="nav-tab" data-page="training">📚 প্রশিক্ষণ</button>
+        <button class="nav-tab" data-page="habits">🎯 অভ্যাস</button>
+        <button class="nav-tab" data-page="progress">📈 অগ্রগতি</button>
+        <button class="nav-tab" data-page="community">🌍 কমিউনিটি</button>
+        <button class="nav-tab" data-page="profile">👤 প্রোফাইল</button>
+      </nav>
+    </div>
+    <div class="mobile-tabs" id="mobileTabs">
+      <button class="nav-tab active" data-page="journey">📅 যাত্রা</button>
+      <button class="nav-tab" data-page="training">📚 প্রশিক্ষণ</button>
+      <button class="nav-tab" data-page="habits">🎯 অভ্যাস</button>
+      <button class="nav-tab" data-page="progress">📈 অগ্রগতি</button>
+      <button class="nav-tab" data-page="community">🌍 কমিউনিটি</button>
+      <button class="nav-tab" data-page="profile">👤 প্রোফাইল</button>
+    </div>
+  </header>
 
-  <!-- ==================== MOBILE TOP BAR ==================== -->
-  <div class="mobile-topbar">
-    <button class="hamburger-btn" id="mobileHamburger" aria-label="মেনু">☰</button>
-    <span class="logo">AlamQuant ATTS</span>
-  </div>
-
-  <!-- ==================== MOBILE DRAWER ==================== -->
-  <div class="mobile-drawer" id="mobileDrawer">
+  <!-- ==================== DRAWER ==================== -->
+  <div class="drawer" id="drawer">
     <nav>
-      <a class="nav-item active" data-page="journey">📅 <span data-i18n="journey">যাত্রা</span></a>
-      <a class="nav-item" data-page="training">📚 <span data-i18n="training">প্রশিক্ষণ</span></a>
-      <a class="nav-item" data-page="habits">🎯 <span data-i18n="habits">অভ্যাস</span></a>
-      <a class="nav-item" data-page="progress">📈 <span data-i18n="progress">অগ্রগতি</span></a>
-      <a class="nav-item" data-page="community">🌍 <span data-i18n="community">কমিউনিটি</span></a>
-      <a class="nav-item" data-page="profile">👤 <span data-i18n="profile">প্রোফাইল</span></a>
+      <a data-page="journey" class="active">📅 যাত্রা</a>
+      <a data-page="training">📚 প্রশিক্ষণ</a>
+      <a data-page="habits">🎯 অভ্যাস</a>
+      <a data-page="progress">📈 অগ্রগতি</a>
+      <a data-page="community">🌍 কমিউনিটি</a>
+      <a data-page="profile">👤 প্রোফাইল</a>
       <hr>
-      <a class="nav-item" data-page="leaderboard">🏆 <span data-i18n="leaderboard">লিডারবোর্ড</span></a>
-      <a class="nav-item" data-page="lessons">📚 <span data-i18n="lessons">লেসন</span></a>
-      <a class="nav-item" data-page="videos">🎥 <span data-i18n="videos">ভিডিও</span></a>
-      <a class="nav-item" data-page="insights">📊 <span data-i18n="insights">ইনসাইটস</span></a>
-      <hr>
-      <a class="nav-item" data-page="settings">⚙️ <span data-i18n="settings">সেটিংস</span></a>
-      <a class="nav-item" data-page="theme-toggle">🌙 <span data-i18n="darkmode">Dark Mode</span></a>
-      <a class="nav-item" onclick="logout()" style="color: var(--danger);">🚪 <span data-i18n="logout">লগআউট</span></a>
+      <a data-page="leaderboard">🏆 লিডারবোর্ড</a>
+      <a data-page="lessons">📚 লেসন</a>
+      <a data-page="videos">🎥 ভিডিও</a>
+      <a data-page="insights">📊 ইনসাইটস</a>
+      <a data-page="settings">⚙️ সেটিংস</a>
+      <a data-page="theme-toggle">🌙 Dark Mode</a>
+      <a data-page="help">❓ সহায়তা</a>
+      <a onclick="logout()" style="color: var(--danger);">🚪 লগআউট</a>
     </nav>
   </div>
   <div class="drawer-overlay" id="drawerOverlay"></div>
-
-  <!-- ==================== FLOATING BACK BUTTON ==================== -->
-  <div class="floating-back hidden" id="backButton" onclick="goBack()" data-i18n-title="back">←</div>
 
   <!-- ==================== MAIN CONTENT ==================== -->
   <main id="main-content">
@@ -381,15 +459,15 @@
         <div class="glass">
           <div class="flex"><select id="post-type"><option value="lesson">শিক্ষা</option><option value="mistake">ভুল</option></select><textarea id="post-content" rows="1" placeholder="শেয়ার করুন..."></textarea><button class="btn btn-sm" onclick="submitPost()">পোস্ট</button></div>
           <div class="flex" style="margin-top:8px;">
-  <input type="file" id="post-image" accept="image/*" multiple style="display:none;">
-  <button class="btn btn-sm" onclick="document.getElementById('post-image').click()">📷 ছবি যোগ</button>
-  
-  <!-- নতুন ভিডিও ইনপুট -->
-  <input type="file" id="post-video" accept="video/*" multiple style="display:none;">
-  <button class="btn btn-sm" onclick="document.getElementById('post-video').click()">🎬 ভিডিও যোগ</button>
-  
-  <span id="post-image-preview"></span>
-</div>
+            <input type="file" id="post-image" accept="image/*" multiple style="display:none;">
+            <button class="btn btn-sm" onclick="document.getElementById('post-image').click()">📷 ছবি যোগ</button>
+            <input type="file" id="post-video" accept="video/*" multiple style="display:none;">
+            <button class="btn btn-sm" onclick="document.getElementById('post-video').click()">🎬 ভিডিও যোগ</button>
+            <!-- Folder upload for images -->
+            <input type="file" id="post-image-folder" webkitdirectory style="display:none;" onchange="handleFolderUpload(event, 'image')">
+            <button class="btn btn-sm" onclick="document.getElementById('post-image-folder').click()">📁 ফোল্ডার</button>
+            <span id="post-image-preview"></span>
+          </div>
           <div id="posts-container"></div>
         </div>
       </div>
@@ -526,17 +604,16 @@
 
     // ==================== Text to Speech ====================
     function speakText(text, lang = null) {
-  // ... (ভাষা নির্ধারণ, utterance তৈরি ইত্যাদি)
-  const voices = speechSynthesis.getVoices();
-  const femaleVoice = voices.find(v => v.name.includes('Female') && v.lang.startsWith(utterance.lang)) ||
-                      voices.find(v => v.lang.startsWith(utterance.lang));
-  if (femaleVoice) {
-    utterance.voice = femaleVoice;
-  } else {
-    showToast('⚠️ আপনার ডিভাইসে ফিমেল ভয়েস নেই, ডিফল্ট ভয়েস ব্যবহার করা হচ্ছে।');
-  }
-  speechSynthesis.speak(utterance);
-}
+      if (!('speechSynthesis' in window)) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang || document.documentElement.lang || 'bn-BD';
+      utterance.rate = 0.9;
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => v.name.includes('Female') && v.lang.startsWith(utterance.lang)) ||
+                          voices.find(v => v.lang.startsWith(utterance.lang));
+      if (femaleVoice) utterance.voice = femaleVoice;
+      window.speechSynthesis.speak(utterance);
+    }
     function attachTTSButtons() {
       document.querySelectorAll('.tts-target').forEach(el => {
         if (!el.querySelector('.tts-btn')) {
@@ -549,24 +626,22 @@
       });
     }
 
-    // ==================== Back Button ====================
-    function goBack() {
-      if (pageHistory.length > 0) {
-        const prevPage = pageHistory.pop();
-        showPage(prevPage, true);
-      }
-    }
+    // ==================== Navigation ====================
     function showPage(pageName, fromBack = false) {
+      if (pageName === 'theme-toggle') { toggleTheme(); return; }
       if (!fromBack && currentPage) {
         pageHistory.push(currentPage);
       }
       currentPage = pageName;
-      document.getElementById('backButton').classList.toggle('hidden', pageHistory.length === 0);
+      // Activate nav tabs
+      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll(`.nav-tab[data-page="${pageName}"]`).forEach(tab => tab.classList.add('active'));
+      document.querySelectorAll('.drawer nav a').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll(`.drawer nav a[data-page="${pageName}"]`).forEach(a => a.classList.add('active'));
+      // Show/hide pages
       document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
       const pageEl = document.getElementById('page-' + pageName);
       if (pageEl) pageEl.classList.remove('hidden');
-      document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
-      document.querySelectorAll(`.nav-item[data-page="${pageName}"]`).forEach(a => a.classList.add('active'));
       switch(pageName) {
         case 'journey': renderSliders(); loadDailyQuest(); loadProfile(); break;
         case 'training': loadTrainingTab(); break;
@@ -578,23 +653,29 @@
         case 'lessons': loadLessons(); break;
         case 'videos': loadVideos(); break;
         case 'insights': loadInsights(); break;
+        case 'settings': break;
       }
       attachTTSButtons();
       i18n.apply();
+      // Close drawer on mobile
+      if (window.innerWidth < 768) closeDrawer();
     }
 
-    // ==================== Sidebar & Drawer ====================
-    function openMobileDrawer() { document.getElementById('mobileDrawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('show'); }
-    function closeMobileDrawer() { document.getElementById('mobileDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('show'); }
-    document.getElementById('mobileHamburger').addEventListener('click', openMobileDrawer);
-    document.getElementById('drawerOverlay').addEventListener('click', closeMobileDrawer);
-    document.querySelectorAll('.nav-item[data-page]').forEach(link => {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    function openDrawer() { drawer.classList.add('open'); drawerOverlay.classList.add('show'); }
+    function closeDrawer() { drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); }
+    hamburgerBtn.addEventListener('click', openDrawer);
+    drawerOverlay.addEventListener('click', closeDrawer);
+    document.querySelectorAll('.nav-tab[data-page]').forEach(tab => {
+      tab.addEventListener('click', () => showPage(tab.dataset.page));
+    });
+    document.querySelectorAll('.drawer nav a[data-page]').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        const page = link.dataset.page;
-        if (page === 'theme-toggle') { toggleTheme(); closeMobileDrawer(); return; }
-        showPage(page);
-        if(window.innerWidth < 768) closeMobileDrawer();
+        showPage(link.dataset.page);
+        closeDrawer();
       });
     });
 
@@ -607,7 +688,7 @@
     }
     (function(){ const saved = localStorage.getItem('theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); })();
 
-    // ==================== Auth & Registration with error handling ====================
+    // ==================== Auth & Registration ====================
     function showRegister() { document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); }
     function showLogin() { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); }
     async function login() {
@@ -649,12 +730,16 @@
     }
     async function logout() { localStorage.removeItem('token'); token = null; clearAllReminders(); document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
 
-    function initGoogleSignIn() {
-      if (window.google && window.GOOGLE_CLIENT_ID) {
+    function loadGoogleSignIn() {
+      if (window.google && window.google.accounts && window.GOOGLE_CLIENT_ID) {
         google.accounts.id.initialize({ client_id: window.GOOGLE_CLIENT_ID, callback: handleGoogleSignIn });
         google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme: 'outline', size: 'large' });
+      } else {
+        setTimeout(loadGoogleSignIn, 200);
       }
     }
+    window.addEventListener('load', loadGoogleSignIn);
+
     async function handleGoogleSignIn(response) {
       const res = await fetch(`${API}/auth/google`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ credential: response.credential }) });
       const data = await res.json();
@@ -689,7 +774,7 @@
     // ==================== Training ====================
     async function loadTrainingTab() { await loadEnergy(); const chapters = await apiCall('GET', '/training/chapters?course_id=1'); if(!chapters) return; const container = document.getElementById('chapter-list'); container.innerHTML = chapters.map((ch, i) => `<div class="glass chapter-card ${i>0 && !chapters[i-1].passed ? 'locked' : ''}" onclick="${i>0 && !chapters[i-1].passed ? '' : `openChapterModal(${ch.id})`}"><div style="font-size:2rem;">${i>0 && !chapters[i-1].passed ? '🔒' : ch.passed ? '✅' : '📖'}</div><strong>${escapeHtml(ch.title)}</strong>${ch.passed ? '<span class="badge badge-accent">পাশ</span>' : ''}</div>`).join(''); }
     async function loadEnergy() { const e = await apiCall('GET', '/energy'); if(e) { document.getElementById('energy-current').textContent = e.current_energy; document.getElementById('energy-max').textContent = e.max_energy; document.getElementById('energy-fill').style.width = (e.current_energy/e.max_energy*100)+'%'; } }
-    async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return; document.getElementById('chapter-modal-title').textContent = d.title; document.getElementById('chapter-modal-content').innerHTML = d.content_text || ''; document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join(''); document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join(''); currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ পাস করেছেন! স্কোর: ${d.user_progress.best_score}%</p>`; document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById('submit-quiz-btn').classList.remove('hidden'); document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); } document.getElementById('chapter-modal').classList.remove('hidden'); document.getElementById('practice-timer').classList.add('hidden'); }
+    async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return; document.getElementById('chapter-modal-title').textContent = d.title; document.getElementById('chapter-modal-content').innerHTML = DOMPurify.sanitize(d.content_text || ''); document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join(''); document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join(''); currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ পাস করেছেন! স্কোর: ${d.user_progress.best_score}%</p>`; document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById('submit-quiz-btn').classList.remove('hidden'); document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join(''); } document.getElementById('chapter-modal').classList.remove('hidden'); document.getElementById('practice-timer').classList.add('hidden'); }
     function closeChapterModal() { document.getElementById('chapter-modal').classList.add('hidden'); clearInterval(practiceTimerInterval); loadTrainingTab(); }
     function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode === 'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval); document.getElementById('practice-timer').classList.add('hidden'); } }
     function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining = totalSeconds; timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const secs = remaining % 60; timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0) { clearInterval(practiceTimerInterval); submitChapterQuiz(); } remaining--; }; update(); clearInterval(practiceTimerInterval); practiceTimerInterval = setInterval(update, 1000); }
@@ -703,48 +788,65 @@
     async function saveHabit() { const title = document.getElementById('new-habit-title').value.trim(); if(!title) return showToast('নাম দিন'); await apiCall('POST', '/habits/definitions', { title, icon: document.getElementById('new-habit-icon').value, color: document.getElementById('new-habit-color').value, reminder_times: document.getElementById('new-habit-times').value.split(',').map(t=>t.trim()).filter(t=>t) }); document.getElementById('add-habit-modal').classList.add('hidden'); loadHabits(); }
     async function toggleHabitTime(habitId, time) { const date = new Date().toLocaleDateString('en-CA'); const log = todayLogs.find(l => l.habit_id === habitId); const completed = !(log?.completed_times?.[time] ?? false); await fetch(`${API}/habits/logs`, { method:'POST', headers:{'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}, body:JSON.stringify({habit_id:habitId, date, time, completed}) }); loadHabits(); }
 
-    // ==================== Community ====================
-    async function loadCommunity() { const ps = await apiCall('GET', '/community'); document.getElementById('posts-container').innerHTML = ps.map(p => `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><p>${escapeHtml(p.content)}</p><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`).join(''); }
+    // ==================== Community with HTML rendering and folder upload ====================
+    async function loadCommunity() { const ps = await apiCall('GET', '/community'); document.getElementById('posts-container').innerHTML = ps.map(p => `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><div class="post-content">${DOMPurify.sanitize(p.content)}</div><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`).join(''); }
     async function submitPost() {
-  const content = document.getElementById('post-content').value.trim();
-  const videoFiles = document.getElementById('post-video').files;
-  const allFiles = [...postImages, ...videoFiles];
-  if (!content && allFiles.length === 0) return showToast('কিছু লিখুন বা মিডিয়া যোগ করুন');
-  
-  const mediaUrls = [];
-  for (let file of allFiles) {
-    const url = await uploadMedia(file);  // uploadMedia ইমেজ ও ভিডিও উভয়ই আপলোড করতে পারে
-    if (url) mediaUrls.push({ url, type: file.type.startsWith('image/') ? 'image' : 'video' });
-  }
-  
-  let finalContent = content;
-  mediaUrls.forEach(m => {
-    if (m.type === 'image') finalContent += ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
-    else finalContent += ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
-  });
-  
-  await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
-  // রিসেট অংশ...
-  postImages = [];
-  document.getElementById('post-video').value = '';
-  document.getElementById('post-image-preview').innerHTML = '';
-  loadCommunity();
-}
+      const content = document.getElementById('post-content').value.trim();
+      const videoFiles = document.getElementById('post-video').files;
+      const imageFiles = document.getElementById('post-image').files;
+      const allFiles = [...Array.from(imageFiles || []), ...Array.from(videoFiles || [])];
+      if (!content && allFiles.length === 0) return showToast('কিছু লিখুন বা মিডিয়া যোগ করুন');
+      const mediaUrls = [];
+      for (let file of allFiles) {
+        const url = await uploadMedia(file);
+        if (url) mediaUrls.push({ url, type: file.type.startsWith('image/') ? 'image' : 'video' });
+      }
+      let finalContent = content;
+      mediaUrls.forEach(m => {
+        if (m.type === 'image') finalContent += ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
+        else finalContent += ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
+      });
+      await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
+      postImages = [];
+      document.getElementById('post-image').value = '';
+      document.getElementById('post-video').value = '';
+      document.getElementById('post-image-folder').value = '';
+      document.getElementById('post-image-preview').innerHTML = '';
+      loadCommunity();
+    }
+    async function handleFolderUpload(event, type) {
+      const files = event.target.files;
+      for (let file of files) {
+        if (file.type.startsWith('image/')) {
+          const url = await uploadMedia(file);
+          if (url) postImages.push({ url, type: 'image' });
+        }
+      }
+      document.getElementById('post-image-preview').innerHTML = postImages.map(f => `<span>${f.url}</span>`).join(', ');
+    }
     async function likePost(id) { await apiCall('POST', '/like-post', { post_id:id }); loadCommunity(); }
     async function toggleReply(postId) { const container = document.getElementById('replies-' + postId); container.classList.toggle('hidden'); if (!container.classList.contains('hidden') && !container.dataset.loaded) { container.dataset.loaded = 'true'; const replies = await apiCall('GET', `/replies?post_id=${postId}`); container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join(''); } }
     async function uploadMedia(file) {
       try {
-        const resizedFile = await resizeImage(file, 1200);
-        const formData = new FormData(); formData.append('image', resizedFile);
+        let processedFile = file;
+        if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
+        const formData = new FormData(); formData.append('image', processedFile);
         const res = await fetch(`${API}/upload-image`, { method:'POST', headers:{'Authorization': `Bearer ${token}`}, body: formData });
         const data = await res.json();
         return data.url || null;
       } catch(e) { return null; }
     }
-    document.getElementById('post-image')?.addEventListener('change', (e) => {
-      postImages = Array.from(e.target.files);
-      document.getElementById('post-image-preview').innerHTML = postImages.map(f => `<span>${f.name}</span>`).join(', ');
-    });
+    async function resizeImage(file, maxWidth) {
+      const img = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      const ratio = maxWidth / img.width;
+      canvas.width = maxWidth;
+      canvas.height = img.height * ratio;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
+      return new File([blob], file.name, { type: 'image/jpeg' });
+    }
 
     // ==================== Leaderboard, Lessons, Videos, Insights ====================
     async function loadLeaderboard() { const d = await apiCall('GET', '/leaderboard'); document.getElementById('leaderboard-list').innerHTML = d.map((u,i) => `<div>${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}</div>`).join(''); }
@@ -752,6 +854,63 @@
     async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id:id }); loadLessons(); showToast('+3 XP!'); }
     async function loadVideos() { const vs = await apiCall('GET', '/videos'); document.getElementById('video-grid').innerHTML = vs.map(v => `<div class="video-card">${v.youtube_id ? `<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>` : ''}<div class="video-info">${escapeHtml(v.title)}</div></div>`).join(''); }
     async function loadInsights() { const r = await apiCall('GET', '/insights'); document.getElementById('insights-content').innerHTML = r ? `মোট জার্নাল: ${r.totalJournals}, স্ট্রিক: ${r.currentStreak}, টপ ভুল: ${r.topMistake}` : ''; }
+
+    // ==================== Progress (Newly Added) ====================
+    async function loadProgress() {
+      const d = await apiCall('GET', '/progress');
+      if (!d) return;
+      document.getElementById('progress-fill').style.width = Math.min(100, (d.totalDays / 30) * 100) + '%';
+      document.getElementById('progress-text').textContent = Math.round((d.totalDays / 30) * 100) + '%';
+      document.getElementById('discipline-streak-text').textContent = d.disciplineStreak;
+      document.getElementById('identity-phase-text').textContent = d.identity_level;
+      document.getElementById('identity-phase-text').className = 'phase-tag';
+      // Heatmap
+      const heatmapDiv = document.getElementById('heatmap');
+      heatmapDiv.innerHTML = '';
+      const days = d.days || [];
+      const last30Days = [];
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().slice(0, 10);
+        const journal = days.find(j => j.date === dateStr);
+        last30Days.push({ date: dateStr, hasJournal: !!journal });
+      }
+      last30Days.forEach(day => {
+        const box = document.createElement('div');
+        box.style.width = '14px';
+        box.style.height = '14px';
+        box.style.borderRadius = '3px';
+        box.style.backgroundColor = day.hasJournal ? 'var(--accent)' : 'rgba(255,255,255,0.1)';
+        box.title = day.date;
+        heatmapDiv.appendChild(box);
+      });
+      // Badges
+      const badgesDiv = document.getElementById('badges-list');
+      badgesDiv.innerHTML = (d.badges || []).map(b => `<span class="badge">${b}</span>`).join('');
+      // Radar chart
+      if (radarChart) radarChart.destroy();
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      const radarToday = d.radar_today || {};
+      const radarYesterday = d.radar_yesterday || {};
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Planning', 'Execution', 'Risk', 'Psychology', 'Improvement'],
+          datasets: [
+            { label: 'Today', data: [radarToday.planning||0, radarToday.execution||0, radarToday.risk||0, radarToday.psychology||0, radarToday.improvement||0], borderColor: 'var(--accent)', backgroundColor: 'rgba(37,99,235,0.2)' },
+            { label: 'Yesterday', data: [radarYesterday.planning||0, radarYesterday.execution||0, radarYesterday.risk||0, radarYesterday.psychology||0, radarYesterday.improvement||0], borderColor: 'var(--text-secondary)', backgroundColor: 'rgba(156,163,175,0.1)' }
+          ]
+        },
+        options: { scales: { r: { suggestedMin: 0, suggestedMax: 20 } } }
+      });
+      const certBtn = document.getElementById('certificate-btn');
+      if (d.totalDays >= 30) {
+        certBtn.classList.remove('hidden');
+      } else {
+        certBtn.classList.add('hidden');
+      }
+    }
 
     // ==================== Profile Page ====================
     async function loadProfilePage() {
@@ -794,17 +953,6 @@
         } else { document.getElementById('profile-upload-status').textContent = 'আপলোড ব্যর্থ'; }
       } catch(e) { document.getElementById('profile-upload-status').textContent = 'ত্রুটি'; }
     }
-    async function resizeImage(file, maxWidth) {
-      const img = await createImageBitmap(file);
-      const canvas = document.createElement('canvas');
-      const ratio = maxWidth / img.width;
-      canvas.width = maxWidth;
-      canvas.height = img.height * ratio;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
-      return new File([blob], file.name, { type: 'image/jpeg' });
-    }
 
     // ==================== Reminder ====================
     function startReminderScheduler() { if(reminderInterval) clearInterval(reminderInterval); reminderInterval = setInterval(() => { if(!currentUser) return; const now = new Date(); const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`; habitDefinitions.forEach(h => { if(h.reminder_times && h.reminder_times.includes(time)) { if(Notification.permission === 'granted') new Notification(`🧩 ${h.title}`, { body: `এখন ${time} টায় অভ্যাস করার সময়` }); showToast(`⏰ ${h.title} করার সময়!`); } }); }, 60000); }
@@ -820,7 +968,6 @@
     }
     window.addEventListener('load', async () => {
       await i18n.init();
-      initGoogleSignIn();
       try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
       if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }
       else { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }

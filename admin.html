@@ -184,15 +184,11 @@
       <div id="chapter-quill-editor" style="height:250px;"></div>
       <div style="margin-top:12px;">
         <h4>ছবি</h4>
-        <div id="images-container">
-          <!-- Dynamic image fields -->
-        </div>
+        <div id="images-container"></div>
       </div>
       <div style="margin-top:12px;">
         <h4>ভিডিও</h4>
-        <div id="videos-container">
-          <!-- Dynamic video fields -->
-        </div>
+        <div id="videos-container"></div>
       </div>
       <div class="grid-2">
         <div><label>পাসিং স্কোর (%)</label><input type="number" id="ch-passing" value="90"></div>
@@ -247,20 +243,20 @@
   </div>
 
   <!-- Translation Add Modal -->
-<div id="translation-add-modal" class="modal-overlay hidden">
-  <div class="modal-content" style="max-width:400px;">
-    <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeTransAddModal()">✕</button>
-    <h3>নতুন অনুবাদ যোগ</h3>
-    <input type="text" id="trans-key" placeholder="Key">
-    <input type="text" id="trans-value" placeholder="Value">
-    <select id="trans-lang">
-      <option value="bn">বাংলা</option>
-      <option value="en">English</option>
-      <option value="hi">हिन्दी</option>
-    </select>
-    <button class="btn" onclick="saveNewTranslation()">সংরক্ষণ</button>
+  <div id="translation-add-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:400px;">
+      <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeTransAddModal()">✕</button>
+      <h3>নতুন অনুবাদ যোগ</h3>
+      <input type="text" id="trans-key" placeholder="Key">
+      <input type="text" id="trans-value" placeholder="Value">
+      <select id="trans-lang">
+        <option value="bn">বাংলা</option>
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+      <button class="btn" onclick="saveNewTranslation()">সংরক্ষণ</button>
+    </div>
   </div>
-</div>
 
   <script>
     // ==================== CONFIG ====================
@@ -486,12 +482,8 @@
           quillEditor.root.innerHTML = ch.content_text || '';
           document.getElementById('ch-edit-id').value = ch.id;
           document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা';
-          if (ch.images && ch.images.length) {
-            ch.images.forEach(url => addImageField(url));
-          }
-          if (ch.videos && ch.videos.length) {
-            ch.videos.forEach(url => addVideoField(url));
-          }
+          if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url));
+          if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url));
         }
       } else {
         document.getElementById('ch-title').value = '';
@@ -835,26 +827,13 @@
       document.getElementById('ce-type').value = type;
       const fields = document.getElementById('ce-fields');
       if (type === 'lesson') {
-        fields.innerHTML = `
-          <input type="number" id="ce-day" placeholder="দিন">
-          <input type="text" id="ce-phase" placeholder="ফেজ">
-          <input type="text" id="ce-title" placeholder="শিরোনাম">
-          <textarea id="ce-content" placeholder="কন্টেন্ট"></textarea>`;
+        fields.innerHTML = `<input type="number" id="ce-day" placeholder="দিন"><input type="text" id="ce-phase" placeholder="ফেজ"><input type="text" id="ce-title" placeholder="শিরোনাম"><textarea id="ce-content" placeholder="কন্টেন্ট"></textarea>`;
       } else if (type === 'quiz') {
-        fields.innerHTML = `
-          <input type="text" id="ce-question" placeholder="প্রশ্ন">
-          <input type="text" id="ce-options" placeholder='["A","B","C","D"]'>
-          <input type="number" id="ce-correct" placeholder="সঠিক ইনডেক্স">`;
+        fields.innerHTML = `<input type="text" id="ce-question" placeholder="প্রশ্ন"><input type="text" id="ce-options" placeholder='["A","B","C","D"]'><input type="number" id="ce-correct" placeholder="সঠিক ইনডেক্স">`;
       } else if (type === 'video') {
-        fields.innerHTML = `
-          <input type="text" id="ce-vtitle" placeholder="শিরোনাম">
-          <textarea id="ce-vdesc" placeholder="বিবরণ"></textarea>
-          <input type="text" id="ce-ytid" placeholder="YouTube ID">
-          <input type="text" id="ce-duration" placeholder="সময়">
-          <input type="text" id="ce-category" placeholder="ক্যাটাগরি">`;
+        fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="শিরোনাম"><textarea id="ce-vdesc" placeholder="বিবরণ"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="সময়"><input type="text" id="ce-category" placeholder="ক্যাটাগরি">`;
       }
 
-      // Pre-fill from API
       try {
         const res = await adminApiCall('GET', `/admin/content/list?type=${type}`, null, false);
         if (res) {
@@ -922,16 +901,8 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    function updateThemeInput(colorInput) {
-      const textInput = colorInput.parentElement.querySelector('input[type="text"]');
-      textInput.value = colorInput.value;
-    }
-
-    function updateThemeColor(textInput) {
-      const colorInput = textInput.parentElement.querySelector('input[type="color"]');
-      colorInput.value = textInput.value;
-    }
-
+    function updateThemeInput(colorInput) { const textInput = colorInput.parentElement.querySelector('input[type="text"]'); textInput.value = colorInput.value; }
+    function updateThemeColor(textInput) { const colorInput = textInput.parentElement.querySelector('input[type="color"]'); colorInput.value = textInput.value; }
     async function saveTheme() {
       const inputs = document.querySelectorAll('#theme-grid input[type="color"]');
       const themeObj = {};
@@ -942,7 +913,6 @@
         document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">থিম সংরক্ষিত</span>';
       }
     }
-
     function resetTheme() {
       const defaults = {
         '--bg': '#0B1220', '--surface': 'rgba(17,24,39,0.92)', '--gold': '#C8A75B', '--gold-bright': '#E8C97A',
@@ -1098,21 +1068,21 @@
     }
 
     function openTransAddModal() {
-  document.getElementById('translation-add-modal').classList.remove('hidden');
-}
-function closeTransAddModal() {
-  document.getElementById('translation-add-modal').classList.add('hidden');
-}
-async function saveNewTranslation() {
-  const key = document.getElementById('trans-key').value.trim();
-  const value = document.getElementById('trans-value').value.trim();
-  const lang = document.getElementById('trans-lang').value;
-  if (!key || !value) return showToast('সব ফিল্ড পূরণ করুন');
-  await adminApiCall('POST', '/admin/translations', { key, lang, value });
-  closeTransAddModal();
-  loadTranslations();
-  showToast('অনুবাদ যোগ হয়েছে');
-}
+      document.getElementById('translation-add-modal').classList.remove('hidden');
+    }
+    function closeTransAddModal() {
+      document.getElementById('translation-add-modal').classList.add('hidden');
+    }
+    async function saveNewTranslation() {
+      const key = document.getElementById('trans-key').value.trim();
+      const value = document.getElementById('trans-value').value.trim();
+      const lang = document.getElementById('trans-lang').value;
+      if (!key || !value) return showToast('সব ফিল্ড পূরণ করুন');
+      await adminApiCall('POST', '/admin/translations', { key, lang, value });
+      closeTransAddModal();
+      loadTranslations();
+      showToast('অনুবাদ যোগ হয়েছে');
+    }
 
     function editTrans(key, lang, current) {
       const newVal = prompt('নতুন মান:', current);
