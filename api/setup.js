@@ -1233,18 +1233,19 @@ async function apiHandler(req) {
       return json(benefits);
     }
 
-    if (path === '/translations' && req.method === 'GET') {
-      try {
-        const lang = url.searchParams.get('lang') || 'en';
-        const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
-        const result = {};
-        rows.forEach(r => result[r.key] = r.value);
-        return json(result);
-     } catch (err) {
+      if (path === '/translations' && req.method === 'GET') {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const lang = url.searchParams.get('lang') || 'en';
+      const rows = await sql`SELECT key, value FROM ui_translations WHERE lang = ${lang}`;
+      const result = {};
+      rows.forEach(r => result[r.key] = r.value);
+      return json(result);
+    } catch (err) {
       console.error('TRANSLATIONS ERROR:', err);
-      return json({ error: err.message, detail: err.detail, hint: err.hint }, 500);
-     }
+      return errorJson('Internal server error in translations', 500);
     }
+  }
 
     if (path.startsWith('/verify/') && req.method === 'GET') {
       const code = path.split('/').pop();
