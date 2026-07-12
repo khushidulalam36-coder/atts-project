@@ -368,9 +368,9 @@ function toNodeHandler(handlerFn) {
   return async (req, res) => {
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const fullUrl = `${protocol}://${host}${req.url}`;
 
     // ---------- Multipart file upload handling ----------
-    // সরাসরি req.url চেক করে দ্রুত সমাধান
     const isUploadRoute = req.url.includes('/api/setup/admin/upload-image') || 
                           req.url.includes('/api/setup/upload-image');
 
