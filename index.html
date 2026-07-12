@@ -307,17 +307,15 @@
       background: none; border: none; color: var(--accent-bright); cursor: pointer; font-size: 1.2rem; margin-left: 8px; vertical-align: middle;
     }
     .post-content img, .post-content video { max-width:100%; border-radius:8px; margin-top:8px; }
-    /* Assessment Radio Fix */
-    /* Assessment Section Clean UI */
-    /* Assessment Section Clean UI */
+    /* ==================== Assessment Section Clean UI ==================== */
 .assessment-container {
   max-width: 600px;
   margin: 0 auto;
 }
 .assessment-item {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   border-bottom: 1px solid var(--border-gold);
-  padding-bottom: 15px;
+  padding-bottom: 16px;
 }
 .assessment-item:last-child {
   border-bottom: none;
@@ -326,29 +324,33 @@
 }
 .assessment-question {
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   color: var(--text);
   font-size: 0.95rem;
+  line-height: 1.5;
 }
 .assessment-options {
   display: flex;
-  gap: 30px;
-  align-items: center;
+  gap: 40px;
+  align-items: center;       /* radio ও label একই উচ্চতায় */
+  padding-left: 2px;
 }
 .assessment-options label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   user-select: none;
+  white-space: nowrap;
 }
 .assessment-options input[type="radio"] {
-  width: auto;
+  width: 18px;
+  height: 18px;
   margin: 0;
   accent-color: var(--gold);
-  transform: scale(1.1);
+  flex-shrink: 0;
 }
     /* Multiple Time Picker */
     .habit-time-block {
@@ -960,7 +962,7 @@
     function showLevelUp(nl) { document.getElementById('level-up-title').innerHTML = `লেভেল ${nl}!`; document.getElementById('level-up-modal').classList.remove('hidden'); confetti(); }
     function updateEvolutionTree(phase) { document.querySelectorAll('.evolution-tree .stage').forEach(e => { e.classList.remove('active'); if(e.dataset.phase === phase) e.classList.add('active'); }); }
     function showAssessment() { document.getElementById('assessment-screen').classList.remove('hidden'); document.getElementById('assessment-prompt').classList.add('hidden'); loadAssessmentQuestions(); }
-async function loadAssessmentQuestions() { 
+    async function loadAssessmentQuestions() { 
   const qs = await apiCall('GET', '/assessment/questions'); 
   const container = document.getElementById('assessment-questions');
   if (!qs || !qs.length) {
@@ -975,10 +977,12 @@ async function loadAssessmentQuestions() {
         <div class="assessment-question">${index + 1}. ${escapeHtml(q.question)}</div>
         <div class="assessment-options">
           <label>
-            <input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ
+            <input type="radio" name="assess_${q.id}" value="true"> 
+            <span>✅ হ্যাঁ</span>
           </label>
           <label>
-            <input type="radio" name="assess_${q.id}" value="false"> ❌ না
+            <input type="radio" name="assess_${q.id}" value="false"> 
+            <span>❌ না</span>
           </label>
         </div>
       </div>`;
