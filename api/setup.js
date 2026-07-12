@@ -1240,10 +1240,10 @@ async function apiHandler(req) {
         const result = {};
         rows.forEach(r => result[r.key] = r.value);
         return json(result);
-      } catch (err) {
-       console.error('TRANSLATIONS ERROR:', err);
-        return json({ error: err.message, stack: err.stack }, 500);
-      }
+     } catch (err) {
+      console.error('TRANSLATIONS ERROR:', err);
+      return json({ error: err.message, detail: err.detail, hint: err.hint }, 500);
+     }
     }
 
     if (path.startsWith('/verify/') && req.method === 'GET') {
