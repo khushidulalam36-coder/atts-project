@@ -1241,8 +1241,8 @@ async function apiHandler(req) {
         rows.forEach(r => result[r.key] = r.value);
         return json(result);
       } catch (err) {
-        console.error('TRANSLATIONS ERROR:', err);
-        return errorJson('Internal server error in translations', 500);
+       console.error('TRANSLATIONS ERROR:', err);
+        return json({ error: err.message, stack: err.stack }, 500);
       }
     }
 
