@@ -308,38 +308,53 @@
     }
     .post-content img, .post-content video { max-width:100%; border-radius:8px; margin-top:8px; }
     /* Assessment Radio Fix */
-    .assessment-option {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 14px;
-      background: rgba(255,255,255,0.03);
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    .assessment-option span {
-      flex: 1;
-      color: var(--text);
-      font-weight: 500;
-    }
-    .assessment-option .radio-group {
-      display: flex;
-      gap: 20px;
-      white-space: nowrap;
-    }
-    .assessment-option .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      color: var(--text-secondary);
-      cursor: pointer;
-    }
-    .assessment-option input[type="radio"] {
-      width: auto;
-      margin: 0;
-      accent-color: var(--gold);
-    }
+    /* Assessment Section Clean UI */
+.assessment-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.assessment-item {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-gold);
+  padding-bottom: 15px;
+}
+
+.assessment-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.assessment-question {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.assessment-options {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.assessment-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.assessment-options input[type="radio"] {
+  width: auto;
+  margin: 0;
+  accent-color: var(--gold);
+  transform: scale(1.1);
+}
     /* Multiple Time Picker */
     .habit-time-block {
       display: inline-flex;
@@ -952,15 +967,29 @@
     function showAssessment() { document.getElementById('assessment-screen').classList.remove('hidden'); document.getElementById('assessment-prompt').classList.add('hidden'); loadAssessmentQuestions(); }
     async function loadAssessmentQuestions() { 
       const qs = await apiCall('GET', '/assessment/questions'); 
-      const c = document.getElementById('assessment-questions'); 
-      c.innerHTML = qs.map(q => `
-        <div class="assessment-option">
-          <span>${escapeHtml(q.question)}</span>
-          <div class="radio-group">
-            <label><input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ</label>
-            <label><input type="radio" name="assess_${q.id}" value="false"> ❌ না</label>
-          </div>
-        </div>`).join(''); 
+      const container = document.getElementById('assessment-questions');
+      if (!qs || !qs.length) {
+        container.innerHTML = '<p>কোনো প্রশ্ন পাওয়া যায়নি।</p>';
+        return;
+      }
+
+      let html = '<div class="assessment-container">';
+      qs.forEach((q, index) => {
+        html += `
+          <div class="assessment-item">
+            <div class="assessment-question">${index + 1}. ${escapeHtml(q.question)}</div>
+            <div class="assessment-options">
+              <label>
+                <input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ
+              </label>
+              <label>
+                <input type="radio" name="assess_${q.id}" value="false"> ❌ না
+              </label>
+            </div>
+          </div>`;
+      });
+      html += '</div>';
+      container.innerHTML = html;
     }
     async function submitAssessment() { 
       const ans = []; 
