@@ -1283,18 +1283,19 @@ async function apiHandler(req) {
     }
 
     // --- Admin Users ---
-    if (path === '/admin/users' && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const search = url.searchParams.get('search') || '';
-      let users;
-      if (search) {
-        users = await sql`SELECT id, email, display_name, xp, level FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'} ORDER BY created_at DESC LIMIT 100`;
-      } else {
-        users = await sql`SELECT id, email, display_name, xp, level FROM users ORDER BY created_at DESC LIMIT 100`;
-      }
-      return json({ users });
-    }
+  if (path === '/admin/users' && req.method === 'GET') {
+  const url = new URL(req.url, `http://${req.headers.host}`);   // ✅ এই লাইন যোগ
+  const admin = await authenticateAdmin(req);
+  if (!admin) return errorJson('Forbidden', 403);
+  const search = url.searchParams.get('search') || '';
+  let users;
+  if (search) {
+    users = await sql`SELECT id, email, display_name, xp, level FROM users WHERE email ILIKE ${'%'+search+'%'} OR display_name ILIKE ${'%'+search+'%'} ORDER BY created_at DESC LIMIT 100`;
+  } else {
+    users = await sql`SELECT id, email, display_name, xp, level FROM users ORDER BY created_at DESC LIMIT 100`;
+  }
+  return json({ users });
+}
 
     if (path === '/admin/reset-password' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
@@ -1492,9 +1493,10 @@ async function apiHandler(req) {
 
     // --- Content Manager (lessons, quizzes, videos) ---
     if (path === '/admin/content/list' && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const type = url.searchParams.get('type');
+  const url = new URL(req.url, `http://${req.headers.host}`);  // ✅ যোগ করুন
+  const admin = await authenticateAdmin(req);
+  if (!admin) return errorJson('Forbidden', 403);
+  const type = url.searchParams.get('type');
       if (type === 'lesson') {
         const lessons = await sql`SELECT * FROM lessons ORDER BY day`;
         return json(lessons);
@@ -1586,9 +1588,10 @@ async function apiHandler(req) {
 
     // --- Translations (UI) ---
     if (path === '/admin/translations' && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const lang = url.searchParams.get('lang') || 'bn';
+  const url = new URL(req.url, `http://${req.headers.host}`);  // ✅
+  const admin = await authenticateAdmin(req);
+  if (!admin) return errorJson('Forbidden', 403);
+  const lang = url.searchParams.get('lang') || 'bn';
       const translations = await sql`SELECT * FROM ui_translations WHERE lang = ${lang}`;
       return json(translations);
     }
@@ -1989,6 +1992,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
     if (path === '/replies' && req.method === 'GET') {
+      const url = new URL(req.url, `http://${req.headers.host}`); // ← যোগ করুন
       const postId = url.searchParams.get('post_id');
       const replies = await sql`SELECT r.*, u.email, u.display_name, u.avatar_emoji FROM replies r JOIN users u ON r.user_id = u.id WHERE post_id = ${postId} ORDER BY created_at ASC`;
       return json(replies.map(r => ({ ...r, email: maskEmail(r.email), display_name: r.display_name || r.email.split('@')[0] })));
@@ -2080,7 +2084,8 @@ async function apiHandler(req) {
       return json({ success: true });
     }
     if (path === '/habits/logs' && req.method === 'GET') {
-      const date = url.searchParams.get('date') || new Date().toISOString().slice(0,10);
+  const url = new URL(req.url, `http://${req.headers.host}`);  // ✅
+  const date = url.searchParams.get('date') || new Date().toISOString().slice(0,10);
       const habits = await sql`SELECT * FROM habit_definitions WHERE user_id = ${user.id} AND is_active = true`;
       const logs = await sql`SELECT * FROM habit_logs WHERE user_id = ${user.id} AND date = ${date}`;
       const merged = habits.map(h => {
@@ -2108,9 +2113,10 @@ async function apiHandler(req) {
     }
 
     // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
-    if (path === '/training/chapters' && req.method === 'GET') {
-      const courseId = url.searchParams.get('course_id') || 1;
-      const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
+if (path === '/training/chapters' && req.method === 'GET') {
+  const url = new URL(req.url, `http://${req.headers.host}`);  // ✅
+  const courseId = url.searchParams.get('course_id') || 1;
+  const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
       let chapters = await sql`
         SELECT c.*, 
                COALESCE(ct_title.translated_text, c.title) AS title,
@@ -2142,9 +2148,10 @@ async function apiHandler(req) {
       return json(chapters);
     }
 
-    if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
-      const chapterId = parseInt(path.split('/')[3]);
-      const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
+  if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
+  const url = new URL(req.url, `http://${req.headers.host}`);  // ✅
+  const chapterId = parseInt(path.split('/')[3]);
+  const lang = url.searchParams.get('lang') || (user ? await getUserLanguage(user.id) : 'en');
       let chapter = await sql`
         SELECT c.*, 
                COALESCE(ct_title.translated_text, c.title) AS title,
