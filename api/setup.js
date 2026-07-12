@@ -1351,9 +1351,10 @@ async function apiHandler(req) {
 
     // --- Chapters Management ---
     if (path === '/admin/chapters' && req.method === 'GET') {
+      const url = new URL(req.url, `http://${req.headers.host}`);  // ✅ এই লাইনটি যোগ করুন
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const courseId = url.searchParams.get('course_id') || 1;
+      const courseId = url.searchParams.get('course_id') || 1;   // ✅ এখন url ঠিকঠাক কাজ করছে
       const chapters = await sql`
         SELECT c.*, 
                (SELECT COUNT(*)::int FROM chapter_quiz_questions WHERE chapter_id = c.id) as question_count,
