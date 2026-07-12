@@ -368,20 +368,13 @@ function toNodeHandler(handlerFn) {
   return async (req, res) => {
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
-    const fullUrl = `${protocol}://${host}${req.url}`;
 
     // ---------- Multipart file upload handling ----------
-    // FIX: Use the correctly rewritten path to detect upload routes
-    let reqPath;
-    const forwardedPath = req.headers['x-forwarded-path'];
-    if (forwardedPath) {
-      const u = new URL(forwardedPath, `http://${host}`);
-      reqPath = u.pathname;
-    } else {
-      reqPath = new URL(req.url, `http://${host}`).pathname;
-    }
+    // সরাসরি req.url চেক করে দ্রুত সমাধান
+    const isUploadRoute = req.url.includes('/api/setup/admin/upload-image') || 
+                          req.url.includes('/api/setup/upload-image');
 
-    if (req.method === 'POST' && (reqPath === '/api/setup/admin/upload-image' || reqPath === '/api/setup/upload-image')) {
+    if (req.method === 'POST' && isUploadRoute) {
       let requiredRole = null;
       if (reqPath === '/api/setup/admin/upload-image') {
         requiredRole = 'admin';
