@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -98,36 +98,13 @@
       display: flex; align-items: center; justify-content: center; z-index: 1000;
     }
     .modal-content { background: var(--surface); border: 1px solid var(--border-gold); border-radius: var(--radius); padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; }
-    /* Drop zone for media */
     .drop-zone {
-      border: 2px dashed var(--border-gold);
-      border-radius: var(--radius);
-      padding: 30px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s;
-      background: rgba(255,255,255,0.02);
-      margin: 12px 0;
+      border: 2px dashed var(--border-gold); border-radius: var(--radius); padding: 30px;
+      text-align: center; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.02);
     }
     .drop-zone.dragover { border-color: var(--gold-bright); background: rgba(200,167,91,0.1); }
-    /* Media list items */
-    .media-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.05);
-      padding: 8px;
-      border-radius: 8px;
-      max-width: 100%;
-      overflow: hidden;
-    }
-    .media-item .url-text {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 0.8rem;
-    }
+    .media-item { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; max-width: 100%; overflow: hidden; }
+    .media-item .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; }
     @media (max-width: 768px) {
       .admin-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; padding: 12px; }
       .admin-sidebar nav { display: flex; gap: 8px; margin-top: 0; }
@@ -142,28 +119,29 @@
   <div class="admin-sidebar">
     <div class="logo">⚙️ ATTS Admin</div>
     <nav>
-      <a data-tab="stats" class="active" onclick="switchTab('stats')">📊 ড্যাশবোর্ড</a>
-      <a data-tab="users" onclick="switchTab('users')">👥 ইউজার</a>
-      <a data-tab="simulate" onclick="switchTab('simulate')">🧪 সিমুলেট</a>
-      <a data-tab="chapters" onclick="switchTab('chapters')">📚 চ্যাপ্টার</a>
-      <a data-tab="courses" onclick="switchTab('courses')">📘 কোর্স</a>
-      <a data-tab="content" onclick="switchTab('content')">📝 কন্টেন্ট</a>
-      <a data-tab="theme" onclick="switchTab('theme')">🎨 থিম</a>
-      <a data-tab="media" onclick="switchTab('media')">🖼️ মিডিয়া</a>
-      <a data-tab="translations" onclick="switchTab('translations')">🌐 অনুবাদ</a>
-      <a data-tab="activity" onclick="switchTab('activity')">📋 অ্যাক্টিভিটি</a>
-      <a data-tab="settings" onclick="switchTab('settings')">⚙️ সেটিংস</a>
-      <a onclick="logout()" style="color: var(--danger);">🚪 লগআউট</a>
+      <a data-tab="stats" class="active" onclick="switchTab('stats')">📊 Dashboard</a>
+      <a data-tab="users" onclick="switchTab('users')">👥 Users</a>
+      <a data-tab="simulate" onclick="switchTab('simulate')">🧪 Simulate</a>
+      <a data-tab="chapters" onclick="switchTab('chapters')">📚 Chapters</a>
+      <a data-tab="courses" onclick="switchTab('courses')">📘 Courses</a>
+      <a data-tab="content" onclick="switchTab('content')">📝 Content</a>
+      <a data-tab="theme" onclick="switchTab('theme')">🎨 Theme</a>
+      <a data-tab="media" onclick="switchTab('media')">🖼️ Media</a>
+      <a data-tab="translations" onclick="switchTab('translations')">🌐 Translations</a>
+      <a data-tab="assessments" onclick="switchTab('assessments')">📋 Assessments</a>
+      <a data-tab="activity" onclick="switchTab('activity')">📋 Activity</a>
+      <a data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</a>
+      <a onclick="logout()" style="color: var(--danger);">🚪 Logout</a>
     </nav>
   </div>
   <div class="admin-main">
     <!-- Login Screen -->
     <div id="login-screen">
       <div class="card" style="max-width:400px; margin:40px auto;">
-        <h2 style="color:var(--gold);">🔐 অ্যাডমিন লগইন</h2>
-        <input type="email" id="admin-email" placeholder="ইমেইল" autocomplete="email">
-        <input type="password" id="admin-password" placeholder="পাসওয়ার্ড" autocomplete="current-password">
-        <button class="btn" onclick="adminLogin()" style="width:100%; margin-top:12px;">লগইন</button>
+        <h2 style="color:var(--gold);">🔐 Admin Login</h2>
+        <input type="email" id="admin-email" placeholder="Email" autocomplete="email">
+        <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+        <button class="btn" onclick="adminLogin()" style="width:100%; margin-top:12px;">Login</button>
         <p id="login-error" style="color:var(--danger); margin-top:8px; display:none;"></p>
       </div>
     </div>
@@ -171,13 +149,13 @@
     <div id="panel-screen" class="hidden"></div>
   </div>
 
-  <!-- Chapter Editor Modal (with Multilingual Support) -->
+  <!-- Chapter Editor Modal -->
   <div id="chapter-editor-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterEditor()">✕</button>
-      <h3 id="chapter-editor-title">চ্যাপ্টার সম্পাদনা</h3>
+      <h3 id="chapter-editor-title">Chapter Editor</h3>
       <div class="flex" style="gap:8px; margin-bottom:12px;">
-        <label>🌐 ভাষা:</label>
+        <label>🌐 Language:</label>
         <select id="ch-lang" onchange="switchEditorLanguage()">
           <option value="en">English</option>
           <option value="bn">বাংলা</option>
@@ -185,26 +163,20 @@
         </select>
       </div>
       <div class="grid-2">
-        <div><label>শিরোনাম</label><input type="text" id="ch-title" required></div>
-        <div><label>ক্রম</label><input type="number" id="ch-order" min="1" required></div>
+        <div><label>Title</label><input type="text" id="ch-title" required></div>
+        <div><label>Order</label><input type="number" id="ch-order" min="1" required></div>
       </div>
-      <label>বিষয়বস্তু (HTML)</label>
+      <label>Content (HTML)</label>
       <div id="chapter-quill-editor" style="height:250px;"></div>
-      <div style="margin-top:12px;">
-        <h4>ছবি</h4>
-        <div id="images-container"></div>
-      </div>
-      <div style="margin-top:12px;">
-        <h4>ভিডিও</h4>
-        <div id="videos-container"></div>
-      </div>
+      <div style="margin-top:12px;"><h4>Images</h4><div id="images-container"></div></div>
+      <div style="margin-top:12px;"><h4>Videos</h4><div id="videos-container"></div></div>
       <div class="grid-2">
-        <div><label>পাসিং স্কোর (%)</label><input type="number" id="ch-passing" value="90"></div>
-        <div><label>ভাষা (মাস্টার)</label><input type="text" id="ch-language" value="en" disabled></div>
+        <div><label>Passing Score (%)</label><input type="number" id="ch-passing" value="90"></div>
+        <div><label>Master Language</label><input type="text" id="ch-language" value="en" disabled></div>
       </div>
       <div style="margin-top:16px;">
-        <button class="btn" onclick="saveChapter()">সংরক্ষণ</button>
-        <button class="btn btn-outline" onclick="closeChapterEditor()">বাতিল</button>
+        <button class="btn" onclick="saveChapter()">Save</button>
+        <button class="btn btn-outline" onclick="closeChapterEditor()">Cancel</button>
         <input type="hidden" id="ch-edit-id">
         <input type="hidden" id="ch-edit-lang" value="en">
       </div>
@@ -215,25 +187,25 @@
   <div id="question-manager-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:600px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeQuestionManager()">✕</button>
-      <h3 id="qm-title">কুইজ প্রশ্ন</h3>
+      <h3 id="qm-title">Quiz Questions</h3>
       <input type="hidden" id="qm-chapter-id">
-      <button class="btn btn-sm" onclick="openQuestionForm()">+ প্রশ্ন</button>
+      <button class="btn btn-sm" onclick="openQuestionForm()">+ Question</button>
       <div id="qm-questions-list" style="margin-top:16px;"></div>
       <div id="qm-question-form" class="hidden card" style="margin-top:16px;">
-        <input type="text" id="qm-question-text" placeholder="প্রশ্ন">
+        <input type="text" id="qm-question-text" placeholder="Question">
         <div class="grid-2">
-          <input type="text" id="qm-opt0" placeholder="বিকল্প ১">
-          <input type="text" id="qm-opt1" placeholder="বিকল্প ২">
-          <input type="text" id="qm-opt2" placeholder="বিকল্প ৩">
-          <input type="text" id="qm-opt3" placeholder="বিকল্প ৪">
+          <input type="text" id="qm-opt0" placeholder="Option 1">
+          <input type="text" id="qm-opt1" placeholder="Option 2">
+          <input type="text" id="qm-opt2" placeholder="Option 3">
+          <input type="text" id="qm-opt3" placeholder="Option 4">
         </div>
         <div class="flex">
-          <label>সঠিক উত্তর (0-3):</label>
+          <label>Correct Index (0-3):</label>
           <input type="number" id="qm-correct" min="0" max="3" style="width:80px;">
         </div>
-        <input type="text" id="qm-explanation" placeholder="ব্যাখ্যা">
-        <button class="btn btn-sm" onclick="saveQuestion()">সংরক্ষণ</button>
-        <button class="btn btn-sm btn-outline" onclick="cancelQuestionEdit()">বাতিল</button>
+        <input type="text" id="qm-explanation" placeholder="Explanation">
+        <button class="btn btn-sm" onclick="saveQuestion()">Save</button>
+        <button class="btn btn-sm btn-outline" onclick="cancelQuestionEdit()">Cancel</button>
         <input type="hidden" id="qm-edit-qid">
       </div>
     </div>
@@ -243,11 +215,11 @@
   <div id="content-edit-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:600px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeContentEditModal()">✕</button>
-      <h3 id="content-edit-title">কন্টেন্ট সম্পাদনা</h3>
+      <h3 id="content-edit-title">Edit Content</h3>
       <input type="hidden" id="ce-id">
       <input type="hidden" id="ce-type">
       <div id="ce-fields"></div>
-      <button class="btn" onclick="saveContentEdit()" style="margin-top:16px;">সংরক্ষণ</button>
+      <button class="btn" onclick="saveContentEdit()" style="margin-top:16px;">Save</button>
     </div>
   </div>
 
@@ -255,7 +227,7 @@
   <div id="translation-add-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:400px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeTransAddModal()">✕</button>
-      <h3>নতুন অনুবাদ যোগ</h3>
+      <h3>Add Translation</h3>
       <input type="text" id="trans-key" placeholder="Key">
       <input type="text" id="trans-value" placeholder="Value">
       <select id="trans-lang">
@@ -263,17 +235,42 @@
         <option value="en">English</option>
         <option value="hi">हिन्दी</option>
       </select>
-      <button class="btn" onclick="saveNewTranslation()">সংরক্ষণ</button>
+      <button class="btn" onclick="saveNewTranslation()">Save</button>
+    </div>
+  </div>
+
+  <!-- Assessment Question Modal -->
+  <div id="assess-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:500px;">
+      <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeAssessModal()">✕</button>
+      <h3 id="assess-modal-title">Assessment Question</h3>
+      <input type="text" id="assess-question" placeholder="Question">
+      <input type="text" id="assess-category" placeholder="Category (optional)">
+      <input type="number" id="assess-order" placeholder="Order" value="1">
+      <button class="btn" onclick="saveAssessQuestion()">Save</button>
+      <button class="btn btn-outline" onclick="closeAssessModal()">Cancel</button>
+      <input type="hidden" id="assess-edit-id">
     </div>
   </div>
 
   <script>
-    // ==================== CONFIG ====================
     const API = '/api/setup';
+    const ADMIN_APP_VERSION = '2.0.1';
     let adminToken = localStorage.getItem('adminToken');
     let quillEditor = null;
 
-    // ==================== UTILS ====================
+    async function checkVersion() {
+      try {
+        const res = await fetch('/api/setup/version', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.version !== ADMIN_APP_VERSION) {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.reload(true);
+        }
+      } catch(e) {}
+    }
+
     function showToast(msg, dur=3000) {
       const existing = document.querySelector('.toast');
       if (existing) existing.remove();
@@ -284,10 +281,7 @@
       setTimeout(() => t.remove(), dur);
     }
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
+    function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
 
     async function adminApiCall(method, path, body = null, showError = true) {
       const headers = { 'Content-Type': 'application/json' };
@@ -313,12 +307,11 @@
       document.getElementById('panel-screen').classList.add('hidden');
     }
 
-    // ==================== AUTH ====================
     async function adminLogin() {
       const email = document.getElementById('admin-email').value.trim();
       const password = document.getElementById('admin-password').value;
       if (!email || !password) {
-        document.getElementById('login-error').textContent = 'ইমেইল ও পাসওয়ার্ড প্রয়োজন';
+        document.getElementById('login-error').textContent = 'Email and password required';
         document.getElementById('login-error').style.display = 'block';
         return;
       }
@@ -334,19 +327,17 @@
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('panel-screen').classList.remove('hidden');
         switchTab('stats');
-        if (data.require_password_change) showToast('পাসওয়ার্ড পরিবর্তন করুন!');
+        if (data.require_password_change) showToast('Please change your password!');
       } else {
         document.getElementById('login-error').textContent = data.error || 'Login failed';
         document.getElementById('login-error').style.display = 'block';
       }
     }
 
-    // ==================== TAB NAVIGATION ====================
     function switchTab(tab) {
       document.querySelectorAll('.admin-sidebar nav a').forEach(a => a.classList.remove('active'));
       const activeLink = document.querySelector(`.admin-sidebar nav a[data-tab="${tab}"]`);
       if (activeLink) activeLink.classList.add('active');
-      const panel = document.getElementById('panel-screen');
       switch(tab) {
         case 'stats': loadStats(); break;
         case 'users': loadUsers(); break;
@@ -357,30 +348,31 @@
         case 'theme': loadThemeEditor(); break;
         case 'media': loadMediaLibrary(); break;
         case 'translations': loadTranslations(); break;
+        case 'assessments': loadAssessments(); break;
         case 'activity': loadActivity(); break;
         case 'settings': loadSettings(); break;
       }
     }
 
-    // ==================== STATS ====================
+    // ======================= STATS =======================
     async function loadStats() {
       const data = await adminApiCall('GET', '/admin/dashboard');
       if (!data) return;
       document.getElementById('panel-screen').innerHTML = `
         <div class="stats">
-          <div class="stat"><h3>${data.totalUsers}</h3><p>মোট ইউজার</p></div>
-          <div class="stat"><h3>${data.dailyActiveUsers}</h3><p>আজ সক্রিয়</p></div>
-          <div class="stat"><h3>${data.totalJournals}</h3><p>মোট জার্নাল</p></div>
-          <div class="stat"><h3>${data.completionRate}%</h3><p>ট্রেনিং সম্পন্ন</p></div>
+          <div class="stat"><h3>${data.totalUsers}</h3><p>Total Users</p></div>
+          <div class="stat"><h3>${data.dailyActiveUsers}</h3><p>Active Today</p></div>
+          <div class="stat"><h3>${data.totalJournals}</h3><p>Journals</p></div>
+          <div class="stat"><h3>${data.completionRate}%</h3><p>Completion</p></div>
         </div>
-        <div class="card"><p>মোট চ্যাপ্টার: <strong>${data.totalChapters}</strong> | সার্টিফাইড: <strong>${data.completedTrainings}</strong></p></div>
+        <div class="card"><p>Chapters: <strong>${data.totalChapters}</strong> | Certified: <strong>${data.completedTrainings}</strong></p></div>
       `;
     }
 
-    // ==================== USERS ====================
+    // ======================= USERS =======================
     async function loadUsers() {
       const res = await adminApiCall('GET', '/admin/users');
-      let html = `<div class="card"><h3>👥 ইউজার</h3><input type="text" id="user-search" placeholder="ইমেইল বা নাম দিয়ে সার্চ..." oninput="searchUsers()" style="margin-bottom:12px;"><table><thead><tr><th>ইমেইল</th><th>নাম</th><th>XP</th><th>লেভেল</th><th>অ্যাকশন</th></tr></thead><tbody id="users-tbody">`;
+      let html = `<div class="card"><h3>👥 Users</h3><input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:12px;"><table><thead><tr><th>Email</th><th>Name</th><th>XP</th><th>Level</th><th>Actions</th></tr></thead><tbody id="users-tbody">`;
       if (res) {
         res.users.forEach(u => {
           html += `<tr><td>${escapeHtml(u.email)}</td><td>${escapeHtml(u.display_name||'')}</td><td>${u.xp}</td><td>${u.level}</td>
@@ -411,37 +403,37 @@
     }
 
     function resetUserPassword(userId) {
-      const p = prompt('নতুন পাসওয়ার্ড (৬+ অক্ষর)');
+      const p = prompt('New password (min 6 characters)');
       if (p && p.length >= 6) {
         adminApiCall('POST', '/admin/reset-password', { user_id: userId, new_password: p });
-        showToast('✅ পাসওয়ার্ড রিসেট হয়েছে');
+        showToast('✅ Password reset');
       }
     }
 
     async function impersonateUser(userId) {
-      if (!confirm('এই ইউজার হিসেবে লগইন করবেন?')) return;
+      if (!confirm('Login as this user?')) return;
       const res = await adminApiCall('POST', '/admin/impersonate', { user_id: userId });
       if (res?.token) {
         localStorage.setItem('token', res.token);
         window.open('/', '_blank');
-      } else showToast('ইম্পারসোনেট ব্যর্থ');
+      } else showToast('Impersonation failed');
     }
 
     async function deleteUser(userId) {
-      if (!confirm('এই ইউজার সম্পূর্ণ মুছে ফেলবেন?')) return;
+      if (!confirm('Delete this user permanently?')) return;
       await adminApiCall('DELETE', `/admin/user/${userId}`);
       loadUsers();
-      showToast('✅ ইউজার ডিলিট হয়েছে');
+      showToast('✅ User deleted');
     }
 
-    // ==================== SIMULATE ====================
+    // ======================= SIMULATE =======================
     function loadSimulate() {
       document.getElementById('panel-screen').innerHTML = `
-        <div class="card"><h3>🧪 সিমুলেট ইউজার</h3>
-          <input type="text" id="sim-email" placeholder="ইউজার ইমেইল">
-          <input type="number" id="sim-days" placeholder="দিন (1-30)" value="7">
-          <input type="number" id="sim-start" placeholder="শুরু দিন" value="1">
-          <button class="btn" onclick="simulateUser()">সিমুলেট</button>
+        <div class="card"><h3>🧪 Simulate User</h3>
+          <input type="text" id="sim-email" placeholder="User email">
+          <input type="number" id="sim-days" placeholder="Days (1-30)" value="7">
+          <input type="number" id="sim-start" placeholder="Start day" value="1">
+          <button class="btn" onclick="simulateUser()">Simulate</button>
         </div>`;
     }
 
@@ -449,26 +441,26 @@
       const email = document.getElementById('sim-email').value.trim();
       const days = document.getElementById('sim-days').value;
       const start = document.getElementById('sim-start').value;
-      if (!email) return showToast('ইউজার ইমেইল দিন');
+      if (!email) return showToast('User email required');
       const res = await adminApiCall('POST', '/admin/simulate-day', { email, days: parseInt(days), start_day: parseInt(start) });
-      if (res?.success) showToast(`✅ ${res.inserted_days} দিন সিমুলেট হয়েছে`);
-      else showToast(res?.error || 'ব্যর্থ');
+      if (res?.success) showToast(`✅ ${res.inserted_days} days simulated`);
+      else showToast(res?.error || 'Failed');
     }
 
-    // ==================== CHAPTERS (Multilingual) ====================
+    // ======================= CHAPTERS (Multilingual) ====================
     let currentChapterId = null;
     let currentChapterLanguage = 'en';
-    let chapterMasterData = null; // store english master when editing translations
+    let chapterMasterData = null;
 
     async function loadChapters() {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       if (!chapters) return;
-      let html = `<div class="card"><h3>📚 চ্যাপ্টার</h3><button class="btn" onclick="openChapterEditor(null)">+ নতুন চ্যাপ্টার</button><table><thead><tr><th>#</th><th>শিরোনাম</th><th>প্রশ্ন</th><th>পাস</th><th>অ্যাকশন</th></tr></thead><tbody>`;
+      let html = `<div class="card"><h3>📚 Chapters</h3><button class="btn" onclick="openChapterEditor(null)">+ New Chapter</button><table><thead><tr><th>#</th><th>Title</th><th>Questions</th><th>Passed</th><th>Actions</th></tr></thead><tbody>`;
       chapters.forEach(c => {
         html += `<tr><td>${c.order_index}</td><td>${escapeHtml(c.title)}</td><td>${c.question_count}</td><td>${c.passed_count}</td>
           <td>
             <button class="btn btn-sm btn-outline" onclick="openChapterEditor(${c.id})">✏️</button>
-            <button class="btn btn-sm btn-outline" onclick="manageQuestions(${c.id}, '${escapeHtml(c.title)}')">📝 প্রশ্ন</button>
+            <button class="btn btn-sm btn-outline" onclick="manageQuestions(${c.id}, '${escapeHtml(c.title)}')">📝 Questions</button>
             <button class="btn btn-sm btn-danger" onclick="deleteChapter(${c.id})">🗑</button>
           </td></tr>`;
       });
@@ -479,7 +471,7 @@
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
       if (!quillEditor) {
-        quillEditor = new Quill('#chapter-quill-editor', { theme: 'snow', modules: { clipboard: { matchVisual: false } } });
+        quillEditor = new Quill('#chapter-quill-editor', { theme: 'snow' });
       }
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
@@ -489,7 +481,6 @@
 
       if (id) {
         currentChapterId = id;
-        // Load English master first to cache
         const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
         const ch = chapters.find(c => c.id == id);
         if (ch) {
@@ -500,7 +491,7 @@
           document.getElementById('ch-language').value = 'en';
           quillEditor.root.innerHTML = ch.content_text || '';
           document.getElementById('ch-edit-id').value = ch.id;
-          document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
+          document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
           if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url));
           else addImageField();
           if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url));
@@ -515,7 +506,7 @@
         document.getElementById('ch-language').value = 'en';
         quillEditor.root.innerHTML = '';
         document.getElementById('ch-edit-id').value = '';
-        document.getElementById('chapter-editor-title').textContent = 'নতুন চ্যাপ্টার (ইংরেজি)';
+        document.getElementById('chapter-editor-title').textContent = 'New Chapter (English)';
         addImageField();
         addVideoField();
       }
@@ -525,16 +516,12 @@
       const lang = document.getElementById('ch-lang').value;
       currentChapterLanguage = lang;
       document.getElementById('ch-edit-lang').value = lang;
-
-      if (!currentChapterId) return; // new chapter, only english possible
-
+      if (!currentChapterId) return;
       if (lang === 'en') {
-        // load master
         document.getElementById('ch-title').value = chapterMasterData.title;
         quillEditor.root.innerHTML = chapterMasterData.content_text || '';
-        document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
+        document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
       } else {
-        // load translation from content_translations
         const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
         if (trans && trans.title) {
           document.getElementById('ch-title').value = trans.title;
@@ -542,9 +529,9 @@
         } else {
           document.getElementById('ch-title').value = '';
           quillEditor.root.innerHTML = '';
-          showToast('এই ভাষার জন্য এখনো কোনো অনুবাদ নেই।');
+          showToast('No translation yet for this language.');
         }
-        document.getElementById('chapter-editor-title').textContent = `চ্যাপ্টার সম্পাদনা (${lang})`;
+        document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`;
       }
     }
 
@@ -554,7 +541,7 @@
       div.className = 'flex';
       div.style.marginBottom = '4px';
       div.innerHTML = `
-        <input type="text" class="ch-image-url" placeholder="ছবির URL" value="${escapeHtml(url)}">
+        <input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}">
         <input type="file" class="ch-image-upload" accept="image/*" style="display:none;">
         <button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button>
         <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
@@ -568,7 +555,7 @@
       div.className = 'flex';
       div.style.marginBottom = '4px';
       div.innerHTML = `
-        <input type="text" class="ch-video-url" placeholder="ভিডিও URL" value="${escapeHtml(url)}">
+        <input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}">
         <input type="file" class="ch-video-upload" accept="video/*" style="display:none;">
         <button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button>
         <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
@@ -587,7 +574,7 @@
         const url = await uploadSingleMedia(file);
         if (url) {
           btn.parentElement.querySelector('.ch-image-url').value = url;
-          showToast('ছবি আপলোড হয়েছে');
+          showToast('Image uploaded');
         }
         btn.disabled = false; btn.textContent = '📷';
       });
@@ -604,7 +591,7 @@
         const url = await uploadSingleMedia(file, true);
         if (url) {
           btn.parentElement.querySelector('.ch-video-url').value = url;
-          showToast('ভিডিও আপলোড হয়েছে');
+          showToast('Video uploaded');
         }
         btn.disabled = false; btn.textContent = '🎬';
       });
@@ -624,7 +611,7 @@
       const passing_score = parseInt(document.getElementById('ch-passing').value);
       const chapterId = document.getElementById('ch-edit-id').value;
 
-      if (!title || !order_index) return showToast('শিরোনাম ও ক্রম আবশ্যক');
+      if (!title || !order_index) return showToast('Title and order required');
 
       if (lang === 'en') {
         const body = { course_id: 1, title, order_index, content_text, images, videos, passing_score, language: 'en' };
@@ -632,77 +619,34 @@
           await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body);
         } else {
           const res = await adminApiCall('POST', '/admin/chapter', body);
-          if (res) currentChapterId = res.id; // capture new id
+          if (res) currentChapterId = res.id;
         }
-        // Update master cache
         chapterMasterData = { title, content_text, images, videos, passing_score };
       } else {
-        // For non-english, save translation
-        if (!currentChapterId) return showToast('প্রথমে ইংরেজি চ্যাপ্টার সংরক্ষণ করুন');
+        if (!currentChapterId) return showToast('Save English chapter first');
         await adminApiCall('POST', '/admin/translations/content', {
           table_name: 'chapters',
           record_id: parseInt(currentChapterId),
           language_code: lang,
           translations: { title, content_text }
         });
-        // images/videos are not translated typically
       }
       closeChapterEditor();
       loadChapters();
-      showToast('✅ চ্যাপ্টার সংরক্ষিত');
+      showToast('✅ Chapter saved');
     }
 
     async function deleteChapter(id) {
-      if (!confirm('সত্যিই মুছে ফেলবেন?')) return;
+      if (!confirm('Delete this chapter?')) return;
       await adminApiCall('DELETE', `/admin/chapter/${id}`);
       loadChapters();
     }
 
-    // Translation fetch helper (for chapter editor) - we'll handle via adminApiCall to a new endpoint not yet defined; we can assume /admin/chapter/:id/translations?lang=... exists
-    // We'll implement a simple fallback query in adminApiCall. But for brevity, we'll just query the content_translations table via adminApiCall.
-    // Since we didn't set up that route, we'll do a direct fetch using SQL? That's not possible from frontend.
-    // Instead, we'll modify switchEditorLanguage to fetch from /admin/translations/content?table=chapters&record_id=...&lang=...
-    // We'll add a quick helper:
-
-    async function fetchChapterTranslation(chapterId, lang) {
-      // We can use GET /admin/translations/content?table_name=chapters&record_id=...&language_code=...
-      // We'll construct the query ourselves by adminApiCall to a new endpoint or simply call /admin/chapter/:id with a different lang param.
-      // Actually, the API has /admin/chapters which returns all; we could filter. But simpler: we'll just do:
-      const data = await adminApiCall('GET', `/admin/chapter/${chapterId}?lang=${lang}`, null, false);
-      if (data && data.id) {
-        return { title: data.title, content_text: data.content_text };
-      }
-      return null;
-    }
-    // Override switchEditorLanguage to use this:
-    window.switchEditorLanguage = async function() {
-      const lang = document.getElementById('ch-lang').value;
-      currentChapterLanguage = lang;
-      document.getElementById('ch-edit-lang').value = lang;
-      if (!currentChapterId) return;
-      if (lang === 'en') {
-        document.getElementById('ch-title').value = chapterMasterData.title;
-        quillEditor.root.innerHTML = chapterMasterData.content_text || '';
-        document.getElementById('chapter-editor-title').textContent = 'চ্যাপ্টার সম্পাদনা (ইংরেজি)';
-      } else {
-        const trans = await fetchChapterTranslation(currentChapterId, lang);
-        if (trans) {
-          document.getElementById('ch-title').value = trans.title;
-          quillEditor.root.innerHTML = trans.content_text || '';
-        } else {
-          document.getElementById('ch-title').value = '';
-          quillEditor.root.innerHTML = '';
-          showToast('এই ভাষার জন্য এখনো কোনো অনুবাদ নেই।');
-        }
-        document.getElementById('chapter-editor-title').textContent = `চ্যাপ্টার সম্পাদনা (${lang})`;
-      }
-    };
-
-    // ==================== QUESTION MANAGER ====================
+    // ======================= QUESTION MANAGER =======================
     let currentQmChapterId;
     async function manageQuestions(chapterId, title) {
       currentQmChapterId = chapterId;
-      document.getElementById('qm-title').textContent = title + ' - প্রশ্ন';
+      document.getElementById('qm-title').textContent = title + ' - Questions';
       document.getElementById('qm-chapter-id').value = chapterId;
       await loadQuestionsForChapter(chapterId);
       document.getElementById('question-manager-modal').classList.remove('hidden');
@@ -766,7 +710,7 @@
         explanation: document.getElementById('qm-explanation').value
       };
       if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index))
-        return showToast('সব ফিল্ড পূরণ করুন');
+        return showToast('All fields required');
       if (qId) {
         await adminApiCall('PUT', `/admin/question/${qId}`, data);
       } else {
@@ -774,28 +718,28 @@
       }
       cancelQuestionEdit();
       loadQuestionsForChapter(chapterId);
-      showToast('✅ প্রশ্ন সংরক্ষিত');
+      showToast('✅ Question saved');
     }
 
     async function deleteQuestion(qId, chapterId) {
-      if (!confirm('প্রশ্ন মুছবেন?')) return;
+      if (!confirm('Delete this question?')) return;
       await adminApiCall('DELETE', `/admin/question/${qId}`);
       loadQuestionsForChapter(chapterId);
     }
 
-    // ==================== COURSES ====================
+    // ======================= COURSES =======================
     async function loadCourses() {
       const courses = await adminApiCall('GET', '/admin/courses');
       if (!courses) return;
-      let html = `<div class="card"><h3>📘 কোর্স</h3><button class="btn" onclick="openCourseForm()">+ নতুন কোর্স</button>
+      let html = `<div class="card"><h3>📘 Courses</h3><button class="btn" onclick="openCourseForm()">+ New Course</button>
         <div id="course-form" class="card hidden" style="margin-top:16px;">
-          <input type="text" id="course-title" placeholder="শিরোনাম">
-          <textarea id="course-desc" placeholder="বিবরণ"></textarea>
-          <button class="btn" onclick="saveCourse()">সংরক্ষণ</button>
-          <button class="btn btn-outline" onclick="cancelCourseForm()">বাতিল</button>
+          <input type="text" id="course-title" placeholder="Title">
+          <textarea id="course-desc" placeholder="Description"></textarea>
+          <button class="btn" onclick="saveCourse()">Save</button>
+          <button class="btn btn-outline" onclick="cancelCourseForm()">Cancel</button>
           <input type="hidden" id="course-edit-id">
         </div>
-        <table><thead><tr><th>ID</th><th>শিরোনাম</th><th>বিবরণ</th><th>অ্যাকশন</th></tr></thead><tbody>`;
+        <table><thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Actions</th></tr></thead><tbody>`;
       courses.forEach(c => {
         html += `<tr><td>${c.id}</td><td>${escapeHtml(c.title)}</td><td>${escapeHtml(c.description||'')}</td>
           <td>
@@ -829,7 +773,7 @@
       const title = document.getElementById('course-title').value;
       const description = document.getElementById('course-desc').value;
       const id = document.getElementById('course-edit-id').value;
-      if (!title) return showToast('শিরোনাম আবশ্যক');
+      if (!title) return showToast('Title required');
       if (id) {
         await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active: true });
       } else {
@@ -837,37 +781,37 @@
       }
       cancelCourseForm();
       loadCourses();
-      showToast('✅ কোর্স সংরক্ষিত');
+      showToast('✅ Course saved');
     }
 
     async function deleteCourse(id) {
-      if (!confirm('কোর্স মুছে ফেললে সংশ্লিষ্ট সব চ্যাপ্টার মুছে যাবে!')) return;
+      if (!confirm('Deleting course will delete all chapters!')) return;
       await adminApiCall('DELETE', `/admin/course/${id}`);
       loadCourses();
     }
 
-    // ==================== CONTENT (Lessons/Quizzes/Videos) with Edit Modal ====================
+    // ======================= CONTENT (Lessons/Quizzes/Videos) =======================
     async function loadContentManager() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card">
-          <h3>📝 কন্টেন্ট ম্যানেজার</h3>
+          <h3>📝 Content Manager</h3>
           <select id="content-type-select" onchange="setupContentForm()">
-            <option value="lesson">লেসন</option>
-            <option value="quiz">কুইজ</option>
-            <option value="video">ভিডিও</option>
+            <option value="lesson">Lesson</option>
+            <option value="quiz">Quiz</option>
+            <option value="video">Video</option>
           </select>
           <div id="content-form-fields" style="margin-top:12px;"></div>
-          <button class="btn" onclick="addContent()">যোগ করুন</button>
-          <h4 style="margin-top:20px;">বর্তমান কন্টেন্ট</h4>
+          <button class="btn" onclick="addContent()">Add</button>
+          <h4 style="margin-top:20px;">Existing Content</h4>
           <select id="content-list-type" onchange="loadContentList()">
-            <option value="lesson">লেসন</option>
-            <option value="quiz">কুইজ</option>
-            <option value="video">ভিডিও</option>
+            <option value="lesson">Lesson</option>
+            <option value="quiz">Quiz</option>
+            <option value="video">Video</option>
           </select>
           <div id="content-list-section" style="margin-top:12px;"></div>
-          <h4 style="margin-top:20px;">ইমেজ আপলোড (Vercel Blob)</h4>
+          <h4 style="margin-top:20px;">Image Upload</h4>
           <input type="file" id="image-upload" accept="image/*" style="margin-top:6px;">
-          <button class="btn btn-sm" onclick="uploadImage()">আপলোড</button>
+          <button class="btn btn-sm" onclick="uploadImage()">Upload</button>
           <span id="upload-status" style="margin-left:10px; font-size:0.9rem;"></span>
         </div>
       `;
@@ -903,20 +847,20 @@
         body.duration = document.getElementById('content-duration').value;
       }
       const res = await adminApiCall('POST', '/admin/content', body);
-      if (res?.success) { showToast('✅ কন্টেন্ট যোগ হয়েছে'); loadContentList(); }
+      if (res?.success) { showToast('✅ Content added'); loadContentList(); }
     }
 
     async function loadContentList() {
       const type = document.getElementById('content-list-type').value;
       const res = await adminApiCall('GET', `/admin/content/list?type=${type}`);
       const container = document.getElementById('content-list-section');
-      if (!res || res.error) { container.innerHTML = '<p>লোড করতে সমস্যা</p>'; return; }
+      if (!res || res.error) { container.innerHTML = '<p>Load failed</p>'; return; }
       if (type === 'lesson') {
-        container.innerHTML = res.map(l => `<div class="flex" style="justify-content:space-between; padding:4px 0;">${l.day}. ${escapeHtml(l.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('lesson',${l.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button></span></div>`).join('');
+        container.innerHTML = res.map(l => `<div class="flex" style="justify-content:space-between;">${l.day}. ${escapeHtml(l.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('lesson',${l.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button></span></div>`).join('');
       } else if (type === 'quiz') {
-        container.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between; padding:4px 0;">${escapeHtml(q.question)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('quiz',${q.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('quiz',${q.id})">🗑</button></span></div>`).join('');
+        container.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between;">${escapeHtml(q.question)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('quiz',${q.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('quiz',${q.id})">🗑</button></span></div>`).join('');
       } else if (type === 'video') {
-        container.innerHTML = res.map(v => `<div class="flex" style="justify-content:space-between; padding:4px 0;">${escapeHtml(v.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('video',${v.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('video',${v.id})">🗑</button></span></div>`).join('');
+        container.innerHTML = res.map(v => `<div class="flex" style="justify-content:space-between;">${escapeHtml(v.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('video',${v.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('video',${v.id})">🗑</button></span></div>`).join('');
       }
     }
 
@@ -926,11 +870,11 @@
       document.getElementById('ce-type').value = type;
       const fields = document.getElementById('ce-fields');
       if (type === 'lesson') {
-        fields.innerHTML = `<input type="number" id="ce-day" placeholder="দিন"><input type="text" id="ce-phase" placeholder="ফেজ"><input type="text" id="ce-title" placeholder="শিরোনাম"><textarea id="ce-content" placeholder="কন্টেন্ট"></textarea>`;
+        fields.innerHTML = `<input type="number" id="ce-day" placeholder="Day"><input type="text" id="ce-phase" placeholder="Phase"><input type="text" id="ce-title" placeholder="Title"><textarea id="ce-content" placeholder="Content"></textarea>`;
       } else if (type === 'quiz') {
-        fields.innerHTML = `<input type="text" id="ce-question" placeholder="প্রশ্ন"><input type="text" id="ce-options" placeholder='["A","B","C","D"]'><input type="number" id="ce-correct" placeholder="সঠিক ইনডেক্স">`;
+        fields.innerHTML = `<input type="text" id="ce-question" placeholder="Question"><input type="text" id="ce-options" placeholder='["A","B","C","D"]'><input type="number" id="ce-correct" placeholder="Correct index">`;
       } else if (type === 'video') {
-        fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="শিরোনাম"><textarea id="ce-vdesc" placeholder="বিবরণ"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="সময়"><input type="text" id="ce-category" placeholder="ক্যাটাগরি">`;
+        fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="Title"><textarea id="ce-vdesc" placeholder="Description"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="Duration"><input type="text" id="ce-category" placeholder="Category">`;
       }
 
       try {
@@ -975,19 +919,19 @@
       await adminApiCall('PUT', `/admin/content/${type}/${id}`, body);
       closeContentEditModal();
       loadContentList();
-      showToast('কন্টেন্ট আপডেট হয়েছে');
+      showToast('Content updated');
     }
 
     async function deleteContent(type, id) {
-      if (!confirm('মুছে ফেলবেন?')) return;
+      if (!confirm('Delete?')) return;
       await adminApiCall('DELETE', `/admin/content/${type}/${id}`);
       loadContentList();
     }
 
-    // ==================== THEME EDITOR ====================
+    // ======================= THEME EDITOR =======================
     async function loadThemeEditor() {
       const vars = ['--bg','--surface','--gold','--gold-bright','--gold-light','--accent','--accent-bright','--accent2','--purple','--cyan','--orange','--text','--text-secondary','--danger','--success','--warning','--border-gold','--border-accent'];
-      let html = `<div class="card"><h3>🎨 থিম কাস্টমাইজেশন</h3><div class="theme-grid" id="theme-grid">`;
+      let html = `<div class="card"><h3>🎨 Theme Customization</h3><div class="theme-grid" id="theme-grid">`;
       vars.forEach(v => {
         const current = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
         html += `<div class="color-picker-group">
@@ -996,7 +940,7 @@
           <input type="text" value="${current}" data-var="${v}" onchange="updateThemeColor(this)" style="width:80px;">
         </div>`;
       });
-      html += `</div><button class="btn" onclick="saveTheme()">সংরক্ষণ</button> <button class="btn btn-outline" onclick="resetTheme()">↺ ডিফল্ট</button><div id="theme-msg" style="margin-top:8px;"></div></div>`;
+      html += `</div><button class="btn" onclick="saveTheme()">Save</button> <button class="btn btn-outline" onclick="resetTheme()">↺ Reset Default</button><div id="theme-msg" style="margin-top:8px;"></div></div>`;
       document.getElementById('panel-screen').innerHTML = html;
     }
 
@@ -1009,7 +953,7 @@
       const res = await adminApiCall('PUT', '/admin/settings', themeObj);
       if (res?.success) {
         for (const [k,v] of Object.entries(themeObj)) document.documentElement.style.setProperty(k, v);
-        document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">থিম সংরক্ষিত</span>';
+        document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">Theme saved</span>';
       }
     }
     function resetTheme() {
@@ -1030,19 +974,19 @@
       adminApiCall('PUT', '/admin/settings', defaults);
     }
 
-    // ==================== MEDIA LIBRARY (with Drop Zone & Folder Upload + video thumbnail) ====================
+    // ======================= MEDIA LIBRARY =======================
     async function loadMediaLibrary() {
       const res = await adminApiCall('GET', '/admin/media');
-      let html = `<div class="card"><h3>🖼️ মিডিয়া লাইব্রেরি</h3>
+      let html = `<div class="card"><h3>🖼️ Media Library</h3>
         <div class="drop-zone" id="media-drop-zone">
-          <p>📁 এখানে ছবি/ভিডিও টেনে আনুন অথবা ক্লিক করুন</p>
+          <p>📁 Drag & drop images/videos here or click</p>
           <input type="file" id="media-file-input" accept="image/*,video/*" multiple style="display:none;">
         </div>
         <div class="flex" style="gap:8px; margin-bottom:12px;">
-          <button class="btn btn-sm" onclick="document.getElementById('media-folder-input').click()">📂 ফোল্ডার আপলোড</button>
+          <button class="btn btn-sm" onclick="document.getElementById('media-folder-input').click()">📂 Folder Upload</button>
           <input type="file" id="media-folder-input" webkitdirectory multiple style="display:none;" onchange="uploadFolderFiles(this.files)">
-          <input type="text" id="media-url-input" placeholder="অথবা URL পেস্ট করুন" style="flex:1;">
-          <button class="btn btn-sm" onclick="addMediaUrl()">URL যোগ</button>
+          <input type="text" id="media-url-input" placeholder="Or paste URL" style="flex:1;">
+          <button class="btn btn-sm" onclick="addMediaUrl()">Add URL</button>
         </div>
         <div id="media-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">`;
       if (res) {
@@ -1069,62 +1013,42 @@
 
     function initMediaDropZone() {
       const dz = document.getElementById('media-drop-zone');
-      const fileInput = document.getElementById('media-file-input');
-      if (!dz || !fileInput) return;
-      dz.addEventListener('click', () => fileInput.click());
+      const fi = document.getElementById('media-file-input');
+      if (!dz || !fi) return;
+      dz.addEventListener('click', () => fi.click());
       dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
       dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
       dz.addEventListener('drop', (e) => {
         e.preventDefault();
         dz.classList.remove('dragover');
         const files = e.dataTransfer.files;
-        if (files.length) {
-          for (let file of files) uploadSingleMedia(file);
-        }
+        if (files.length) for (let f of files) uploadSingleMedia(f);
       });
-      fileInput.addEventListener('change', (e) => {
-        for (let file of e.target.files) uploadSingleMedia(file);
-      });
+      fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
     async function uploadSingleMedia(file, allowVideo = false) {
       try {
         const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
         if (!validTypes.includes(file.type)) {
-          showToast('ফাইল টাইপ সমর্থিত নয়');
-          return null;
+          showToast('File type not supported'); return null;
         }
         let processedFile = file;
-        if (file.type.startsWith('image/')) {
-          processedFile = await resizeImage(file, 1200);
-        }
-        const formData = new FormData();
-        formData.append('image', processedFile);
+        if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
+        const formData = new FormData(); formData.append('image', processedFile);
         const res = await fetch(`${API}/admin/upload-image`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${adminToken}` },
           body: formData
         });
         const data = await res.json();
-        if (data.url) {
-          showToast('✅ আপলোড সফল');
-          loadMediaLibrary();
-          return data.url;
-        } else {
-          showToast('আপলোড ব্যর্থ');
-          return null;
-        }
-      } catch(e) {
-        showToast('ত্রুটি');
+        if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; }
+        else showToast('Upload failed');
         return null;
-      }
+      } catch(e) { showToast('Error'); return null; }
     }
 
-    async function uploadFolderFiles(fileList) {
-      for (let file of fileList) {
-        await uploadSingleMedia(file, true);
-      }
-    }
+    async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
 
     async function resizeImage(file, maxWidth) {
       const img = await createImageBitmap(file);
@@ -1140,61 +1064,120 @@
 
     async function addMediaUrl() {
       const url = document.getElementById('media-url-input').value.trim();
-      if (!url) return showToast('URL দিন');
+      if (!url) return showToast('Enter URL');
       await adminApiCall('POST', '/admin/media/url', { url });
       loadMediaLibrary();
-      showToast('✅ ইউআরএল যোগ হয়েছে');
     }
 
-    async function deleteMedia(id) {
-      await adminApiCall('DELETE', `/admin/media/${id}`);
-      loadMediaLibrary();
-    }
+    async function deleteMedia(id) { await adminApiCall('DELETE', `/admin/media/${id}`); loadMediaLibrary(); }
 
-    // ==================== TRANSLATIONS ====================
+    // ======================= TRANSLATIONS =======================
     async function loadTranslations() {
-      const lang = prompt('ভাষা কোড (bn/en/hi):', 'bn') || 'bn';
+      const lang = prompt('Language code (bn/en/hi):', 'bn') || 'bn';
       const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
-      let html = `<div class="card"><h3>🌐 অনুবাদ (${lang})</h3><select id="trans-lang" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`;
+      let html = `<div class="card"><h3>🌐 Translations (${lang})</h3><select id="trans-lang-select" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`;
       if (rows) {
         rows.forEach(t => {
           html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span>
             <button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`;
         });
       }
-      html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ নতুন</button></div></div>`;
+      html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ New</button></div></div>`;
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    function openTransAddModal() {
-      document.getElementById('translation-add-modal').classList.remove('hidden');
-    }
-    function closeTransAddModal() {
-      document.getElementById('translation-add-modal').classList.add('hidden');
-    }
+    function openTransAddModal() { document.getElementById('translation-add-modal').classList.remove('hidden'); }
+    function closeTransAddModal() { document.getElementById('translation-add-modal').classList.add('hidden'); }
     async function saveNewTranslation() {
       const key = document.getElementById('trans-key').value.trim();
       const value = document.getElementById('trans-value').value.trim();
       const lang = document.getElementById('trans-lang').value;
-      if (!key || !value) return showToast('সব ফিল্ড পূরণ করুন');
+      if (!key || !value) return showToast('All fields required');
       await adminApiCall('POST', '/admin/translations', { key, lang, value });
       closeTransAddModal();
       loadTranslations();
-      showToast('অনুবাদ যোগ হয়েছে');
+      showToast('Translation added');
     }
-
     function editTrans(key, lang, current) {
-      const newVal = prompt('নতুন মান:', current);
+      const newVal = prompt('New value:', current);
       if (newVal !== null) {
         adminApiCall('POST', '/admin/translations', { key, lang, value: newVal });
         loadTranslations();
       }
     }
 
-    // ==================== ACTIVITY ====================
+    // ======================= ASSESSMENTS (Evaluation Parameters) =======================
+    async function loadAssessments() {
+      const questions = await adminApiCall('GET', '/admin/assessments');
+      let html = `<div class="card"><h3>📋 Assessment Questions (Slider Parameters)</h3>
+        <button class="btn" onclick="openAssessModal(null)">+ New Question</button>
+        <table><thead><tr><th>Order</th><th>Question</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
+      if (questions) {
+        questions.forEach(q => {
+          html += `<tr><td>${q.order_index}</td><td>${escapeHtml(q.question)}</td><td>${escapeHtml(q.category||'')}</td>
+            <td>
+              <button class="btn btn-sm btn-outline" onclick="openAssessModal(${q.id})">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteAssessQuestion(${q.id})">🗑</button>
+            </td></tr>`;
+        });
+      }
+      html += `</tbody></table></div>`;
+      document.getElementById('panel-screen').innerHTML = html;
+    }
+
+    function openAssessModal(id) {
+      const modal = document.getElementById('assess-modal');
+      document.getElementById('assess-edit-id').value = id || '';
+      if (id) {
+        adminApiCall('GET', '/admin/assessments').then(all => {
+          const q = all.find(x => x.id == id);
+          if (q) {
+            document.getElementById('assess-question').value = q.question;
+            document.getElementById('assess-category').value = q.category || '';
+            document.getElementById('assess-order').value = q.order_index;
+          }
+        });
+        document.getElementById('assess-modal-title').textContent = 'Edit Assessment Question';
+      } else {
+        document.getElementById('assess-question').value = '';
+        document.getElementById('assess-category').value = '';
+        document.getElementById('assess-order').value = '1';
+        document.getElementById('assess-modal-title').textContent = 'New Assessment Question';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeAssessModal() {
+      document.getElementById('assess-modal').classList.add('hidden');
+    }
+
+    async function saveAssessQuestion() {
+      const question = document.getElementById('assess-question').value.trim();
+      const category = document.getElementById('assess-category').value.trim();
+      const order_index = parseInt(document.getElementById('assess-order').value);
+      const id = document.getElementById('assess-edit-id').value;
+      if (!question) return showToast('Question is required');
+      const body = { question, category, order_index };
+      if (id) {
+        await adminApiCall('PUT', `/admin/assessments/${id}`, body);
+      } else {
+        await adminApiCall('POST', '/admin/assessments', body);
+      }
+      closeAssessModal();
+      loadAssessments();
+      showToast('Assessment question saved');
+    }
+
+    async function deleteAssessQuestion(id) {
+      if (!confirm('Delete this question?')) return;
+      await adminApiCall('DELETE', `/admin/assessments/${id}`);
+      loadAssessments();
+    }
+
+    // ======================= ACTIVITY LOG =======================
     async function loadActivity() {
       const logs = await adminApiCall('GET', '/admin/activity-log');
-      let html = '<div class="card"><h3>📋 অ্যাক্টিভিটি লগ</h3><table><tr><th>সময়</th><th>অ্যাডমিন</th><th>কাজ</th><th>বিস্তারিত</th></tr>';
+      let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>';
       if (logs) {
         logs.forEach(l => {
           html += `<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.admin_name || l.admin_email}</td><td>${l.action}</td><td>${JSON.stringify(l.details).substr(0,60)}</td></tr>`;
@@ -1204,24 +1187,21 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    // ==================== SETTINGS ====================
+    // ======================= SETTINGS =======================
     function loadSettings() {
       document.getElementById('panel-screen').innerHTML = `
-        <div class="card"><h3>⚙️ অ্যাডমিন সেটিংস</h3>
-          <input type="password" id="current-password" placeholder="বর্তমান পাসওয়ার্ড">
-          <input type="password" id="new-password" placeholder="নতুন পাসওয়ার্ড">
-          <input type="password" id="confirm-password" placeholder="নতুন পাসওয়ার্ড আবার">
-          <button class="btn" onclick="changeAdminPassword()">পাসওয়ার্ড পরিবর্তন</button>
+        <div class="card"><h3>⚙️ Admin Settings</h3>
+          <input type="password" id="current-password" placeholder="Current password">
+          <input type="password" id="new-password" placeholder="New password">
+          <input type="password" id="confirm-password" placeholder="Confirm new password">
+          <button class="btn" onclick="changeAdminPassword()">Change Password</button>
           <div id="settings-message" style="margin-top:12px;"></div>
         </div>
-        <div class="card" style="margin-top:16px;"><h3>🌐 সাইট কনফিগারেশন</h3>
-          <label>সাইট টাইটেল</label>
-          <input type="text" id="site-title" placeholder="AlamQuant ATTS">
-          <label>CORS অরিজিন (কমা দিয়ে আলাদা)</label>
-          <input type="text" id="cors-origin" placeholder="https://your-domain.vercel.app">
-          <label>Vercel Blob URL (যদি প্রয়োজন)</label>
-          <input type="text" id="blob-url" placeholder="https://...">
-          <button class="btn" onclick="saveSiteConfig()">সাইট কনফিগ সংরক্ষণ</button>
+        <div class="card" style="margin-top:16px;"><h3>🌐 Site Configuration</h3>
+          <label>Site Title</label><input type="text" id="site-title" placeholder="AlamQuant ATTS">
+          <label>CORS Origin (comma separated)</label><input type="text" id="cors-origin" placeholder="https://your-domain.vercel.app">
+          <label>Vercel Blob URL (if needed)</label><input type="text" id="blob-url" placeholder="https://...">
+          <button class="btn" onclick="saveSiteConfig()">Save Configuration</button>
           <div id="config-message" style="margin-top:12px;"></div>
         </div>
       `;
@@ -1241,14 +1221,14 @@
       const current = document.getElementById('current-password').value;
       const newPass = document.getElementById('new-password').value;
       const confirm = document.getElementById('confirm-password').value;
-      if (newPass !== confirm) return showToast('পাসওয়ার্ড মিলছে না');
-      if (newPass.length < 6) return showToast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর');
+      if (newPass !== confirm) return showToast('Passwords do not match');
+      if (newPass.length < 6) return showToast('Password must be at least 6 characters');
       const res = await adminApiCall('PUT', '/admin/change-password', { current_password: current, new_password: newPass });
       if (res?.success) {
-        showToast('✅ পাসওয়ার্ড পরিবর্তিত');
-        document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">সফল</span>';
+        showToast('✅ Password changed');
+        document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">Success</span>';
       } else {
-        document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'ত্রুটি'}</span>`;
+        document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`;
       }
     }
 
@@ -1262,43 +1242,15 @@
       if (blobUrl) body.blob_url = blobUrl;
       const res = await adminApiCall('PUT', '/admin/settings', body);
       if (res?.success) {
-        document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">সাইট কনফিগ সংরক্ষিত</span>';
+        document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>';
       } else {
-        document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'ত্রুটি'}</span>`;
+        document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`;
       }
     }
 
-    // ==================== UPLOAD IMAGE (for content tab) ====================
-    async function uploadImage() {
-      const file = document.getElementById('image-upload').files[0];
-      if (!file) return showToast('ফাইল সিলেক্ট করুন');
-      document.getElementById('upload-status').textContent = 'ছবি সংকোচন করা হচ্ছে...';
-      try {
-        const resizedFile = await resizeImage(file, 1200);
-        document.getElementById('upload-status').textContent = 'আপলোড হচ্ছে...';
-        const formData = new FormData();
-        formData.append('image', resizedFile);
-        const res = await fetch(`${API}/admin/upload-image`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${adminToken}` },
-          body: formData
-        });
-        const data = await res.json();
-        if (data.url) {
-          document.getElementById('upload-status').textContent = `✅ সফল! URL: ${data.url}`;
-          navigator.clipboard.writeText(data.url);
-          showToast('ইমেজ আপলোড সফল, URL কপি হয়েছে');
-          loadMediaLibrary();
-        } else {
-          document.getElementById('upload-status').textContent = 'আপলোড ব্যর্থ';
-        }
-      } catch (e) {
-        document.getElementById('upload-status').textContent = 'ত্রুটি';
-      }
-    }
-
-    // ==================== INIT ====================
+    // ======================= INITIALIZATION =======================
     if (adminToken) {
+      checkVersion();
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('panel-screen').classList.remove('hidden');
       switchTab('stats');

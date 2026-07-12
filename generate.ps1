@@ -1,13 +1,10 @@
 ﻿# ============================================
-# SECTION 1: AlamQuant ATTS - Enterprise-Grade Project Generator
+# SECTION 1: AlamQuant ATTS - Enterprise-Grade Project Generator (Final)
 # ============================================
 # Description:
 #   Creates ALL necessary project files for the AlamQuant ATTS application.
-#   After execution, MANUALLY replace the three placeholder files:
-#     1. index.html
-#     2. api/setup.js
-#     3. admin.html
-#   with the full production-ready code provided separately.
+#   Placeholder files (index.html, api/setup.js, admin.html) are created as
+#   comments – you will manually replace them with the final production code.
 # ============================================
 
 $ErrorActionPreference = "Stop"
@@ -462,7 +459,7 @@ $icon192Path = Join-Path $projectRoot "icon-192.png"
 $icon512Path = Join-Path $projectRoot "icon-512.png"
 $icon72Path  = Join-Path $projectRoot "icon-72.png"
 
-# Function to create a solid gold icon (Approved verb: New)
+# Function to create a solid gold icon
 function New-SolidIcon($path, $width, $height) {
     try {
         Add-Type -AssemblyName System.Drawing
@@ -677,19 +674,19 @@ $verifyHtml = @'
 [System.IO.File]::WriteAllText("$projectRoot\verify.html", $verifyHtml, $Utf8NoBom)
 Write-Host "  + verify.html (public certificate verification)" -ForegroundColor Green
 
-# 5.2 admin.html - EMPTY PLACEHOLDER (manual replace required)
+# 5.2 admin.html - PLACEHOLDER (manual replace required)
 $adminHtmlPlaceholder = @'
 <!-- REPLACE THIS FILE WITH THE FINAL admin.html PRODUCTION CODE -->
 '@
 [System.IO.File]::WriteAllText("$projectRoot\admin.html", $adminHtmlPlaceholder, $Utf8NoBom)
-Write-Host "  + admin.html (EMPTY placeholder - replace with final enterprise admin.html)" -ForegroundColor Yellow
+Write-Host "  + admin.html (PLACEHOLDER - replace with final enterprise admin.html)" -ForegroundColor Yellow
 
-# 5.3 index.html - EMPTY PLACEHOLDER (manual replace required)
+# 5.3 index.html - PLACEHOLDER (manual replace required)
 $indexHtmlPlaceholder = @'
 <!-- REPLACE THIS FILE WITH THE FINAL index.html PRODUCTION CODE -->
 '@
 [System.IO.File]::WriteAllText("$projectRoot\index.html", $indexHtmlPlaceholder, $Utf8NoBom)
-Write-Host "  + index.html (EMPTY placeholder - replace with final enterprise index.html)" -ForegroundColor Yellow
+Write-Host "  + index.html (PLACEHOLDER - replace with final enterprise index.html)" -ForegroundColor Yellow
 
 # ============================================
 # SECTION 6: CSS (Enterprise Premium Theme)
@@ -931,14 +928,14 @@ textarea { resize:vertical; min-height:60px; }
 Write-Host "  + styles.css (enterprise premium theme)" -ForegroundColor Green
 
 # ============================================
-# SECTION 7: API Setup EMPTY PLACEHOLDER
+# SECTION 7: API Setup PLACEHOLDER
 # ============================================
 Write-Host "`nGenerating api/setup.js placeholder..." -ForegroundColor Yellow
 $setupJsPlaceholder = @'
 // Replace this file with the final api/setup.js production code
 '@
 [System.IO.File]::WriteAllText("$projectRoot\api\setup.js", $setupJsPlaceholder, $Utf8NoBom)
-Write-Host "  + api/setup.js (EMPTY placeholder - replace with final enterprise version)" -ForegroundColor Yellow
+Write-Host "  + api/setup.js (PLACEHOLDER - replace with final enterprise version)" -ForegroundColor Yellow
 
 # ============================================
 # SECTION 8: Final Instructions & Next Steps
