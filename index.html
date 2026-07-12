@@ -309,36 +309,32 @@
     .post-content img, .post-content video { max-width:100%; border-radius:8px; margin-top:8px; }
     /* Assessment Radio Fix */
     /* Assessment Section Clean UI */
+    /* Assessment Section Clean UI */
 .assessment-container {
   max-width: 600px;
   margin: 0 auto;
 }
-
 .assessment-item {
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-gold);
   padding-bottom: 15px;
 }
-
 .assessment-item:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
-
 .assessment-question {
   font-weight: 600;
   margin-bottom: 10px;
   color: var(--text);
   font-size: 0.95rem;
 }
-
 .assessment-options {
   display: flex;
   gap: 30px;
   align-items: center;
 }
-
 .assessment-options label {
   display: flex;
   align-items: center;
@@ -348,7 +344,6 @@
   font-size: 0.9rem;
   user-select: none;
 }
-
 .assessment-options input[type="radio"] {
   width: auto;
   margin: 0;
@@ -965,32 +960,32 @@
     function showLevelUp(nl) { document.getElementById('level-up-title').innerHTML = `লেভেল ${nl}!`; document.getElementById('level-up-modal').classList.remove('hidden'); confetti(); }
     function updateEvolutionTree(phase) { document.querySelectorAll('.evolution-tree .stage').forEach(e => { e.classList.remove('active'); if(e.dataset.phase === phase) e.classList.add('active'); }); }
     function showAssessment() { document.getElementById('assessment-screen').classList.remove('hidden'); document.getElementById('assessment-prompt').classList.add('hidden'); loadAssessmentQuestions(); }
-    async function loadAssessmentQuestions() { 
-      const qs = await apiCall('GET', '/assessment/questions'); 
-      const container = document.getElementById('assessment-questions');
-      if (!qs || !qs.length) {
-        container.innerHTML = '<p>কোনো প্রশ্ন পাওয়া যায়নি।</p>';
-        return;
-      }
+async function loadAssessmentQuestions() { 
+  const qs = await apiCall('GET', '/assessment/questions'); 
+  const container = document.getElementById('assessment-questions');
+  if (!qs || !qs.length) {
+    container.innerHTML = '<p>কোনো প্রশ্ন পাওয়া যায়নি।</p>';
+    return;
+  }
 
-      let html = '<div class="assessment-container">';
-      qs.forEach((q, index) => {
-        html += `
-          <div class="assessment-item">
-            <div class="assessment-question">${index + 1}. ${escapeHtml(q.question)}</div>
-            <div class="assessment-options">
-              <label>
-                <input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ
-              </label>
-              <label>
-                <input type="radio" name="assess_${q.id}" value="false"> ❌ না
-              </label>
-            </div>
-          </div>`;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-    }
+  let html = '<div class="assessment-container">';
+  qs.forEach((q, index) => {
+    html += `
+      <div class="assessment-item">
+        <div class="assessment-question">${index + 1}. ${escapeHtml(q.question)}</div>
+        <div class="assessment-options">
+          <label>
+            <input type="radio" name="assess_${q.id}" value="true"> ✅ হ্যাঁ
+          </label>
+          <label>
+            <input type="radio" name="assess_${q.id}" value="false"> ❌ না
+          </label>
+        </div>
+      </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
     async function submitAssessment() { 
       const ans = []; 
       document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r.name.split('_')[1]), answer: r.value === 'true' })); 
