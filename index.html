@@ -650,7 +650,22 @@
 
   <script>
     // ==================== Global Configuration ====================
+       // ==================== Global Configuration ====================
     const API = '/api/setup';
+    const APP_VERSION = '2.0.1';   // ← api/setup.js-এর ভার্সনের সাথে মিল রাখবেন
+
+    async function checkVersion() {
+      try {
+        const res = await fetch('/api/setup/version', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.version !== APP_VERSION) {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.reload(true);
+        }
+      } catch(e) { /* নেটওয়ার্ক ত্রুটি উপেক্ষা */ }
+    }
+
     let token = localStorage.getItem('token');
     let currentUser = null;
     let previousLevel = null;
@@ -1238,27 +1253,46 @@
     function clearAllReminders() { if(reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; } }
 
     // ==================== Init ====================
-    async function initDashboard(user) {
-      document.getElementById('auth-screen').classList.add('hidden');
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('dashboard').classList.remove('hidden');
-      currentUser = user; previousLevel = user.level;
-      showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone();
-      if (user.language) { i18n.load(user.language); }
+  // ==================== Init ====================
+async function initDashboard(user) {
+  await checkVersion();  // ✅ যোগ করুন
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('dashboard').classList.remove('hidden');
+  currentUser = user; previousLevel = user.level;
+  showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone();
+  if (user.language) { i18n.load(user.language); }
+}
+
+window.addEventListener('load', async () => {
+  // Register Service Worker with update handling
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('Service Worker registered');
+
+      // নতুন ভার্সন এলে অটো রিলোড
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showToast('🔄 নতুন আপডেট এসেছে! পেজ রিলোড হচ্ছে...');
+            setTimeout(() => {
+              window.location.reload(true);
+            }, 2000);
+          }
+        });
+      });
+    } catch (e) {
+      console.error('SW registration failed', e);
     }
-    window.addEventListener('load', async () => {
-      // Register Service Worker
-      if ('serviceWorker' in navigator) {
-        try {
-          await navigator.serviceWorker.register('/sw.js');
-          console.log('Service Worker registered');
-        } catch(e) { console.error('SW registration failed', e); }
-      }
-      await i18n.init();
-      try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
-      if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }
-      else { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }
-    });
+  }
+
+  await i18n.init();
+  try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
+  if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }
+  else { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }
+});
   </script>
 </body>
 </html>
