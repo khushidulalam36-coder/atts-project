@@ -380,6 +380,36 @@
     #chapter-modal-content img {
       max-width:100%; border-radius:8px; margin:8px 0;
     }
+
+    /* TTS Section Buttons */
+    .tts-controls {
+      display: inline-flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .tts-btn-sm {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .tts-btn-sm:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .tts-btn-sm.active-play { background: var(--success); border-color: var(--success); color: #fff; }
+    .tts-btn-sm.active-pause { background: var(--warning); border-color: var(--warning); color: #000; }
+
     @media (max-width:600px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
       .assessment-options { gap:20px; flex-wrap:wrap; }
@@ -759,7 +789,7 @@
       }
     };
 
-    // ==================== TTS ====================
+    // ==================== TTS Functions (Legacy) ====================
     function speakText(elementId) {
       if (speechSynth.speaking) speechSynth.cancel();
       const element = document.getElementById(elementId);
@@ -799,6 +829,149 @@
       utterance.onstart = () => { document.getElementById('chapter-tts-btn').textContent = '🔊⏸️'; };
       utterance.onend = () => { document.getElementById('chapter-tts-btn').textContent = '🔊'; };
       speechSynth.speak(utterance);
+    }
+
+    // ==================== TTS Controller (Section-based) ====================
+    let activeTTSController = null;
+
+    class TTSController {
+      constructor(element, lang) {
+        this.element = element;
+        this.lang = lang;
+        this.utterance = null;
+        this.state = 'stopped';
+        this.controls = null;
+        this.buildUI();
+      }
+
+      buildUI() {
+        const controls = document.createElement('div');
+        controls.className = 'tts-controls';
+        controls.innerHTML = `
+          <button class="tts-btn-sm play-btn" title="Play">▶️</button>
+          <button class="tts-btn-sm pause-btn" title="Pause" disabled>⏸️</button>
+          <button class="tts-btn-sm stop-btn" title="Stop" disabled>⏹️</button>
+        `;
+        this.controls = controls;
+        this.element.appendChild(controls);
+
+        this.playBtn = controls.querySelector('.play-btn');
+        this.pauseBtn = controls.querySelector('.pause-btn');
+        this.stopBtn = controls.querySelector('.stop-btn');
+
+        this.playBtn.addEventListener('click', () => this.play());
+        this.pauseBtn.addEventListener('click', () => this.pause());
+        this.stopBtn.addEventListener('click', () => this.stop());
+      }
+
+      getText() {
+        return this.element.innerText.trim();
+      }
+
+      async play() {
+        const text = this.getText();
+        if (!text) return;
+
+        if (activeTTSController && activeTTSController !== this) {
+          activeTTSController.stop();
+        }
+
+        if (this.utterance) {
+          speechSynthesis.cancel();
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = speechSynthesis.getVoices();
+
+        if (this.lang === 'bn') {
+          utterance.lang = 'bn-BD';
+          const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+          if (bnVoice) utterance.voice = bnVoice;
+        } else if (this.lang === 'hi') {
+          utterance.lang = 'hi-IN';
+          const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+          if (hiVoice) utterance.voice = hiVoice;
+        } else {
+          utterance.lang = 'en-US';
+          const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+          if (femaleVoice) utterance.voice = femaleVoice;
+        }
+
+        utterance.onstart = () => {
+          this.state = 'playing';
+          activeTTSController = this;
+          this.updateUI();
+        };
+        utterance.onend = () => {
+          this.state = 'stopped';
+          activeTTSController = null;
+          this.updateUI();
+        };
+        utterance.onerror = () => {
+          this.state = 'stopped';
+          activeTTSController = null;
+          this.updateUI();
+        };
+        utterance.onpause = () => {
+          this.state = 'paused';
+          this.updateUI();
+        };
+        utterance.onresume = () => {
+          this.state = 'playing';
+          this.updateUI();
+        };
+
+        this.utterance = utterance;
+        speechSynthesis.speak(utterance);
+      }
+
+      pause() {
+        if (speechSynthesis.speaking) {
+          speechSynthesis.pause();
+        }
+      }
+
+      resume() {
+        if (speechSynthesis.paused) {
+          speechSynthesis.resume();
+        }
+      }
+
+      stop() {
+        if (speechSynthesis.speaking || speechSynthesis.paused) {
+          speechSynthesis.cancel();
+        }
+        this.state = 'stopped';
+        this.updateUI();
+      }
+
+      updateUI() {
+        if (this.state === 'playing') {
+          this.playBtn.classList.add('active-play');
+          this.pauseBtn.disabled = false;
+          this.stopBtn.disabled = false;
+        } else if (this.state === 'paused') {
+          this.playBtn.classList.remove('active-play');
+          this.pauseBtn.classList.add('active-pause');
+          this.pauseBtn.disabled = false;
+          this.stopBtn.disabled = false;
+        } else {
+          this.playBtn.classList.remove('active-play');
+          this.pauseBtn.classList.remove('active-pause');
+          this.pauseBtn.disabled = true;
+          this.stopBtn.disabled = true;
+        }
+      }
+    }
+
+    function attachTTSSections() {
+      const sections = document.querySelectorAll('#chapter-modal-content .tts-section');
+      sections.forEach(section => {
+        if (section.dataset.ttsAttached === 'true') return;
+        const lang = section.dataset.lang || 'en';
+        new TTSController(section, lang);
+        section.dataset.ttsAttached = 'true';
+      });
     }
 
     // ==================== Browser History ====================
@@ -1289,8 +1462,19 @@
         document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join('');
       }
       document.getElementById('chapter-modal').classList.remove('hidden');
+      // Attach TTS controllers after DOM render
+      setTimeout(attachTTSSections, 200);
     }
-    function closeChapterModal() { document.getElementById('chapter-modal').classList.add('hidden'); clearInterval(practiceTimerInterval); loadTrainingTab(); }
+    function closeChapterModal() {
+      // Stop any ongoing TTS
+      if (speechSynth.speaking || speechSynth.paused) {
+        speechSynth.cancel();
+      }
+      activeTTSController = null;
+      document.getElementById('chapter-modal').classList.add('hidden');
+      clearInterval(practiceTimerInterval);
+      loadTrainingTab();
+    }
     function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode === 'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval); document.getElementById('practice-timer').classList.add('hidden'); } }
     function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining = totalSeconds; timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const secs = remaining % 60; timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0) { clearInterval(practiceTimerInterval); submitChapterQuiz(); } remaining--; }; update(); clearInterval(practiceTimerInterval); practiceTimerInterval = setInterval(update, 1000); }
     async function submitChapterQuiz() {
@@ -1674,6 +1858,7 @@
     window.nextSlide = nextSlide;
     window.prevSlide = prevSlide;
     window.showSlide = showSlide;
+    window.attachTTSSections = attachTTSSections;
   </script>
 </body>
 </html>

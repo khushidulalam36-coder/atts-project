@@ -54,16 +54,40 @@
     }
     .admin-main { margin-left: 260px; flex: 1; padding: 30px; overflow-x: hidden; word-wrap: break-word; }
     .card { background: var(--surface); border: 1px solid var(--border-gold); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; overflow: hidden; }
+
+    /* ===== MODERN BUTTON STYLES ===== */
     .btn {
-      background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: 20px;
-      cursor: pointer; font-weight: 600; transition: var(--transition); font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #C8A75B, #2563EB);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(200,167,91,0.3);
+      position: relative;
+      overflow: hidden;
     }
-    .btn:hover { background: var(--accent-bright); }
-    .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
-    .btn-outline:hover { background: rgba(200,167,91,0.1); }
-    .btn-danger { background: var(--danger); }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-sm { padding: 4px 12px; font-size: 0.8rem; border-radius: 16px; }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200,167,91,0.5);
+      background: linear-gradient(135deg, #E8C97A, #60A5FA);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); box-shadow: none; }
+    .btn-outline:hover { background: rgba(200,167,91,0.1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(200,167,91,0.3); }
+    .btn-danger { background: var(--danger); box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: #dc2626; box-shadow: 0 8px 20px rgba(239,68,68,0.5); }
+    .btn-sm { padding: 4px 14px; font-size: 0.8rem; border-radius: 20px; }
+    .btn-lg { padding: 12px 28px; font-size: 1rem; border-radius: 30px; }
+
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 16px; }
     .stat { background: var(--surface); border: 1px solid var(--border-gold); border-radius: var(--radius); padding: 16px; text-align: center; }
     .stat h3 { color: var(--gold); font-size: 1.8rem; margin-bottom: 4px; }
@@ -88,6 +112,29 @@
     .ql-toolbar.ql-snow { border-color: var(--border-gold); background: rgba(255,255,255,0.05); }
     .ql-container.ql-snow { border-color: var(--border-gold); }
     .ql-editor { color: var(--text); }
+
+    /* Custom TTS button in toolbar - VISIBLE */
+    .ql-tts-section {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .ql-tts-section:hover {
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+    }
+    .ql-tts-section::before {
+      content: '🔊';
+    }
+
     .toast {
       position: fixed; top: 20px; right: 20px; background: var(--accent); color: white;
       padding: 12px 20px; border-radius: 20px; z-index: 9999; font-weight: 600;
@@ -323,7 +370,7 @@
       } catch(e) {}
     }
 
-    // ------ Admin API call ------
+    // ------ Admin API call with safe JSON parsing ------
     async function adminApiCall(method, path, body = null, showError = true) {
       const headers = { 'Content-Type': 'application/json' };
       if (adminToken) headers['Authorization'] = `Bearer ${adminToken}`;
@@ -332,8 +379,20 @@
       try {
         const res = await fetch(`${API}${path}`, opts);
         if (res.status === 401) { logout(); return null; }
-        const data = await res.json();
-        if (data.error && showError) showToast(data.error);
+        let data;
+        try {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            data = await res.json();
+          } else {
+            if (showError) showToast('Unexpected server response');
+            return null;
+          }
+        } catch (e) {
+          if (showError) showToast('Invalid JSON response');
+          return null;
+        }
+        if (data && data.error && showError) showToast(data.error);
         return data;
       } catch(e) {
         if (showError) showToast('Network error');
@@ -521,7 +580,8 @@
             toolbar: [
               [{ 'header': [1, 2, false] }],
               ['bold', 'italic', 'underline'],
-              ['image', 'video']
+              ['image', 'video'],
+              ['tts-section']
             ]
           }
         });
@@ -542,7 +602,27 @@
             }
           };
         });
+
+        // Custom TTS Section button handler
+        const ttsBtn = document.querySelector('.ql-tts-section');
+        if (ttsBtn) {
+          ttsBtn.addEventListener('click', () => {
+            const lang = prompt('Enter language code (en, bn, hi):', 'en');
+            if (!lang) return;
+            const html = `<div class="tts-section" data-lang="${lang}">
+  <h2>Title here</h2>
+  <p>Content here</p>
+</div>`;
+            const range = quillEditor.getSelection(true);
+            if (range) {
+              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+            } else {
+              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
+            }
+          });
+        }
       }
+
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
       currentChapterLanguage = 'en';
@@ -1100,7 +1180,6 @@
     // ----- SINGLE MEDIA UPLOAD (with token fix) -----
     async function uploadSingleMedia(file, allowVideo = false) {
       try {
-        // Use global adminToken, not localStorage
         if (!adminToken) {
           showToast('Not authenticated');
           return null;
@@ -1126,7 +1205,7 @@
         }
         if (data.url) {
           showToast('Upload successful');
-          loadMediaLibrary(); // refresh if on media page
+          loadMediaLibrary();
           return data.url;
         }
         showToast('Upload failed (no URL returned)');
