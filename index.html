@@ -65,6 +65,7 @@
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     @keyframes goldShine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
     @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes slideFade { 0% { opacity:0.4; transform:scale(0.98); } 100% { opacity:1; transform:scale(1); } }
     body {
       font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
       background: var(--bg-gradient);
@@ -283,8 +284,8 @@
     .mood-picker { display:flex; align-items:center; gap:8px; margin:16px 0; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; }
     .mood-emoji { font-size:28px; cursor:pointer; transition:transform 0.2s; padding:4px; border-radius:50%; }
     .mood-emoji.selected { transform:scale(1.3); background:rgba(200,167,91,0.2); box-shadow:0 0 12px var(--gold); }
-    .evolution-tree { display:flex; justify-content:space-between; margin-top:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:12px; }
-    .evolution-tree .stage { text-align:center; padding:8px; border-radius:8px; opacity:0.4; transition:0.3s; }
+    .evolution-tree { display:flex; justify-content:space-between; margin-top:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:12px; flex-wrap:wrap; gap:6px; }
+    .evolution-tree .stage { text-align:center; padding:8px; border-radius:8px; opacity:0.4; transition:0.3s; font-size:0.8rem; }
     .evolution-tree .stage.active { opacity:1; background:rgba(37,99,235,0.2); box-shadow:0 0 15px var(--accent); }
     .chapter-card { cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
     .chapter-card:hover:not(.locked) { transform:translateY(-5px); box-shadow:var(--glow-gold); }
@@ -300,43 +301,88 @@
     .question-block { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); padding:16px; margin-bottom:16px; }
     .drop-zone { border:2px dashed var(--border-gold); border-radius:var(--radius); padding:30px; text-align:center; cursor:pointer; transition:0.3s; background:rgba(255,255,255,0.02); margin:12px 0; }
     .drop-zone.dragover { border-color:var(--gold-bright); background:rgba(200,167,91,0.1); }
-    .tts-btn {
-      background: none; border: none; color: var(--accent-bright); cursor: pointer; font-size: 1.2rem; margin-left: 8px; vertical-align: middle;
-    }
-    .tts-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    /* Assessment Section Clean UI */
-    .assessment-container { max-width: 600px; margin: 0 auto; }
-    .assessment-item { margin-bottom: 18px; border-bottom: 1px solid var(--border-gold); padding-bottom: 16px; }
-    .assessment-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .assessment-question { font-weight: 600; margin-bottom: 12px; color: var(--text); font-size: 0.95rem; line-height: 1.5; }
-    .assessment-options { display: flex; gap: 40px; align-items: center; padding-left: 2px; }
-    .assessment-options label { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); cursor: pointer; font-size: 0.95rem; user-select: none; white-space: nowrap; }
-    .assessment-options input[type="radio"] { width: 18px; height: 18px; margin: 0; accent-color: var(--gold); flex-shrink: 0; }
-    /* Password toggle */
-    .password-wrapper { position: relative; }
-    .password-wrapper input { padding-right: 40px; }
-    .password-wrapper .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem; }
-    /* Slider fill effect */
+    .tts-btn { background:none; border:none; color:var(--accent-bright); cursor:pointer; font-size:1.2rem; margin-left:8px; vertical-align:middle; }
+    .tts-btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .assessment-container { max-width:600px; margin:0 auto; }
+    .assessment-item { margin-bottom:18px; border-bottom:1px solid var(--border-gold); padding-bottom:16px; }
+    .assessment-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .assessment-question { font-weight:600; margin-bottom:12px; color:var(--text); font-size:0.95rem; line-height:1.5; }
+    .assessment-options { display:flex; gap:40px; align-items:center; padding-left:2px; }
+    .assessment-options label { display:inline-flex; align-items:center; gap:8px; color:var(--text-secondary); cursor:pointer; font-size:0.95rem; user-select:none; white-space:nowrap; }
+    .assessment-options input[type="radio"] { width:18px; height:18px; margin:0; accent-color:var(--gold); flex-shrink:0; }
+    .password-wrapper { position:relative; }
+    .password-wrapper input { padding-right:40px; }
+    .password-wrapper .toggle-password { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.1rem; }
     .slider-item input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      height: 8px;
-      background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 50%), rgba(255,255,255,0.2) var(--fill-percent, 50%), rgba(255,255,255,0.2) 100%);
-      border-radius: 5px;
-      outline: none;
+      -webkit-appearance:none; appearance:none; height:8px;
+      background:linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 50%), rgba(255,255,255,0.2) var(--fill-percent, 50%), rgba(255,255,255,0.2) 100%);
+      border-radius:5px; outline:none;
     }
     .slider-item input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--accent-bright);
-      border: 2px solid white;
-      box-shadow: 0 0 10px var(--accent);
-      cursor: pointer;
+      -webkit-appearance:none; appearance:none; width:20px; height:20px;
+      border-radius:50%; background:var(--accent-bright); border:2px solid white;
+      box-shadow:0 0 10px var(--accent); cursor:pointer;
     }
-    @media (max-width: 600px) {
-      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    /* Slideshow Styles */
+    #hero-slideshow {
+      padding:0; border-radius:var(--radius); overflow:hidden; position:relative;
+      background:rgba(0,0,0,0.3);
+    }
+    #slides-container {
+      display:flex; transition:transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change:transform;
+    }
+    #slides-container .slide-item {
+      flex:0 0 100%; display:block; position:relative; overflow:hidden;
+    }
+    #slides-container .slide-item img {
+      width:100%; height:auto; display:block; object-fit:cover; max-height:420px;
+      animation:slideFade 0.8s ease;
+    }
+    #slide-dots {
+      position:absolute; bottom:12px; left:0; right:0; text-align:center; z-index:5;
+      display:flex; justify-content:center; gap:10px; padding:4px;
+    }
+    #slide-dots .dot {
+      cursor:pointer; font-size:1.2rem; color:rgba(255,255,255,0.5);
+      transition:color 0.3s, transform 0.3s; background:transparent; border:none; padding:4px;
+      line-height:1;
+    }
+    #slide-dots .dot.active { color:var(--gold-bright); transform:scale(1.4); }
+    #slide-dots .dot:hover { color:var(--gold-light); }
+    .slide-arrow {
+      position:absolute; top:50%; transform:translateY(-50%); z-index:5;
+      background:rgba(0,0,0,0.4); color:white; border:none; border-radius:50%;
+      width:40px; height:40px; font-size:1.2rem; cursor:pointer; transition:background 0.3s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .slide-arrow:hover { background:rgba(0,0,0,0.7); }
+    .slide-arrow.prev { left:8px; }
+    .slide-arrow.next { right:8px; }
+    @media (max-width:768px) {
+      .slide-arrow { width:32px; height:32px; font-size:0.9rem; }
+      #slides-container .slide-item img { max-height:240px; }
+      #slide-dots .dot { font-size:0.9rem; }
+    }
+    @keyframes slideFade {
+      0% { opacity:0.5; transform:scale(0.98); }
+      100% { opacity:1; transform:scale(1); }
+    }
+    /* Chapter modal content fix */
+    #chapter-modal-content {
+      line-height:1.8; max-height:60vh; overflow-y:auto; padding:4px 0;
+    }
+    #chapter-modal-content p, #chapter-modal-content h1, #chapter-modal-content h2,
+    #chapter-modal-content h3, #chapter-modal-content h4, #chapter-modal-content ul,
+    #chapter-modal-content ol, #chapter-modal-content blockquote {
+      margin-bottom:12px;
+    }
+    #chapter-modal-content img {
+      max-width:100%; border-radius:8px; margin:8px 0;
+    }
+    @media (max-width:600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+      .assessment-options { gap:20px; flex-wrap:wrap; }
     }
     @keyframes pulse {
       0% { transform:scale(1); } 50% { transform:scale(1.1); } 100% { transform:scale(1); }
@@ -351,7 +397,7 @@
     <div class="top-bar">
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">☰</button>
       <div class="logo">AlamQuant ATTS</div>
-      <button class="icon-btn" id="notif-btn" title="Notifications" onclick="requestPushPermission()" style="margin-right: 8px;">🔔</button>
+      <button class="icon-btn" id="notif-btn" title="Notifications" onclick="requestPushPermission()" style="margin-right:8px;">🔔</button>
       <button class="icon-btn" id="profile-btn" title="Profile" onclick="showPage('profile')">👤</button>
     </div>
     <div class="mobile-tabs" id="mobileTabs">
@@ -388,7 +434,7 @@
       <a data-page="settings">⚙️ Settings</a>
       <a data-page="theme-toggle">🌙 Dark Mode</a>
       <a data-page="help">❓ Help</a>
-      <a onclick="logout()" style="color: var(--danger);">🚪 Logout</a>
+      <a onclick="logout()" style="color:var(--danger);">🚪 Logout</a>
     </nav>
   </div>
   <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -445,14 +491,25 @@
 
     <!-- Dashboard (after login) -->
     <div id="dashboard" class="hidden" style="display:contents;">
-      <!-- Page: Journey -->
+
+      <!-- ========== PAGE: JOURNEY ========== -->
       <div id="page-journey" class="page-content">
+        <!-- Slideshow Hero -->
+        <div id="hero-slideshow" class="glass" style="padding:0; border-radius:var(--radius); overflow:hidden; position:relative; background:rgba(0,0,0,0.3);">
+          <div id="slides-container"></div>
+          <button class="slide-arrow prev" onclick="prevSlide()" aria-label="Previous slide">❮</button>
+          <button class="slide-arrow next" onclick="nextSlide()" aria-label="Next slide">❯</button>
+          <div id="slide-dots"></div>
+        </div>
+
         <div style="text-align:right; color:var(--text-secondary); font-size:0.9rem; margin-bottom:8px;" id="current-date-display"></div>
+
         <div id="daily-quest-card" class="glass quest-card">
           <div class="quest-header"><span>🎯 Daily Quest</span><span class="xp-reward">+15 XP</span></div>
           <p id="quest-desc">Loading...</p>
           <div class="quest-progress"><div class="progress-bar" style="flex:1;"><div id="quest-fill" class="progress-fill" style="width:0%"></div></div><button id="claim-quest-btn" class="btn btn-sm btn-accent" disabled onclick="claimQuestReward()">Claim</button></div>
         </div>
+
         <div class="glass" style="padding:18px 22px;">
           <div class="flex" style="justify-content:space-between; flex-wrap:wrap; gap:12px;">
             <div class="flex" style="gap:10px;"><span id="user-avatar" style="font-size:42px;">🙂</span><div><strong id="user-display-name" style="color:var(--gold-light);"></strong><div style="font-size:12px; color:var(--text-secondary);">Lv. <span id="user-level">1</span> · <span id="user-identity" class="phase-tag">Beginner</span></div></div></div>
@@ -460,34 +517,67 @@
           </div>
           <div class="xp-bar-container"><div id="xp-bar-fill" class="xp-bar-fill" style="width:0%"><span class="xp-text">Lv. <span id="user-level-bar">1</span></span></div></div>
         </div>
+
         <div class="glass" id="assessment-prompt" style="text-align:center;"><button class="btn btn-accent btn-lg" onclick="showAssessment()">📋 Assess Your Trading Mindset</button></div>
         <div id="assessment-screen" class="glass hidden">
           <h2>🧭 Trader Mindset Assessment</h2><div id="assessment-questions"></div><button class="btn btn-accent" onclick="submitAssessment()">Show Analysis</button><div id="assessment-result" class="hidden"></div>
         </div>
+
         <div class="glass" id="weekly-challenge-card"></div>
-        <div class="glass"><h3>Today's Journey (Day <span id="day-count">1</span>) <button class="tts-btn" onclick="speakText('journal-page')">🔊</button></h3><div id="morning-section"><p style="color:var(--accent-bright);">🌅 Morning Mindfulness</p><iframe width="100%" height="60" src="https://www.youtube.com/embed/inpok4MKVLM" style="border-radius:12px; margin:12px 0;" allowfullscreen></iframe><label class="flex"><input type="checkbox" id="mindfulness-done"> Done</label><p style="margin-top:8px;">✍️ Today's Commitment:</p><textarea id="commitment" rows="2" placeholder="I will trade by the rules today..."></textarea><button class="btn btn-lg" onclick="submitCheckin()" style="margin-top:8px;">✅ Check-in</button></div><div id="checkin-done-msg" class="hidden" style="color:var(--success);">✅ Check-in completed</div><div id="evaluation-section" class="hidden"><div id="mood-picker" class="mood-picker"><span>Today's Trading Mood:</span><span class="mood-emoji" data-mood="happy">😊</span><span class="mood-emoji" data-mood="neutral">😐</span><span class="mood-emoji" data-mood="stressed">😰</span><span class="mood-emoji" data-mood="angry">😡</span></div><hr style="border-color:var(--border-gold);"><h4>📊 Trading Session Evaluation</h4><div id="score-sliders"></div><div class="grid-2" style="margin-top:12px;"><div><label>Trade Count</label><input type="number" id="trades-count" value="0" min="0" required></div><div><label>Moved Stop Loss?</label><select id="stop-loss-moved" required><option value="false">No</option><option value="true">Yes</option></select></div><div><label>Deviated Plan?</label><select id="plan-deviation" required><option value="false">No</option><option value="true">Yes</option></select></div><div><label>Revenge Trade?</label><select id="revenge-trade" required><option value="false">No</option><option value="true">Yes</option></select></div><div><label>FOMO?</label><select id="fomo-entry" required><option value="false">No</option><option value="true">Yes</option></select></div><div><label>Overtrading?</label><select id="overtrading" required><option value="false">No</option><option value="true">Yes</option></select></div><div><label>Followed Rules?</label><select id="rule-followed" required><option value="true">Yes</option><option value="false">No</option></select></div></div><textarea id="evaluation-notes" rows="1" placeholder="Notes"></textarea><textarea id="reflection" rows="2" placeholder="Today's lesson"></textarea><div id="reflection-prompts" style="color:var(--accent-bright); font-style:italic;"></div><button class="btn btn-lg" onclick="submitEvaluation()">Submit Evaluation</button></div><div id="feedback-area" class="hidden"><hr><h4>🧠 AI Coach Feedback <button class="tts-btn" onclick="speakText('feedback-text')">🔊</button></h4><p id="feedback-text" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; border-left:4px solid var(--accent-bright);"></p><p><strong style="color:var(--gold);">📌 Tomorrow's Mission:</strong> <span id="tomorrow-mission"></span></p><div id="new-badges" class="flex"></div><button id="mystery-box-btn" class="btn btn-accent hidden" onclick="showMysteryBox()">🎁 Mystery Box</button></div></div></div>
+
+        <div class="glass"><h3>Today's Journey (Day <span id="day-count">1</span>) <button class="tts-btn" onclick="speakText('journal-page')">🔊</button></h3>
+          <div id="morning-section">
+            <p style="color:var(--accent-bright);">🌅 Morning Mindfulness</p>
+            <iframe width="100%" height="60" src="https://www.youtube.com/embed/inpok4MKVLM" style="border-radius:12px; margin:12px 0;" allowfullscreen></iframe>
+            <label class="flex"><input type="checkbox" id="mindfulness-done"> Done</label>
+            <p style="margin-top:8px;">✍️ Today's Commitment:</p>
+            <textarea id="commitment" rows="2" placeholder="I will trade by the rules today..."></textarea>
+            <button class="btn btn-lg" onclick="submitCheckin()" style="margin-top:8px;">✅ Check-in</button>
+          </div>
+          <div id="checkin-done-msg" class="hidden" style="color:var(--success);">✅ Check-in completed</div>
+          <div id="evaluation-section" class="hidden">
+            <div id="mood-picker" class="mood-picker"><span>Today's Trading Mood:</span><span class="mood-emoji" data-mood="happy">😊</span><span class="mood-emoji" data-mood="neutral">😐</span><span class="mood-emoji" data-mood="stressed">😰</span><span class="mood-emoji" data-mood="angry">😡</span></div>
+            <hr style="border-color:var(--border-gold);">
+            <h4>📊 Trading Session Evaluation</h4>
+            <div id="score-sliders"></div>
+            <div class="grid-2" style="margin-top:12px;">
+              <div><label>Trade Count</label><input type="number" id="trades-count" value="0" min="0" required></div>
+              <div><label>Moved Stop Loss?</label><select id="stop-loss-moved" required><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div><label>Deviated Plan?</label><select id="plan-deviation" required><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div><label>Revenge Trade?</label><select id="revenge-trade" required><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div><label>FOMO?</label><select id="fomo-entry" required><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div><label>Overtrading?</label><select id="overtrading" required><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div><label>Followed Rules?</label><select id="rule-followed" required><option value="true">Yes</option><option value="false">No</option></select></div>
+            </div>
+            <textarea id="evaluation-notes" rows="1" placeholder="Notes"></textarea>
+            <textarea id="reflection" rows="2" placeholder="Today's lesson"></textarea>
+            <div id="reflection-prompts" style="color:var(--accent-bright); font-style:italic;"></div>
+            <button class="btn btn-lg" onclick="submitEvaluation()">Submit Evaluation</button>
+          </div>
+          <div id="feedback-area" class="hidden"><hr><h4>🧠 AI Coach Feedback <button class="tts-btn" onclick="speakText('feedback-text')">🔊</button></h4><p id="feedback-text" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; border-left:4px solid var(--accent-bright);"></p><p><strong style="color:var(--gold);">📌 Tomorrow's Mission:</strong> <span id="tomorrow-mission"></span></p><div id="new-badges" class="flex"></div><button id="mystery-box-btn" class="btn btn-accent hidden" onclick="showMysteryBox()">🎁 Mystery Box</button></div>
+        </div>
       </div>
 
-      <!-- Page: Training -->
+      <!-- ========== PAGE: TRAINING ========== -->
       <div id="page-training" class="page-content hidden">
         <div class="glass"><div style="display:flex; justify-content:space-between;"><span>⚡ Energy</span><span><strong id="energy-current">50</strong>/<span id="energy-max">100</span></span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill" style="width:100%;"></div></div></div>
         <div class="glass"><h2>📚 Trader Training Academy</h2><div id="chapter-list" class="grid-2"></div></div>
         <div id="final-exam-section" class="glass hidden" style="text-align:center;"><h3>🏆 Final Exam</h3><button class="btn btn-accent btn-lg" onclick="startFinalExam()">Start</button></div>
       </div>
 
-      <!-- Page: Habits -->
+      <!-- ========== PAGE: HABITS ========== -->
       <div id="page-habits" class="page-content hidden">
         <div class="glass" style="text-align:right;"><button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ New Habit</button></div>
         <div id="habits-list"></div>
         <div id="add-habit-modal" class="modal-overlay hidden"><div class="glass modal-content"><h3>New Habit</h3><input type="text" id="new-habit-title" placeholder="Name"><div class="flex"><select id="new-habit-icon"><option value="🧘">🧘</option><option value="🏃">🏃</option><option value="📖">📖</option></select><input type="color" id="new-habit-color" value="#C8A75B" style="width:50px;"></div><input type="text" id="new-habit-times" placeholder="06:00,12:00"><button class="btn btn-lg" onclick="saveHabit()">Save</button></div></div>
       </div>
 
-      <!-- Page: Progress -->
+      <!-- ========== PAGE: PROGRESS ========== -->
       <div id="page-progress" class="page-content hidden">
         <div class="glass"><h3>📈 Progress</h3><div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div><p>30-Day Journey: <strong id="progress-text">0%</strong></p><div class="timeline" id="journey-timeline"></div><p>Discipline Streak: <strong id="discipline-streak-text">0</strong> days</p><div id="heatmap" class="flex" style="gap:4px; overflow-x:auto;"></div><div id="badges-list" class="flex"></div><canvas id="radarChart" class="chart-container"></canvas><canvas id="scoresChart" class="chart-container"></canvas><p><span id="identity-phase-text" class="phase-tag">Beginner</span></p><button id="certificate-btn" class="btn btn-accent hidden" onclick="downloadCertificate()">🏆 Certificate</button></div>
       </div>
 
-      <!-- Page: Community -->
+      <!-- ========== PAGE: COMMUNITY ========== -->
       <div id="page-community" class="page-content hidden">
         <div class="glass">
           <div class="flex"><select id="post-type"><option value="lesson">Lesson</option><option value="mistake">Mistake</option></select><textarea id="post-content" rows="1" placeholder="Share your thoughts..."></textarea><button class="btn btn-sm" onclick="submitPost()">Post</button></div>
@@ -504,7 +594,7 @@
         </div>
       </div>
 
-      <!-- Page: Profile -->
+      <!-- ========== PAGE: PROFILE ========== -->
       <div id="page-profile" class="page-content hidden">
         <div class="glass">
           <h3>👤 Profile</h3>
@@ -566,7 +656,7 @@
   <div id="forgot-password-modal" class="modal-overlay hidden">
     <div class="glass modal-content"><h3>🔑 Reset Password</h3><input type="email" id="reset-email" placeholder="Your email"><button class="btn" onclick="requestPasswordReset()">Send Link</button><button class="btn btn-outline" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')">Close</button></div>
   </div>
-  <div id="chapter-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button><h2 id="chapter-modal-title"></h2> <button class="tts-btn" id="chapter-tts-btn" onclick="toggleChapterTTS()" title="Read aloud">🔊</button><div id="chapter-images-gallery" class="flex" style="gap:10px; flex-wrap:wrap;"></div><div id="chapter-modal-video-container"></div><div id="chapter-modal-content" style="line-height:1.8;"></div><hr><div style="display:flex; justify-content:space-between;"><h3>🧪 Quiz</h3><select id="quiz-mode-select" onchange="setQuizMode()" style="width:auto;"><option value="learning">Learning</option><option value="practice">Practice</option></select></div><div id="practice-timer" style="color:var(--accent-bright);"></div><div id="quiz-container"></div><div id="quiz-result" class="hidden"></div><button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()">Submit Answers</button></div></div>
+  <div id="chapter-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterModal()">✕</button><h2 id="chapter-modal-title"></h2> <button class="tts-btn" id="chapter-tts-btn" onclick="toggleChapterTTS()" title="Read aloud">🔊</button><div id="chapter-images-gallery" class="flex" style="gap:10px; flex-wrap:wrap;"></div><div id="chapter-modal-video-container"></div><div id="chapter-modal-content" style="line-height:1.8; max-height:60vh; overflow-y:auto; padding:4px 0;"></div><hr><div style="display:flex; justify-content:space-between;"><h3>🧪 Quiz</h3><select id="quiz-mode-select" onchange="setQuizMode()" style="width:auto;"><option value="learning">Learning</option><option value="practice">Practice</option></select></div><div id="practice-timer" style="color:var(--accent-bright);"></div><div id="quiz-container"></div><div id="quiz-result" class="hidden"></div><button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()">Submit Answers</button></div></div>
   <div id="final-exam-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><h2>🏆 Final Exam</h2><p>⏳ <span id="overall-timer">20:00</span></p><div id="final-exam-questions"></div><button class="btn btn-accent btn-lg" onclick="submitFinalExam()">Submit</button><div id="final-exam-result" class="hidden"></div></div></div>
   <div id="toast" class="toast"></div>
   <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#0B1220; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;"><div style="border:4px solid rgba(200,167,91,0.15); border-top:4px solid #C8A75B; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div><span style="color:var(--gold-bright); font-weight:700; font-size:1.1rem;">AlamQuant ATTS</span></div>
@@ -606,34 +696,49 @@
     let speechSynth = window.speechSynthesis;
     let currentUtterance = null;
 
+    // Slideshow state
+    let slidesData = [];
+    let currentSlideIndex = 0;
+    let slideInterval = null;
+    let slideAutoPlay = true;
+
     // ==================== Utility Functions ====================
     function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
     function showToast(msg, d=3000) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), d); }
     function celebrate(msg) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#C8A75B','#F6E4B5','#2563EB','#7C3AED'] }); if (msg) showToast(msg); }
     function showFloatingXp(xp) { const e = document.createElement('div'); e.className = 'float-xp'; e.textContent = `+${xp} XP`; document.body.appendChild(e); setTimeout(() => e.remove(), 2000); }
     function validateForm(sel) { const inputs = document.querySelectorAll(sel + ' input:not([type="checkbox"]), ' + sel + ' textarea, ' + sel + ' select'); let v = true, first = null; inputs.forEach(i => { if(!i.value.trim()) { v = false; i.style.borderColor = 'var(--danger)'; if(!first) first = i; } else i.style.borderColor = ''; }); if(!v && first) { first.focus(); showToast('Please fill all required fields.'); } return v; }
-   async function apiCall(m, p, b, showErr=true) {
-  const h = {'Content-Type':'application/json'};
-  if(token) h['Authorization'] = `Bearer ${token}`;
-  try {
-    const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
-    if(r.status === 401) { logout(); return null; }
-    // কন্টেন্ট-টাইপ চেক করে JSON নেওয়া (না হলে এরর থ্রো করবে)
-    const contentType = r.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error(`Invalid response format (expected JSON, got ${contentType})`);
+
+    // ==================== API Call with Safe JSON Parsing ====================
+    async function apiCall(m, p, b, showErr=true) {
+      const h = {'Content-Type':'application/json'};
+      if(token) h['Authorization'] = `Bearer ${token}`;
+      try {
+        const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
+        if(r.status === 401) { logout(); return null; }
+        // Safe JSON parsing
+        let d = null;
+        const contentType = r.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          try {
+            d = await r.json();
+          } catch (jsonErr) {
+            if (showErr) showToast('Invalid server response format');
+            return null;
+          }
+        } else {
+          // Non-JSON response – treat as error
+          if (showErr) showToast('Unexpected server response');
+          return null;
+        }
+        if (d && d.error && showErr) showToast(d.error);
+        return d;
+      } catch(e) {
+        console.error('API Call Failed [' + p + ']:', e.message || e);
+        if (showErr) showToast('Network error – please try again');
+        return null;
+      }
     }
-    const d = await r.json();
-    if(d.error && showErr) showToast(d.error);
-    return d;
-  } catch(e) {
-    // কনসোলে বিস্তারিত লগ (আপনি চাইলে নেটওয়ার্ক সমস্যাও আলাদা করে ধরতে পারেন)
-    console.error(`API Call Failed [${p}]:`, e.message || e);
-    // যদি নেটওয়ার্কের বাইরে অন্য কারণ হয়, তার মেসেজ টোস্টে দেখান (ঐচ্ছিক)
-    // এখানে showToast কল না করলে “Network error” আর আসবে না
-    return null;
-  }
-}
 
     // ==================== i18n ====================
     const i18n = {
@@ -654,7 +759,7 @@
       }
     };
 
-    // ==================== TTS (Text-to-Speech) ====================
+    // ==================== TTS ====================
     function speakText(elementId) {
       if (speechSynth.speaking) speechSynth.cancel();
       const element = document.getElementById(elementId);
@@ -668,7 +773,6 @@
       utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
       speechSynth.speak(utterance);
     }
-
     function speakElementContent(elementId) {
       if (speechSynth.speaking) speechSynth.cancel();
       const el = document.getElementById(elementId);
@@ -682,7 +786,6 @@
       utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
       speechSynth.speak(utterance);
     }
-
     function toggleChapterTTS() {
       if (speechSynth.speaking) { speechSynth.cancel(); document.getElementById('chapter-tts-btn').textContent = '🔊'; return; }
       const contentEl = document.getElementById('chapter-modal-content');
@@ -698,7 +801,7 @@
       speechSynth.speak(utterance);
     }
 
-    // ==================== Browser History Navigation ====================
+    // ==================== Browser History ====================
     window.addEventListener('popstate', (event) => {
       if (event.state && event.state.page) showPage(event.state.page, true);
     });
@@ -846,7 +949,7 @@
       if (pageEl) pageEl.classList.remove('hidden');
       if (speechSynth.speaking) speechSynth.cancel();
       switch(pageName) {
-        case 'journey': renderSliders(); loadDailyQuest(); loadProfile(); updateDateDisplay(); break;
+        case 'journey': renderSliders(); loadDailyQuest(); loadProfile(); updateDateDisplay(); loadSlideshow(); loadWeeklyChallenge(); break;
         case 'training': loadTrainingTab(); break;
         case 'habits': loadHabits(); break;
         case 'progress': loadProgress(); break;
@@ -945,6 +1048,80 @@
       } catch(e) { /* silently ignore */ }
     }
 
+    // ==================== Slideshow Functions ====================
+    async function loadSlideshow() {
+      try {
+        const res = await fetch(`${API}/slideshow`);
+        if (!res.ok) { throw new Error('Failed to fetch slides'); }
+        slidesData = await res.json();
+        const container = document.getElementById('slides-container');
+        const dotsDiv = document.getElementById('slide-dots');
+        if (!slidesData || slidesData.length === 0) {
+          document.getElementById('hero-slideshow').classList.add('hidden');
+          return;
+        }
+        document.getElementById('hero-slideshow').classList.remove('hidden');
+        const isMobile = window.innerWidth <= 768;
+        container.innerHTML = slidesData.map((slide, i) => {
+          const imgUrl = isMobile ? (slide.image_url_mobile || slide.image_url_desktop) : (slide.image_url_desktop || slide.image_url_mobile);
+          return `<div class="slide-item">
+            <a href="${slide.link_url || '#'}" target="${slide.link_url ? '_blank' : '_self'}" style="display:block;">
+              <img src="${imgUrl}" alt="${escapeHtml(slide.title || 'Slide ' + (i+1))}" loading="lazy">
+            </a>
+          </div>`;
+        }).join('');
+        container.style.width = (slidesData.length * 100) + '%';
+        dotsDiv.innerHTML = slidesData.map((_, i) =>
+          `<button class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})" aria-label="Slide ${i+1}">●</button>`
+        ).join('');
+        currentSlideIndex = 0;
+        showSlide(0);
+        startAutoSlide();
+        // Remove old resize listener to avoid duplicates
+        window.removeEventListener('resize', handleSlideResize);
+        window.addEventListener('resize', handleSlideResize);
+      } catch(e) {
+        console.warn('Slideshow load failed:', e);
+        document.getElementById('hero-slideshow').classList.add('hidden');
+      }
+    }
+
+    function showSlide(index) {
+      if (!slidesData || slidesData.length === 0) return;
+      currentSlideIndex = (index + slidesData.length) % slidesData.length;
+      const container = document.getElementById('slides-container');
+      container.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+      document.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlideIndex);
+      });
+    }
+
+    function goToSlide(index) { showSlide(index); resetAutoSlide(); }
+
+    function nextSlide() { showSlide(currentSlideIndex + 1); resetAutoSlide(); }
+    function prevSlide() { showSlide(currentSlideIndex - 1); resetAutoSlide(); }
+
+    function startAutoSlide() {
+      if (slideInterval) clearInterval(slideInterval);
+      if (slidesData && slidesData.length > 1) {
+        slideInterval = setInterval(nextSlide, 5000);
+      }
+    }
+
+    function resetAutoSlide() {
+      if (slideInterval) { clearInterval(slideInterval); slideInterval = null; }
+      startAutoSlide();
+    }
+
+    function handleSlideResize() {
+      // Only re-render if the screen size crosses the mobile threshold
+      // But we can just update the images by re-loading slides
+      // To avoid flicker, we just reload if needed
+      if (document.getElementById('hero-slideshow') && !document.getElementById('hero-slideshow').classList.contains('hidden')) {
+        loadSlideshow();
+      }
+    }
+
     // ==================== Profile & Dashboard ====================
     async function loadProfile() {
       const d = await apiCall('GET', '/profile'); if(!d) return;
@@ -979,31 +1156,34 @@
         document.getElementById('feedback-area').classList.add('hidden');
       }
       loadDailyQuest();
-  loadWeeklyChallenge();
-}
+      loadWeeklyChallenge();
+    }
 
-// নতুন ফাংশন (loadProfile-এর বাইরে যোগ করুন)
-async function loadWeeklyChallenge() {
-  const challenge = await apiCall('GET', '/weekly-challenge');
-  const container = document.getElementById('weekly-challenge-card');
-  if (!container) return;
-  if (challenge && challenge.id) {
-    const progress = challenge.progress || 0;
-    const percent = Math.min(100, (progress / challenge.target) * 100);
-    container.innerHTML = `
-      <h4>📅 Weekly Challenge</h4>
-      <p><strong>${escapeHtml(challenge.title)}</strong>: ${escapeHtml(challenge.description)}</p>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${percent}%"></div>
-      </div>
-      <small>${progress} / ${challenge.target} completed · Reward: ${challenge.reward_xp} XP</small>
-    `;
-    container.classList.remove('hidden');
-  } else {
-    container.innerHTML = '';
-    container.classList.add('hidden');
-  }
-}
+    async function loadWeeklyChallenge() {
+      const container = document.getElementById('weekly-challenge-card');
+      if (!container) return;
+      try {
+        const challenge = await apiCall('GET', '/weekly-challenge');
+        if (challenge && challenge.id) {
+          const progress = challenge.progress || 0;
+          const percent = Math.min(100, (progress / challenge.target) * 100);
+          container.innerHTML = `
+            <h4>📅 Weekly Challenge</h4>
+            <p><strong>${escapeHtml(challenge.title)}</strong>: ${escapeHtml(challenge.description)}</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${percent}%"></div>
+            </div>
+            <small>${progress} / ${challenge.target} completed · Reward: ${challenge.reward_xp} XP</small>
+          `;
+          container.classList.remove('hidden');
+        } else {
+          container.innerHTML = '';
+          container.classList.add('hidden');
+        }
+      } catch(e) {
+        container.classList.add('hidden');
+      }
+    }
 
     function updateXpBar(xp, lv) { const p = Math.min(100, Math.max(0, ((xp - (lv-1)*75) / 75) * 100)); document.getElementById('xp-bar-fill').style.width = p + '%'; }
     function showLevelUp(nl) { document.getElementById('level-up-title').innerHTML = `Level ${nl}!`; document.getElementById('level-up-modal').classList.remove('hidden'); confetti(); }
@@ -1095,7 +1275,9 @@ async function loadWeeklyChallenge() {
     async function openChapterModal(id) {
       currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return;
       document.getElementById('chapter-modal-title').textContent = d.title;
-      document.getElementById('chapter-modal-content').innerHTML = DOMPurify.sanitize(d.content_text || '');
+      const contentDiv = document.getElementById('chapter-modal-content');
+      const contentHtml = d.content_text || '';
+      contentDiv.innerHTML = contentHtml.trim() ? DOMPurify.sanitize(contentHtml) : '<p style="color:var(--text-secondary);">📖 No content available for this chapter.</p>';
       document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join('');
       document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join('');
       currentChapterQuestions = d.questions || [];
@@ -1226,28 +1408,21 @@ async function loadWeeklyChallenge() {
         container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join('');
       }
     }
-       async function uploadMedia(file) {
+    async function uploadMedia(file) {
       try {
         let processedFile = file;
         if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
         const formData = new FormData();
         formData.append('image', processedFile);
-
         const res = await fetch(`${API}/upload-image`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
         });
         const data = await res.json();
-        if (data.error) {
-          showToast('Upload Error: ' + data.error); // 🔁 এই লাইনটি যোগ করা হয়েছে
-          return null;
-        }
+        if (data.error) { showToast('Upload Error: ' + data.error); return null; }
         return data.url || null;
-      } catch(e) {
-        showToast('Network error or failed: ' + e.message); // 🔁 এই লাইনটিও যোগ করা হয়েছে
-        return null;
-      }
+      } catch(e) { showToast('Network error: ' + e.message); return null; }
     }
     async function resizeImage(file, maxWidth) {
       const img = await createImageBitmap(file);
@@ -1308,13 +1483,26 @@ async function loadWeeklyChallenge() {
       updateEvolutionTree(d.user.identity_level);
       initProfileDropZone();
       loadReminderSettings();
-      // Streak Freeze section
       const freezeData = await apiCall('GET', '/streak-freeze');
       const freezeCount = freezeData?.quantity || 0;
-      document.getElementById('profile-streak-freeze').innerHTML = `
-        <p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p>
-        <button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>
-      `;
+      const existingFreezeEl = document.getElementById('profile-streak-freeze');
+      if (existingFreezeEl) {
+        existingFreezeEl.innerHTML = `
+          <p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p>
+          <button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>
+        `;
+      } else {
+        const container = document.getElementById('profile-badges');
+        if (container) {
+          const div = document.createElement('div');
+          div.id = 'profile-streak-freeze';
+          div.innerHTML = `
+            <p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p>
+            <button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>
+          `;
+          container.parentNode.insertBefore(div, container.nextSibling);
+        }
+      }
     }
     async function changeAvatar() { const e = document.getElementById('avatar-select').value; await apiCall('POST', '/profile', { avatar_emoji:e }); document.getElementById('profile-avatar').textContent = e; document.getElementById('user-avatar').textContent = e; }
     async function changeLanguage(lang) { await apiCall('POST', '/settings', { language: lang }); i18n.load(lang); }
@@ -1350,7 +1538,7 @@ async function loadWeeklyChallenge() {
       const res = await apiCall('POST', '/use-streak-freeze');
       if (res?.success) {
         showToast(`Streak freeze used! Remaining: ${res.remaining}`);
-        loadProfilePage(); // refresh the count
+        loadProfilePage();
       } else {
         showToast(res?.error || 'Failed');
       }
@@ -1362,21 +1550,20 @@ async function loadWeeklyChallenge() {
 
     // ==================== Init ====================
     async function initDashboard(user) {
-  await checkVersion();
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('dashboard').classList.remove('hidden');
-  currentUser = user; previousLevel = user.level;
+      await checkVersion();
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      currentUser = user; previousLevel = user.level;
 
-  // 👇 এই লাইনটি যোগ করুন – প্রথম state সেট করে দেয়
-  if (!window.history.state || !window.history.state.page) {
-    window.history.replaceState({ page: 'journey' }, '', '#/journey');
-  }
+      if (!window.history.state || !window.history.state.page) {
+        window.history.replaceState({ page: 'journey' }, '', '#/journey');
+      }
 
-  showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone(); applyAdminTheme();
-  if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
-  updateDateDisplay();
-}
+      showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone(); applyAdminTheme();
+      if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
+      updateDateDisplay();
+    }
 
     window.addEventListener('load', async () => {
       if ('serviceWorker' in navigator) {
@@ -1394,11 +1581,99 @@ async function loadWeeklyChallenge() {
         } catch(e) { console.error('SW registration failed', e); }
       }
       await i18n.init();
-      applyAdminTheme(); // apply admin theme on first load if possible
+      applyAdminTheme();
       try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if(s.site_title) document.getElementById('app-title').textContent = s.site_title; } catch(e) {}
       if(token) { const d = await apiCall('GET', '/profile'); if(d) initDashboard(d.user); else logout(); }
       else { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }
     });
+
+    // ==================== Additional: Password Reset Request ====================
+    async function requestPasswordReset() {
+      const email = document.getElementById('reset-email').value.trim();
+      if (!email) return showToast('Please enter your email');
+      const res = await apiCall('POST', '/request-password-reset', { email });
+      if (res) showToast('If the email exists, a reset link has been sent.');
+      document.getElementById('forgot-password-modal').classList.add('hidden');
+    }
+
+    // ==================== Mystery Box ====================
+    function showMysteryBox() {
+      document.getElementById('mystery-box-modal').classList.remove('hidden');
+      document.getElementById('mystery-result').textContent = '';
+    }
+    async function openMysteryBox() {
+      const res = await apiCall('POST', '/open-box');
+      if (res && res.reward) {
+        document.getElementById('mystery-result').textContent = `🎉 You got: ${res.reward}`;
+        celebrate(`🎁 ${res.reward}`);
+        if (res.reward.includes('XP')) {
+          const xp = parseInt(res.reward) || 0;
+          if (xp) showFloatingXp(xp);
+        }
+        document.getElementById('mystery-box-btn').classList.add('hidden');
+      } else {
+        document.getElementById('mystery-result').textContent = 'No box available today.';
+      }
+    }
+
+    // ==================== Certificate Download ====================
+    async function downloadCertificate() {
+      window.open(`${API}/certificate`, '_blank');
+    }
+
+    // ==================== Global Expose ====================
+    window.showPage = showPage;
+    window.logout = logout;
+    window.login = login;
+    window.register = register;
+    window.showRegister = showRegister;
+    window.showLogin = showLogin;
+    window.togglePasswordVisibility = togglePasswordVisibility;
+    window.requestPushPermission = requestPushPermission;
+    window.toggleTheme = toggleTheme;
+    window.changeLanguage = changeLanguage;
+    window.changeAvatar = changeAvatar;
+    window.showAssessment = showAssessment;
+    window.submitAssessment = submitAssessment;
+    window.submitCheckin = submitCheckin;
+    window.submitEvaluation = submitEvaluation;
+    window.claimQuestReward = claimQuestReward;
+    window.openChapterModal = openChapterModal;
+    window.closeChapterModal = closeChapterModal;
+    window.submitChapterQuiz = submitChapterQuiz;
+    window.startFinalExam = startFinalExam;
+    window.submitFinalExam = submitFinalExam;
+    window.setQuizMode = setQuizMode;
+    window.toggleChapterTTS = toggleChapterTTS;
+    window.speakText = speakText;
+    window.speakElementContent = speakElementContent;
+    window.showAddHabitForm = showAddHabitForm;
+    window.saveHabit = saveHabit;
+    window.toggleHabitTime = toggleHabitTime;
+    window.submitPost = submitPost;
+    window.likePost = likePost;
+    window.toggleReply = toggleReply;
+    window.handleFolderUpload = handleFolderUpload;
+    window.completeLesson = completeLesson;
+    window.useStreakFreeze = useStreakFreeze;
+    window.showMysteryBox = showMysteryBox;
+    window.openMysteryBox = openMysteryBox;
+    window.downloadCertificate = downloadCertificate;
+    window.requestPasswordReset = requestPasswordReset;
+    window.addTimeBlock = addTimeBlock;
+    window.removeTimeBlock = removeTimeBlock;
+    window.updateTimes = updateTimes;
+    window.toggleAmpm = toggleAmpm;
+    window.toggleReminderFields = toggleReminderFields;
+    window.saveReminderSettings = saveReminderSettings;
+    window.updateSliderFill = updateSliderFill;
+    window.renderSliders = renderSliders;
+    window.loadWeeklyChallenge = loadWeeklyChallenge;
+    window.loadSlideshow = loadSlideshow;
+    window.goToSlide = goToSlide;
+    window.nextSlide = nextSlide;
+    window.prevSlide = prevSlide;
+    window.showSlide = showSlide;
   </script>
 </body>
 </html>

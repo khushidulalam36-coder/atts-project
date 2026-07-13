@@ -371,18 +371,15 @@ function toNodeHandler(handlerFn) {
     const fullUrl = `${protocol}://${host}${req.url}`;
 
     // ---------- Multipart file upload handling ----------
-    const isUploadRoute = req.url.includes('/api/setup/admin/upload-image') || 
-                      req.url.includes('/api/setup/upload-image');
+    const isUploadRoute = (req.url.includes('/api/setup/admin/upload-image') || req.url.includes('/api/setup/upload-image'));
 
-if (req.method === 'POST' && isUploadRoute) {
-  // 👇 এই লাইনটি যুক্ত করুন – কুয়েরি স্ট্রিং বাদ দিয়ে শুধু পাথ নেয়
-  const reqPath = req.url.split('?')[0];
+    if (req.method === 'POST' && isUploadRoute) {
+      const reqPath = req.url.split('?')[0];
+      let requiredRole = null;
+      if (reqPath === '/api/setup/admin/upload-image') {
+        requiredRole = 'admin';
+      }
 
-  let requiredRole = null;
-  if (reqPath === '/api/setup/admin/upload-image') {   // ✅ এখন কাজ করবে
-    requiredRole = 'admin';
-  }
-      
       const authHeader = req.headers.authorization;
       if (!authHeader) {
         res.writeHead(401, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
@@ -986,6 +983,18 @@ async function apiHandler(req) {
         language VARCHAR(10) DEFAULT 'en'
       )`;
 
+      // ----- Slideshow Images (NEW) -----
+      await sql`CREATE TABLE IF NOT EXISTS slideshow_images (
+        id SERIAL PRIMARY KEY,
+        image_url_desktop TEXT NOT NULL,
+        image_url_mobile TEXT NOT NULL,
+        title VARCHAR(255),
+        link_url TEXT,
+        sort_order INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
       // ----- ADD INDEXES -----
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_journals_user_date ON daily_journals(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_badges_user ON badges(user_id)`;
@@ -1186,7 +1195,6 @@ async function apiHandler(req) {
           await sql`UPDATE users SET display_name = ${display_name} WHERE id = ${user.id}`;
           user.display_name = display_name;
         }
-        // Update language if provided
         if (language) {
           await sql`INSERT INTO user_settings (user_id, language) VALUES (${user.id}, ${language}) ON CONFLICT (user_id) DO UPDATE SET language = ${language}`;
         }
@@ -1688,6 +1696,58 @@ async function apiHandler(req) {
       }
     }
 
+    // --- Slideshow Management (NEW) ---
+    if (path === '/admin/slideshow' && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const images = await sql`SELECT * FROM slideshow_images ORDER BY sort_order, id`;
+      return json(images);
+    }
+
+    if (path === '/admin/slideshow' && req.method === 'POST') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const body = await req.json();
+      const { image_url_desktop, image_url_mobile, title, link_url, sort_order, is_active } = body;
+      if (!image_url_desktop || !image_url_mobile) return errorJson('Both desktop and mobile image URLs required', 400);
+      const [newSlide] = await sql`
+        INSERT INTO slideshow_images (image_url_desktop, image_url_mobile, title, link_url, sort_order, is_active)
+        VALUES (${image_url_desktop}, ${image_url_mobile}, ${title || null}, ${link_url || null}, ${sort_order || 0}, ${is_active ?? true})
+        RETURNING *
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_slideshow', ${JSON.stringify({id: newSlide.id})})`;
+      return json(newSlide, 201);
+    }
+
+    if (path.match(/^\/admin\/slideshow\/(\d+)$/) && req.method === 'PUT') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const slideId = parseInt(path.split('/')[3]);
+      const body = await req.json();
+      const { image_url_desktop, image_url_mobile, title, link_url, sort_order, is_active } = body;
+      await sql`
+        UPDATE slideshow_images SET
+          image_url_desktop = COALESCE(${image_url_desktop}, image_url_desktop),
+          image_url_mobile = COALESCE(${image_url_mobile}, image_url_mobile),
+          title = COALESCE(${title}, title),
+          link_url = COALESCE(${link_url}, link_url),
+          sort_order = COALESCE(${sort_order}, sort_order),
+          is_active = COALESCE(${is_active}, is_active)
+        WHERE id = ${slideId}
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_slideshow', ${JSON.stringify({id: slideId})})`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/slideshow\/(\d+)$/) && req.method === 'DELETE') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const slideId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM slideshow_images WHERE id = ${slideId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_slideshow', ${JSON.stringify({id: slideId})})`;
+      return json({ success: true });
+    }
+
     // --- Activity Log ---
     if (path === '/admin/activity-log' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
@@ -1727,6 +1787,12 @@ async function apiHandler(req) {
       }
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_settings', ${JSON.stringify(body)})`;
       return json({ success: true });
+    }
+
+    // ==================== PUBLIC SLIDESHOW (New) ====================
+    if (path === '/slideshow' && req.method === 'GET') {
+      const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
+      return json(slides);
     }
 
     // ==================== AUTH REQUIRED USER ROUTES ====================
@@ -2363,7 +2429,7 @@ async function apiHandler(req) {
         score, passed, total, correct, xp_earned: passed ? 100 : 0,
         message: passed ? 'Congratulations! You passed the final exam.' : `Score: ${score.toFixed(0)}%, Passing: 80%`,
         explanations: explanations,
-        questions: questions.map(q => ({ id: q.id, question: q.question })) // optional: include question text
+        questions: questions.map(q => ({ id: q.id, question: q.question }))
       });
     }
 

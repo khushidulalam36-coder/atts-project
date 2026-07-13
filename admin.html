@@ -129,6 +129,7 @@
       <a data-tab="media" onclick="switchTab('media')">🖼️ Media</a>
       <a data-tab="translations" onclick="switchTab('translations')">🌐 Translations</a>
       <a data-tab="assessments" onclick="switchTab('assessments')">📋 Assessments</a>
+      <a data-tab="slideshow" onclick="switchTab('slideshow')">🖼️ Slideshow</a>
       <a data-tab="activity" onclick="switchTab('activity')">📋 Activity</a>
       <a data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</a>
       <a onclick="logout()" style="color: var(--danger);">🚪 Logout</a>
@@ -253,11 +254,62 @@
     </div>
   </div>
 
+  <!-- Slideshow Edit Modal -->
+  <div id="slideshow-edit-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeSlideshowModal()">✕</button>
+      <h3 id="slideshow-modal-title">Add Slideshow Image</h3>
+      <input type="hidden" id="ss-edit-id">
+      <div class="grid-2">
+        <div>
+          <label>Desktop Image URL</label>
+          <input type="text" id="ss-desktop-url" required>
+        </div>
+        <div>
+          <label>Mobile Image URL</label>
+          <input type="text" id="ss-mobile-url" required>
+        </div>
+      </div>
+      <label>Title</label>
+      <input type="text" id="ss-title">
+      <label>Link URL (optional)</label>
+      <input type="text" id="ss-link">
+      <div class="grid-2">
+        <div>
+          <label>Sort Order</label>
+          <input type="number" id="ss-order" value="0">
+        </div>
+        <div>
+          <label>Active</label>
+          <select id="ss-active">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="saveSlide()">Save</button>
+      <button class="btn btn-outline" onclick="closeSlideshowModal()">Cancel</button>
+    </div>
+  </div>
+
   <script>
     const API = '/api/setup';
     const ADMIN_APP_VERSION = '2.0.1';
     let adminToken = localStorage.getItem('adminToken');
     let quillEditor = null;
+
+    // ------ Global helper ------
+    function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
+
+    function showToast(msg, dur=3000) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), dur);
+    }
 
     async function checkVersion() {
       try {
@@ -271,18 +323,7 @@
       } catch(e) {}
     }
 
-    function showToast(msg, dur=3000) {
-      const existing = document.querySelector('.toast');
-      if (existing) existing.remove();
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), dur);
-    }
-
-    function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
-
+    // ------ Admin API call ------
     async function adminApiCall(method, path, body = null, showError = true) {
       const headers = { 'Content-Type': 'application/json' };
       if (adminToken) headers['Authorization'] = `Bearer ${adminToken}`;
@@ -300,6 +341,7 @@
       }
     }
 
+    // ------ Auth ------
     function logout() {
       localStorage.removeItem('adminToken');
       adminToken = null;
@@ -334,6 +376,7 @@
       }
     }
 
+    // ------ Tab switching ------
     function switchTab(tab) {
       document.querySelectorAll('.admin-sidebar nav a').forEach(a => a.classList.remove('active'));
       const activeLink = document.querySelector(`.admin-sidebar nav a[data-tab="${tab}"]`);
@@ -349,6 +392,7 @@
         case 'media': loadMediaLibrary(); break;
         case 'translations': loadTranslations(); break;
         case 'assessments': loadAssessments(); break;
+        case 'slideshow': loadSlideshowAdmin(); break;
         case 'activity': loadActivity(); break;
         case 'settings': loadSettings(); break;
       }
@@ -471,38 +515,34 @@
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
       if (!quillEditor) {
-  quillEditor = new Quill('#chapter-quill-editor', {
-    theme: 'snow',
-    modules: {
-      toolbar: [
-        [{ 'header': [1, 2, false] }],
-        ['bold', 'italic', 'underline'],
-        ['image', 'video']
-      ]
-    }
-  });
-
-  // Quill-এর ইমেজ আপলোড হ্যান্ডলার
-  quillEditor.getModule('toolbar').addHandler('image', () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (!file) return;
-
-      // আপলোড প্রক্রিয়া (একই uploadSingleMedia ফাংশন ব্যবহার)
-      const url = await uploadSingleMedia(file, false); // allowVideo false
-      if (url) {
-        const range = quillEditor.getSelection(true);
-        quillEditor.insertEmbed(range.index, 'image', url);
-        showToast('Image uploaded and inserted');
+        quillEditor = new Quill('#chapter-quill-editor', {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ 'header': [1, 2, false] }],
+              ['bold', 'italic', 'underline'],
+              ['image', 'video']
+            ]
+          }
+        });
+        // Image upload handler for Quill
+        quillEditor.getModule('toolbar').addHandler('image', () => {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.click();
+          input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+            const url = await uploadSingleMedia(file, false);
+            if (url) {
+              const range = quillEditor.getSelection(true);
+              quillEditor.insertEmbed(range.index, 'image', url);
+              showToast('Image uploaded and inserted');
+            }
+          };
+        });
       }
-    };
-  });
-}
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
       currentChapterLanguage = 'en';
@@ -1057,22 +1097,26 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
-   async function uploadSingleMedia(file, allowVideo = false) {
+    // ----- SINGLE MEDIA UPLOAD (with token fix) -----
+    async function uploadSingleMedia(file, allowVideo = false) {
       try {
-        const currentAdminToken = localStorage.getItem('adminToken'); // 👈 এই লাইনটি যোগ করুন
+        // Use global adminToken, not localStorage
+        if (!adminToken) {
+          showToast('Not authenticated');
+          return null;
+        }
         const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
         if (!validTypes.includes(file.type)) {
-          showToast('File type not supported'); return null;
+          showToast('File type not supported');
+          return null;
         }
         let processedFile = file;
         if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
-        const formData = new FormData(); formData.append('image', processedFile);
-        
-        console.log('Admin token being sent:', currentAdminToken ? 'present' : 'NULL');
-        
+        const formData = new FormData();
+        formData.append('image', processedFile);
         const res = await fetch(`${API}/admin/upload-image`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${currentAdminToken}` }, // 👈 token থেকে currentAdminToken ব্যবহার করুন
+          headers: { 'Authorization': `Bearer ${adminToken}` },
           body: formData
         });
         const data = await res.json();
@@ -1080,16 +1124,16 @@
           showToast('Upload Error: ' + data.error);
           return null;
         }
-        if (data.url) { 
-          showToast('Upload successful'); 
-          loadMediaLibrary(); 
-          return data.url; 
+        if (data.url) {
+          showToast('Upload successful');
+          loadMediaLibrary(); // refresh if on media page
+          return data.url;
         }
         showToast('Upload failed (no URL returned)');
         return null;
-      } catch(e) { 
-        showToast('Network error: ' + e.message); 
-        return null; 
+      } catch(e) {
+        showToast('Network error: ' + e.message);
+        return null;
       }
     }
 
@@ -1151,7 +1195,7 @@
       }
     }
 
-    // ======================= ASSESSMENTS (Evaluation Parameters) =======================
+    // ======================= ASSESSMENTS =======================
     async function loadAssessments() {
       const questions = await adminApiCall('GET', '/admin/assessments');
       let html = `<div class="card"><h3>📋 Assessment Questions (Slider Parameters)</h3>
@@ -1217,6 +1261,90 @@
       if (!confirm('Delete this question?')) return;
       await adminApiCall('DELETE', `/admin/assessments/${id}`);
       loadAssessments();
+    }
+
+    // ======================= SLIDESHOW ADMIN =======================
+    async function loadSlideshowAdmin() {
+      const slides = await adminApiCall('GET', '/admin/slideshow');
+      let html = `<div class="card"><h3>🖼️ Slideshow Images</h3>
+        <button class="btn" onclick="openSlideshowEdit(null)">+ Add Slide</button>
+        <table><thead><tr><th>Order</th><th>Desktop</th><th>Mobile</th><th>Title</th><th>Active</th><th>Actions</th></tr></thead><tbody>`;
+      if (slides) {
+        slides.forEach(s => {
+          html += `<tr>
+            <td>${s.sort_order}</td>
+            <td><img src="${s.image_url_desktop}" class="media-thumb" onerror="this.style.display='none'"></td>
+            <td><img src="${s.image_url_mobile}" class="media-thumb" onerror="this.style.display='none'"></td>
+            <td>${escapeHtml(s.title||'')}</td>
+            <td>${s.is_active ? '✅' : '❌'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline" onclick="openSlideshowEdit(${s.id})">✏️</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteSlide(${s.id})">🗑</button>
+            </td>
+          </tr>`;
+        });
+      }
+      html += '</tbody></table></div>';
+      document.getElementById('panel-screen').innerHTML = html;
+    }
+
+    function openSlideshowEdit(id) {
+      const modal = document.getElementById('slideshow-edit-modal');
+      document.getElementById('ss-edit-id').value = id || '';
+      if (id) {
+        adminApiCall('GET', '/admin/slideshow').then(all => {
+          const s = all.find(x => x.id == id);
+          if (s) {
+            document.getElementById('ss-desktop-url').value = s.image_url_desktop;
+            document.getElementById('ss-mobile-url').value = s.image_url_mobile;
+            document.getElementById('ss-title').value = s.title || '';
+            document.getElementById('ss-link').value = s.link_url || '';
+            document.getElementById('ss-order').value = s.sort_order || 0;
+            document.getElementById('ss-active').value = s.is_active ? 'true' : 'false';
+            document.getElementById('slideshow-modal-title').textContent = 'Edit Slide';
+          }
+        });
+      } else {
+        document.getElementById('ss-desktop-url').value = '';
+        document.getElementById('ss-mobile-url').value = '';
+        document.getElementById('ss-title').value = '';
+        document.getElementById('ss-link').value = '';
+        document.getElementById('ss-order').value = 0;
+        document.getElementById('ss-active').value = 'true';
+        document.getElementById('slideshow-modal-title').textContent = 'Add New Slide';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeSlideshowModal() {
+      document.getElementById('slideshow-edit-modal').classList.add('hidden');
+    }
+
+    async function saveSlide() {
+      const id = document.getElementById('ss-edit-id').value;
+      const body = {
+        image_url_desktop: document.getElementById('ss-desktop-url').value.trim(),
+        image_url_mobile: document.getElementById('ss-mobile-url').value.trim(),
+        title: document.getElementById('ss-title').value.trim(),
+        link_url: document.getElementById('ss-link').value.trim(),
+        sort_order: parseInt(document.getElementById('ss-order').value) || 0,
+        is_active: document.getElementById('ss-active').value === 'true'
+      };
+      if (!body.image_url_desktop || !body.image_url_mobile) return showToast('Both image URLs required');
+      if (id) {
+        await adminApiCall('PUT', `/admin/slideshow/${id}`, body);
+      } else {
+        await adminApiCall('POST', '/admin/slideshow', body);
+      }
+      closeSlideshowModal();
+      loadSlideshowAdmin();
+      showToast('Slide saved');
+    }
+
+    async function deleteSlide(id) {
+      if (!confirm('Delete this slide?')) return;
+      await adminApiCall('DELETE', `/admin/slideshow/${id}`);
+      loadSlideshowAdmin();
     }
 
     // ======================= ACTIVITY LOG =======================
