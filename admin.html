@@ -113,7 +113,7 @@
     .ql-container.ql-snow { border-color: var(--border-gold); }
     .ql-editor { color: var(--text); }
 
-    /* Custom TTS button in toolbar - VISIBLE */
+    /* Custom TTS button in toolbar */
     .ql-tts-section {
       width: 28px;
       height: 28px;
@@ -129,10 +129,30 @@
     }
     .ql-tts-section:hover {
       background: rgba(255,255,255,0.15);
-      border-radius: 4px;
     }
     .ql-tts-section::before {
       content: '🔊';
+    }
+
+    /* Custom Subject Block button in toolbar */
+    .ql-subject-block {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .ql-subject-block:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .ql-subject-block::before {
+      content: '📚';
     }
 
     .toast {
@@ -581,10 +601,12 @@
               [{ 'header': [1, 2, false] }],
               ['bold', 'italic', 'underline'],
               ['image', 'video'],
-              ['tts-section']
+              ['tts-section'],
+              ['subject-block']
             ]
           }
         });
+
         // Image upload handler for Quill
         quillEditor.getModule('toolbar').addHandler('image', () => {
           const input = document.createElement('input');
@@ -603,7 +625,7 @@
           };
         });
 
-        // Custom TTS Section button handler
+        // ----- Custom TTS Section button handler -----
         const ttsBtn = document.querySelector('.ql-tts-section');
         if (ttsBtn) {
           ttsBtn.addEventListener('click', () => {
@@ -619,6 +641,62 @@
             } else {
               quillEditor.clipboard.dangerouslyPasteHTML(0, html);
             }
+          });
+        }
+
+        // ----- Custom Subject Block button handler (Main + Sub-Subjects) -----
+        const subjectBtn = document.querySelector('.ql-subject-block');
+        if (subjectBtn) {
+          subjectBtn.addEventListener('click', () => {
+            // Step 1: Get Main Subject Title
+            const mainTitle = prompt('Enter Main Subject Title:');
+            if (mainTitle === null || mainTitle.trim() === '') return;
+
+            // Step 2: Get number of sub-subjects
+            const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
+            if (subCountInput === null) return;
+            const subCount = parseInt(subCountInput);
+            if (isNaN(subCount) || subCount < 0) {
+              showToast('Please enter a valid number (0 or more)');
+              return;
+            }
+
+            // Step 3: Collect sub-subject titles
+            const subTitles = [];
+            for (let i = 0; i < subCount; i++) {
+              const subTitle = prompt(`Sub-subject ${i + 1} title:`);
+              if (subTitle === null) {
+                // User cancelled mid-way - stop
+                return;
+              }
+              if (subTitle.trim() !== '') {
+                subTitles.push(subTitle.trim());
+              }
+            }
+
+            if (subTitles.length === 0) {
+              showToast('No sub-subjects added. Use TTS Section button for single blocks.');
+              return;
+            }
+
+            // Step 4: Generate HTML with each sub-subject as a separate .tts-section
+            let html = '';
+            for (const subTitle of subTitles) {
+              html += `<div class="tts-section" data-lang="bn">
+  <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
+  <p>Write content here for "${escapeHtml(subTitle)}"</p>
+</div>`;
+            }
+
+            // Step 5: Insert into editor
+            const range = quillEditor.getSelection(true);
+            if (range) {
+              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+            } else {
+              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
+            }
+
+            showToast(`✅ ${subTitles.length} sub-subject(s) added under "${mainTitle}"`);
           });
         }
       }
