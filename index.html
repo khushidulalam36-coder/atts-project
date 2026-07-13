@@ -612,16 +612,28 @@
     function celebrate(msg) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#C8A75B','#F6E4B5','#2563EB','#7C3AED'] }); if (msg) showToast(msg); }
     function showFloatingXp(xp) { const e = document.createElement('div'); e.className = 'float-xp'; e.textContent = `+${xp} XP`; document.body.appendChild(e); setTimeout(() => e.remove(), 2000); }
     function validateForm(sel) { const inputs = document.querySelectorAll(sel + ' input:not([type="checkbox"]), ' + sel + ' textarea, ' + sel + ' select'); let v = true, first = null; inputs.forEach(i => { if(!i.value.trim()) { v = false; i.style.borderColor = 'var(--danger)'; if(!first) first = i; } else i.style.borderColor = ''; }); if(!v && first) { first.focus(); showToast('Please fill all required fields.'); } return v; }
-    async function apiCall(m, p, b, showErr=true) {
-      const h = {'Content-Type':'application/json'}; if(token) h['Authorization'] = `Bearer ${token}`;
-      try {
-        const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
-        if(r.status === 401) { logout(); return null; }
-        const d = await r.json();
-        if(d.error && showErr) showToast(d.error);
-        return d;
-      } catch(e) { if(showErr) showToast('Network error'); return null; }
+   async function apiCall(m, p, b, showErr=true) {
+  const h = {'Content-Type':'application/json'};
+  if(token) h['Authorization'] = `Bearer ${token}`;
+  try {
+    const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
+    if(r.status === 401) { logout(); return null; }
+    // কন্টেন্ট-টাইপ চেক করে JSON নেওয়া (না হলে এরর থ্রো করবে)
+    const contentType = r.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error(`Invalid response format (expected JSON, got ${contentType})`);
     }
+    const d = await r.json();
+    if(d.error && showErr) showToast(d.error);
+    return d;
+  } catch(e) {
+    // কনসোলে বিস্তারিত লগ (আপনি চাইলে নেটওয়ার্ক সমস্যাও আলাদা করে ধরতে পারেন)
+    console.error(`API Call Failed [${p}]:`, e.message || e);
+    // যদি নেটওয়ার্কের বাইরে অন্য কারণ হয়, তার মেসেজ টোস্টে দেখান (ঐচ্ছিক)
+    // এখানে showToast কল না করলে “Network error” আর আসবে না
+    return null;
+  }
+}
 
     // ==================== i18n ====================
     const i18n = {
