@@ -19,7 +19,7 @@ import { Resend } from 'resend';
 import { z } from 'zod';
 import * as Sentry from '@sentry/node';
 import webPush from 'web-push';
-import busboy from 'busboy';  // ✅ busboy imported
+import Busboy from 'busboy'; // ✅ busboy import
 
 // ---------- Environment validation ----------
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
@@ -359,6 +359,20 @@ const evaluationSchema = z.object({
   mood: z.enum(['happy', 'neutral', 'stressed', 'angry']).optional(),
 });
 
+// ---------- Auth helper for Node req (used in multipart handler) ----------
+async function verifyTokenFromNodeReq(req) {
+  const auth = req.headers.authorization;
+  if (!auth) return null;
+  try {
+    const token = auth.replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const [user] = await sql`SELECT * FROM users WHERE id = ${decoded.id}`;
+    return user;
+  } catch {
+    return null;
+  }
+}
+
 // ===================================================
 // SECTION 2: Node.js to Fetch API wrapper (simplified + multipart)
 // ===================================================
@@ -369,39 +383,31 @@ function toNodeHandler(handlerFn) {
     const fullUrl = `${protocol}://${host}${req.url}`;
     const reqPath = new URL(fullUrl).pathname;
 
-    // ----- CORS headers for multipart responses -----
-    const corsHeaders = {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    };
-
-    // ----- SPECIAL MULTIPART UPLOAD HANDLING (FIXED – Promise-based) -----
+    // ----- SPECIAL MULTIPART UPLOAD HANDLING -----
     const isUploadRoute = (
       req.method === 'POST' &&
       (reqPath === '/api/setup/upload-image' || reqPath === '/api/setup/admin/upload-image')
     );
 
     if (isUploadRoute) {
+      // Use busboy to parse the multipart request directly, without converting to Fetch
       const contentType = req.headers['content-type'];
       if (!contentType || !contentType.startsWith('multipart/form-data')) {
-        res.writeHead(400, corsHeaders);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
         return;
       }
 
-      // Authenticate based on route
+      // Authenticate for admin route
       let requiredRole = null;
       if (reqPath === '/api/setup/admin/upload-image') {
         requiredRole = 'admin';
       }
 
-      // ---------- AUTHENTICATION ----------
       if (requiredRole) {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-          res.writeHead(401, corsHeaders);
+          res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Authentication required' }));
           return;
         }
@@ -409,103 +415,76 @@ function toNodeHandler(handlerFn) {
           const token = authHeader.replace('Bearer ', '');
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           if (!decoded.role || decoded.role !== 'admin') {
-            res.writeHead(403, corsHeaders);
+            res.writeHead(403, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Forbidden' }));
             return;
           }
         } catch {
-          res.writeHead(401, corsHeaders);
-          res.end(JSON.stringify({ error: 'Invalid token' }));
-          return;
-        }
-      } else {
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-          res.writeHead(401, corsHeaders);
-          res.end(JSON.stringify({ error: 'Authentication required' }));
-          return;
-        }
-        try {
-          const token = authHeader.replace('Bearer ', '');
-          jwt.verify(token, process.env.JWT_SECRET);
-        } catch {
-          res.writeHead(401, corsHeaders);
+          res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Invalid token' }));
           return;
         }
       }
 
-      // ---------- PROCESS UPLOAD ----------
-      try {
-        const bb = busboy({
-          headers: { 'content-type': contentType },
-          limits: { fileSize: 5 * 1024 * 1024 }
-        });
+      // Check for user image upload authentication
+      if (reqPath === '/api/setup/upload-image') {
+        const user = await verifyTokenFromNodeReq(req);
+        if (!user) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Authentication required' }));
+          return;
+        }
+      }
 
-        const uploadPromises = [];
+      try {
+        const bb = new Busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 5 * 1024 * 1024 } });
+        const files = [];
+        let aborted = false;
 
         bb.on('file', (fieldname, fileStream, info) => {
-          const { mimeType, filename } = info;
+          const { mimeType } = info;
           if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm'].includes(mimeType)) {
+            aborted = true;
             fileStream.resume();
             bb.emit('error', new Error('Invalid file type'));
             return;
           }
-
-          const uploadPromise = new Promise((resolve, reject) => {
-            const chunks = [];
-            fileStream.on('data', (chunk) => chunks.push(chunk));
-            fileStream.on('end', async () => {
-              try {
-                const buffer = Buffer.concat(chunks);
-                const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
-                await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${filename})`;
-                resolve(blob.url);
-              } catch (blobError) {
-                console.error('Vercel Blob failed, falling back to Base64:', blobError.message);
-                Sentry.captureException(blobError);
-                try {
-                  const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
-                  await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${filename})`;
-                  resolve(base64);
-                } catch (dbError) {
-                  reject(dbError);
-                }
-              }
-            });
-            fileStream.on('error', reject);
+          const chunks = [];
+          fileStream.on('data', (chunk) => chunks.push(chunk));
+          fileStream.on('end', async () => {
+            if (aborted) return;
+            const buffer = Buffer.concat(chunks);
+            try {
+              const blob = await put(info.filename, buffer, { access: 'public', contentType: mimeType });
+              files.push(blob.url);
+              await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${info.filename})`;
+            } catch (blobError) {
+              console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
+              Sentry.captureException(blobError);
+              const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
+              files.push(base64);
+              await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${info.filename})`;
+            }
           });
-
-          uploadPromises.push(uploadPromise);
         });
 
-        bb.on('finish', async () => {
-          try {
-            if (uploadPromises.length === 0) {
-              res.writeHead(400, corsHeaders);
-              res.end(JSON.stringify({ error: 'No file uploaded' }));
-              return;
-            }
-            const urls = await Promise.all(uploadPromises);
-            const fileUrl = urls[0];
-            res.writeHead(200, corsHeaders);
-            res.end(JSON.stringify({ url: fileUrl }));
-          } catch (err) {
-            console.error('Upload failed:', err);
-            Sentry.captureException(err);
-            if (!res.headersSent) {
-              res.writeHead(500, corsHeaders);
-              res.end(JSON.stringify({ error: 'Upload failed' }));
-            }
+        bb.on('finish', () => {
+          if (aborted) return;
+          if (files.length === 0) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'No file uploaded' }));
+            return;
           }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ url: files[0] }));
         });
 
         bb.on('error', (err) => {
           console.error('Busboy error:', err);
           Sentry.captureException(err);
           if (!res.headersSent) {
-            res.writeHead(400, corsHeaders);
-            res.end(JSON.stringify({ error: err.message || 'Upload error' }));
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: err.message }));
           }
         });
 
@@ -513,7 +492,7 @@ function toNodeHandler(handlerFn) {
         return;
       } catch (err) {
         Sentry.captureException(err);
-        res.writeHead(500, corsHeaders);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error' }));
         return;
       }
@@ -578,64 +557,6 @@ function toNodeHandler(handlerFn) {
     }
   };
 }
-
-    // ---------- Normal Fetch API conversion for all other requests ----------
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(req.headers)) {
-      if (value) {
-        if (Array.isArray(value)) value.forEach(v => headers.append(key, v));
-        else headers.set(key, value);
-      }
-    }
-
-    let body = null;
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      try {
-        const chunks = [];
-        req.on('data', (chunk) => chunks.push(chunk));
-        body = await new Promise((resolve, reject) => {
-          req.on('end', () => resolve(Buffer.concat(chunks)));
-          req.on('error', (err) => { Sentry.captureException(err); resolve(null); });
-          setTimeout(() => resolve(null), 10000);
-        });
-      } catch (e) { Sentry.captureException(e); }
-    }
-
-    const request = new Request(fullUrl, {
-      method: req.method,
-      headers: headers,
-      body: body,
-    });
-
-    try {
-      const response = await handlerFn(request);
-      const responseHeaders = {
-        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      };
-      response.headers.forEach((value, key) => { responseHeaders[key] = value; });
-      res.writeHead(response.status, responseHeaders);
-      if (response.body) {
-        const reader = response.body.getReader();
-        const pump = async () => {
-          const { done, value } = await reader.read();
-          if (done) { res.end(); return; }
-          res.write(value);
-          await pump();
-        };
-        await pump();
-      } else {
-        res.end();
-      }
-    } catch (err) {
-      Sentry.captureException(err);
-      res.writeHead(500, {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0]
-      });
-      res.end(JSON.stringify({ error: 'Internal server error' }));
-    }
 
 // ===================================================
 // SECTION 3: Main API Handler
@@ -1471,13 +1392,48 @@ async function apiHandler(req) {
       return json({ token });
     }
 
+    // ✅ FULL MANUAL CASCADE USER DELETE (with all related tables)
     if (path.match(/^\/admin\/user\/(.+)$/) && req.method === 'DELETE') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const userId = path.split('/')[3];
-      await sql`DELETE FROM users WHERE id = ${userId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
-      return json({ success: true });
+
+      try {
+        await sql`DELETE FROM daily_journals WHERE user_id = ${userId}`;
+        await sql`DELETE FROM badges WHERE user_id = ${userId}`;
+        await sql`DELETE FROM user_lessons WHERE user_id = ${userId}`;
+        await sql`DELETE FROM community_posts WHERE user_id = ${userId}`;
+        await sql`DELETE FROM replies WHERE user_id = ${userId}`;
+        await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`; // ✅ added
+        await sql`DELETE FROM notif_settings WHERE user_id = ${userId}`;
+        await sql`DELETE FROM daily_quests WHERE user_id = ${userId}`;
+        await sql`DELETE FROM habit_definitions WHERE user_id = ${userId}`;
+        await sql`DELETE FROM habit_logs WHERE user_id = ${userId}`;
+        await sql`DELETE FROM mood_logs WHERE user_id = ${userId}`;
+        await sql`DELETE FROM portfolio_performance WHERE user_id = ${userId}`;
+        await sql`DELETE FROM user_chapter_progress WHERE user_id = ${userId}`;
+        await sql`DELETE FROM final_exam_results WHERE user_id = ${userId}`;
+        await sql`DELETE FROM user_energy WHERE user_id = ${userId}`;
+        await sql`DELETE FROM user_settings WHERE user_id = ${userId}`;
+        await sql`DELETE FROM user_activity_log WHERE user_id = ${userId}`;
+        await sql`DELETE FROM streak_freeze_items WHERE user_id = ${userId}`;
+        await sql`DELETE FROM mystery_boxes WHERE user_id = ${userId}`;
+        await sql`DELETE FROM daily_rewards WHERE user_id = ${userId}`;
+        await sql`DELETE FROM certificates WHERE user_id = ${userId}`;
+        await sql`DELETE FROM trading_simulator WHERE user_id = ${userId}`;
+        await sql`DELETE FROM mentor_assignments WHERE mentor_id = ${userId} OR student_id = ${userId}`;
+        await sql`DELETE FROM user_assessments WHERE user_id = ${userId}`;
+        await sql`DELETE FROM exam_sessions WHERE user_id = ${userId}`;
+        // Finally, delete the user
+        await sql`DELETE FROM users WHERE id = ${userId}`;
+
+        await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
+        return json({ success: true });
+      } catch (err) {
+        console.error('Delete user failed:', err);
+        Sentry.captureException(err);
+        return errorJson('Failed to delete user', 500);
+      }
     }
 
     if (path === '/admin/simulate-day' && req.method === 'POST') {
@@ -1753,7 +1709,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Admin Image Upload (using req.formData()) ---
+    // --- Admin Image Upload (using req.formData()) – kept as fallback, but normally multipart handler above handles it first ---
     if (path === '/admin/upload-image' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -2041,12 +1997,7 @@ async function apiHandler(req) {
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      // Note: This route is now protected by authenticate above, but busboy route also handles it.
-      // However, this route is not using busboy, it's using req.formData() which may not work for large files.
-      // The busboy route handles /api/setup/upload-image, which is the same as /upload-image after normalization?
-      // Let's keep this as fallback but it's better to remove or redirect to busboy version.
-      // Actually, the busboy route catches /api/setup/upload-image, which is normalized to /upload-image.
-      // So we can simply return error or proxy to busboy. But to avoid duplication, we'll implement properly.
+      // This route is now only reached for non-multipart or fallback; actual upload goes through multipart handler with auth
       try {
         const formData = await req.formData();
         const file = formData.get('image');

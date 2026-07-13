@@ -592,9 +592,11 @@
 
     async function deleteUser(userId) {
       if (!confirm('Delete this user permanently?')) return;
-      await adminApiCall('DELETE', `/admin/user/${userId}`);
-      loadUsers();
-      showToast('✅ User deleted');
+      const res = await adminApiCall('DELETE', `/admin/user/${userId}`);
+      if (res?.success) {
+        loadUsers();
+        showToast('✅ User deleted');
+      }
     }
 
     // ======================= SIMULATE =======================
@@ -623,10 +625,9 @@
     let currentChapterLanguage = 'en';
     let chapterMasterData = null;
 
-    // ----- FIX: Quill Editor Destroy/Recreate -----
+    // ----- FIX 3: Quill Editor Destroy/Recreate -----
     function destroyQuill() {
       if (quillEditor) {
-        // Remove the DOM content and reset
         const container = document.getElementById('chapter-quill-editor');
         if (container) {
           container.innerHTML = '';
@@ -639,7 +640,6 @@
       destroyQuill();
       const container = document.getElementById('chapter-quill-editor');
       if (!container) return null;
-      // Ensure container is empty before creating new editor
       container.innerHTML = '';
       const editor = new Quill('#chapter-quill-editor', {
         theme: 'snow',
@@ -674,74 +674,68 @@
         }
       });
 
-      // Add custom TTS section button logic
-      const ttsBtn = document.querySelector('.ql-tts-section');
-      if (ttsBtn) {
-        ttsBtn.addEventListener('click', () => {
-          const lang = prompt('Enter language code (en, bn, hi):', 'en');
-          if (!lang) return;
-          const html = `<div class="tts-section" data-lang="${lang}">
+      // Reattach custom button events after toolbar render
+      setTimeout(() => {
+        const ttsBtn = document.querySelector('.ql-tts-section');
+        if (ttsBtn) {
+          ttsBtn.onclick = () => {
+            const lang = prompt('Enter language code (en, bn, hi):', 'en');
+            if (!lang) return;
+            const html = `<div class="tts-section" data-lang="${lang}">
   <h2>Title here</h2>
   <p>Content here</p>
 </div>`;
-          const range = editor.getSelection(true);
-          if (range) {
-            editor.clipboard.dangerouslyPasteHTML(range.index, html);
-          } else {
-            editor.clipboard.dangerouslyPasteHTML(0, html);
-          }
-        });
-      }
+            const range = editor.getSelection(true);
+            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
+          };
+        }
 
-      const subjectBtn = document.querySelector('.ql-subject-block');
-      if (subjectBtn) {
-        subjectBtn.addEventListener('click', () => {
-          const mainTitle = prompt('Enter Main Subject Title:');
-          if (mainTitle === null || mainTitle.trim() === '') return;
+        const subjectBtn = document.querySelector('.ql-subject-block');
+        if (subjectBtn) {
+          subjectBtn.onclick = () => {
+            const mainTitle = prompt('Enter Main Subject Title:');
+            if (mainTitle === null || mainTitle.trim() === '') return;
 
-          const lang = prompt('Language code (en / bn / hi):', 'bn');
-          if (!lang || !['en','bn','hi'].includes(lang)) {
-            showToast('Invalid language code. Use en, bn, or hi');
-            return;
-          }
+            const lang = prompt('Language code (en / bn / hi):', 'bn');
+            if (!lang || !['en','bn','hi'].includes(lang)) {
+              showToast('Invalid language code. Use en, bn, or hi');
+              return;
+            }
 
-          const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
-          if (subCountInput === null) return;
-          const subCount = parseInt(subCountInput);
-          if (isNaN(subCount) || subCount < 0) {
-            showToast('Please enter a valid number (0 or more)');
-            return;
-          }
+            const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
+            if (subCountInput === null) return;
+            const subCount = parseInt(subCountInput);
+            if (isNaN(subCount) || subCount < 0) {
+              showToast('Please enter a valid number (0 or more)');
+              return;
+            }
 
-          const subTitles = [];
-          for (let i = 0; i < subCount; i++) {
-            const subTitle = prompt(`Sub-subject ${i + 1} title:`);
-            if (subTitle === null) return;
-            if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
-          }
+            const subTitles = [];
+            for (let i = 0; i < subCount; i++) {
+              const subTitle = prompt(`Sub-subject ${i + 1} title:`);
+              if (subTitle === null) return;
+              if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
+            }
 
-          if (subTitles.length === 0) {
-            showToast('No sub-subjects added. Use TTS Section button for single blocks.');
-            return;
-          }
+            if (subTitles.length === 0) {
+              showToast('No sub-subjects added. Use TTS Section button for single blocks.');
+              return;
+            }
 
-          let html = '';
-          for (const subTitle of subTitles) {
-            html += `<div class="tts-section" data-lang="${lang}">
+            let html = '';
+            for (const subTitle of subTitles) {
+              html += `<div class="tts-section" data-lang="${lang}">
   <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
   <p>Write content here for "${escapeHtml(subTitle)}"</p>
 </div>`;
-          }
+            }
 
-          const range = editor.getSelection(true);
-          if (range) {
-            editor.clipboard.dangerouslyPasteHTML(range.index, html);
-          } else {
-            editor.clipboard.dangerouslyPasteHTML(0, html);
-          }
-          showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
-        });
-      }
+            const range = editor.getSelection(true);
+            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
+            showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
+          };
+        }
+      }, 100);
 
       return editor;
     }
@@ -764,11 +758,8 @@
 
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
-
-      // Destroy old Quill and reinit
-      destroyQuill();
-      const editor = initQuill();
-      quillEditor = editor; // store globally
+      // Reinit Quill cleanly
+      quillEditor = initQuill();
 
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
@@ -896,7 +887,7 @@
 
     function closeChapterEditor() {
       document.getElementById('chapter-editor-modal').classList.add('hidden');
-      destroyQuill(); // clean up Quill instance
+      destroyQuill();
     }
 
     async function saveChapter() {
