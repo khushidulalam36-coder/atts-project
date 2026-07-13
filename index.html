@@ -227,15 +227,86 @@
       background-clip:text; font-weight:800; margin-bottom:12px; animation:goldShine 4s linear infinite;
     }
     h2 { font-size:1.6rem; } h3 { font-size:1.25rem; }
-    .btn { background:linear-gradient(135deg, var(--accent), #1d4ed8); color:#fff; border:none; padding:10px 22px; border-radius:30px; font-weight:600; cursor:pointer; transition:all 0.25s ease; font-size:0.9rem; box-shadow:0 4px 15px rgba(37,99,235,0.4); letter-spacing:0.5px; position:relative; overflow:hidden; z-index:1; font-family:var(--font-en), 'Inter', sans-serif; }
-    .btn:hover { background:linear-gradient(135deg, var(--accent-bright), var(--accent)); box-shadow:0 6px 20px rgba(37,99,235,0.7); transform:translateY(-2px); }
-    .btn:active { transform:scale(0.97); }
-    .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
-    .btn-outline:hover { background:rgba(200,167,91,0.1); }
-    .btn-accent { background:linear-gradient(135deg, var(--accent), #1d4ed8); }
-    .btn-danger { background:linear-gradient(135deg, var(--danger), #dc2626); }
-    .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
-    .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
+
+    /* ===== MODERN BUTTON STYLES ===== */
+    .btn {
+      background: linear-gradient(135deg, #C8A75B, #2563EB);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(200,167,91,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
+      background: linear-gradient(135deg, #E8C97A, #60A5FA);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn:focus-visible {
+      outline: 2px solid #E8C97A;
+      outline-offset: 3px;
+    }
+    /* Ripple pseudo */
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%,-50%);
+      transition: width 0.6s, height 0.6s, opacity 0.6s;
+      opacity: 0;
+    }
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+      transition: 0s;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      background: rgba(200,167,91,0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(200,167,91,0.4);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+    }
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-bright), #2563EB);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.6);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    }
+    .btn-danger:hover {
+      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
+    }
+    .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
+    .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
+
     input, textarea, select {
       background: rgba(255,255,255,0.08); border:1px solid var(--border-gold);
       color: var(--text); padding:10px 16px; border-radius:var(--radius-sm); width:100%; margin:6px 0; font-family:inherit; transition:var(--transition); outline:none; font-size:0.95rem;
@@ -435,7 +506,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-left: auto; /* pushes to the right */
+      margin-left: auto;
     }
     .tts-speed-control label {
       font-size: 0.8rem;
@@ -638,7 +709,19 @@
 
       <!-- ========== PAGE: TRAINING ========== -->
       <div id="page-training" class="page-content hidden">
+        <!-- Energy Bar -->
         <div class="glass"><div style="display:flex; justify-content:space-between;"><span>⚡ Energy</span><span><strong id="energy-current">50</strong>/<span id="energy-max">100</span></span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill" style="width:100%;"></div></div></div>
+        <!-- Language Filter -->
+        <div class="glass" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <label style="color:var(--text-secondary);">🌐 Training Language:</label>
+          <select id="training-lang-select" onchange="filterTrainingLanguage()" style="width:auto; padding:6px 12px;">
+            <option value="all">All Languages</option>
+            <option value="en">English</option>
+            <option value="bn">বাংলা</option>
+            <option value="hi">हिन्दी</option>
+          </select>
+        </div>
+        <!-- Chapter List -->
         <div class="glass"><h2>📚 Trader Training Academy</h2><div id="chapter-list" class="grid-2"></div></div>
         <div id="final-exam-section" class="glass hidden" style="text-align:center;"><h3>🏆 Final Exam</h3><button class="btn btn-accent btn-lg" onclick="startFinalExam()">Start</button></div>
       </div>
@@ -808,7 +891,6 @@
             return null;
           }
         } else {
-          // Non-JSON response – treat as error
           if (showErr) showToast('Unexpected server response');
           return null;
         }
@@ -999,18 +1081,18 @@
         };
 
         this.utterance = utterance;
-        speechSynthesis.speak(utterance);
+        speechSynth.speak(utterance);
       }
 
       pause() {
-        if (speechSynthesis.speaking) {
-          speechSynthesis.pause();
+        if (speechSynth.speaking) {
+          speechSynth.pause();
         }
       }
 
       stop() {
-        if (speechSynthesis.speaking || speechSynthesis.paused) {
-          speechSynthesis.cancel();
+        if (speechSynth.speaking || speechSynth.paused) {
+          speechSynth.cancel();
         }
         this.state = 'stopped';
         activeTTSController = null;
@@ -1045,6 +1127,20 @@
         const lang = section.dataset.lang || 'en';
         new TTSController(section, lang);
         section.dataset.ttsAttached = 'true';
+      });
+    }
+
+    // ==================== Language Filter for Training ====================
+    function filterTrainingLanguage() {
+      const selectedLang = document.getElementById('training-lang-select')?.value || 'all';
+      localStorage.setItem('preferredTrainingLang', selectedLang);
+
+      document.querySelectorAll('#chapter-modal-content .tts-section').forEach(section => {
+        if (selectedLang === 'all') {
+          section.style.display = '';
+        } else {
+          section.style.display = section.dataset.lang === selectedLang ? '' : 'none';
+        }
       });
     }
 
@@ -1324,7 +1420,6 @@
         currentSlideIndex = 0;
         showSlide(0);
         startAutoSlide();
-        // Remove old resize listener to avoid duplicates
         window.removeEventListener('resize', handleSlideResize);
         window.addEventListener('resize', handleSlideResize);
       } catch(e) {
@@ -1361,9 +1456,6 @@
     }
 
     function handleSlideResize() {
-      // Only re-render if the screen size crosses the mobile threshold
-      // But we can just update the images by re-loading slides
-      // To avoid flicker, we just reload if needed
       if (document.getElementById('hero-slideshow') && !document.getElementById('hero-slideshow').classList.contains('hidden')) {
         loadSlideshow();
       }
@@ -1517,18 +1609,28 @@
     async function claimQuestReward() { const r = await apiCall('POST', '/claim-quest-reward'); if(r?.success) { celebrate('+15 XP!'); showFloatingXp(15); loadDailyQuest(); loadProfile(); } }
 
     // ==================== Training ====================
-    async function loadTrainingTab() { await loadEnergy(); const chapters = await apiCall('GET', '/training/chapters?course_id=1'); if(!chapters) return; const container = document.getElementById('chapter-list'); container.innerHTML = chapters.map((ch,i) => `<div class="glass chapter-card ${i>0 && !chapters[i-1].passed ? 'locked' : ''}" onclick="${i>0 && !chapters[i-1].passed ? '' : `openChapterModal(${ch.id})`}"><div style="font-size:2rem;">${i>0 && !chapters[i-1].passed ? '🔒' : ch.passed ? '✅' : '📖'}</div><strong>${escapeHtml(ch.title)}</strong>${ch.passed ? '<span class="badge badge-accent">Passed</span>' : ''}</div>`).join(''); }
+    async function loadTrainingTab() {
+      await loadEnergy();
+      const chapters = await apiCall('GET', '/training/chapters?course_id=1');
+      if(!chapters) return;
+      const container = document.getElementById('chapter-list');
+      container.innerHTML = chapters.map((ch,i) => `<div class="glass chapter-card ${i>0 && !chapters[i-1].passed ? 'locked' : ''}" onclick="${i>0 && !chapters[i-1].passed ? '' : `openChapterModal(${ch.id})`}"><div style="font-size:2rem;">${i>0 && !chapters[i-1].passed ? '🔒' : ch.passed ? '✅' : '📖'}</div><strong>${escapeHtml(ch.title)}</strong>${ch.passed ? '<span class="badge badge-accent">Passed</span>' : ''}</div>`).join('');
+
+      const savedLang = localStorage.getItem('preferredTrainingLang');
+      if (savedLang) {
+        const select = document.getElementById('training-lang-select');
+        if (select) select.value = savedLang;
+      }
+    }
     async function loadEnergy() { const e = await apiCall('GET', '/energy'); if(e) { document.getElementById('energy-current').textContent = e.current_energy; document.getElementById('energy-max').textContent = e.max_energy; document.getElementById('energy-fill').style.width = (e.current_energy/e.max_energy*100)+'%'; } }
     async function openChapterModal(id) {
       currentChapterId = id; const d = await apiCall('GET', `/training/chapter/${id}`); if(!d) return;
       document.getElementById('chapter-modal-title').textContent = d.title;
       const contentDiv = document.getElementById('chapter-modal-content');
       const contentHtml = d.content_text || '';
-      // Wrap content inside .tts-section with detected language
-      const wrappedHtml = contentHtml.trim()
-        ? `<div class="tts-section" data-lang="${i18n.lang || 'en'}">${DOMPurify.sanitize(contentHtml)}</div>`
+      contentDiv.innerHTML = contentHtml.trim()
+        ? DOMPurify.sanitize(contentHtml)
         : '<p style="color:var(--text-secondary);">📖 No content available for this chapter.</p>';
-      contentDiv.innerHTML = wrappedHtml;
       document.getElementById('chapter-images-gallery').innerHTML = (d.images||[]).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join('');
       document.getElementById('chapter-modal-video-container').innerHTML = (d.videos||[]).map(v => { let embed = v; if(v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join('');
       currentChapterQuestions = d.questions || [];
@@ -1540,11 +1642,13 @@
         document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q,i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join('');
       }
       document.getElementById('chapter-modal').classList.remove('hidden');
-      // Attach TTS controllers after DOM render
-      setTimeout(attachTTSSections, 200);
+
+      setTimeout(() => {
+        attachTTSSections();
+        filterTrainingLanguage();
+      }, 200);
     }
     function closeChapterModal() {
-      // Stop any ongoing TTS
       if (speechSynth.speaking || speechSynth.paused) {
         speechSynth.cancel();
       }
@@ -1937,6 +2041,7 @@
     window.prevSlide = prevSlide;
     window.showSlide = showSlide;
     window.attachTTSSections = attachTTSSections;
+    window.filterTrainingLanguage = filterTrainingLanguage;
   </script>
 </body>
 </html>

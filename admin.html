@@ -60,33 +60,79 @@
       background: linear-gradient(135deg, #C8A75B, #2563EB);
       color: #fff;
       border: none;
-      padding: 8px 20px;
+      padding: 10px 24px;
       border-radius: 30px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(200,167,91,0.3);
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
       position: relative;
       overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(200,167,91,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(200,167,91,0.5);
+      box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
       background: linear-gradient(135deg, #E8C97A, #60A5FA);
     }
     .btn:active {
       transform: scale(0.96);
     }
-    .btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); box-shadow: none; }
-    .btn-outline:hover { background: rgba(200,167,91,0.1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(200,167,91,0.3); }
-    .btn-danger { background: var(--danger); box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
-    .btn-danger:hover { background: #dc2626; box-shadow: 0 8px 20px rgba(239,68,68,0.5); }
-    .btn-sm { padding: 4px 14px; font-size: 0.8rem; border-radius: 20px; }
-    .btn-lg { padding: 12px 28px; font-size: 1rem; border-radius: 30px; }
+    .btn:focus-visible {
+      outline: 2px solid #E8C97A;
+      outline-offset: 3px;
+    }
+    /* Ripple pseudo */
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%,-50%);
+      transition: width 0.6s, height 0.6s, opacity 0.6s;
+      opacity: 0;
+    }
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+      transition: 0s;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      background: rgba(200,167,91,0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(200,167,91,0.4);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+    }
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-bright), #2563EB);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.6);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    }
+    .btn-danger:hover {
+      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
+    }
+    .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
+    .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
 
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 16px; }
     .stat { background: var(--surface); border: 1px solid var(--border-gold); border-radius: var(--radius); padding: 16px; text-align: center; }
@@ -644,15 +690,19 @@
           });
         }
 
-        // ----- Custom Subject Block button handler (Main + Sub-Subjects) -----
+        // ----- Custom Subject Block button handler (with language prompt) -----
         const subjectBtn = document.querySelector('.ql-subject-block');
         if (subjectBtn) {
           subjectBtn.addEventListener('click', () => {
-            // Step 1: Get Main Subject Title
             const mainTitle = prompt('Enter Main Subject Title:');
             if (mainTitle === null || mainTitle.trim() === '') return;
 
-            // Step 2: Get number of sub-subjects
+            const lang = prompt('Language code (en / bn / hi):', 'bn');
+            if (!lang || !['en','bn','hi'].includes(lang)) {
+              showToast('Invalid language code. Use en, bn, or hi');
+              return;
+            }
+
             const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
             if (subCountInput === null) return;
             const subCount = parseInt(subCountInput);
@@ -661,17 +711,11 @@
               return;
             }
 
-            // Step 3: Collect sub-subject titles
             const subTitles = [];
             for (let i = 0; i < subCount; i++) {
               const subTitle = prompt(`Sub-subject ${i + 1} title:`);
-              if (subTitle === null) {
-                // User cancelled mid-way - stop
-                return;
-              }
-              if (subTitle.trim() !== '') {
-                subTitles.push(subTitle.trim());
-              }
+              if (subTitle === null) return;
+              if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
             }
 
             if (subTitles.length === 0) {
@@ -679,24 +723,21 @@
               return;
             }
 
-            // Step 4: Generate HTML with each sub-subject as a separate .tts-section
             let html = '';
             for (const subTitle of subTitles) {
-              html += `<div class="tts-section" data-lang="bn">
+              html += `<div class="tts-section" data-lang="${lang}">
   <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
   <p>Write content here for "${escapeHtml(subTitle)}"</p>
 </div>`;
             }
 
-            // Step 5: Insert into editor
             const range = quillEditor.getSelection(true);
             if (range) {
               quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
             } else {
               quillEditor.clipboard.dangerouslyPasteHTML(0, html);
             }
-
-            showToast(`✅ ${subTitles.length} sub-subject(s) added under "${mainTitle}"`);
+            showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
           });
         }
       }
@@ -1517,7 +1558,7 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    // ======================= SETTINGS =======================
+    // ======================= SETTINGS with Backup/Restore =======================
     function loadSettings() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card"><h3>⚙️ Admin Settings</h3>
@@ -1534,6 +1575,17 @@
           <button class="btn" onclick="saveSiteConfig()">Save Configuration</button>
           <div id="config-message" style="margin-top:12px;"></div>
         </div>
+        <div class="card" style="margin-top:16px;">
+          <h3>💾 Training Data Backup</h3>
+          <p>Export all courses, chapters, and quiz questions as a JSON file. Save it to your Google Drive or local disk.</p>
+          <button class="btn" onclick="exportTrainingData()">📥 Download Training Backup</button>
+          <hr>
+          <h3>📤 Restore Training Data</h3>
+          <p>Select a previously exported JSON backup file to restore the training content.</p>
+          <input type="file" id="restore-file" accept=".json">
+          <button class="btn" onclick="importTrainingData()">🔄 Restore Now</button>
+          <div id="restore-status" style="margin-top:12px;"></div>
+        </div>
       `;
       loadCurrentSiteConfig();
     }
@@ -1547,6 +1599,80 @@
       }
     }
 
+    // ----- Export Training Data -----
+    async function exportTrainingData() {
+      try {
+        const res = await fetch(`${API}/admin/export/training`, {
+          headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          showToast('Export failed: ' + (err.error || 'Unknown error'));
+          return;
+        }
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `training-backup-${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('✅ Training data exported successfully!');
+      } catch (e) {
+        showToast('Export failed: ' + e.message);
+      }
+    }
+
+    // ----- Import Training Data -----
+    async function importTrainingData() {
+      const fileInput = document.getElementById('restore-file');
+      const statusDiv = document.getElementById('restore-status');
+      if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        showToast('Please select a JSON backup file first');
+        return;
+      }
+      const file = fileInput.files[0];
+      if (!file.name.endsWith('.json')) {
+        showToast('Please select a JSON file');
+        return;
+      }
+      try {
+        statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const jsonData = JSON.parse(e.target.result);
+            const res = await fetch(`${API}/admin/import/training`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${adminToken}`
+              },
+              body: JSON.stringify(jsonData)
+            });
+            const result = await res.json();
+            if (result.success) {
+              statusDiv.innerHTML = `<span style="color:var(--success);">✅ ${result.message}</span>`;
+              showToast('✅ Training data restored successfully!');
+              fileInput.value = '';
+            } else {
+              statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${result.error || 'Restore failed'}</span>`;
+              showToast('Restore failed: ' + (result.error || 'Unknown error'));
+            }
+          } catch (parseErr) {
+            statusDiv.innerHTML = `<span style="color:var(--danger);">❌ Invalid JSON file</span>`;
+            showToast('Invalid JSON file');
+          }
+        };
+        reader.readAsText(file);
+      } catch (e) {
+        statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`;
+        showToast('Import failed: ' + e.message);
+      }
+    }
+
+    // ----- Change Admin Password -----
     async function changeAdminPassword() {
       const current = document.getElementById('current-password').value;
       const newPass = document.getElementById('new-password').value;
@@ -1562,6 +1688,7 @@
       }
     }
 
+    // ----- Save Site Configuration -----
     async function saveSiteConfig() {
       const siteTitle = document.getElementById('site-title').value.trim();
       const corsOrigin = document.getElementById('cors-origin').value.trim();
@@ -1573,6 +1700,7 @@
       const res = await adminApiCall('PUT', '/admin/settings', body);
       if (res?.success) {
         document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>';
+        showToast('✅ Configuration saved');
       } else {
         document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`;
       }
@@ -1585,6 +1713,13 @@
       document.getElementById('panel-screen').classList.remove('hidden');
       switchTab('stats');
     }
+
+    // Expose functions globally
+    window.exportTrainingData = exportTrainingData;
+    window.importTrainingData = importTrainingData;
+    window.changeAdminPassword = changeAdminPassword;
+    window.saveSiteConfig = saveSiteConfig;
+    window.loadSettings = loadSettings;
   </script>
 </body>
 </html>

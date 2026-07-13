@@ -983,7 +983,7 @@ async function apiHandler(req) {
         language VARCHAR(10) DEFAULT 'en'
       )`;
 
-      // ----- Slideshow Images (NEW) -----
+      // ----- Slideshow Images -----
       await sql`CREATE TABLE IF NOT EXISTS slideshow_images (
         id SERIAL PRIMARY KEY,
         image_url_desktop TEXT NOT NULL,
@@ -1696,7 +1696,7 @@ async function apiHandler(req) {
       }
     }
 
-    // --- Slideshow Management (NEW) ---
+    // --- Slideshow Management ---
     if (path === '/admin/slideshow' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1748,6 +1748,98 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // ==================== Training Export/Import ====================
+    if (path === '/admin/export/training' && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+
+      try {
+        const courses = await sql`SELECT * FROM courses WHERE is_active = true`;
+        const result = [];
+
+        for (const course of courses) {
+          const chapters = await sql`
+            SELECT * FROM chapters 
+            WHERE course_id = ${course.id} AND is_active = true 
+            ORDER BY order_index
+          `;
+          const chaptersWithQuestions = [];
+
+          for (const ch of chapters) {
+            const questions = await sql`
+              SELECT * FROM chapter_quiz_questions 
+              WHERE chapter_id = ${ch.id}
+              ORDER BY order_index
+            `;
+            chaptersWithQuestions.push({
+              ...ch,
+              questions: questions
+            });
+          }
+
+          result.push({
+            ...course,
+            chapters: chaptersWithQuestions
+          });
+        }
+
+        return json({
+          exported_at: new Date().toISOString(),
+          version: '2.0',
+          data: result
+        });
+      } catch (err) {
+        Sentry.captureException(err);
+        return errorJson('Export failed: ' + err.message, 500);
+      }
+    }
+
+    if (path === '/admin/import/training' && req.method === 'POST') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+
+      let body;
+      try {
+        body = await req.json();
+      } catch {
+        return errorJson('Invalid JSON file', 400);
+      }
+
+      if (!body.data || !Array.isArray(body.data)) {
+        return errorJson('Invalid backup format: missing data array', 400);
+      }
+
+      try {
+        for (const course of body.data) {
+          const [existingCourse] = await sql`SELECT id FROM courses WHERE id = ${course.id}`;
+          if (existingCourse) {
+            await sql`UPDATE courses SET title = ${course.title}, description = ${course.description} WHERE id = ${course.id}`;
+          } else {
+            await sql`INSERT INTO courses (id, title, description) VALUES (${course.id}, ${course.title}, ${course.description})`;
+          }
+
+          for (const ch of (course.chapters || [])) {
+            const [existingChapter] = await sql`SELECT id FROM chapters WHERE id = ${ch.id}`;
+            if (existingChapter) {
+              await sql`UPDATE chapters SET title = ${ch.title}, order_index = ${ch.order_index}, content_text = ${ch.content_text}, images = ${ch.images}, videos = ${ch.videos}, passing_score = ${ch.passing_score}, language = ${ch.language} WHERE id = ${ch.id}`;
+            } else {
+              await sql`INSERT INTO chapters (id, course_id, title, order_index, content_text, images, videos, passing_score, language) VALUES (${ch.id}, ${course.id}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.images}, ${ch.videos}, ${ch.passing_score}, ${ch.language})`;
+            }
+
+            await sql`DELETE FROM chapter_quiz_questions WHERE chapter_id = ${ch.id}`;
+            for (const q of (ch.questions || [])) {
+              await sql`INSERT INTO chapter_quiz_questions (id, chapter_id, question, options, correct_index, explanation, order_index) VALUES (${q.id}, ${ch.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation}, ${q.order_index})`;
+            }
+          }
+        }
+
+        return json({ success: true, message: 'Training data imported successfully' });
+      } catch (err) {
+        Sentry.captureException(err);
+        return errorJson('Import failed: ' + err.message, 500);
+      }
+    }
+
     // --- Activity Log ---
     if (path === '/admin/activity-log' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
@@ -1789,7 +1881,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // ==================== PUBLIC SLIDESHOW (New) ====================
+    // ==================== PUBLIC SLIDESHOW ====================
     if (path === '/slideshow' && req.method === 'GET') {
       const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
       return json(slides);
@@ -2345,7 +2437,6 @@ async function apiHandler(req) {
 
       await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'chapter_quiz', ${JSON.stringify({chapterId, score, passed})}, ${ip})`;
 
-      // Build explanations array
       const explanations = questions.map(q => ({
         question_id: q.id,
         correct_index: q.correct_index,
