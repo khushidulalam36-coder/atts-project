@@ -623,6 +623,129 @@
     let currentChapterLanguage = 'en';
     let chapterMasterData = null;
 
+    // ----- FIX: Quill Editor Destroy/Recreate -----
+    function destroyQuill() {
+      if (quillEditor) {
+        // Remove the DOM content and reset
+        const container = document.getElementById('chapter-quill-editor');
+        if (container) {
+          container.innerHTML = '';
+        }
+        quillEditor = null;
+      }
+    }
+
+    function initQuill() {
+      destroyQuill();
+      const container = document.getElementById('chapter-quill-editor');
+      if (!container) return null;
+      // Ensure container is empty before creating new editor
+      container.innerHTML = '';
+      const editor = new Quill('#chapter-quill-editor', {
+        theme: 'snow',
+        modules: {
+          toolbar: {
+            container: [
+              [{ 'header': [1, 2, false] }],
+              ['bold', 'italic', 'underline'],
+              ['image', 'video'],
+              ['tts-section'],
+              ['subject-block']
+            ],
+            handlers: {
+              image: function() {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.click();
+                input.onchange = async () => {
+                  const file = input.files[0];
+                  if (!file) return;
+                  const url = await uploadSingleMedia(file, false);
+                  if (url) {
+                    const range = this.quill.getSelection(true);
+                    this.quill.insertEmbed(range.index, 'image', url);
+                    showToast('Image uploaded and inserted');
+                  }
+                };
+              }
+            }
+          }
+        }
+      });
+
+      // Add custom TTS section button logic
+      const ttsBtn = document.querySelector('.ql-tts-section');
+      if (ttsBtn) {
+        ttsBtn.addEventListener('click', () => {
+          const lang = prompt('Enter language code (en, bn, hi):', 'en');
+          if (!lang) return;
+          const html = `<div class="tts-section" data-lang="${lang}">
+  <h2>Title here</h2>
+  <p>Content here</p>
+</div>`;
+          const range = editor.getSelection(true);
+          if (range) {
+            editor.clipboard.dangerouslyPasteHTML(range.index, html);
+          } else {
+            editor.clipboard.dangerouslyPasteHTML(0, html);
+          }
+        });
+      }
+
+      const subjectBtn = document.querySelector('.ql-subject-block');
+      if (subjectBtn) {
+        subjectBtn.addEventListener('click', () => {
+          const mainTitle = prompt('Enter Main Subject Title:');
+          if (mainTitle === null || mainTitle.trim() === '') return;
+
+          const lang = prompt('Language code (en / bn / hi):', 'bn');
+          if (!lang || !['en','bn','hi'].includes(lang)) {
+            showToast('Invalid language code. Use en, bn, or hi');
+            return;
+          }
+
+          const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
+          if (subCountInput === null) return;
+          const subCount = parseInt(subCountInput);
+          if (isNaN(subCount) || subCount < 0) {
+            showToast('Please enter a valid number (0 or more)');
+            return;
+          }
+
+          const subTitles = [];
+          for (let i = 0; i < subCount; i++) {
+            const subTitle = prompt(`Sub-subject ${i + 1} title:`);
+            if (subTitle === null) return;
+            if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
+          }
+
+          if (subTitles.length === 0) {
+            showToast('No sub-subjects added. Use TTS Section button for single blocks.');
+            return;
+          }
+
+          let html = '';
+          for (const subTitle of subTitles) {
+            html += `<div class="tts-section" data-lang="${lang}">
+  <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
+  <p>Write content here for "${escapeHtml(subTitle)}"</p>
+</div>`;
+          }
+
+          const range = editor.getSelection(true);
+          if (range) {
+            editor.clipboard.dangerouslyPasteHTML(range.index, html);
+          } else {
+            editor.clipboard.dangerouslyPasteHTML(0, html);
+          }
+          showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
+        });
+      }
+
+      return editor;
+    }
+
     async function loadChapters() {
       const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
       if (!chapters) return;
@@ -641,108 +764,11 @@
 
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
-      if (!quillEditor) {
-        quillEditor = new Quill('#chapter-quill-editor', {
-          theme: 'snow',
-          modules: {
-            toolbar: [
-              [{ 'header': [1, 2, false] }],
-              ['bold', 'italic', 'underline'],
-              ['image', 'video'],
-              ['tts-section'],
-              ['subject-block']
-            ]
-          }
-        });
 
-        // Image upload handler for Quill
-        quillEditor.getModule('toolbar').addHandler('image', () => {
-          const input = document.createElement('input');
-          input.setAttribute('type', 'file');
-          input.setAttribute('accept', 'image/*');
-          input.click();
-          input.onchange = async () => {
-            const file = input.files[0];
-            if (!file) return;
-            const url = await uploadSingleMedia(file, false);
-            if (url) {
-              const range = quillEditor.getSelection(true);
-              quillEditor.insertEmbed(range.index, 'image', url);
-              showToast('Image uploaded and inserted');
-            }
-          };
-        });
-
-        // Custom TTS Section button handler
-        const ttsBtn = document.querySelector('.ql-tts-section');
-        if (ttsBtn) {
-          ttsBtn.addEventListener('click', () => {
-            const lang = prompt('Enter language code (en, bn, hi):', 'en');
-            if (!lang) return;
-            const html = `<div class="tts-section" data-lang="${lang}">
-  <h2>Title here</h2>
-  <p>Content here</p>
-</div>`;
-            const range = quillEditor.getSelection(true);
-            if (range) {
-              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
-            } else {
-              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
-            }
-          });
-        }
-
-        // Custom Subject Block button handler
-        const subjectBtn = document.querySelector('.ql-subject-block');
-        if (subjectBtn) {
-          subjectBtn.addEventListener('click', () => {
-            const mainTitle = prompt('Enter Main Subject Title:');
-            if (mainTitle === null || mainTitle.trim() === '') return;
-
-            const lang = prompt('Language code (en / bn / hi):', 'bn');
-            if (!lang || !['en','bn','hi'].includes(lang)) {
-              showToast('Invalid language code. Use en, bn, or hi');
-              return;
-            }
-
-            const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
-            if (subCountInput === null) return;
-            const subCount = parseInt(subCountInput);
-            if (isNaN(subCount) || subCount < 0) {
-              showToast('Please enter a valid number (0 or more)');
-              return;
-            }
-
-            const subTitles = [];
-            for (let i = 0; i < subCount; i++) {
-              const subTitle = prompt(`Sub-subject ${i + 1} title:`);
-              if (subTitle === null) return;
-              if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
-            }
-
-            if (subTitles.length === 0) {
-              showToast('No sub-subjects added. Use TTS Section button for single blocks.');
-              return;
-            }
-
-            let html = '';
-            for (const subTitle of subTitles) {
-              html += `<div class="tts-section" data-lang="${lang}">
-  <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
-  <p>Write content here for "${escapeHtml(subTitle)}"</p>
-</div>`;
-            }
-
-            const range = quillEditor.getSelection(true);
-            if (range) {
-              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
-            } else {
-              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
-            }
-            showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
-          });
-        }
-      }
+      // Destroy old Quill and reinit
+      destroyQuill();
+      const editor = initQuill();
+      quillEditor = editor; // store globally
 
       document.getElementById('images-container').innerHTML = '';
       document.getElementById('videos-container').innerHTML = '';
@@ -870,6 +896,7 @@
 
     function closeChapterEditor() {
       document.getElementById('chapter-editor-modal').classList.add('hidden');
+      destroyQuill(); // clean up Quill instance
     }
 
     async function saveChapter() {
@@ -1199,7 +1226,7 @@
       loadContentList();
     }
 
-    // ======================= THEME EDITOR (fixed: text inputs + preview) =======================
+    // ======================= THEME EDITOR =======================
     async function loadThemeEditor() {
       const vars = ['--bg','--surface','--gold','--gold-bright','--gold-light','--accent','--accent-bright','--accent2','--purple','--cyan','--orange','--text','--text-secondary','--danger','--success','--warning','--border-gold','--border-accent'];
       let html = `<div class="card"><h3>🎨 Theme Customization</h3><div class="theme-grid" id="theme-grid">`;
@@ -1219,7 +1246,6 @@
       const varName = input.dataset.var;
       const val = input.value.trim();
       document.documentElement.style.setProperty(varName, val);
-      // Update preview
       const preview = input.parentElement.querySelector('.color-preview');
       if (preview) preview.style.background = val;
     }
@@ -1310,7 +1336,7 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
-        // ----- SINGLE MEDIA UPLOAD (uses admin API) -----
+    // ----- SINGLE MEDIA UPLOAD (uses admin API) -----
     async function uploadSingleMedia(file, allowVideo = false) {
       try {
         if (!adminToken) {
@@ -1351,7 +1377,6 @@
 
     async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
 
-    // ===== NEW: Missing uploadImage function for Content Manager =====
     async function uploadImage() {
       const file = document.getElementById('image-upload').files[0];
       if (!file) return showToast('Select a file');

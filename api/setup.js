@@ -19,6 +19,7 @@ import { Resend } from 'resend';
 import { z } from 'zod';
 import * as Sentry from '@sentry/node';
 import webPush from 'web-push';
+import busboy from 'busboy';  // ✅ busboy imported
 
 // ---------- Environment validation ----------
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
@@ -359,9 +360,6 @@ const evaluationSchema = z.object({
 });
 
 // ===================================================
-// SECTION 2: Node.js to Fetch API wrapper (simplified)
-// ===================================================
-// ===================================================
 // SECTION 2: Node.js to Fetch API wrapper (simplified + multipart)
 // ===================================================
 function toNodeHandler(handlerFn) {
@@ -371,31 +369,39 @@ function toNodeHandler(handlerFn) {
     const fullUrl = `${protocol}://${host}${req.url}`;
     const reqPath = new URL(fullUrl).pathname;
 
-    // ----- SPECIAL MULTIPART UPLOAD HANDLING -----
+    // ----- CORS headers for multipart responses -----
+    const corsHeaders = {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
+    // ----- SPECIAL MULTIPART UPLOAD HANDLING (FIXED – Promise-based) -----
     const isUploadRoute = (
       req.method === 'POST' &&
       (reqPath === '/api/setup/upload-image' || reqPath === '/api/setup/admin/upload-image')
     );
 
     if (isUploadRoute) {
-      // Use busboy to parse the multipart request directly, without converting to Fetch
       const contentType = req.headers['content-type'];
       if (!contentType || !contentType.startsWith('multipart/form-data')) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(400, corsHeaders);
         res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
         return;
       }
 
-      // Authenticate for admin route
+      // Authenticate based on route
       let requiredRole = null;
       if (reqPath === '/api/setup/admin/upload-image') {
         requiredRole = 'admin';
       }
 
+      // ---------- AUTHENTICATION ----------
       if (requiredRole) {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.writeHead(401, corsHeaders);
           res.end(JSON.stringify({ error: 'Authentication required' }));
           return;
         }
@@ -403,66 +409,103 @@ function toNodeHandler(handlerFn) {
           const token = authHeader.replace('Bearer ', '');
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           if (!decoded.role || decoded.role !== 'admin') {
-            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.writeHead(403, corsHeaders);
             res.end(JSON.stringify({ error: 'Forbidden' }));
             return;
           }
         } catch {
-          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.writeHead(401, corsHeaders);
+          res.end(JSON.stringify({ error: 'Invalid token' }));
+          return;
+        }
+      } else {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+          res.writeHead(401, corsHeaders);
+          res.end(JSON.stringify({ error: 'Authentication required' }));
+          return;
+        }
+        try {
+          const token = authHeader.replace('Bearer ', '');
+          jwt.verify(token, process.env.JWT_SECRET);
+        } catch {
+          res.writeHead(401, corsHeaders);
           res.end(JSON.stringify({ error: 'Invalid token' }));
           return;
         }
       }
 
+      // ---------- PROCESS UPLOAD ----------
       try {
-        const bb = busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 5 * 1024 * 1024 } });
-        const files = [];
-        let aborted = false;
+        const bb = busboy({
+          headers: { 'content-type': contentType },
+          limits: { fileSize: 5 * 1024 * 1024 }
+        });
+
+        const uploadPromises = [];
 
         bb.on('file', (fieldname, fileStream, info) => {
-          const { mimeType } = info;
+          const { mimeType, filename } = info;
           if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm'].includes(mimeType)) {
-            aborted = true;
             fileStream.resume();
             bb.emit('error', new Error('Invalid file type'));
             return;
           }
-          const chunks = [];
-          fileStream.on('data', (chunk) => chunks.push(chunk));
-          fileStream.on('end', async () => {
-            if (aborted) return;
-            const buffer = Buffer.concat(chunks);
-            try {
-              const blob = await put(info.filename, buffer, { access: 'public', contentType: mimeType });
-              files.push(blob.url);
-              await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${info.filename})`;
-            } catch (blobError) {
-              console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
-              Sentry.captureException(blobError);
-              const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
-              files.push(base64);
-              await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${info.filename})`;
-            }
+
+          const uploadPromise = new Promise((resolve, reject) => {
+            const chunks = [];
+            fileStream.on('data', (chunk) => chunks.push(chunk));
+            fileStream.on('end', async () => {
+              try {
+                const buffer = Buffer.concat(chunks);
+                const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
+                await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${filename})`;
+                resolve(blob.url);
+              } catch (blobError) {
+                console.error('Vercel Blob failed, falling back to Base64:', blobError.message);
+                Sentry.captureException(blobError);
+                try {
+                  const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
+                  await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${filename})`;
+                  resolve(base64);
+                } catch (dbError) {
+                  reject(dbError);
+                }
+              }
+            });
+            fileStream.on('error', reject);
           });
+
+          uploadPromises.push(uploadPromise);
         });
 
-        bb.on('finish', () => {
-          if (aborted) return;
-          if (files.length === 0) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'No file uploaded' }));
-            return;
+        bb.on('finish', async () => {
+          try {
+            if (uploadPromises.length === 0) {
+              res.writeHead(400, corsHeaders);
+              res.end(JSON.stringify({ error: 'No file uploaded' }));
+              return;
+            }
+            const urls = await Promise.all(uploadPromises);
+            const fileUrl = urls[0];
+            res.writeHead(200, corsHeaders);
+            res.end(JSON.stringify({ url: fileUrl }));
+          } catch (err) {
+            console.error('Upload failed:', err);
+            Sentry.captureException(err);
+            if (!res.headersSent) {
+              res.writeHead(500, corsHeaders);
+              res.end(JSON.stringify({ error: 'Upload failed' }));
+            }
           }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ url: files[0] }));
         });
 
         bb.on('error', (err) => {
           console.error('Busboy error:', err);
           Sentry.captureException(err);
           if (!res.headersSent) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: err.message }));
+            res.writeHead(400, corsHeaders);
+            res.end(JSON.stringify({ error: err.message || 'Upload error' }));
           }
         });
 
@@ -470,7 +513,7 @@ function toNodeHandler(handlerFn) {
         return;
       } catch (err) {
         Sentry.captureException(err);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(500, corsHeaders);
         res.end(JSON.stringify({ error: 'Internal server error' }));
         return;
       }
@@ -535,6 +578,64 @@ function toNodeHandler(handlerFn) {
     }
   };
 }
+
+    // ---------- Normal Fetch API conversion for all other requests ----------
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value) {
+        if (Array.isArray(value)) value.forEach(v => headers.append(key, v));
+        else headers.set(key, value);
+      }
+    }
+
+    let body = null;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      try {
+        const chunks = [];
+        req.on('data', (chunk) => chunks.push(chunk));
+        body = await new Promise((resolve, reject) => {
+          req.on('end', () => resolve(Buffer.concat(chunks)));
+          req.on('error', (err) => { Sentry.captureException(err); resolve(null); });
+          setTimeout(() => resolve(null), 10000);
+        });
+      } catch (e) { Sentry.captureException(e); }
+    }
+
+    const request = new Request(fullUrl, {
+      method: req.method,
+      headers: headers,
+      body: body,
+    });
+
+    try {
+      const response = await handlerFn(request);
+      const responseHeaders = {
+        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0],
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      };
+      response.headers.forEach((value, key) => { responseHeaders[key] = value; });
+      res.writeHead(response.status, responseHeaders);
+      if (response.body) {
+        const reader = response.body.getReader();
+        const pump = async () => {
+          const { done, value } = await reader.read();
+          if (done) { res.end(); return; }
+          res.write(value);
+          await pump();
+        };
+        await pump();
+      } else {
+        res.end();
+      }
+    } catch (err) {
+      Sentry.captureException(err);
+      res.writeHead(500, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0]
+      });
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+    }
 
 // ===================================================
 // SECTION 3: Main API Handler
@@ -1374,7 +1475,6 @@ async function apiHandler(req) {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const userId = path.split('/')[3];
-      // Due to CASCADE, deletion will now work cleanly
       await sql`DELETE FROM users WHERE id = ${userId}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
       return json({ success: true });
@@ -1941,7 +2041,12 @@ async function apiHandler(req) {
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      // Use similar logic as admin upload but for regular users
+      // Note: This route is now protected by authenticate above, but busboy route also handles it.
+      // However, this route is not using busboy, it's using req.formData() which may not work for large files.
+      // The busboy route handles /api/setup/upload-image, which is the same as /upload-image after normalization?
+      // Let's keep this as fallback but it's better to remove or redirect to busboy version.
+      // Actually, the busboy route catches /api/setup/upload-image, which is normalized to /upload-image.
+      // So we can simply return error or proxy to busboy. But to avoid duplication, we'll implement properly.
       try {
         const formData = await req.formData();
         const file = formData.get('image');
