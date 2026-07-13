@@ -1214,14 +1214,28 @@ async function loadWeeklyChallenge() {
         container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join('');
       }
     }
-    async function uploadMedia(file) {
+       async function uploadMedia(file) {
       try {
         let processedFile = file;
         if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
-        const formData = new FormData(); formData.append('image', processedFile);
-        const res = await fetch(`${API}/upload-image`, { method:'POST', headers:{'Authorization': `Bearer ${token}`}, body: formData });
-        const data = await res.json(); return data.url || null;
-      } catch(e) { return null; }
+        const formData = new FormData();
+        formData.append('image', processedFile);
+
+        const res = await fetch(`${API}/upload-image`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.error) {
+          showToast('Upload Error: ' + data.error); // 🔁 এই লাইনটি যোগ করা হয়েছে
+          return null;
+        }
+        return data.url || null;
+      } catch(e) {
+        showToast('Network error or failed: ' + e.message); // 🔁 এই লাইনটিও যোগ করা হয়েছে
+        return null;
+      }
     }
     async function resizeImage(file, maxWidth) {
       const img = await createImageBitmap(file);
