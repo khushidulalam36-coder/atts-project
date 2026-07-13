@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Admin – AlamQuant ATTS</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- ✅ FIX: favicon inline SVG to avoid 404 -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📈%3C/text%3E%3C/svg%3E">
   <!-- Quill Rich Text Editor -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
   <style>
-    /* ── All existing admin styles remain unchanged ── */
     :root {
       --bg: #0B1220;
       --surface: rgba(17,24,39,0.92);
@@ -83,8 +80,13 @@
       box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
       background: linear-gradient(135deg, #E8C97A, #60A5FA);
     }
-    .btn:active { transform: scale(0.96); }
-    .btn:focus-visible { outline: 2px solid #E8C97A; outline-offset: 3px; }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn:focus-visible {
+      outline: 2px solid #E8C97A;
+      outline-offset: 3px;
+    }
     .btn::after {
       content: '';
       position: absolute;
@@ -96,24 +98,38 @@
       transition: width 0.6s, height 0.6s, opacity 0.6s;
       opacity: 0;
     }
-    .btn:active::after { width: 300px; height: 300px; opacity: 0; transition: 0s; }
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+      transition: 0s;
+    }
     .btn-outline {
       background: transparent;
       border: 2px solid var(--gold);
       color: var(--gold);
       box-shadow: none;
     }
-    .btn-outline:hover { background: rgba(200,167,91,0.1); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(200,167,91,0.4); }
+    .btn-outline:hover {
+      background: rgba(200,167,91,0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(200,167,91,0.4);
+    }
     .btn-accent {
       background: linear-gradient(135deg, var(--accent), #1d4ed8);
       box-shadow: 0 4px 12px rgba(37,99,235,0.4);
     }
-    .btn-accent:hover { background: linear-gradient(135deg, var(--accent-bright), #2563EB); box-shadow: 0 8px 20px rgba(37,99,235,0.6); }
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-bright), #2563EB);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.6);
+    }
     .btn-danger {
       background: linear-gradient(135deg, var(--danger), #b91c1c);
       box-shadow: 0 4px 12px rgba(239,68,68,0.4);
     }
-    .btn-danger:hover { box-shadow: 0 8px 20px rgba(239,68,68,0.6); }
+    .btn-danger:hover {
+      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
+    }
     .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
     .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
 
@@ -135,12 +151,45 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
     .color-picker-group { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; }
-    .color-picker-group input[type="color"] { width: 40px; height: 30px; border: none; background: transparent; }
-    .color-picker-group input[type="text"] { width: 80px; font-size: 0.75rem; }
+    .color-picker-group input[type="text"] { width: 120px; font-size: 0.75rem; }
+    .color-preview { display: inline-block; width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
     .media-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 10px; }
     .ql-toolbar.ql-snow { border-color: var(--border-gold); background: rgba(255,255,255,0.05); }
     .ql-container.ql-snow { border-color: var(--border-gold); }
     .ql-editor { color: var(--text); }
+
+    .ql-tts-section {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .ql-tts-section:hover { background: rgba(255,255,255,0.15); }
+    .ql-tts-section::before { content: '🔊'; }
+
+    .ql-subject-block {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .ql-subject-block:hover { background: rgba(255,255,255,0.15); }
+    .ql-subject-block::before { content: '📚'; }
+
     .toast {
       position: fixed; top: 20px; right: 20px; background: var(--accent); color: white;
       padding: 12px 20px; border-radius: 20px; z-index: 9999; font-weight: 600;
@@ -222,11 +271,6 @@
       </div>
       <label>Content (HTML)</label>
       <div id="chapter-quill-editor" style="height:250px;"></div>
-      <!-- ✅ FIX: custom buttons outside Quill toolbar -->
-      <div style="display:flex; gap:8px; margin:8px 0;">
-        <button type="button" class="btn btn-sm btn-outline" id="custom-tts-btn">🔊 TTS Section</button>
-        <button type="button" class="btn btn-sm btn-outline" id="custom-subject-btn">📚 Subject Block</button>
-      </div>
       <div style="margin-top:12px;"><h4>Images</h4><div id="images-container"></div></div>
       <div style="margin-top:12px;"><h4>Videos</h4><div id="videos-container"></div></div>
       <div class="grid-2">
@@ -582,17 +626,21 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
+    // --- Quill dummy blot registration to suppress warning ---
+    Quill.register('formats/subject-block', function() {});
+
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
       if (!quillEditor) {
-        // ✅ FIX: remove custom formats from toolbar
         quillEditor = new Quill('#chapter-quill-editor', {
           theme: 'snow',
           modules: {
             toolbar: [
               [{ 'header': [1, 2, false] }],
               ['bold', 'italic', 'underline'],
-              ['image', 'video']
+              ['image', 'video'],
+              ['tts-section'],
+              ['subject-block']
             ]
           }
         });
@@ -615,72 +663,75 @@
           };
         });
 
-        // ✅ Custom TTS button (outside toolbar)
-        document.getElementById('custom-tts-btn').addEventListener('click', () => {
-          const lang = prompt('Enter language code (en, bn, hi):', 'en');
-          if (!lang || !['en','bn','hi'].includes(lang)) {
-            showToast('Invalid language. Use en, bn, or hi');
-            return;
-          }
-          const html = `<div class="tts-section" data-lang="${lang}">
+        // Custom TTS Section button handler
+        const ttsBtn = document.querySelector('.ql-tts-section');
+        if (ttsBtn) {
+          ttsBtn.addEventListener('click', () => {
+            const lang = prompt('Enter language code (en, bn, hi):', 'en');
+            if (!lang) return;
+            const html = `<div class="tts-section" data-lang="${lang}">
   <h2>Title here</h2>
   <p>Content here</p>
 </div>`;
-          const range = quillEditor.getSelection(true);
-          if (range) {
-            quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
-          } else {
-            quillEditor.clipboard.dangerouslyPasteHTML(0, html);
-          }
-        });
+            const range = quillEditor.getSelection(true);
+            if (range) {
+              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+            } else {
+              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
+            }
+          });
+        }
 
-        // ✅ Custom Subject Block button (outside toolbar)
-        document.getElementById('custom-subject-btn').addEventListener('click', () => {
-          const mainTitle = prompt('Enter Main Subject Title:');
-          if (mainTitle === null || mainTitle.trim() === '') return;
+        // Custom Subject Block button handler
+        const subjectBtn = document.querySelector('.ql-subject-block');
+        if (subjectBtn) {
+          subjectBtn.addEventListener('click', () => {
+            const mainTitle = prompt('Enter Main Subject Title:');
+            if (mainTitle === null || mainTitle.trim() === '') return;
 
-          const lang = prompt('Language code (en / bn / hi):', 'bn');
-          if (!lang || !['en','bn','hi'].includes(lang)) {
-            showToast('Invalid language code. Use en, bn, or hi');
-            return;
-          }
+            const lang = prompt('Language code (en / bn / hi):', 'bn');
+            if (!lang || !['en','bn','hi'].includes(lang)) {
+              showToast('Invalid language code. Use en, bn, or hi');
+              return;
+            }
 
-          const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
-          if (subCountInput === null) return;
-          const subCount = parseInt(subCountInput);
-          if (isNaN(subCount) || subCount < 0) {
-            showToast('Please enter a valid number (0 or more)');
-            return;
-          }
+            const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
+            if (subCountInput === null) return;
+            const subCount = parseInt(subCountInput);
+            if (isNaN(subCount) || subCount < 0) {
+              showToast('Please enter a valid number (0 or more)');
+              return;
+            }
 
-          const subTitles = [];
-          for (let i = 0; i < subCount; i++) {
-            const subTitle = prompt(`Sub-subject ${i + 1} title:`);
-            if (subTitle === null) return;
-            if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
-          }
+            const subTitles = [];
+            for (let i = 0; i < subCount; i++) {
+              const subTitle = prompt(`Sub-subject ${i + 1} title:`);
+              if (subTitle === null) return;
+              if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
+            }
 
-          if (subTitles.length === 0) {
-            showToast('No sub-subjects added. Use TTS Section button for single blocks.');
-            return;
-          }
+            if (subTitles.length === 0) {
+              showToast('No sub-subjects added. Use TTS Section button for single blocks.');
+              return;
+            }
 
-          let html = '';
-          for (const subTitle of subTitles) {
-            html += `<div class="tts-section" data-lang="${lang}">
+            let html = '';
+            for (const subTitle of subTitles) {
+              html += `<div class="tts-section" data-lang="${lang}">
   <h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
   <p>Write content here for "${escapeHtml(subTitle)}"</p>
 </div>`;
-          }
+            }
 
-          const range = quillEditor.getSelection(true);
-          if (range) {
-            quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
-          } else {
-            quillEditor.clipboard.dangerouslyPasteHTML(0, html);
-          }
-          showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
-        });
+            const range = quillEditor.getSelection(true);
+            if (range) {
+              quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+            } else {
+              quillEditor.clipboard.dangerouslyPasteHTML(0, html);
+            }
+            showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
+          });
+        }
       }
 
       document.getElementById('images-container').innerHTML = '';
@@ -781,7 +832,7 @@
         const file = e.target.files[0];
         if (!file) return;
         btn.disabled = true; btn.textContent = '⏳';
-        const url = await uploadSingleMedia(file, false);
+        const url = await uploadSingleMedia(file);
         if (url) {
           btn.parentElement.querySelector('.ch-image-url').value = url;
           showToast('Image uploaded');
@@ -1138,33 +1189,37 @@
       loadContentList();
     }
 
-    // ======================= THEME EDITOR =======================
+    // ======================= THEME EDITOR (fixed: text inputs + preview) =======================
     async function loadThemeEditor() {
       const vars = ['--bg','--surface','--gold','--gold-bright','--gold-light','--accent','--accent-bright','--accent2','--purple','--cyan','--orange','--text','--text-secondary','--danger','--success','--warning','--border-gold','--border-accent'];
       let html = `<div class="card"><h3>🎨 Theme Customization</h3><div class="theme-grid" id="theme-grid">`;
       vars.forEach(v => {
         const current = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-        // ✅ FIX: check if value is hex, otherwise set color picker to #000000
-        const isHex = /^#[0-9A-Fa-f]{3,8}$/.test(current);
         html += `<div class="color-picker-group">
           <label style="flex:1; font-size:0.8rem;">${v}</label>
-          <input type="color" value="${isHex ? current : '#000000'}" data-var="${v}" onchange="updateThemeInput(this)">
-          <input type="text" value="${current}" data-var="${v}" onchange="updateThemeColor(this)" style="width:80px;">
-          ${!isHex ? '<small style="color:var(--warning)">Only hex can use picker</small>' : ''}
+          <span class="color-preview" style="background:${current};"></span>
+          <input type="text" value="${current}" data-var="${v}" onchange="updateThemeFromText(this)">
         </div>`;
       });
       html += `</div><button class="btn" onclick="saveTheme()">Save</button> <button class="btn btn-outline" onclick="resetTheme()">↺ Reset Default</button><div id="theme-msg" style="margin-top:8px;"></div></div>`;
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    function updateThemeInput(colorInput) { const textInput = colorInput.parentElement.querySelector('input[type="text"]'); textInput.value = colorInput.value; }
-    function updateThemeColor(textInput) { const colorInput = textInput.parentElement.querySelector('input[type="color"]'); colorInput.value = textInput.value; }
+    function updateThemeFromText(input) {
+      const varName = input.dataset.var;
+      const val = input.value.trim();
+      document.documentElement.style.setProperty(varName, val);
+      // Update preview
+      const preview = input.parentElement.querySelector('.color-preview');
+      if (preview) preview.style.background = val;
+    }
+
     async function saveTheme() {
-      // ✅ FIX: read from text inputs (they hold the real value, including rgba)
-      const textInputs = document.querySelectorAll('#theme-grid input[type="text"]');
+      const inputs = document.querySelectorAll('#theme-grid input[type="text"]');
       const themeObj = {};
-      textInputs.forEach(inp => {
-        themeObj[inp.dataset.var] = inp.value;
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) themeObj[inp.dataset.var] = val;
       });
       const res = await adminApiCall('PUT', '/admin/settings', themeObj);
       if (res?.success) {
@@ -1172,6 +1227,7 @@
         document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">Theme saved</span>';
       }
     }
+
     function resetTheme() {
       const defaults = {
         '--bg': '#0B1220', '--surface': 'rgba(17,24,39,0.92)', '--gold': '#C8A75B', '--gold-bright': '#E8C97A',
@@ -1182,10 +1238,11 @@
       };
       for (const [k,v] of Object.entries(defaults)) document.documentElement.style.setProperty(k, v);
       document.querySelectorAll('.color-picker-group').forEach(g => {
-        const inp = g.querySelector('input[type="color"]');
-        const varName = inp.dataset.var;
-        inp.value = defaults[varName] || '';
-        g.querySelector('input[type="text"]').value = defaults[varName] || '';
+        const input = g.querySelector('input[type="text"]');
+        const varName = input.dataset.var;
+        input.value = defaults[varName] || '';
+        const preview = g.querySelector('.color-preview');
+        if (preview) preview.style.background = defaults[varName] || '';
       });
       adminApiCall('PUT', '/admin/settings', defaults);
     }
@@ -1243,16 +1300,11 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
-    // ----- SINGLE MEDIA UPLOAD (with token fix and size check) -----
+    // ----- SINGLE MEDIA UPLOAD (uses admin API) -----
     async function uploadSingleMedia(file, allowVideo = false) {
       try {
         if (!adminToken) {
           showToast('Not authenticated');
-          return null;
-        }
-        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-        if (file.size > MAX_SIZE) {
-          showToast('File too large (max 10MB)');
           return null;
         }
         const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
@@ -1282,7 +1334,6 @@
         showToast('Upload failed (no URL returned)');
         return null;
       } catch(e) {
-        console.error('Upload error:', e);
         showToast('Network error: ' + e.message);
         return null;
       }

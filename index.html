@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <meta name="theme-color" content="#0B1220">
   <title id="app-title">AlamQuant ATTS – Professional Trader Transformation</title>
-  <!-- ✅ FIX: Favicon as inline SVG to avoid 404 -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📈%3C/text%3E%3C/svg%3E">
+  <meta name="google-client-id" content="">
+  <meta name="vapid-public-key" content="BFxrFRS2h5lKJRfQBRvXlG1Dz3_xilwLd7YKfyh4ktlw-2R-fKoq5q2jDeOTLSbS_8yd9fQxWPaOhwu2wc27MPg">
+  <meta name="app-url" content="https://atts-project.vercel.app">
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -64,7 +67,6 @@
     @keyframes goldShine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
     @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes slideFade { 0% { opacity:0.4; transform:scale(0.98); } 100% { opacity:1; transform:scale(1); } }
-    @keyframes pulse { 0% { transform:scale(1); } 50% { transform:scale(1.1); } 100% { transform:scale(1); } }
     body {
       font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
       background: var(--bg-gradient);
@@ -81,9 +83,9 @@
       position: fixed;
       top: -50%; left: -50%;
       width: 200%; height: 200%;
-      background: radial-gradient(circle at 30% 50%, rgba(139,92,246,0.05) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 20%, rgba(200,167,91,0.05) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 80%, rgba(37,99,235,0.05) 0%, transparent 50%);
+      background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 20%, rgba(200,167,91, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(37,99,235, 0.05) 0%, transparent 50%);
       animation: rotate 30s linear infinite;
       z-index: 0; pointer-events: none;
     }
@@ -252,8 +254,13 @@
       box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
       background: linear-gradient(135deg, #E8C97A, #60A5FA);
     }
-    .btn:active { transform: scale(0.96); }
-    .btn:focus-visible { outline: 2px solid #E8C97A; outline-offset: 3px; }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn:focus-visible {
+      outline: 2px solid #E8C97A;
+      outline-offset: 3px;
+    }
     .btn::after {
       content: '';
       position: absolute;
@@ -265,24 +272,38 @@
       transition: width 0.6s, height 0.6s, opacity 0.6s;
       opacity: 0;
     }
-    .btn:active::after { width: 300px; height: 300px; opacity: 0; transition: 0s; }
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+      transition: 0s;
+    }
     .btn-outline {
       background: transparent;
       border: 2px solid var(--gold);
       color: var(--gold);
       box-shadow: none;
     }
-    .btn-outline:hover { background: rgba(200,167,91,0.1); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(200,167,91,0.4); }
+    .btn-outline:hover {
+      background: rgba(200,167,91,0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(200,167,91,0.4);
+    }
     .btn-accent {
       background: linear-gradient(135deg, var(--accent), #1d4ed8);
       box-shadow: 0 4px 12px rgba(37,99,235,0.4);
     }
-    .btn-accent:hover { background: linear-gradient(135deg, var(--accent-bright), #2563EB); box-shadow: 0 8px 20px rgba(37,99,235,0.6); }
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-bright), #2563EB);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.6);
+    }
     .btn-danger {
       background: linear-gradient(135deg, var(--danger), #b91c1c);
       box-shadow: 0 4px 12px rgba(239,68,68,0.4);
     }
-    .btn-danger:hover { box-shadow: 0 8px 20px rgba(239,68,68,0.6); }
+    .btn-danger:hover {
+      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
+    }
     .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
     .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
 
@@ -430,7 +451,8 @@
     #chapter-modal-content img {
       max-width:100%; border-radius:8px; margin:8px 0;
     }
-    /* TTS Controls Bar */
+
+    /* ========= TTS Controls Bar ========= */
     .tts-controls {
       display: flex;
       align-items: center;
@@ -504,11 +526,15 @@
       border-color: var(--accent-bright);
       box-shadow: 0 0 8px var(--accent);
     }
+
     @media (max-width:600px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
       .assessment-options { gap:20px; flex-wrap:wrap; }
       .tts-controls { flex-direction: column; align-items: stretch; }
       .tts-speed-control { margin-left: 0; margin-top: 4px; }
+    }
+    @keyframes pulse {
+      0% { transform:scale(1); } 50% { transform:scale(1.1); } 100% { transform:scale(1); }
     }
   </style>
 </head>
@@ -989,7 +1015,9 @@
         });
       }
 
-      getText() { return this.element.innerText.trim(); }
+      getText() {
+        return this.element.innerText.trim();
+      }
 
       async play() {
         const text = this.getText();
@@ -1055,9 +1083,16 @@
         speechSynth.speak(utterance);
       }
 
-      pause() { if (speechSynth.speaking) speechSynth.pause(); }
+      pause() {
+        if (speechSynth.speaking) {
+          speechSynth.pause();
+        }
+      }
+
       stop() {
-        if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+        if (speechSynth.speaking || speechSynth.paused) {
+          speechSynth.cancel();
+        }
         this.state = 'stopped';
         activeTTSController = null;
         this.updateUI();
@@ -1098,6 +1133,7 @@
     function filterTrainingLanguage() {
       const selectedLang = document.getElementById('training-lang-select')?.value || 'all';
       localStorage.setItem('preferredTrainingLang', selectedLang);
+
       document.querySelectorAll('#chapter-modal-content .tts-section').forEach(section => {
         if (selectedLang === 'all') {
           section.style.display = '';
@@ -1358,37 +1394,26 @@
     async function loadSlideshow() {
       const container = document.getElementById('slides-container');
       const dotsDiv = document.getElementById('slide-dots');
-      const heroEl = document.getElementById('hero-slideshow');
-
       try {
         const res = await fetch(`${API}/slideshow`);
         if (!res.ok) {
-          // If server returns error, hide slideshow gracefully
-          console.warn('Slideshow fetch returned', res.status);
-          heroEl.classList.add('hidden');
+          // If 500 or any error, treat as empty and hide
+          document.getElementById('hero-slideshow').classList.add('hidden');
           return;
         }
-        // Safe JSON parse
-        let data;
-        try {
-          data = await res.json();
-        } catch (jsonErr) {
-          console.warn('Slideshow JSON parse error:', jsonErr);
-          heroEl.classList.add('hidden');
-          return;
-        }
-        if (!data || !Array.isArray(data) || data.length === 0) {
-          heroEl.classList.add('hidden');
+        const data = await res.json();
+        if (!data || data.length === 0) {
+          document.getElementById('hero-slideshow').classList.add('hidden');
           return;
         }
         slidesData = data;
-        heroEl.classList.remove('hidden');
+        document.getElementById('hero-slideshow').classList.remove('hidden');
         const isMobile = window.innerWidth <= 768;
         container.innerHTML = slidesData.map((slide, i) => {
           const imgUrl = isMobile ? (slide.image_url_mobile || slide.image_url_desktop) : (slide.image_url_desktop || slide.image_url_mobile);
           return `<div class="slide-item">
             <a href="${slide.link_url || '#'}" target="${slide.link_url ? '_blank' : '_self'}" style="display:block;">
-              <img src="${imgUrl}" alt="${escapeHtml(slide.title || 'Slide ' + (i+1))}" loading="lazy" onerror="this.style.display='none'">
+              <img src="${imgUrl}" alt="${escapeHtml(slide.title || 'Slide ' + (i+1))}" loading="lazy">
             </a>
           </div>`;
         }).join('');
@@ -1401,10 +1426,9 @@
         startAutoSlide();
         window.removeEventListener('resize', handleSlideResize);
         window.addEventListener('resize', handleSlideResize);
-      } catch (e) {
+      } catch(e) {
         console.warn('Slideshow load failed:', e);
-        // Hide slideshow on any error
-        heroEl.classList.add('hidden');
+        document.getElementById('hero-slideshow').classList.add('hidden');
       }
     }
 
@@ -1419,6 +1443,7 @@
     }
 
     function goToSlide(index) { showSlide(index); resetAutoSlide(); }
+
     function nextSlide() { showSlide(currentSlideIndex + 1); resetAutoSlide(); }
     function prevSlide() { showSlide(currentSlideIndex - 1); resetAutoSlide(); }
 
@@ -1628,7 +1653,9 @@
       }, 200);
     }
     function closeChapterModal() {
-      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      if (speechSynth.speaking || speechSynth.paused) {
+        speechSynth.cancel();
+      }
       activeTTSController = null;
       document.getElementById('chapter-modal').classList.add('hidden');
       clearInterval(practiceTimerInterval);
