@@ -1057,8 +1057,9 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
-       async function uploadSingleMedia(file, allowVideo = false) {
+   async function uploadSingleMedia(file, allowVideo = false) {
       try {
+        const currentAdminToken = localStorage.getItem('adminToken'); // 👈 এই লাইনটি যোগ করুন
         const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
         if (!validTypes.includes(file.type)) {
           showToast('File type not supported'); return null;
@@ -1067,17 +1068,14 @@
         if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
         const formData = new FormData(); formData.append('image', processedFile);
         
-        // 🔍 টোকেন চেক (কনসোলেও দেখাবে)
-        console.log('Admin token being sent:', adminToken ? 'present' : 'NULL');
+        console.log('Admin token being sent:', currentAdminToken ? 'present' : 'NULL');
         
         const res = await fetch(`${API}/admin/upload-image`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${adminToken}` },
+          headers: { 'Authorization': `Bearer ${currentAdminToken}` }, // 👈 token থেকে currentAdminToken ব্যবহার করুন
           body: formData
         });
         const data = await res.json();
-        
-        // 🔁 সার্ভারের error ফিল্ড থাকলে টোস্টে দেখাও
         if (data.error) {
           showToast('Upload Error: ' + data.error);
           return null;
