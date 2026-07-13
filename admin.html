@@ -395,6 +395,19 @@
   </div>
 
   <script>
+    // ===== Quill Blot Registration (Fix toolbar warnings) =====
+    const Block = Quill.import('blots/block');
+
+    class TtsSectionBlot extends Block {}
+    TtsSectionBlot.blotName = 'tts-section';
+    TtsSectionBlot.tagName = 'div';
+    Quill.register('formats/tts-section', TtsSectionBlot);
+
+    class SubjectBlockBlot extends Block {}
+    SubjectBlockBlot.blotName = 'subject-block';
+    SubjectBlockBlot.tagName = 'div';
+    Quill.register('formats/subject-block', SubjectBlockBlot);
+
     const API = '/api/setup';
     const ADMIN_APP_VERSION = '2.0.1';
     let adminToken = localStorage.getItem('adminToken');
@@ -625,9 +638,6 @@
       html += '</tbody></table></div>';
       document.getElementById('panel-screen').innerHTML = html;
     }
-
-    // --- Quill dummy blot registration to suppress warning ---
-    Quill.register('formats/subject-block', function() {});
 
     async function openChapterEditor(id) {
       document.getElementById('chapter-editor-modal').classList.remove('hidden');
@@ -1300,7 +1310,7 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
-    // ----- SINGLE MEDIA UPLOAD (uses admin API) -----
+        // ----- SINGLE MEDIA UPLOAD (uses admin API) -----
     async function uploadSingleMedia(file, allowVideo = false) {
       try {
         if (!adminToken) {
@@ -1340,6 +1350,14 @@
     }
 
     async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
+
+    // ===== NEW: Missing uploadImage function for Content Manager =====
+    async function uploadImage() {
+      const file = document.getElementById('image-upload').files[0];
+      if (!file) return showToast('Select a file');
+      const url = await uploadSingleMedia(file);
+      if (url) showToast('Uploaded!');
+    }
 
     async function resizeImage(file, maxWidth) {
       const img = await createImageBitmap(file);

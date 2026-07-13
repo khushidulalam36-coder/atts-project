@@ -15,7 +15,6 @@ import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client } from 'google-auth-library';
 import { put } from '@vercel/blob';
-import busboy from 'busboy';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import * as Sentry from '@sentry/node';
@@ -40,12 +39,10 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const SENTRY_DSN = process.env.SENTRY_DSN || '';
 const RATE_LIMIT_KV_URL = process.env.KV_URL || '';
 
-// Sentry initialization
 if (SENTRY_DSN) {
   Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.1 });
 }
 
-// VAPID configuration
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webPush.setVapidDetails(
     'mailto:support@alamquant.com',
@@ -57,7 +54,7 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// ---------- Rate limiter (Vercel KV + in-memory fallback) ----------
+// ---------- Rate limiter (Vercel KV + in‑memory fallback) ----------
 let kv;
 if (RATE_LIMIT_KV_URL) {
   try {
@@ -362,61 +359,68 @@ const evaluationSchema = z.object({
 });
 
 // ===================================================
-// SECTION 2: Node.js to Fetch API wrapper
+// SECTION 2: Node.js to Fetch API wrapper (simplified)
+// ===================================================
+// ===================================================
+// SECTION 2: Node.js to Fetch API wrapper (simplified + multipart)
 // ===================================================
 function toNodeHandler(handlerFn) {
   return async (req, res) => {
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const fullUrl = `${protocol}://${host}${req.url}`;
+    const reqPath = new URL(fullUrl).pathname;
 
-    // ---------- Multipart file upload handling ----------
-    const isUploadRoute = (req.url.includes('/api/setup/admin/upload-image') || req.url.includes('/api/setup/upload-image'));
+    // ----- SPECIAL MULTIPART UPLOAD HANDLING -----
+    const isUploadRoute = (
+      req.method === 'POST' &&
+      (reqPath === '/api/setup/upload-image' || reqPath === '/api/setup/admin/upload-image')
+    );
 
-    if (req.method === 'POST' && isUploadRoute) {
-      const reqPath = req.url.split('?')[0];
+    if (isUploadRoute) {
+      // Use busboy to parse the multipart request directly, without converting to Fetch
+      const contentType = req.headers['content-type'];
+      if (!contentType || !contentType.startsWith('multipart/form-data')) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
+        return;
+      }
+
+      // Authenticate for admin route
       let requiredRole = null;
       if (reqPath === '/api/setup/admin/upload-image') {
         requiredRole = 'admin';
       }
 
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        res.writeHead(401, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
-        res.end(JSON.stringify({ error: 'Authentication required' }));
-        return;
-      }
-      try {
-        const token = authHeader.replace('Bearer ', '');
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (requiredRole === 'admin') {
+      if (requiredRole) {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Authentication required' }));
+          return;
+        }
+        try {
+          const token = authHeader.replace('Bearer ', '');
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
           if (!decoded.role || decoded.role !== 'admin') {
-            res.writeHead(403, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
+            res.writeHead(403, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Forbidden' }));
             return;
           }
+        } catch {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid token' }));
+          return;
         }
-      } catch {
-        res.writeHead(401, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
-        res.end(JSON.stringify({ error: 'Invalid token' }));
-        return;
-      }
-
-      const contentType = req.headers['content-type'];
-      if (!contentType || !contentType.startsWith('multipart/form-data')) {
-        res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
-        res.end(JSON.stringify({ error: 'Must be multipart/form-data' }));
-        return;
       }
 
       try {
-        // Increased file size limit to 10MB
-        const bb = busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 10 * 1024 * 1024 } });
+        const bb = busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 5 * 1024 * 1024 } });
         const files = [];
         let aborted = false;
 
         bb.on('file', (fieldname, fileStream, info) => {
-          const { filename, mimeType } = info;
+          const { mimeType } = info;
           if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm'].includes(mimeType)) {
             aborted = true;
             fileStream.resume();
@@ -428,33 +432,28 @@ function toNodeHandler(handlerFn) {
           fileStream.on('end', async () => {
             if (aborted) return;
             const buffer = Buffer.concat(chunks);
-            let finalUrl = '';
             try {
-              const blob = await put(filename, buffer, { access: 'public', contentType: mimeType });
-              finalUrl = blob.url;
-              await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
+              const blob = await put(info.filename, buffer, { access: 'public', contentType: mimeType });
+              files.push(blob.url);
+              await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${info.filename})`;
             } catch (blobError) {
               console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
               Sentry.captureException(blobError);
               const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
-              finalUrl = base64;
-              await sql`INSERT INTO media_files (url, filename) VALUES (${finalUrl}, ${filename})`;
+              files.push(base64);
+              await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${info.filename})`;
             }
-            files.push(finalUrl);
           });
         });
 
         bb.on('finish', () => {
           if (aborted) return;
           if (files.length === 0) {
-            res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
+            res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'No file uploaded' }));
             return;
           }
-          res.writeHead(200, {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0]
-          });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ url: files[0] }));
         });
 
@@ -462,7 +461,7 @@ function toNodeHandler(handlerFn) {
           console.error('Busboy error:', err);
           Sentry.captureException(err);
           if (!res.headersSent) {
-            res.writeHead(400, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
+            res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err.message }));
           }
         });
@@ -471,13 +470,13 @@ function toNodeHandler(handlerFn) {
         return;
       } catch (err) {
         Sentry.captureException(err);
-        res.writeHead(500, { 'Access-Control-Allow-Origin': allowedOrigins === '*' ? '*' : allowedOrigins[0] });
+        res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error' }));
         return;
       }
     }
 
-    // ---------- Normal Fetch API conversion ----------
+    // ---------- Normal Fetch API conversion for all other requests ----------
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
       if (value) {
@@ -558,7 +557,6 @@ async function apiHandler(req) {
 
   const host = req.headers.get('host') || 'localhost';
   const protocol = req.headers.get('x-forwarded-proto') || 'http';
-  // Vercel rewrite path
   const forwardedPath = req.headers.get('x-forwarded-path');
   let path;
   if (forwardedPath) {
@@ -715,7 +713,7 @@ async function apiHandler(req) {
 
       await sql`CREATE TABLE IF NOT EXISTS certificates (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id UUID REFERENCES users(id),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         verification_code UUID UNIQUE,
         issued_at TIMESTAMPTZ DEFAULT NOW()
       )`;
@@ -788,7 +786,7 @@ async function apiHandler(req) {
 
       await sql`CREATE TABLE IF NOT EXISTS daily_quests (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id UUID REFERENCES users(id),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         quest_date DATE NOT NULL DEFAULT CURRENT_DATE,
         quest_type VARCHAR(50),
         completed BOOLEAN DEFAULT false,
@@ -885,8 +883,8 @@ async function apiHandler(req) {
 
       await sql`CREATE TABLE IF NOT EXISTS mentor_assignments (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        mentor_id UUID REFERENCES users(id),
-        student_id UUID REFERENCES users(id) UNIQUE,
+        mentor_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        student_id UUID REFERENCES users(id) ON DELETE CASCADE UNIQUE,
         assigned_at TIMESTAMPTZ DEFAULT NOW(),
         status VARCHAR(20) DEFAULT 'active'
       )`;
@@ -924,7 +922,7 @@ async function apiHandler(req) {
 
       await sql`CREATE TABLE IF NOT EXISTS admin_activity_log (
         id SERIAL PRIMARY KEY,
-        admin_id UUID REFERENCES admin_users(id),
+        admin_id UUID REFERENCES admin_users(id) ON DELETE SET NULL,
         action VARCHAR(255) NOT NULL,
         details JSONB,
         created_at TIMESTAMPTZ DEFAULT NOW()
@@ -941,7 +939,7 @@ async function apiHandler(req) {
 
       await sql`CREATE TABLE IF NOT EXISTS exam_sessions (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id UUID REFERENCES users(id),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         start_time TIMESTAMPTZ DEFAULT NOW(),
         expiry TIMESTAMPTZ NOT NULL,
         status VARCHAR(20) DEFAULT 'active'
@@ -972,7 +970,6 @@ async function apiHandler(req) {
         uploaded_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
-      // ----- User Settings -----
       await sql`CREATE TABLE IF NOT EXISTS user_settings (
         user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         reminder_enabled BOOLEAN DEFAULT false,
@@ -984,7 +981,6 @@ async function apiHandler(req) {
         language VARCHAR(10) DEFAULT 'en'
       )`;
 
-      // ----- Slideshow Images -----
       await sql`CREATE TABLE IF NOT EXISTS slideshow_images (
         id SERIAL PRIMARY KEY,
         image_url_desktop TEXT NOT NULL,
@@ -1149,7 +1145,6 @@ async function apiHandler(req) {
           VALUES (${email}, ${hash}, ${name}, ${avatar_emoji || '🙂'}, ${verificationToken}, false)
           RETURNING *
         `;
-        // Create default user_settings
         await sql`INSERT INTO user_settings (user_id, language) VALUES (${user.id}, ${language || 'en'}) ON CONFLICT (user_id) DO NOTHING`;
         if (resend) {
           const verifyLink = `${protocol}://${host}/api/setup/verify-email?token=${verificationToken}`;
@@ -1286,6 +1281,44 @@ async function apiHandler(req) {
       return json({ version: '2.0.1' });
     }
 
+    // ==================== PUBLIC SLIDESHOW (with error handling) ====================
+    if (path === '/slideshow' && req.method === 'GET') {
+      try {
+        const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
+        return json(slides);
+      } catch (e) {
+        console.error('Slideshow error:', e);
+        return json([], 200);
+      }
+    }
+
+    // ==================== Push Subscription Update (from Service Worker) ====================
+    if (path === '/update-subscription' && req.method === 'POST') {
+      try {
+        const body = await req.json();
+        const { oldSubscription, newSubscription } = body;
+
+        if (newSubscription && oldSubscription?.endpoint) {
+          const [user] = await sql`
+            SELECT user_id FROM notif_settings
+            WHERE push_subscription->>'endpoint' = ${oldSubscription.endpoint}
+          `;
+          if (user) {
+            await sql`
+              UPDATE notif_settings
+              SET push_subscription = ${newSubscription}
+              WHERE user_id = ${user.user_id}
+            `;
+          }
+        }
+        return json({ success: true });
+      } catch (e) {
+        console.error('Subscription update error:', e);
+        Sentry.captureException(e);
+        return errorJson('Failed to update subscription', 500);
+      }
+    }
+
     // ==================== ADMIN ENDPOINTS ====================
     // --- Admin Dashboard ---
     if (path === '/admin/dashboard' && req.method === 'GET') {
@@ -1338,18 +1371,13 @@ async function apiHandler(req) {
     }
 
     if (path.match(/^\/admin\/user\/(.+)$/) && req.method === 'DELETE') {
-      try {
-        const admin = await authenticateAdmin(req);
-        if (!admin) return errorJson('Forbidden', 403);
-        const userId = path.split('/')[3];
-        await sql`DELETE FROM users WHERE id = ${userId}`;
-        await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
-        return json({ success: true });
-      } catch (err) {
-        console.error('Delete user error:', err);
-        Sentry.captureException(err);
-        return errorJson('Delete failed: ' + err.message, 500);
-      }
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const userId = path.split('/')[3];
+      // Due to CASCADE, deletion will now work cleanly
+      await sql`DELETE FROM users WHERE id = ${userId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
+      return json({ success: true });
     }
 
     if (path === '/admin/simulate-day' && req.method === 'POST') {
@@ -1625,6 +1653,25 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
+    // --- Admin Image Upload (using req.formData()) ---
+    if (path === '/admin/upload-image' && req.method === 'POST') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      try {
+        const formData = await req.formData();
+        const file = formData.get('image');
+        if (!file) return errorJson('No file uploaded', 400);
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const blob = await put(file.name, buffer, { access: 'public', contentType: file.type });
+        await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${file.name})`;
+        return json({ url: blob.url });
+      } catch (err) {
+        Sentry.captureException(err);
+        return errorJson('Upload failed: ' + err.message, 500);
+      }
+    }
+
     // --- Translations (UI) ---
     if (path === '/admin/translations' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
@@ -1888,26 +1935,26 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // ==================== PUBLIC SLIDESHOW ====================
-    if (path === '/slideshow' && req.method === 'GET') {
-      try {
-        const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
-        return json(slides);
-      } catch (err) {
-        console.error('Slideshow error:', err);
-        Sentry.captureException(err);
-        // Return empty array to avoid breaking frontend
-        return json([]);
-      }
-    }
-
     // ==================== AUTH REQUIRED USER ROUTES ====================
     const user = await authenticate(req);
     if (!user) return errorJson('Authentication required', 401);
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      return json({ message: 'Please use multipart/form-data for file uploads.' });
+      // Use similar logic as admin upload but for regular users
+      try {
+        const formData = await req.formData();
+        const file = formData.get('image');
+        if (!file) return errorJson('No file uploaded', 400);
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const blob = await put(file.name, buffer, { access: 'public', contentType: file.type });
+        await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${file.name})`;
+        return json({ url: blob.url });
+      } catch (err) {
+        Sentry.captureException(err);
+        return errorJson('Upload failed', 500);
+      }
     }
 
     // --- User Settings (with reminders & language) ---
