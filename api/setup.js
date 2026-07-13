@@ -372,13 +372,16 @@ function toNodeHandler(handlerFn) {
 
     // ---------- Multipart file upload handling ----------
     const isUploadRoute = req.url.includes('/api/setup/admin/upload-image') || 
-                          req.url.includes('/api/setup/upload-image');
+                      req.url.includes('/api/setup/upload-image');
 
-    if (req.method === 'POST' && isUploadRoute) {
-      let requiredRole = null;
-      if (reqPath === '/api/setup/admin/upload-image') {
-        requiredRole = 'admin';
-      }
+if (req.method === 'POST' && isUploadRoute) {
+  // 👇 এই লাইনটি যুক্ত করুন – কুয়েরি স্ট্রিং বাদ দিয়ে শুধু পাথ নেয়
+  const reqPath = req.url.split('?')[0];
+
+  let requiredRole = null;
+  if (reqPath === '/api/setup/admin/upload-image') {   // ✅ এখন কাজ করবে
+    requiredRole = 'admin';
+  }
       
       const authHeader = req.headers.authorization;
       if (!authHeader) {
