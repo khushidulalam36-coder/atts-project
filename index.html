@@ -1350,15 +1350,21 @@ async function loadWeeklyChallenge() {
 
     // ==================== Init ====================
     async function initDashboard(user) {
-      await checkVersion();
-      document.getElementById('auth-screen').classList.add('hidden');
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('dashboard').classList.remove('hidden');
-      currentUser = user; previousLevel = user.level;
-      showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone(); applyAdminTheme();
-      if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
-      updateDateDisplay();
-    }
+  await checkVersion();
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('dashboard').classList.remove('hidden');
+  currentUser = user; previousLevel = user.level;
+
+  // 👇 এই লাইনটি যোগ করুন – প্রথম state সেট করে দেয়
+  if (!window.history.state || !window.history.state.page) {
+    window.history.replaceState({ page: 'journey' }, '', '#/journey');
+  }
+
+  showPage('journey'); renderSliders(); startReminderScheduler(); initProfileDropZone(); applyAdminTheme();
+  if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
+  updateDateDisplay();
+}
 
     window.addEventListener('load', async () => {
       if ('serviceWorker' in navigator) {
