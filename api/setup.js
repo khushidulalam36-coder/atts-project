@@ -19,7 +19,7 @@ import { Resend } from 'resend';
 import { z } from 'zod';
 import * as Sentry from '@sentry/node';
 import webPush from 'web-push';
-import Busboy from 'busboy'; // ✅ busboy import
+import Busboy from 'busboy';
 
 // ---------- Environment validation ----------
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
@@ -39,6 +39,7 @@ const allowedOrigins = CORS_ORIGIN === '*' ? '*' : CORS_ORIGIN.split(',').map(s 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const SENTRY_DSN = process.env.SENTRY_DSN || '';
 const RATE_LIMIT_KV_URL = process.env.KV_URL || '';
+const CRON_SECRET = process.env.CRON_SECRET || '';
 
 if (SENTRY_DSN) {
   Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.1 });
@@ -212,7 +213,7 @@ async function computeDisciplineStreak(userId) {
       streak = 1;
       prevDate = currDate;
     } else {
-      const diffDays = (prevDate - currDate) / (1000 * 60 * 60 * 24);
+      const diffDays = Math.round((prevDate - currDate) / (1000 * 60 * 60 * 24));
       if (diffDays === 1) {
         streak++;
         prevDate = currDate;
@@ -390,7 +391,6 @@ function toNodeHandler(handlerFn) {
     );
 
     if (isUploadRoute) {
-      // Use busboy to parse the multipart request directly, without converting to Fetch
       const contentType = req.headers['content-type'];
       if (!contentType || !contentType.startsWith('multipart/form-data')) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -398,13 +398,12 @@ function toNodeHandler(handlerFn) {
         return;
       }
 
-      // Authenticate for admin route
       let requiredRole = null;
       if (reqPath === '/api/setup/admin/upload-image') {
         requiredRole = 'admin';
       }
 
-      if (requiredRole) {
+      if (requiredRole === 'admin') {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
           res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -424,10 +423,7 @@ function toNodeHandler(handlerFn) {
           res.end(JSON.stringify({ error: 'Invalid token' }));
           return;
         }
-      }
-
-      // Check for user image upload authentication
-      if (reqPath === '/api/setup/upload-image') {
+      } else {
         const user = await verifyTokenFromNodeReq(req);
         if (!user) {
           res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -440,13 +436,18 @@ function toNodeHandler(handlerFn) {
         const bb = new Busboy({ headers: { 'content-type': contentType }, limits: { fileSize: 5 * 1024 * 1024 } });
         const files = [];
         let aborted = false;
+        let errorSent = false;
 
         bb.on('file', (fieldname, fileStream, info) => {
           const { mimeType } = info;
           if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm'].includes(mimeType)) {
             aborted = true;
             fileStream.resume();
-            bb.emit('error', new Error('Invalid file type'));
+            if (!errorSent) {
+              errorSent = true;
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Invalid file type' }));
+            }
             return;
           }
           const chunks = [];
@@ -459,24 +460,30 @@ function toNodeHandler(handlerFn) {
               files.push(blob.url);
               await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${info.filename})`;
             } catch (blobError) {
-              console.error('Vercel Blob failed, falling back to Base64 storage:', blobError.message);
+              console.error('Vercel Blob failed:', blobError.message);
               Sentry.captureException(blobError);
-              const base64 = `data:${mimeType};base64,${buffer.toString('base64')}`;
-              files.push(base64);
-              await sql`INSERT INTO media_files (url, filename) VALUES (${base64}, ${info.filename})`;
+              if (!res.headersSent) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Upload to storage failed' }));
+                aborted = true;
+              }
             }
           });
         });
 
         bb.on('finish', () => {
-          if (aborted) return;
+          if (aborted || errorSent) return;
           if (files.length === 0) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'No file uploaded' }));
+            if (!res.headersSent) {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'No file uploaded' }));
+            }
             return;
           }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ url: files[0] }));
+          if (!res.headersSent) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ url: files[0] }));
+          }
         });
 
         bb.on('error', (err) => {
@@ -492,8 +499,10 @@ function toNodeHandler(handlerFn) {
         return;
       } catch (err) {
         Sentry.captureException(err);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Internal server error' }));
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Internal server error' }));
+        }
         return;
       }
     }
@@ -1014,6 +1023,17 @@ async function apiHandler(req) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      await sql`CREATE TABLE IF NOT EXISTS subjects (
+        id SERIAL PRIMARY KEY,
+        course_id INT REFERENCES courses(id) ON DELETE CASCADE,
+        parent_id INT REFERENCES subjects(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        content_text TEXT DEFAULT '',
+        order_index INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
       // ----- ADD INDEXES -----
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_journals_user_date ON daily_journals(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_badges_user ON badges(user_id)`;
@@ -1026,6 +1046,8 @@ async function apiHandler(req) {
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_quests_user_date ON daily_quests(user_id, quest_date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_chapter_quiz_questions_chapter ON chapter_quiz_questions(chapter_id)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_user_activity_log_user ON user_activity_log(user_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_subjects_parent ON subjects(parent_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_subjects_course ON subjects(course_id)`;
 
       // ----- Seed default translations -----
       await seedDefaultTranslations();
@@ -1169,7 +1191,7 @@ async function apiHandler(req) {
         `;
         await sql`INSERT INTO user_settings (user_id, language) VALUES (${user.id}, ${language || 'en'}) ON CONFLICT (user_id) DO NOTHING`;
         if (resend) {
-          const verifyLink = `${protocol}://${host}/api/setup/verify-email?token=${verificationToken}`;
+          const verifyLink = `${protocol}://${host}/verify-email?token=${verificationToken}`;
           try {
             await resend.emails.send({
               from: 'AlamQuant ATTS <noreply@alamquant.com>',
@@ -1189,6 +1211,15 @@ async function apiHandler(req) {
         Sentry.captureException(err);
         return errorJson('Internal server error during registration', 500);
       }
+    }
+
+    if (path === '/verify-email' && req.method === 'GET') {
+      const token = getQueryParam('token');
+      if (!token) return errorJson('No token provided', 400);
+      const [user] = await sql`SELECT * FROM users WHERE verification_token = ${token}`;
+      if (!user) return errorJson('Invalid or expired token', 400);
+      await sql`UPDATE users SET email_verified = true, verification_token = NULL WHERE id = ${user.id}`;
+      return new Response(null, { status: 302, headers: { Location: '/?verified=true' } });
     }
 
     if (path === '/verify-email' && req.method === 'POST') {
@@ -1234,7 +1265,7 @@ async function apiHandler(req) {
       const resetToken = uuidv4();
       await sql`UPDATE users SET verification_token = ${resetToken} WHERE id = ${user.id}`;
       if (resend) {
-        const resetLink = `${protocol}://${host}/api/setup/reset-password?token=${resetToken}`;
+        const resetLink = `${protocol}://${host}/reset-password?token=${resetToken}`;
         try {
           await resend.emails.send({
             from: 'AlamQuant ATTS <noreply@alamquant.com>',
@@ -1248,6 +1279,12 @@ async function apiHandler(req) {
       }
       await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'password_reset_request', ${JSON.stringify({email})}, ${ip})`;
       return json({ message: 'If the email exists, a reset link has been sent.' });
+    }
+
+    if (path === '/reset-password' && req.method === 'GET') {
+      const token = getQueryParam('token');
+      if (!token) return errorJson('No token provided', 400);
+      return new Response(null, { status: 302, headers: { Location: `/reset-password.html?token=${token}` } });
     }
 
     if (path === '/reset-password' && req.method === 'POST') {
@@ -1404,7 +1441,7 @@ async function apiHandler(req) {
         await sql`DELETE FROM user_lessons WHERE user_id = ${userId}`;
         await sql`DELETE FROM community_posts WHERE user_id = ${userId}`;
         await sql`DELETE FROM replies WHERE user_id = ${userId}`;
-        await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`; // ✅ added
+        await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`;
         await sql`DELETE FROM notif_settings WHERE user_id = ${userId}`;
         await sql`DELETE FROM daily_quests WHERE user_id = ${userId}`;
         await sql`DELETE FROM habit_definitions WHERE user_id = ${userId}`;
@@ -1456,6 +1493,101 @@ async function apiHandler(req) {
       }
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'simulate', ${JSON.stringify({email, days, inserted})})`;
       return json({ success: true, inserted_days: inserted });
+    }
+
+    // --- Subjects Management (NEW) ---
+    if (path === '/admin/subjects' && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const courseId = getQueryParam('course_id') || 1;
+      const subjects = await sql`
+        SELECT s.*, 
+               (SELECT COUNT(*)::int FROM subjects sub WHERE sub.parent_id = s.id AND sub.is_active = true) as sub_count
+        FROM subjects s 
+        WHERE s.course_id = ${courseId} AND s.parent_id IS NULL AND s.is_active = true 
+        ORDER BY s.order_index, s.id
+      `;
+      const result = [];
+      for (const main of subjects) {
+        const subs = await sql`
+          SELECT * FROM subjects 
+          WHERE parent_id = ${main.id} AND is_active = true 
+          ORDER BY order_index, id
+        `;
+        result.push({ ...main, sub_subjects: subs });
+      }
+      return json(result);
+    }
+
+    if (path === '/admin/subjects/tree' && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const courseId = getQueryParam('course_id') || 1;
+      const allSubjects = await sql`
+        SELECT * FROM subjects 
+        WHERE course_id = ${courseId} AND is_active = true 
+        ORDER BY order_index, id
+      `;
+      const buildTree = (parentId = null) => {
+        return allSubjects
+          .filter(s => s.parent_id === parentId)
+          .map(s => ({ ...s, children: buildTree(s.id) }));
+      };
+      return json(buildTree(null));
+    }
+
+    if (path === '/admin/subject' && req.method === 'POST') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const body = await req.json();
+      const { course_id, parent_id, title, content_text, order_index } = body;
+      if (!title) return errorJson('Title required', 400);
+      const [subject] = await sql`
+        INSERT INTO subjects (course_id, parent_id, title, content_text, order_index)
+        VALUES (${course_id || 1}, ${parent_id || null}, ${title}, ${content_text || ''}, ${order_index || 0})
+        RETURNING *
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_subject', ${JSON.stringify({subject_id: subject.id, title})})`;
+      return json(subject, 201);
+    }
+
+    if (path.match(/^\/admin\/subject\/(\d+)$/) && req.method === 'PUT') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const subjectId = parseInt(path.split('/')[3]);
+      const body = await req.json();
+      const { title, content_text, order_index, is_active } = body;
+      await sql`
+        UPDATE subjects SET 
+          title = COALESCE(${title}, title),
+          content_text = COALESCE(${content_text}, content_text),
+          order_index = COALESCE(${order_index}, order_index),
+          is_active = COALESCE(${is_active}, is_active)
+        WHERE id = ${subjectId}
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_subject', ${JSON.stringify({subjectId})})`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/subject\/(\d+)$/) && req.method === 'DELETE') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const subjectId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM subjects WHERE id = ${subjectId} OR parent_id = ${subjectId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_subject', ${JSON.stringify({subjectId})})`;
+      return json({ success: true });
+    }
+
+    if (path.match(/^\/admin\/subjects\/(\d+)\/sub$/) && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const mainId = parseInt(path.split('/')[3]);
+      const subs = await sql`
+        SELECT * FROM subjects 
+        WHERE parent_id = ${mainId} AND is_active = true 
+        ORDER BY order_index, id
+      `;
+      return json(subs);
     }
 
     // --- Chapters Management ---
@@ -2521,6 +2653,19 @@ async function apiHandler(req) {
 
     if (path.match(/^\/training\/chapter\/(\d+)\/quiz$/) && req.method === 'POST') {
       const chapterId = parseInt(path.split('/')[3]);
+      
+      // Check chapter lock: must have passed previous chapter
+      const [chapter] = await sql`SELECT order_index, course_id FROM chapters WHERE id = ${chapterId}`;
+      if (chapter && chapter.order_index > 1) {
+        const [prevChapter] = await sql`SELECT id FROM chapters WHERE course_id = ${chapter.course_id} AND order_index = ${chapter.order_index - 1}`;
+        if (prevChapter) {
+          const [prevProgress] = await sql`SELECT passed FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${prevChapter.id}`;
+          if (!prevProgress || !prevProgress.passed) {
+            return errorJson('Complete the previous chapter first', 403);
+          }
+        }
+      }
+      
       const body = await req.json();
       const { answers } = body;
       const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
@@ -2535,8 +2680,8 @@ async function apiHandler(req) {
         if (userAns && userAns.selected_index === q.correct_index) correct++;
       }
       const score = total > 0 ? (correct / total) * 100 : 0;
-      const [chapter] = await sql`SELECT passing_score FROM chapters WHERE id = ${chapterId}`;
-      const passed = score >= (chapter.passing_score || 90);
+      const [chapterData] = await sql`SELECT passing_score FROM chapters WHERE id = ${chapterId}`;
+      const passed = score >= (chapterData.passing_score || 90);
 
       await sql`
         INSERT INTO user_chapter_progress (user_id, chapter_id, quiz_attempts, best_score, passed, completed_at, last_attempt_at)
@@ -2561,9 +2706,9 @@ async function apiHandler(req) {
       }));
 
       return json({
-        score, passed, total, correct, passing_score: chapter.passing_score,
+        score, passed, total, correct, passing_score: chapterData.passing_score,
         xp_earned: passed ? 20 : 0, energy_cost: energyCost,
-        message: passed ? 'Congratulations! You passed.' : `Score: ${score.toFixed(0)}%. Passing: ${chapter.passing_score}%. Please study again.`,
+        message: passed ? 'Congratulations! You passed.' : `Score: ${score.toFixed(0)}%. Passing: ${chapterData.passing_score}%. Please study again.`,
         explanations: explanations
       });
     }
@@ -2778,6 +2923,12 @@ async function apiHandler(req) {
 
     // ==================== CRON JOB (Reminders) ====================
     if (path === '/cron/check-reminders' && req.method === 'GET') {
+      // Security check for cron secret
+      const secret = getQueryParam('secret');
+      if (CRON_SECRET && secret !== CRON_SECRET) {
+        return errorJson('Forbidden', 403);
+      }
+      
       const now = new Date();
       const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 

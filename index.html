@@ -1768,7 +1768,7 @@
                 showToast('Please fill all required fields.'); } return v; }
         async function apiCall(m, p, b, showErr = true) { const h = { 'Content-Type': 'application/json' }; if (token) h[
                 'Authorization'] = `Bearer ${token}`; try { const r = await fetch(`${API}${p}`, { method: m,
-                headers: h, body: b ? JSON.stringify(b) : null }); if (r.status === 401) { logout(); return null; } let d =
+                headers: h, body: b ? JSON.stringify(b) : null }); if (r.status === 401) { logout(); return null; } if (r.status === 401) { logout(); return null; } let d =
                 null; const contentType = r.headers.get('content-type') || ''; if (contentType.includes(
                     'application/json')) { try { d = await r.json(); } catch (jsonErr) { if (showErr) showToast(
                         'Invalid server response format'); return null; } } else { if (showErr) showToast(

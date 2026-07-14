@@ -130,8 +130,8 @@
         <nav>
             <a data-tab="stats" class="active" onclick="switchTab('stats')">📊 Dashboard</a>
             <a data-tab="users" onclick="switchTab('users')">👥 Users</a>
-            <a data-tab="simulate" onclick="switchTab('simulate')">🧪 Simulate</a>
-            <a data-tab="chapters" onclick="switchTab('chapters')">📚 Chapters</a>
+            <a data-tab="subjects" onclick="switchTab('subjects')">📚 Subjects</a>
+            <a data-tab="chapters" onclick="switchTab('chapters')">📖 Chapters</a>
             <a data-tab="courses" onclick="switchTab('courses')">📘 Courses</a>
             <a data-tab="content" onclick="switchTab('content')">📝 Content</a>
             <a data-tab="theme" onclick="switchTab('theme')">🎨 Theme</a>
@@ -148,16 +148,18 @@
         <div id="login-screen">
             <div class="card" style="max-width:400px; margin:40px auto;">
                 <h2 style="color:var(--gold);">🔐 Admin Login</h2>
-                <input type="email" id="admin-email" placeholder="Email" autocomplete="email">
-                <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
-                <button class="btn" onclick="adminLogin()" style="width:100%; margin-top:12px;">Login</button>
+                <form id="admin-login-form" onsubmit="adminLogin(); return false;">
+                    <input type="email" id="admin-email" placeholder="Email" autocomplete="email">
+                    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+                    <button type="submit" class="btn" style="width:100%; margin-top:12px;">Login</button>
+                </form>
                 <p id="login-error" style="color:var(--danger); margin-top:8px; display:none;"></p>
             </div>
         </div>
         <div id="panel-screen" class="hidden"></div>
     </div>
 
-    <!-- Chapter Editor Modal -->
+    <!-- Chapter Editor Modal (for legacy chapters) -->
     <div id="chapter-editor-modal" class="modal-overlay hidden">
         <div class="modal-content" style="max-width:1050px; width:95vw;">
             <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterEditor()">✕</button>
@@ -312,6 +314,24 @@
         </div>
     </div>
 
+    <!-- Subject Edit Modal (new) -->
+    <div id="subject-edit-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeSubjectModal()">✕</button>
+            <h3 id="subject-modal-title">Subject Editor</h3>
+            <input type="hidden" id="subj-edit-id">
+            <input type="hidden" id="subj-parent-id" value="">
+            <label>Title</label>
+            <input type="text" id="subj-title" required>
+            <label>Content (HTML, optional)</label>
+            <textarea id="subj-content" rows="6"></textarea>
+            <label>Order Index</label>
+            <input type="number" id="subj-order" value="0">
+            <button class="btn" onclick="saveSubject()">Save</button>
+            <button class="btn btn-outline" onclick="closeSubjectModal()">Cancel</button>
+        </div>
+    </div>
+
     <script>
         (function() {
             const Block = Quill.import('blots/block');
@@ -404,7 +424,7 @@
                 switch(tab) {
                     case 'stats': loadStats(); break;
                     case 'users': loadUsers(); break;
-                    case 'simulate': loadSimulate(); break;
+                    case 'subjects': loadSubjects(); break;
                     case 'chapters': loadChapters(); break;
                     case 'courses': loadCourses(); break;
                     case 'content': loadContentManager(); break;
@@ -444,20 +464,143 @@
             async function impersonateUser(userId) { if (!confirm('Login as this user?')) return; const res = await adminApiCall('POST', '/admin/impersonate', { user_id: userId }); if (res && res.token) { localStorage.setItem('token', res.token); window.open('/', '_blank'); } else showToast('Impersonation failed'); }
             async function deleteUser(userId) { if (!confirm('Delete this user permanently?')) return; const res = await adminApiCall('DELETE', `/admin/user/${userId}`); if (res && res.success) { loadUsers(); showToast('✅ User deleted'); } }
 
-            function loadSimulate() {
-                document.getElementById('panel-screen').innerHTML = `<div class="card"><h3>🧪 Simulate User</h3><input type="text" id="sim-email" placeholder="User email"><input type="number" id="sim-days" placeholder="Days (1-30)" value="7"><input type="number" id="sim-start" placeholder="Start day" value="1"><button class="btn" onclick="simulateUser()">Simulate</button></div>`;
-            }
-            async function simulateUser() {
-                const email = document.getElementById('sim-email').value.trim();
-                const days = document.getElementById('sim-days').value;
-                const start = document.getElementById('sim-start').value;
-                if (!email) return showToast('User email required');
-                const res = await adminApiCall('POST', '/admin/simulate-day', { email, days: parseInt(days), start_day: parseInt(start) });
-                if (res && res.success) showToast(`✅ ${res.inserted_days} days simulated`);
-                else showToast(res?.error || 'Failed');
+            // ===== SUBJECTS (NEW TREE-BASED SYSTEM) =====
+            async function loadSubjects() {
+                const data = await adminApiCall('GET', '/admin/subjects?course_id=1');
+                if (!data) return;
+                let html = `<div class="card"><h3>📚 Training Subjects</h3>
+                    <button class="btn btn-sm" onclick="showSubjectModal(null, null)">➕ Add Main Subject</button>
+                    <div style="display:flex; gap:20px; margin-top:20px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:220px; max-width:300px; border-right:1px solid var(--border-gold); padding-right:10px;">
+                            <h4>Main Subjects</h4>
+                            <div id="main-subject-list"></div>
+                        </div>
+                        <div style="flex:2; min-width:300px;">
+                            <h4 id="sub-subject-header">Sub-subjects</h4>
+                            <div id="sub-subject-list"><p style="color:var(--text-secondary);">Select a Main Subject to view its sub-subjects.</p></div>
+                        </div>
+                    </div>
+                </div>`;
+                document.getElementById('panel-screen').innerHTML = html;
+                renderMainSubjects(data);
             }
 
-            // ===== QUILL EDITOR =====
+            function renderMainSubjects(subjects) {
+                const list = document.getElementById('main-subject-list');
+                if (!subjects.length) {
+                    list.innerHTML = '<p style="color:var(--text-secondary);">No main subjects yet.</p>';
+                    return;
+                }
+                list.innerHTML = subjects.map(s => `
+                    <div class="flex" style="justify-content:space-between; padding:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1); margin:4px 0; border-radius:8px;">
+                        <span onclick="selectMainSubject(${s.id})" style="flex:1;">📁 ${escapeHtml(s.title)}</span>
+                        <div>
+                            <button class="tts-mini-btn play-btn" onclick="event.stopPropagation(); playMainSubjectTTS('${escapeHtml(s.title)}')">▶</button>
+                            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); showSubjectModal(${s.id}, null)">✏️</button>
+                            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); showSubjectModal(null, ${s.id})" title="Add Sub">➕</button>
+                            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteSubject(${s.id})">🗑</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async function selectMainSubject(mainId) {
+                const subs = await adminApiCall('GET', `/admin/subjects/${mainId}/sub`);
+                document.getElementById('sub-subject-header').innerText = 'Sub-subjects';
+                const subList = document.getElementById('sub-subject-list');
+                if (!subs || subs.length === 0) {
+                    subList.innerHTML = '<p style="color:var(--text-secondary);">No sub-subjects. Add one using the + button on the Main Subject.</p>';
+                    return;
+                }
+                subList.innerHTML = subs.map(sub => `
+                    <div class="flex" style="justify-content:space-between; padding:8px; border:1px solid var(--border-gold); margin:4px 0; border-radius:8px;">
+                        <span>📄 ${escapeHtml(sub.title)}</span>
+                        <div>
+                            <button class="tts-mini-btn play-btn" onclick="playSubSubjectTTS('${escapeHtml(sub.content_text || '')}')">▶</button>
+                            <button class="btn btn-sm btn-outline" onclick="showSubjectModal(${sub.id}, ${mainId})">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSubject(${sub.id})">🗑</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function showSubjectModal(id, parentId) {
+                const modal = document.getElementById('subject-edit-modal');
+                document.getElementById('subj-edit-id').value = id || '';
+                document.getElementById('subj-parent-id').value = parentId || '';
+                if (id) {
+                    adminApiCall('GET', '/admin/subjects?course_id=1').then(all => {
+                        const found = findSubjectById(all, id);
+                        if (found) {
+                            document.getElementById('subj-title').value = found.title;
+                            document.getElementById('subj-content').value = found.content_text || '';
+                            document.getElementById('subj-order').value = found.order_index || 0;
+                        }
+                    });
+                    document.getElementById('subject-modal-title').textContent = 'Edit Subject';
+                } else {
+                    document.getElementById('subj-title').value = '';
+                    document.getElementById('subj-content').value = '';
+                    document.getElementById('subj-order').value = 0;
+                    document.getElementById('subject-modal-title').textContent = parentId ? 'Add Sub-subject' : 'Add Main Subject';
+                }
+                modal.classList.remove('hidden');
+            }
+
+            function findSubjectById(tree, id) {
+                for (const main of tree) {
+                    if (main.id == id) return main;
+                    if (main.sub_subjects) {
+                        const found = main.sub_subjects.find(s => s.id == id);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+
+            function closeSubjectModal() { document.getElementById('subject-edit-modal').classList.add('hidden'); }
+
+            async function saveSubject() {
+                const id = document.getElementById('subj-edit-id').value;
+                const parentId = document.getElementById('subj-parent-id').value || null;
+                const title = document.getElementById('subj-title').value.trim();
+                const content = document.getElementById('subj-content').value.trim();
+                const order = parseInt(document.getElementById('subj-order').value) || 0;
+                if (!title) return showToast('Title required');
+                const body = { course_id: 1, parent_id: parentId ? parseInt(parentId) : null, title, content_text: content, order_index: order };
+                if (id) {
+                    await adminApiCall('PUT', `/admin/subject/${id}`, body);
+                } else {
+                    await adminApiCall('POST', '/admin/subject', body);
+                }
+                closeSubjectModal();
+                loadSubjects();
+                showToast('✅ Subject saved');
+            }
+
+            async function deleteSubject(id) {
+                if (!confirm('Delete this subject and all its sub-subjects?')) return;
+                await adminApiCall('DELETE', `/admin/subject/${id}`);
+                loadSubjects();
+                showToast('Subject deleted');
+            }
+
+            function playMainSubjectTTS(title) {
+                if (speechSynthesis.speaking) speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(title);
+                utterance.lang = 'en-US';
+                speechSynthesis.speak(utterance);
+            }
+
+            function playSubSubjectTTS(content) {
+                if (!content) return showToast('No content to read');
+                if (speechSynthesis.speaking) speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(content.replace(/<[^>]*>/g, ''));
+                utterance.lang = 'en-US';
+                speechSynthesis.speak(utterance);
+            }
+
+            // ===== QUILL EDITOR & SECTION TREE =====
             function destroyQuill() {
                 if (quillEditor) { document.getElementById('chapter-quill-editor').innerHTML = ''; quillEditor = null; }
                 activeSectionTTS = null; activeSectionTTSBtn = null;
@@ -542,7 +685,6 @@
                 return editor;
             }
 
-            // ===== SECTION TREE =====
             function refreshSectionTree() {
                 if (!quillEditor) return;
                 const container = document.getElementById('section-tree');
@@ -550,12 +692,13 @@
                 const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
                 let html = '';
 
+                // Assign IDs to sections
+                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
+                ttsSections.forEach((sub, sIdx) => { if (!sub.id.startsWith('section-')) sub.id = `section-direct-${sIdx}`; });
                 mainDivs.forEach((mainDiv, mIdx) => {
                     const subDivs = mainDiv.querySelectorAll('.tts-section');
                     subDivs.forEach((sub, sIdx) => { sub.id = `section-${mIdx}-${sIdx}`; });
                 });
-                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                ttsSections.forEach((sub, sIdx) => { if (!sub.id.startsWith('section-')) sub.id = `section-direct-${sIdx}`; });
 
                 if (mainDivs.length === 0) {
                     if (ttsSections.length > 0) {
@@ -787,8 +930,13 @@
                 if (sIdx < ttsSections.length) { ttsSections[sIdx].remove(); quillEditor.update(); refreshSectionTree(); }
             }
 
-            // ===== TTS =====
-            function stopAllTTS() { if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel(); resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; }
+            function stopAllTTS() {
+                if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
+                resetAllTTSButtons();
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null;
+            }
+
             function resetAllTTSButtons() {
                 document.querySelectorAll('#section-tree .play-btn').forEach(b => { b.textContent = '▶'; b.classList.remove('active-play'); });
                 document.querySelectorAll('#section-tree .stop-btn').forEach(b => b.classList.remove('visible'));
@@ -797,6 +945,7 @@
                 document.querySelectorAll('.tree-sub-item').forEach(el => el.classList.remove('playing'));
                 document.querySelectorAll('.tts-section').forEach(el => el.style.background = '');
             }
+
             function highlightPlayingSection(btn) {
                 document.querySelectorAll('.tree-sub-item').forEach(el => el.classList.remove('playing'));
                 const subItem = btn.closest('.tree-sub-item');
@@ -811,12 +960,13 @@
                     if (target) target.style.background = 'rgba(200,167,91,0.15)';
                 }
             }
+
             function playSubTTS(mIdx, sIdx, btn) {
                 const text = getSubTextFromEditor(mIdx, sIdx);
                 if (!text) return;
                 if (activeSectionTTS && activeSectionTTSBtn === btn) {
-                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); activeSectionTTS.state = 'paused'; return; }
-                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); activeSectionTTS.state = 'playing'; highlightPlayingSection(btn); return; }
+                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); return; }
+                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); highlightPlayingSection(btn); return; }
                 }
                 stopAllTTS();
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -837,12 +987,13 @@
                 utterance.onerror = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
                 speechSynthesis.speak(utterance);
             }
+
             function playDirectSubTTS(sIdx, btn) {
                 const text = getDirectSubText(sIdx);
                 if (!text) return;
                 if (activeSectionTTS && activeSectionTTSBtn === btn) {
-                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); activeSectionTTS.state = 'paused'; return; }
-                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); activeSectionTTS.state = 'playing'; highlightPlayingSection(btn); return; }
+                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); return; }
+                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); highlightPlayingSection(btn); return; }
                 }
                 stopAllTTS();
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -863,6 +1014,7 @@
                 utterance.onerror = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
                 speechSynthesis.speak(utterance);
             }
+
             function playMainTTS(mIdx, btn) {
                 if (!quillEditor) return;
                 const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
@@ -883,14 +1035,28 @@
                 utterance.onerror = () => { btn.textContent = '🔊'; activeSectionTTS = null; activeSectionTTSBtn = null; };
                 speechSynthesis.speak(utterance);
             }
-            function getSubTextFromEditor(mIdx, sIdx) { if (!quillEditor) return ''; const mainDivs = quillEditor.root.querySelectorAll('.main-subject'); if (mIdx >= mainDivs.length) return ''; const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section'); if (sIdx >= subDivs.length) return ''; return subDivs[sIdx].innerText; }
-            function getDirectSubText(sIdx) { if (!quillEditor) return ''; const ttsSections = quillEditor.root.querySelectorAll('.tts-section'); if (sIdx >= ttsSections.length) return ''; return ttsSections[sIdx].innerText; }
+
+            function getSubTextFromEditor(mIdx, sIdx) {
+                if (!quillEditor) return '';
+                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+                if (mIdx >= mainDivs.length) return '';
+                const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
+                if (sIdx >= subDivs.length) return '';
+                return subDivs[sIdx].innerText;
+            }
+
+            function getDirectSubText(sIdx) {
+                if (!quillEditor) return '';
+                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
+                if (sIdx >= ttsSections.length) return '';
+                return ttsSections[sIdx].innerText;
+            }
 
             // ===== CHAPTERS =====
             async function loadChapters() {
                 const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
                 if (!chapters) return;
-                let html = `<div class="card"><h3>📚 Chapters</h3><button class="btn" onclick="openChapterEditor(null)">+ New Chapter</button><table><thead><tr><th>#</th><th>Title</th><th>Questions</th><th>Passed</th><th>Actions</th></tr></thead><tbody>`;
+                let html = `<div class="card"><h3>📖 Chapters</h3><button class="btn" onclick="openChapterEditor(null)">+ New Chapter</button><table><thead><tr><th>#</th><th>Title</th><th>Questions</th><th>Passed</th><th>Actions</th></tr></thead><tbody>`;
                 chapters.forEach(c => { html += `<tr><td>${c.order_index}</td><td>${escapeHtml(c.title)}</td><td>${c.question_count}</td><td>${c.passed_count}</td><td><button class="btn btn-sm btn-outline" onclick="openChapterEditor(${c.id})">✏️</button><button class="btn btn-sm btn-outline" onclick="manageQuestions(${c.id}, '${escapeHtml(c.title)}')">📝 Questions</button><button class="btn btn-sm btn-danger" onclick="deleteChapter(${c.id})">🗑</button></td></tr>`; });
                 html += '</tbody></table></div>';
                 document.getElementById('panel-screen').innerHTML = html;
@@ -937,92 +1103,17 @@
                     addVideoField();
                     setTimeout(() => refreshSectionTree(), 200);
                 }
-                const draft = localStorage.getItem('chapterDraft');
-                if (draft) {
-                    try {
-                        const obj = JSON.parse(draft);
-                        if ((!id && !obj.id) || (id == obj.id)) {
-                            if (confirm('You have an unsaved draft. Restore it?')) {
-                                if (obj.title) document.getElementById('ch-title').value = obj.title;
-                                if (obj.order) document.getElementById('ch-order').value = obj.order;
-                                if (obj.passing) document.getElementById('ch-passing').value = obj.passing;
-                                if (obj.lang) { document.getElementById('ch-edit-lang').value = obj.lang; document.getElementById('ch-lang').value = obj.lang; }
-                                if (obj.content && quillEditor) { quillEditor.root.innerHTML = obj.content; refreshSectionTree(); }
-                            } else { localStorage.removeItem('chapterDraft'); }
-                        }
-                    } catch(e) {}
-                }
                 startAutoSave();
             }
 
-            function startAutoSave() {
-                clearInterval(autoSaveInterval);
-                autoSaveInterval = setInterval(() => {
-                    if (!quillEditor) return;
-                    const draft = {
-                        id: document.getElementById('ch-edit-id').value,
-                        title: document.getElementById('ch-title').value,
-                        order: document.getElementById('ch-order').value,
-                        passing: document.getElementById('ch-passing').value,
-                        lang: document.getElementById('ch-edit-lang').value,
-                        content: quillEditor.root.innerHTML
-                    };
-                    localStorage.setItem('chapterDraft', JSON.stringify(draft));
-                }, 30000);
-            }
-
-            async function switchEditorLanguage() {
-                const lang = document.getElementById('ch-lang').value;
-                currentChapterLanguage = lang;
-                document.getElementById('ch-edit-lang').value = lang;
-                if (!currentChapterId) return;
-                if (lang === 'en') {
-                    if (chapterMasterData) {
-                        document.getElementById('ch-title').value = chapterMasterData.title;
-                        if (quillEditor) { quillEditor.root.innerHTML = chapterMasterData.content_text || ''; setTimeout(() => refreshSectionTree(), 200); }
-                        document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
-                    }
-                } else {
-                    const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
-                    if (trans && trans.title) {
-                        document.getElementById('ch-title').value = trans.title;
-                        if (quillEditor) { quillEditor.root.innerHTML = trans.content_text || ''; setTimeout(() => refreshSectionTree(), 200); }
-                    } else {
-                        document.getElementById('ch-title').value = '';
-                        if (quillEditor) quillEditor.root.innerHTML = '';
-                        showToast('No translation yet for this language.');
-                    }
-                    document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`;
-                }
-            }
-
+            function startAutoSave() { clearInterval(autoSaveInterval); autoSaveInterval = setInterval(() => { if (!quillEditor) return; const draft = { id: document.getElementById('ch-edit-id').value, title: document.getElementById('ch-title').value, order: document.getElementById('ch-order').value, passing: document.getElementById('ch-passing').value, lang: document.getElementById('ch-edit-lang').value, content: quillEditor.root.innerHTML }; localStorage.setItem('chapterDraft', JSON.stringify(draft)); }, 30000); }
+            async function switchEditorLanguage() { const lang = document.getElementById('ch-lang').value; currentChapterLanguage = lang; document.getElementById('ch-edit-lang').value = lang; if (!currentChapterId) return; if (lang === 'en') { if (chapterMasterData) { document.getElementById('ch-title').value = chapterMasterData.title; if (quillEditor) { quillEditor.root.innerHTML = chapterMasterData.content_text || ''; setTimeout(() => refreshSectionTree(), 200); } document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)'; } } else { const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false); if (trans && trans.title) { document.getElementById('ch-title').value = trans.title; if (quillEditor) { quillEditor.root.innerHTML = trans.content_text || ''; setTimeout(() => refreshSectionTree(), 200); } } else { document.getElementById('ch-title').value = ''; if (quillEditor) quillEditor.root.innerHTML = ''; showToast('No translation yet for this language.'); } document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`; } }
             function addImageField(url='') { const container = document.getElementById('images-container'); const div = document.createElement('div'); div.className = 'flex'; div.style.marginBottom = '4px'; div.innerHTML = `<input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}"><input type="file" class="ch-image-upload" accept="image/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
             function addVideoField(url='') { const container = document.getElementById('videos-container'); const div = document.createElement('div'); div.className = 'flex'; div.style.marginBottom = '4px'; div.innerHTML = `<input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}"><input type="file" class="ch-video-upload" accept="video/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
             async function triggerChapterImageUpload(btn) { const fileInput = btn.parentElement.querySelector('.ch-image-upload'); fileInput.click(); fileInput.addEventListener('change', async function handler(e) { fileInput.removeEventListener('change', handler); const file = e.target.files[0]; if (!file) return; btn.disabled = true; btn.textContent = '⏳'; const url = await uploadSingleMedia(file); if (url) { btn.parentElement.querySelector('.ch-image-url').value = url; showToast('Image uploaded'); } btn.disabled = false; btn.textContent = '📷'; }); }
             async function triggerChapterVideoUpload(btn) { const fileInput = btn.parentElement.querySelector('.ch-video-upload'); fileInput.click(); fileInput.addEventListener('change', async function handler(e) { fileInput.removeEventListener('change', handler); const file = e.target.files[0]; if (!file) return; btn.disabled = true; btn.textContent = '⏳'; const url = await uploadSingleMedia(file, true); if (url) { btn.parentElement.querySelector('.ch-video-url').value = url; showToast('Video uploaded'); } btn.disabled = false; btn.textContent = '🎬'; }); }
             function closeChapterEditor() { stopAllTTS(); clearInterval(autoSaveInterval); document.getElementById('chapter-editor-modal').classList.add('hidden'); destroyQuill(); document.getElementById('section-tree').innerHTML = ''; localStorage.removeItem('chapterDraft'); }
-
-            async function saveChapter() {
-                const lang = document.getElementById('ch-edit-lang').value;
-                const title = document.getElementById('ch-title').value.trim();
-                const order_index = parseInt(document.getElementById('ch-order').value);
-                const content_text = quillEditor ? quillEditor.root.innerHTML : '';
-                const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
-                const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
-                const passing_score = parseInt(document.getElementById('ch-passing').value);
-                const chapterId = document.getElementById('ch-edit-id').value;
-                if (!title || !order_index) return showToast('Title and order required');
-                if (lang === 'en') {
-                    const body = { course_id:1, title, order_index, content_text, images, videos, passing_score, language:'en' };
-                    if (chapterId) { await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body); } else { const res = await adminApiCall('POST', '/admin/chapter', body); if (res) currentChapterId = res.id; }
-                    chapterMasterData = { title, content_text, images, videos, passing_score };
-                } else {
-                    if (!currentChapterId) return showToast('Save English chapter first');
-                    await adminApiCall('POST', '/admin/translations/content', { table_name:'chapters', record_id:parseInt(currentChapterId), language_code:lang, translations:{ title, content_text } });
-                }
-                closeChapterEditor(); loadChapters(); showToast('✅ Chapter saved');
-                localStorage.removeItem('chapterDraft');
-            }
+            async function saveChapter() { const lang = document.getElementById('ch-edit-lang').value; const title = document.getElementById('ch-title').value.trim(); const order_index = parseInt(document.getElementById('ch-order').value); const content_text = quillEditor ? quillEditor.root.innerHTML : ''; const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u); const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u); const passing_score = parseInt(document.getElementById('ch-passing').value); const chapterId = document.getElementById('ch-edit-id').value; if (!title || !order_index) return showToast('Title and order required'); if (lang === 'en') { const body = { course_id:1, title, order_index, content_text, images, videos, passing_score, language:'en' }; if (chapterId) { await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body); } else { const res = await adminApiCall('POST', '/admin/chapter', body); if (res) currentChapterId = res.id; } chapterMasterData = { title, content_text, images, videos, passing_score }; } else { if (!currentChapterId) return showToast('Save English chapter first'); await adminApiCall('POST', '/admin/translations/content', { table_name:'chapters', record_id:parseInt(currentChapterId), language_code:lang, translations:{ title, content_text } }); } closeChapterEditor(); loadChapters(); showToast('✅ Chapter saved'); localStorage.removeItem('chapterDraft'); }
             async function deleteChapter(id) { if (!confirm('Delete this chapter?')) return; await adminApiCall('DELETE', `/admin/chapter/${id}`); loadChapters(); }
 
             // ===== QUESTIONS =====
@@ -1145,7 +1236,14 @@
             window.resetUserPassword = resetUserPassword;
             window.impersonateUser = impersonateUser;
             window.deleteUser = deleteUser;
-            window.simulateUser = simulateUser;
+            window.loadSubjects = loadSubjects;
+            window.showSubjectModal = showSubjectModal;
+            window.closeSubjectModal = closeSubjectModal;
+            window.saveSubject = saveSubject;
+            window.deleteSubject = deleteSubject;
+            window.selectMainSubject = selectMainSubject;
+            window.playMainSubjectTTS = playMainSubjectTTS;
+            window.playSubSubjectTTS = playSubSubjectTTS;
             window.openChapterEditor = openChapterEditor;
             window.closeChapterEditor = closeChapterEditor;
             window.saveChapter = saveChapter;
