@@ -80,13 +80,8 @@
       box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
       background: linear-gradient(135deg, #E8C97A, #60A5FA);
     }
-    .btn:active {
-      transform: scale(0.96);
-    }
-    .btn:focus-visible {
-      outline: 2px solid #E8C97A;
-      outline-offset: 3px;
-    }
+    .btn:active { transform: scale(0.96); }
+    .btn:focus-visible { outline: 2px solid #E8C97A; outline-offset: 3px; }
     .btn::after {
       content: '';
       position: absolute;
@@ -98,12 +93,7 @@
       transition: width 0.6s, height 0.6s, opacity 0.6s;
       opacity: 0;
     }
-    .btn:active::after {
-      width: 300px;
-      height: 300px;
-      opacity: 0;
-      transition: 0s;
-    }
+    .btn:active::after { width: 300px; height: 300px; opacity: 0; transition: 0s; }
     .btn-outline {
       background: transparent;
       border: 2px solid var(--gold);
@@ -127,9 +117,7 @@
       background: linear-gradient(135deg, var(--danger), #b91c1c);
       box-shadow: 0 4px 12px rgba(239,68,68,0.4);
     }
-    .btn-danger:hover {
-      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
-    }
+    .btn-danger:hover { box-shadow: 0 8px 20px rgba(239,68,68,0.6); }
     .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
     .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
 
@@ -208,38 +196,49 @@
     .media-item { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; max-width: 100%; overflow: hidden; }
     .media-item .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; }
 
-    /* Chapter Editor Drawer styles */
-    #section-drawer {
-      flex: 1; border-left: 1px solid var(--border-gold); padding-left: 12px; max-height: 75vh; overflow-y: auto;
+    /* === Chapter Editor Layout === */
+    .chapter-editor-layout {
+      display: flex;
+      gap: 16px;
+      max-width: 100%;
     }
-    #section-drawer .tree-main {
+    .chapter-editor-layout .editor-panel {
+      flex: 2;
+      min-width: 0;
+    }
+    .chapter-editor-layout .drawer-panel {
+      flex: 1;
+      border-left: 1px solid var(--border-gold);
+      padding-left: 16px;
+      max-height: 75vh;
+      overflow-y: auto;
+      min-width: 220px;
+    }
+    .tree-main {
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px;
       margin-bottom: 8px;
-      padding: 6px;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.02);
     }
-    #section-drawer .tree-main-header {
+    .tree-main-header {
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 6px;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    #section-drawer .tree-main-header:hover {
-      background: rgba(255,255,255,0.05);
-    }
-    #section-drawer .tree-main-header .main-title {
+      padding: 4px 0;
       font-weight: 600;
       color: var(--gold-light);
-      font-size: 0.9rem;
     }
-    #section-drawer .tree-subs {
+    .tree-main-header .toggle-icon { transition: transform 0.2s; }
+    .tree-main-header .toggle-icon.open { transform: rotate(90deg); }
+    .tree-subs {
       padding-left: 12px;
       margin-top: 6px;
+      display: none;
     }
-    #section-drawer .tree-sub-item {
+    .tree-subs.open { display: block; }
+    .tree-sub-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -247,28 +246,23 @@
       padding: 4px 8px;
       border-radius: 4px;
       margin: 4px 0;
-      font-size: 0.85rem;
+      gap: 6px;
+      flex-wrap: wrap;
     }
-    #section-drawer .tree-sub-item .sub-label {
+    .tree-sub-item .sub-title {
       flex: 1;
-      color: var(--text-secondary);
+      font-size: 0.9rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    #section-drawer .tree-sub-item .sub-actions {
+    .tree-sub-item .tts-mini-controls {
       display: flex;
       gap: 4px;
       align-items: center;
-      flex-shrink: 0;
     }
-    #section-drawer .tree-sub-item .sub-actions .btn-sm {
-      padding: 2px 8px;
-      font-size: 0.65rem;
-    }
-
     .tts-mini-btn {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.08);
       border: 1px solid var(--border-gold);
       color: var(--text);
       width: 28px;
@@ -278,29 +272,29 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       transition: all 0.2s;
     }
-    .tts-mini-btn:hover:not(:disabled) {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
+    .tts-mini-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .tts-mini-btn.active-play { background: var(--success); border-color: var(--success); color: #fff; }
+    .tts-mini-btn.active-pause { background: var(--warning); border-color: var(--warning); color: #000; }
     .tts-mini-speed {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border-gold);
       color: var(--text);
+      font-size: 0.7rem;
       padding: 2px 4px;
       border-radius: 4px;
-      font-size: 0.65rem;
-      width: 60px;
-      cursor: pointer;
+      width: 55px;
+      display: none;
     }
-    .tts-mini-speed:focus {
-      border-color: var(--accent-bright);
-      outline: none;
+    .tts-mini-speed:focus { outline: none; border-color: var(--accent-bright); }
+    .empty-tree-msg {
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 12px 0;
+      text-align: center;
     }
-
     @media (max-width: 768px) {
       .admin-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; padding: 12px; }
       .admin-sidebar nav { display: flex; gap: 8px; margin-top: 0; }
@@ -308,9 +302,8 @@
       .admin-sidebar nav a.active { border-bottom-color: var(--accent); }
       .admin-main { margin-left: 0; padding: 16px; }
       .grid-2 { grid-template-columns: 1fr; }
-      #chapter-editor-modal .modal-content { flex-direction: column; }
-      #chapter-editor-modal .modal-content > div:first-child { flex: 1; }
-      #chapter-editor-modal .modal-content > div:last-child { flex: 1; border-left: none; border-top: 1px solid var(--border-gold); padding-left: 0; padding-top: 12px; max-height: 40vh; }
+      .chapter-editor-layout { flex-direction: column; }
+      .chapter-editor-layout .drawer-panel { border-left: none; padding-left: 0; border-top: 1px solid var(--border-gold); padding-top: 16px; max-height: 50vh; }
     }
   </style>
 </head>
@@ -349,56 +342,55 @@
     <div id="panel-screen" class="hidden"></div>
   </div>
 
-  <!-- ============================================================ -->
-  <!-- CHAPTER EDITOR MODAL – REDESIGNED WITH SECTION DRAWER        -->
-  <!-- ============================================================ -->
+  <!-- ======================= CHAPTER EDITOR MODAL (UPDATED LAYOUT) ======================= -->
   <div id="chapter-editor-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:1100px; display:flex; gap:20px; padding:24px; flex-direction:row;">
-      <!-- Left: Editor -->
-      <div style="flex:2; min-width:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-          <div class="flex" style="gap:8px;">
-            <label style="color:var(--text-secondary);">🌐 Language:</label>
-            <select id="ch-lang" onchange="switchEditorLanguage()" style="width:auto; padding:4px 10px;">
+    <div class="modal-content" style="max-width:1000px;">
+      <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeChapterEditor()">✕</button>
+      <h3 id="chapter-editor-title">Chapter Editor</h3>
+      <div class="chapter-editor-layout">
+        <!-- LEFT: Editor Panel -->
+        <div class="editor-panel">
+          <div class="flex" style="gap:8px; margin-bottom:12px;">
+            <label>🌐 Language:</label>
+            <select id="ch-lang" onchange="switchEditorLanguage()">
               <option value="en">English</option>
               <option value="bn">বাংলা</option>
               <option value="hi">हिन्दी</option>
             </select>
           </div>
-          <button class="btn btn-sm btn-outline" onclick="closeChapterEditor()">✕</button>
+          <div class="grid-2">
+            <div><label>Title</label><input type="text" id="ch-title" required></div>
+            <div><label>Order</label><input type="number" id="ch-order" min="1" required></div>
+          </div>
+          <label>Content (HTML)</label>
+          <div id="chapter-quill-editor" style="height:300px;"></div>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-sm btn-accent" onclick="insertMainSubject()">➕ Add Main Subject</button>
+            <button class="btn btn-sm btn-outline" onclick="insertTTSBlockDirect()">🔊 Add TTS Block</button>
+          </div>
+          <div style="margin-top:12px;"><h4>Images</h4><div id="images-container"></div></div>
+          <div style="margin-top:12px;"><h4>Videos</h4><div id="videos-container"></div></div>
+          <div class="grid-2">
+            <div><label>Passing Score (%)</label><input type="number" id="ch-passing" value="90"></div>
+            <div><label>Master Language</label><input type="text" id="ch-language" value="en" disabled></div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn" onclick="saveChapter()">Save</button>
+            <button class="btn btn-outline" onclick="closeChapterEditor()">Cancel</button>
+            <input type="hidden" id="ch-edit-id">
+            <input type="hidden" id="ch-edit-lang" value="en">
+          </div>
         </div>
-        <div class="grid-2">
-          <div><label>Title</label><input type="text" id="ch-title" required></div>
-          <div><label>Order</label><input type="number" id="ch-order" min="1" required></div>
+        <!-- RIGHT: Drawer Panel (Section Manager) -->
+        <div class="drawer-panel" id="section-drawer">
+          <h4 style="margin-bottom:12px;">📑 Sections</h4>
+          <div id="section-tree"></div>
         </div>
-        <label>Content (HTML)</label>
-        <div id="chapter-quill-editor" style="height:320px;"></div>
-        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-sm" onclick="insertMainSubject()">➕ Add Main Subject</button>
-          <button class="btn btn-sm btn-outline" onclick="refreshSectionTree()">🔄 Refresh Tree</button>
-        </div>
-        <div style="margin-top:12px;"><h4>Images</h4><div id="images-container"></div></div>
-        <div style="margin-top:12px;"><h4>Videos</h4><div id="videos-container"></div></div>
-        <div class="grid-2">
-          <div><label>Passing Score (%)</label><input type="number" id="ch-passing" value="90"></div>
-          <div><label>Master Language</label><input type="text" id="ch-language" value="en" disabled></div>
-        </div>
-        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" onclick="saveChapter()">Save</button>
-          <button class="btn btn-outline" onclick="closeChapterEditor()">Cancel</button>
-          <input type="hidden" id="ch-edit-id">
-          <input type="hidden" id="ch-edit-lang" value="en">
-        </div>
-      </div>
-      <!-- Right: Section Drawer -->
-      <div id="section-drawer">
-        <h4 style="margin-top:0;">📑 Sections</h4>
-        <div id="section-tree"></div>
       </div>
     </div>
   </div>
 
-  <!-- Question Manager Modal -->
+  <!-- ======================= QUESTION MANAGER MODAL ======================= -->
   <div id="question-manager-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:600px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeQuestionManager()">✕</button>
@@ -426,7 +418,7 @@
     </div>
   </div>
 
-  <!-- Content Edit Modal -->
+  <!-- ======================= CONTENT EDIT MODAL ======================= -->
   <div id="content-edit-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:600px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeContentEditModal()">✕</button>
@@ -438,7 +430,7 @@
     </div>
   </div>
 
-  <!-- Translation Add Modal -->
+  <!-- ======================= TRANSLATION ADD MODAL ======================= -->
   <div id="translation-add-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:400px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeTransAddModal()">✕</button>
@@ -454,7 +446,7 @@
     </div>
   </div>
 
-  <!-- Assessment Question Modal -->
+  <!-- ======================= ASSESSMENT MODAL ======================= -->
   <div id="assess-modal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:500px;">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeAssessModal()">✕</button>
@@ -468,38 +460,21 @@
     </div>
   </div>
 
-  <!-- Slideshow Edit Modal -->
+  <!-- ======================= SLIDESHOW EDIT MODAL ======================= -->
   <div id="slideshow-edit-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeSlideshowModal()">✕</button>
       <h3 id="slideshow-modal-title">Add Slideshow Image</h3>
       <input type="hidden" id="ss-edit-id">
       <div class="grid-2">
-        <div>
-          <label>Desktop Image URL</label>
-          <input type="text" id="ss-desktop-url" required>
-        </div>
-        <div>
-          <label>Mobile Image URL</label>
-          <input type="text" id="ss-mobile-url" required>
-        </div>
+        <div><label>Desktop Image URL</label><input type="text" id="ss-desktop-url" required></div>
+        <div><label>Mobile Image URL</label><input type="text" id="ss-mobile-url" required></div>
       </div>
-      <label>Title</label>
-      <input type="text" id="ss-title">
-      <label>Link URL (optional)</label>
-      <input type="text" id="ss-link">
+      <label>Title</label><input type="text" id="ss-title">
+      <label>Link URL (optional)</label><input type="text" id="ss-link">
       <div class="grid-2">
-        <div>
-          <label>Sort Order</label>
-          <input type="number" id="ss-order" value="0">
-        </div>
-        <div>
-          <label>Active</label>
-          <select id="ss-active">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
+        <div><label>Sort Order</label><input type="number" id="ss-order" value="0"></div>
+        <div><label>Active</label><select id="ss-active"><option value="true">Yes</option><option value="false">No</option></select></div>
       </div>
       <button class="btn" onclick="saveSlide()">Save</button>
       <button class="btn btn-outline" onclick="closeSlideshowModal()">Cancel</button>
@@ -507,36 +482,40 @@
   </div>
 
   <script>
-    // ================================================================
-    // QUICK FIX: register custom blots to avoid toolbar warnings
-    // ================================================================
-    if (typeof Quill !== 'undefined') {
-      const Block = Quill.import('blots/block');
-      class TtsSectionBlot extends Block {}
-      TtsSectionBlot.blotName = 'tts-section';
-      TtsSectionBlot.tagName = 'div';
-      Quill.register('formats/tts-section', TtsSectionBlot);
+    // ============================================================
+    //  QUICK FIX: Quill Blot Registration (suppress toolbar warnings)
+    // ============================================================
+    (function() {
+      try {
+        const Block = Quill.import('blots/block');
+        class TtsSectionBlot extends Block {}
+        TtsSectionBlot.blotName = 'tts-section';
+        TtsSectionBlot.tagName = 'div';
+        Quill.register('formats/tts-section', TtsSectionBlot);
+        class SubjectBlockBlot extends Block {}
+        SubjectBlockBlot.blotName = 'subject-block';
+        SubjectBlockBlot.tagName = 'div';
+        Quill.register('formats/subject-block', SubjectBlockBlot);
+      } catch(e) { /* silently ignore if already registered */ }
+    })();
 
-      class SubjectBlockBlot extends Block {}
-      SubjectBlockBlot.blotName = 'subject-block';
-      SubjectBlockBlot.tagName = 'div';
-      Quill.register('formats/subject-block', SubjectBlockBlot);
-    }
-
-    // ================================================================
-    // GLOBALS & HELPERS
-    // ================================================================
+    // ============================================================
+    //  GLOBALS
+    // ============================================================
     const API = '/api/setup';
     const ADMIN_APP_VERSION = '2.0.1';
     let adminToken = localStorage.getItem('adminToken');
     let quillEditor = null;
     let currentChapterId = null;
-    let chapterMasterData = null;
     let currentChapterLanguage = 'en';
-    let activeEditorTTS = null;
-    let activeSectionTTS = null;
+    let chapterMasterData = null;
+    let activeTTS = null;  // for mini TTS controller
 
+    // ============================================================
+    //  UTILITY HELPERS
+    // ============================================================
     function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
+
     function showToast(msg, dur=3000) {
       const existing = document.querySelector('.toast');
       if (existing) existing.remove();
@@ -559,7 +538,9 @@
       } catch(e) {}
     }
 
-    // ------ Admin API call ------
+    // ============================================================
+    //  ADMIN API CALL
+    // ============================================================
     async function adminApiCall(method, path, body = null, showError = true) {
       const headers = { 'Content-Type': 'application/json' };
       if (adminToken) headers['Authorization'] = `Bearer ${adminToken}`;
@@ -589,7 +570,9 @@
       }
     }
 
-    // ------ Auth ------
+    // ============================================================
+    //  AUTH
+    // ============================================================
     function logout() {
       localStorage.removeItem('adminToken');
       adminToken = null;
@@ -624,9 +607,9 @@
       }
     }
 
-    // ================================================================
-    // TAB SWITCHING
-    // ================================================================
+    // ============================================================
+    //  TAB SWITCHING
+    // ============================================================
     function switchTab(tab) {
       document.querySelectorAll('.admin-sidebar nav a').forEach(a => a.classList.remove('active'));
       const activeLink = document.querySelector(`.admin-sidebar nav a[data-tab="${tab}"]`);
@@ -648,9 +631,9 @@
       }
     }
 
-    // ================================================================
-    // STATS
-    // ================================================================
+    // ============================================================
+    //  STATS
+    // ============================================================
     async function loadStats() {
       const data = await adminApiCall('GET', '/admin/dashboard');
       if (!data) return;
@@ -665,9 +648,9 @@
       `;
     }
 
-    // ================================================================
-    // USERS
-    // ================================================================
+    // ============================================================
+    //  USERS
+    // ============================================================
     async function loadUsers() {
       const res = await adminApiCall('GET', '/admin/users');
       let html = `<div class="card"><h3>👥 Users</h3><input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:12px;"><table><thead><tr><th>Email</th><th>Name</th><th>XP</th><th>Level</th><th>Actions</th></tr></thead><tbody id="users-tbody">`;
@@ -720,15 +703,12 @@
     async function deleteUser(userId) {
       if (!confirm('Delete this user permanently?')) return;
       const res = await adminApiCall('DELETE', `/admin/user/${userId}`);
-      if (res?.success) {
-        loadUsers();
-        showToast('✅ User deleted');
-      }
+      if (res?.success) { loadUsers(); showToast('✅ User deleted'); }
     }
 
-    // ================================================================
-    // SIMULATE
-    // ================================================================
+    // ============================================================
+    //  SIMULATE
+    // ============================================================
     function loadSimulate() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card"><h3>🧪 Simulate User</h3>
@@ -749,774 +729,9 @@
       else showToast(res?.error || 'Failed');
     }
 
-    // ================================================================
-    // CHAPTERS (with full editor drawer)
-    // ================================================================
-    async function loadChapters() {
-      const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
-      if (!chapters) return;
-      let html = `<div class="card"><h3>📚 Chapters</h3><button class="btn" onclick="openChapterEditor(null)">+ New Chapter</button><table><thead><tr><th>#</th><th>Title</th><th>Questions</th><th>Passed</th><th>Actions</th></tr></thead><tbody>`;
-      chapters.forEach(c => {
-        html += `<tr><td>${c.order_index}</td><td>${escapeHtml(c.title)}</td><td>${c.question_count}</td><td>${c.passed_count}</td>
-          <td>
-            <button class="btn btn-sm btn-outline" onclick="openChapterEditor(${c.id})">✏️</button>
-            <button class="btn btn-sm btn-outline" onclick="manageQuestions(${c.id}, '${escapeHtml(c.title)}')">📝 Questions</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteChapter(${c.id})">🗑</button>
-          </td></tr>`;
-      });
-      html += '</tbody></table></div>';
-      document.getElementById('panel-screen').innerHTML = html;
-    }
-
-    async function deleteChapter(id) {
-      if (!confirm('Delete this chapter?')) return;
-      await adminApiCall('DELETE', `/admin/chapter/${id}`);
-      loadChapters();
-    }
-
-    // ----- Chapter Editor (Main+Sub) -----
-
-    // Init Quill with custom buttons
-    function initQuill() {
-      destroyQuill();
-      const container = document.getElementById('chapter-quill-editor');
-      if (!container) return null;
-      container.innerHTML = '';
-      const editor = new Quill('#chapter-quill-editor', {
-        theme: 'snow',
-        modules: {
-          toolbar: {
-            container: [
-              [{ 'header': [1, 2, false] }],
-              ['bold', 'italic', 'underline'],
-              ['image', 'video'],
-              ['tts-section'],
-              ['subject-block']
-            ],
-            handlers: {
-              image: function() {
-                const input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
-                input.click();
-                input.onchange = async () => {
-                  const file = input.files[0];
-                  if (!file) return;
-                  const url = await uploadSingleMedia(file);
-                  if (url) {
-                    const range = this.quill.getSelection(true);
-                    this.quill.insertEmbed(range.index, 'image', url);
-                    showToast('Image uploaded and inserted');
-                  }
-                };
-              }
-            }
-          }
-        }
-      });
-
-      // Attach custom button logic
-      setTimeout(() => {
-        const ttsBtn = document.querySelector('.ql-tts-section');
-        if (ttsBtn) {
-          ttsBtn.onclick = () => {
-            const lang = prompt('Enter language code (en, bn, hi):', 'en');
-            if (!lang) return;
-            const html = `<div class="tts-section" data-lang="${lang}">
-  <h2>Title here</h2>
-  <p>Content here</p>
-</div>`;
-            const range = editor.getSelection(true);
-            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
-            refreshSectionTree();
-          };
-        }
-
-        const subjectBtn = document.querySelector('.ql-subject-block');
-        if (subjectBtn) {
-          subjectBtn.onclick = () => {
-            const mainTitle = prompt('Enter Main Subject Title:');
-            if (mainTitle === null || mainTitle.trim() === '') return;
-
-            const lang = prompt('Language code (en / bn / hi):', 'bn');
-            if (!lang || !['en','bn','hi'].includes(lang)) {
-              showToast('Invalid language code. Use en, bn, or hi');
-              return;
-            }
-
-            const subCountInput = prompt('How many sub-subjects? (0 for none)', '2');
-            if (subCountInput === null) return;
-            const subCount = parseInt(subCountInput);
-            if (isNaN(subCount) || subCount < 0) {
-              showToast('Please enter a valid number (0 or more)');
-              return;
-            }
-
-            const subTitles = [];
-            for (let i = 0; i < subCount; i++) {
-              const subTitle = prompt(`Sub-subject ${i + 1} title:`);
-              if (subTitle === null) return;
-              if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
-            }
-
-            if (subTitles.length === 0) {
-              showToast('No sub-subjects added. Use TTS Section button for single blocks.');
-              return;
-            }
-
-            let html = `<div class="main-subject" data-main-title="${escapeHtml(mainTitle)}" data-lang="${lang}">`;
-            for (const subTitle of subTitles) {
-              html += `<div class="tts-section" data-lang="${lang}">
-  <h2>${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2>
-  <p>Write content here for "${escapeHtml(subTitle)}"</p>
-</div>`;
-            }
-            html += `</div>`;
-
-            const range = editor.getSelection(true);
-            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
-            showToast(`✅ ${subTitles.length} sub-subject(s) added (lang: ${lang})`);
-            refreshSectionTree();
-          };
-        }
-      }, 100);
-
-      return editor;
-    }
-
-    function destroyQuill() {
-      if (quillEditor) {
-        const container = document.getElementById('chapter-quill-editor');
-        if (container) {
-          container.innerHTML = '';
-        }
-        quillEditor = null;
-      }
-    }
-
-    // Open chapter editor
-    async function openChapterEditor(id) {
-      document.getElementById('chapter-editor-modal').classList.remove('hidden');
-      // Reset fields
-      document.getElementById('ch-title').value = '';
-      document.getElementById('ch-order').value = '';
-      document.getElementById('ch-passing').value = 90;
-      document.getElementById('ch-edit-id').value = '';
-      document.getElementById('ch-edit-lang').value = 'en';
-      document.getElementById('ch-lang').value = 'en';
-      document.getElementById('images-container').innerHTML = '';
-      document.getElementById('videos-container').innerHTML = '';
-      addImageField();
-      addVideoField();
-
-      destroyQuill();
-      quillEditor = initQuill();
-
-      if (id) {
-        currentChapterId = id;
-        const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
-        const ch = chapters.find(c => c.id == id);
-        if (ch) {
-          chapterMasterData = ch;
-          document.getElementById('ch-title').value = ch.title;
-          document.getElementById('ch-order').value = ch.order_index;
-          document.getElementById('ch-passing').value = ch.passing_score || 90;
-          document.getElementById('ch-edit-id').value = ch.id;
-          document.getElementById('ch-language').value = 'en';
-          setTimeout(() => {
-            if (quillEditor) {
-              quillEditor.root.innerHTML = ch.content_text || '';
-              refreshSectionTree();
-            }
-          }, 100);
-          if (ch.images && ch.images.length) {
-            document.getElementById('images-container').innerHTML = '';
-            ch.images.forEach(url => addImageField(url));
-          }
-          if (ch.videos && ch.videos.length) {
-            document.getElementById('videos-container').innerHTML = '';
-            ch.videos.forEach(url => addVideoField(url));
-          }
-        }
-      } else {
-        currentChapterId = null;
-        chapterMasterData = null;
-        setTimeout(() => {
-          if (quillEditor) {
-            quillEditor.root.innerHTML = '';
-            refreshSectionTree();
-          }
-        }, 100);
-      }
-    }
-
-    // Switch editor language
-    async function switchEditorLanguage() {
-      const lang = document.getElementById('ch-lang').value;
-      currentChapterLanguage = lang;
-      document.getElementById('ch-edit-lang').value = lang;
-      if (!currentChapterId) {
-        showToast('Save the English version first, then switch language to add translations.');
-        return;
-      }
-      if (lang === 'en') {
-        if (chapterMasterData) {
-          document.getElementById('ch-title').value = chapterMasterData.title || '';
-          if (quillEditor) quillEditor.root.innerHTML = chapterMasterData.content_text || '';
-        }
-      } else {
-        const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
-        if (trans && trans.title) {
-          document.getElementById('ch-title').value = trans.title;
-          if (quillEditor) quillEditor.root.innerHTML = trans.content_text || '';
-        } else {
-          document.getElementById('ch-title').value = '';
-          if (quillEditor) quillEditor.root.innerHTML = '';
-          showToast('No translation yet for this language.');
-        }
-      }
-      refreshSectionTree();
-    }
-
-    // Save chapter
-    async function saveChapter() {
-      const lang = document.getElementById('ch-edit-lang').value;
-      const title = document.getElementById('ch-title').value.trim();
-      const order_index = parseInt(document.getElementById('ch-order').value);
-      const content_text = quillEditor ? quillEditor.root.innerHTML : '';
-      const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
-      const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
-      const passing_score = parseInt(document.getElementById('ch-passing').value);
-      const chapterId = document.getElementById('ch-edit-id').value;
-
-      if (!title || !order_index) return showToast('Title and order required');
-
-      if (lang === 'en') {
-        const body = { course_id: 1, title, order_index, content_text, images, videos, passing_score, language: 'en' };
-        let result;
-        if (chapterId) {
-          await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body);
-          result = { id: parseInt(chapterId) };
-        } else {
-          result = await adminApiCall('POST', '/admin/chapter', body);
-        }
-        if (result && result.id) currentChapterId = result.id;
-        chapterMasterData = { title, content_text, images, videos, passing_score };
-      } else {
-        if (!currentChapterId) return showToast('Save English chapter first');
-        await adminApiCall('POST', '/admin/translations/content', {
-          table_name: 'chapters',
-          record_id: parseInt(currentChapterId),
-          language_code: lang,
-          translations: { title, content_text }
-        });
-      }
-      closeChapterEditor();
-      loadChapters();
-      showToast('✅ Chapter saved');
-    }
-
-    // Close editor
-    function closeChapterEditor() {
-      document.getElementById('chapter-editor-modal').classList.add('hidden');
-      destroyQuill();
-      document.getElementById('section-tree').innerHTML = '';
-    }
-
-    // ==================== Main / Sub Section Logic ====================
-
-    // Insert Main Subject
-    function insertMainSubject() {
-      if (!quillEditor) return showToast('Editor not ready');
-      const title = prompt('Main Subject Title (e.g., Money Management):');
-      if (!title) return;
-      const lang = document.getElementById('ch-lang').value || 'en';
-      const html = `<div class="main-subject" data-main-title="${escapeHtml(title)}" data-lang="${lang}"></div>`;
-      quillEditor.clipboard.dangerouslyPasteHTML(quillEditor.getLength(), html);
-      refreshSectionTree();
-    }
-
-    // Add Sub Section to a specific main
-    function addSubSection(mainIndex) {
-      if (!quillEditor) return;
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (mainIndex >= mainDivs.length) return;
-      const mainDiv = mainDivs[mainIndex];
-      const lang = mainDiv.getAttribute('data-lang') || 'en';
-      const subTitle = prompt('Sub-subject title:');
-      if (!subTitle) return;
-      const html = `<div class="tts-section" data-lang="${lang}"><h2>${escapeHtml(subTitle)}</h2><p>Write content here...</p></div>`;
-      mainDiv.insertAdjacentHTML('beforeend', html);
-      quillEditor.update();
-      refreshSectionTree();
-    }
-
-    // Refresh Section Tree (Drawer)
-    function refreshSectionTree() {
-      if (!quillEditor) return;
-      const container = document.getElementById('section-tree');
-      if (!container) return;
-
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      let html = '';
-      if (mainDivs.length === 0) {
-        html = '<p style="color:var(--text-secondary);">No main subject added yet. Click "Add Main Subject" to start.</p>';
-        container.innerHTML = html;
-        return;
-      }
-
-      mainDivs.forEach((mainDiv, mIdx) => {
-        const mainTitle = mainDiv.getAttribute('data-main-title') || 'Untitled';
-        const lang = mainDiv.getAttribute('data-lang') || 'en';
-        const subDivs = mainDiv.querySelectorAll('.tts-section');
-
-        html += `
-          <div class="tree-main">
-            <div class="tree-main-header" onclick="toggleSubSections(this)">
-              <span class="main-title">▶ ${escapeHtml(mainTitle)} (${lang})</span>
-              <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); addSubSection(${mIdx})" title="Add Sub">➕</button>
-                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); editMainTitle(${mIdx})" title="Edit">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteMain(${mIdx})" title="Delete">🗑</button>
-                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); playMainTTS(${mIdx}, this)" title="TTS">🔊</button>
-              </div>
-            </div>
-            <div class="tree-subs" style="display:none; padding-left:12px; margin-top:6px;">`;
-
-        subDivs.forEach((subDiv, sIdx) => {
-          const h2 = subDiv.querySelector('h2');
-          const subTitle = h2 ? h2.textContent : 'Untitled';
-          html += `
-            <div class="tree-sub-item">
-              <span class="sub-label">${sIdx+1}. ${escapeHtml(subTitle)}</span>
-              <div class="sub-actions">
-                <select class="tts-mini-speed" style="display:none; font-size:0.65rem; width:50px; background:rgba(255,255,255,0.08); border:1px solid var(--border-gold); color:var(--text); padding:2px 4px; border-radius:4px;">
-                  <option value="0.5">0.5x</option><option value="0.75">0.75x</option>
-                  <option value="1" selected>1x</option>
-                  <option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option>
-                </select>
-                <button class="tts-mini-btn play-btn" onclick="playSubTTS(${mIdx},${sIdx},this)" title="Play">▶</button>
-                <button class="tts-mini-btn stop-btn" onclick="stopSubTTS()" style="display:none;" title="Stop">⏹</button>
-                <button class="btn btn-sm btn-outline" onclick="editSubTitle(${mIdx},${sIdx})" title="Edit">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteSub(${mIdx},${sIdx})" title="Delete">🗑</button>
-              </div>
-            </div>`;
-        });
-
-        html += `</div></div>`;
-      });
-
-      container.innerHTML = html;
-    }
-
-    // Toggle subs in drawer
-    function toggleSubSections(header) {
-      const parent = header.parentElement;
-      const subs = parent.querySelector('.tree-subs');
-      if (subs) {
-        const isHidden = subs.style.display === 'none';
-        subs.style.display = isHidden ? 'block' : 'none';
-        const mainTitleSpan = header.querySelector('.main-title');
-        if (mainTitleSpan) {
-          mainTitleSpan.textContent = isHidden
-            ? mainTitleSpan.textContent.replace('▶', '▼')
-            : mainTitleSpan.textContent.replace('▼', '▶');
-        }
-      }
-    }
-
-    // Edit Main Title
-    function editMainTitle(index) {
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (index >= mainDivs.length) return;
-      const current = mainDivs[index].getAttribute('data-main-title') || '';
-      const newTitle = prompt('New Main Subject Title:', current);
-      if (newTitle === null) return;
-      mainDivs[index].setAttribute('data-main-title', newTitle);
-      quillEditor.update();
-      refreshSectionTree();
-    }
-
-    // Delete Main (and all subs)
-    function deleteMain(index) {
-      if (!confirm('Delete this main subject and all its sub-sections?')) return;
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (index < mainDivs.length) {
-        mainDivs[index].remove();
-        quillEditor.update();
-        refreshSectionTree();
-      }
-    }
-
-    // Edit Sub Title
-    function editSubTitle(mIdx, sIdx) {
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (mIdx >= mainDivs.length) return;
-      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-      if (sIdx >= subDivs.length) return;
-      const h2 = subDivs[sIdx].querySelector('h2');
-      const current = h2 ? h2.textContent : '';
-      const newTitle = prompt('New Sub-subject Title:', current);
-      if (newTitle === null) return;
-      if (h2) {
-        h2.textContent = newTitle;
-      } else {
-        const newH2 = document.createElement('h2');
-        newH2.textContent = newTitle;
-        subDivs[sIdx].prepend(newH2);
-      }
-      quillEditor.update();
-      refreshSectionTree();
-    }
-
-    // Delete Sub
-    function deleteSub(mIdx, sIdx) {
-      if (!confirm('Delete this sub-subject?')) return;
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (mIdx >= mainDivs.length) return;
-      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-      if (sIdx < subDivs.length) {
-        subDivs[sIdx].remove();
-        quillEditor.update();
-        refreshSectionTree();
-      }
-    }
-
-    // ==================== Editor TTS ====================
-
-    function getSubText(mIdx, sIdx) {
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (mIdx >= mainDivs.length) return '';
-      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-      if (sIdx >= subDivs.length) return '';
-      return subDivs[sIdx].innerText;
-    }
-
-    function playSubTTS(mIdx, sIdx, btn) {
-      const text = getSubText(mIdx, sIdx);
-      if (!text) return;
-
-      if (activeEditorTTS && activeEditorTTS.mIdx === mIdx && activeEditorTTS.sIdx === sIdx) {
-        if (speechSynthesis.speaking) {
-          speechSynthesis.pause();
-          btn.textContent = '⏸';
-          return;
-        } else if (speechSynthesis.paused) {
-          speechSynthesis.resume();
-          btn.textContent = '▶';
-          return;
-        }
-      }
-
-      if (speechSynthesis.speaking || speechSynthesis.paused) {
-        speechSynthesis.cancel();
-        resetEditorTTSButtons();
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-      const stopBtn = btn.parentElement.querySelector('.stop-btn');
-
-      utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-
-      const lang = document.getElementById('ch-lang').value || 'en';
-      const voices = speechSynthesis.getVoices();
-      if (lang === 'bn') {
-        utterance.lang = 'bn-BD';
-        const v = voices.find(v => v.lang.startsWith('bn'));
-        if (v) utterance.voice = v;
-      } else if (lang === 'hi') {
-        utterance.lang = 'hi-IN';
-        const v = voices.find(v => v.lang.startsWith('hi'));
-        if (v) utterance.voice = v;
-      } else {
-        utterance.lang = 'en-US';
-        const v = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
-        if (v) utterance.voice = v;
-      }
-
-      btn.textContent = '⏸';
-      if (speedSelect) speedSelect.style.display = 'inline-block';
-      if (stopBtn) stopBtn.style.display = 'inline-block';
-
-      activeEditorTTS = { mIdx, sIdx, utterance, playBtn: btn, stopBtn, speedSelect };
-
-      utterance.onend = () => {
-        resetEditorTTSButtons();
-        activeEditorTTS = null;
-      };
-      utterance.onerror = () => {
-        resetEditorTTSButtons();
-        activeEditorTTS = null;
-      };
-
-      speechSynthesis.speak(utterance);
-    }
-
-    function stopSubTTS() {
-      if (speechSynthesis.speaking || speechSynthesis.paused) {
-        speechSynthesis.cancel();
-      }
-      resetEditorTTSButtons();
-      activeEditorTTS = null;
-    }
-
-    function resetEditorTTSButtons() {
-      document.querySelectorAll('#section-tree .play-btn').forEach(b => b.textContent = '▶');
-      document.querySelectorAll('#section-tree .stop-btn').forEach(b => b.style.display = 'none');
-      document.querySelectorAll('#section-tree .tts-mini-speed').forEach(s => s.style.display = 'none');
-    }
-
-    function playMainTTS(mIdx, btn) {
-      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-      if (mIdx >= mainDivs.length) return;
-      const text = mainDivs[mIdx].innerText;
-      if (!text) return;
-
-      if (activeEditorTTS) {
-        speechSynthesis.cancel();
-        resetEditorTTSButtons();
-        activeEditorTTS = null;
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      const lang = document.getElementById('ch-lang').value || 'en';
-      const voices = speechSynthesis.getVoices();
-      if (lang === 'bn') {
-        utterance.lang = 'bn-BD';
-        const v = voices.find(v => v.lang.startsWith('bn'));
-        if (v) utterance.voice = v;
-      } else if (lang === 'hi') {
-        utterance.lang = 'hi-IN';
-        const v = voices.find(v => v.lang.startsWith('hi'));
-        if (v) utterance.voice = v;
-      } else {
-        utterance.lang = 'en-US';
-        const v = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
-        if (v) utterance.voice = v;
-      }
-
-      utterance.rate = 1;
-      btn.textContent = '⏸';
-
-      utterance.onend = () => {
-        btn.textContent = '🔊';
-        activeEditorTTS = null;
-      };
-      utterance.onerror = () => {
-        btn.textContent = '🔊';
-        activeEditorTTS = null;
-      };
-
-      activeEditorTTS = { utterance, playBtn: btn };
-      speechSynthesis.speak(utterance);
-    }
-
-    // ==================== Image/Video Helpers ====================
-
-    function addImageField(url = '') {
-      const container = document.getElementById('images-container');
-      const div = document.createElement('div');
-      div.className = 'flex';
-      div.style.marginBottom = '4px';
-      div.innerHTML = `
-        <input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}">
-        <input type="file" class="ch-image-upload" accept="image/*" style="display:none;">
-        <button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button>
-        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
-      `;
-      container.appendChild(div);
-    }
-
-    function addVideoField(url = '') {
-      const container = document.getElementById('videos-container');
-      const div = document.createElement('div');
-      div.className = 'flex';
-      div.style.marginBottom = '4px';
-      div.innerHTML = `
-        <input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}">
-        <input type="file" class="ch-video-upload" accept="video/*" style="display:none;">
-        <button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button>
-        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
-      `;
-      container.appendChild(div);
-    }
-
-    async function triggerChapterImageUpload(btn) {
-      const fileInput = btn.parentElement.querySelector('.ch-image-upload');
-      fileInput.click();
-      fileInput.addEventListener('change', async function handler(e) {
-        fileInput.removeEventListener('change', handler);
-        const file = e.target.files[0];
-        if (!file) return;
-        btn.disabled = true; btn.textContent = '⏳';
-        const url = await uploadSingleMedia(file);
-        if (url) {
-          btn.parentElement.querySelector('.ch-image-url').value = url;
-          showToast('Image uploaded');
-        }
-        btn.disabled = false; btn.textContent = '📷';
-      });
-    }
-
-    async function triggerChapterVideoUpload(btn) {
-      const fileInput = btn.parentElement.querySelector('.ch-video-upload');
-      fileInput.click();
-      fileInput.addEventListener('change', async function handler(e) {
-        fileInput.removeEventListener('change', handler);
-        const file = e.target.files[0];
-        if (!file) return;
-        btn.disabled = true; btn.textContent = '⏳';
-        const url = await uploadSingleMedia(file, true);
-        if (url) {
-          btn.parentElement.querySelector('.ch-video-url').value = url;
-          showToast('Video uploaded');
-        }
-        btn.disabled = false; btn.textContent = '🎬';
-      });
-    }
-
-    // ----- Single Media Upload -----
-    async function uploadSingleMedia(file, allowVideo = false) {
-      try {
-        if (!adminToken) {
-          showToast('Not authenticated');
-          return null;
-        }
-        const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
-        if (!validTypes.includes(file.type)) {
-          showToast('File type not supported');
-          return null;
-        }
-        let processedFile = file;
-        if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
-        const formData = new FormData();
-        formData.append('image', processedFile);
-        const res = await fetch(`${API}/admin/upload-image`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${adminToken}` },
-          body: formData
-        });
-        const data = await res.json();
-        if (data.error) {
-          showToast('Upload Error: ' + data.error);
-          return null;
-        }
-        if (data.url) {
-          showToast('Upload successful');
-          return data.url;
-        }
-        showToast('Upload failed (no URL returned)');
-        return null;
-      } catch(e) {
-        showToast('Network error: ' + e.message);
-        return null;
-      }
-    }
-
-    async function resizeImage(file, maxWidth) {
-      const img = await createImageBitmap(file);
-      const canvas = document.createElement('canvas');
-      const ratio = maxWidth / img.width;
-      canvas.width = maxWidth;
-      canvas.height = img.height * ratio;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
-      return new File([blob], file.name, { type: 'image/jpeg' });
-    }
-
-    // ================================================================
-    // QUESTION MANAGER
-    // ================================================================
-    let currentQmChapterId;
-    async function manageQuestions(chapterId, title) {
-      currentQmChapterId = chapterId;
-      document.getElementById('qm-title').textContent = title + ' - Questions';
-      document.getElementById('qm-chapter-id').value = chapterId;
-      await loadQuestionsForChapter(chapterId);
-      document.getElementById('question-manager-modal').classList.remove('hidden');
-      document.getElementById('qm-question-form').classList.add('hidden');
-    }
-
-    function closeQuestionManager() {
-      document.getElementById('question-manager-modal').classList.add('hidden');
-    }
-
-    async function loadQuestionsForChapter(chapterId) {
-      const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
-      const list = document.getElementById('qm-questions-list');
-      if (!questions) return;
-      list.innerHTML = questions.map(q => `
-        <div class="card" style="padding:12px; margin:6px 0;">
-          <strong>${escapeHtml(q.question)}</strong><br>
-          <small>${q.options.map((o,i)=>`${i===q.correct_index?'✓':'○'} ${escapeHtml(o)}`).join(' | ')}</small>
-          ${q.explanation ? `<br><small style="color:var(--accent-bright);">${escapeHtml(q.explanation)}</small>` : ''}
-          <div style="margin-top:8px;">
-            <button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">✏️</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">🗑</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openQuestionForm(q = null) {
-      document.getElementById('qm-question-form').classList.remove('hidden');
-      document.getElementById('qm-edit-qid').value = '';
-      document.getElementById('qm-question-text').value = '';
-      for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = '';
-      document.getElementById('qm-correct').value = 0;
-      document.getElementById('qm-explanation').value = '';
-      if (q) {
-        document.getElementById('qm-edit-qid').value = q.id;
-        document.getElementById('qm-question-text').value = q.question;
-        q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt);
-        document.getElementById('qm-correct').value = q.correct_index;
-        document.getElementById('qm-explanation').value = q.explanation || '';
-      }
-    }
-
-    function cancelQuestionEdit() {
-      document.getElementById('qm-question-form').classList.add('hidden');
-    }
-
-    async function editQuestion(qId, chapterId) {
-      const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
-      const q = questions.find(q => q.id == qId);
-      if (q) openQuestionForm(q);
-    }
-
-    async function saveQuestion() {
-      const chapterId = parseInt(document.getElementById('qm-chapter-id').value);
-      const qId = document.getElementById('qm-edit-qid').value;
-      const data = {
-        question: document.getElementById('qm-question-text').value,
-        options: [0,1,2,3].map(i => document.getElementById(`qm-opt${i}`).value),
-        correct_index: parseInt(document.getElementById('qm-correct').value),
-        explanation: document.getElementById('qm-explanation').value
-      };
-      if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index))
-        return showToast('All fields required');
-      if (qId) {
-        await adminApiCall('PUT', `/admin/question/${qId}`, data);
-      } else {
-        await adminApiCall('POST', `/admin/chapter/${chapterId}/question`, data);
-      }
-      cancelQuestionEdit();
-      loadQuestionsForChapter(chapterId);
-      showToast('✅ Question saved');
-    }
-
-    async function deleteQuestion(qId, chapterId) {
-      if (!confirm('Delete this question?')) return;
-      await adminApiCall('DELETE', `/admin/question/${qId}`);
-      loadQuestionsForChapter(chapterId);
-    }
-
-    // ================================================================
-    // COURSES
-    // ================================================================
+    // ============================================================
+    //  COURSES
+    // ============================================================
     async function loadCourses() {
       const courses = await adminApiCall('GET', '/admin/courses');
       if (!courses) return;
@@ -1547,9 +762,7 @@
       document.getElementById('course-desc').value = '';
     }
 
-    function cancelCourseForm() {
-      document.getElementById('course-form').classList.add('hidden');
-    }
+    function cancelCourseForm() { document.getElementById('course-form').classList.add('hidden'); }
 
     function editCourse(id, title, desc) {
       document.getElementById('course-form').classList.remove('hidden');
@@ -1579,10 +792,10 @@
       loadCourses();
     }
 
-    // ================================================================
-    // CONTENT MANAGER (Lessons/Quizzes/Videos)
-    // ================================================================
-    function loadContentManager() {
+    // ============================================================
+    //  CONTENT MANAGER (Lessons/Quizzes/Videos)
+    // ============================================================
+    async function loadContentManager() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card">
           <h3>📝 Content Manager</h3>
@@ -1655,7 +868,7 @@
       }
     }
 
-    function openContentEditModal(type, id) {
+    async function openContentEditModal(type, id) {
       document.getElementById('content-edit-modal').classList.remove('hidden');
       document.getElementById('ce-id').value = id;
       document.getElementById('ce-type').value = type;
@@ -1667,7 +880,8 @@
       } else if (type === 'video') {
         fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="Title"><textarea id="ce-vdesc" placeholder="Description"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="Duration"><input type="text" id="ce-category" placeholder="Category">`;
       }
-      adminApiCall('GET', `/admin/content/list?type=${type}`, null, false).then(res => {
+      try {
+        const res = await adminApiCall('GET', `/admin/content/list?type=${type}`, null, false);
         if (res) {
           const item = res.find(x => x.id == id);
           if (item) {
@@ -1689,7 +903,7 @@
             }
           }
         }
-      });
+      } catch(e) { /* keep form empty */ }
     }
 
     function closeContentEditModal() { document.getElementById('content-edit-modal').classList.add('hidden'); }
@@ -1717,17 +931,68 @@
       loadContentList();
     }
 
-    // ================================================================
-    // THEME EDITOR (stub – full implementation in admin.html)
-    // ================================================================
-    function loadThemeEditor() {
-      document.getElementById('panel-screen').innerHTML = `<div class="card"><h3>🎨 Theme Customization</h3><p>Full theme editor with live preview is available. Use the settings endpoint to update CSS variables.</p><button class="btn" onclick="saveTheme()">Save Theme</button></div>`;
+    // ============================================================
+    //  THEME EDITOR
+    // ============================================================
+    async function loadThemeEditor() {
+      const vars = ['--bg','--surface','--gold','--gold-bright','--gold-light','--accent','--accent-bright','--accent2','--purple','--cyan','--orange','--text','--text-secondary','--danger','--success','--warning','--border-gold','--border-accent'];
+      let html = `<div class="card"><h3>🎨 Theme Customization</h3><div class="theme-grid" id="theme-grid">`;
+      vars.forEach(v => {
+        const current = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+        html += `<div class="color-picker-group">
+          <label style="flex:1; font-size:0.8rem;">${v}</label>
+          <span class="color-preview" style="background:${current};"></span>
+          <input type="text" value="${current}" data-var="${v}" onchange="updateThemeFromText(this)">
+        </div>`;
+      });
+      html += `</div><button class="btn" onclick="saveTheme()">Save</button> <button class="btn btn-outline" onclick="resetTheme()">↺ Reset Default</button><div id="theme-msg" style="margin-top:8px;"></div></div>`;
+      document.getElementById('panel-screen').innerHTML = html;
     }
-    function saveTheme() { showToast('Theme saved (stub)'); }
 
-    // ================================================================
-    // MEDIA LIBRARY
-    // ================================================================
+    function updateThemeFromText(input) {
+      const varName = input.dataset.var;
+      const val = input.value.trim();
+      document.documentElement.style.setProperty(varName, val);
+      const preview = input.parentElement.querySelector('.color-preview');
+      if (preview) preview.style.background = val;
+    }
+
+    async function saveTheme() {
+      const inputs = document.querySelectorAll('#theme-grid input[type="text"]');
+      const themeObj = {};
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) themeObj[inp.dataset.var] = val;
+      });
+      const res = await adminApiCall('PUT', '/admin/settings', themeObj);
+      if (res?.success) {
+        for (const [k,v] of Object.entries(themeObj)) document.documentElement.style.setProperty(k, v);
+        document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">Theme saved</span>';
+      }
+    }
+
+    function resetTheme() {
+      const defaults = {
+        '--bg': '#0B1220', '--surface': 'rgba(17,24,39,0.92)', '--gold': '#C8A75B', '--gold-bright': '#E8C97A',
+        '--gold-light': '#F6E4B5', '--accent': '#2563EB', '--accent-bright': '#60A5FA', '--accent2': '#7C3AED',
+        '--purple': '#8B5CF6', '--cyan': '#22D3EE', '--orange': '#F59E0B', '--text': '#F9FAFB',
+        '--text-secondary': '#9CA3AF', '--danger': '#EF4444', '--success': '#22C55E', '--warning': '#F59E0B',
+        '--border-gold': 'rgba(200,167,91,0.35)', '--border-accent': 'rgba(37,99,235,0.30)'
+      };
+      for (const [k,v] of Object.entries(defaults)) document.documentElement.style.setProperty(k, v);
+      document.querySelectorAll('.color-picker-group').forEach(g => {
+        const input = g.querySelector('input[type="text"]');
+        const varName = input.dataset.var;
+        input.value = defaults[varName] || '';
+        const preview = g.querySelector('.color-preview');
+        if (preview) preview.style.background = defaults[varName] || '';
+      });
+      adminApiCall('PUT', '/admin/settings', defaults);
+    }
+
+    // ============================================================
+    //  MEDIA LIBRARY
+    // ============================================================
     async function loadMediaLibrary() {
       const res = await adminApiCall('GET', '/admin/media');
       let html = `<div class="card"><h3>🖼️ Media Library</h3>
@@ -1780,6 +1045,28 @@
       fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
     }
 
+    async function uploadSingleMedia(file, allowVideo = false) {
+      try {
+        if (!adminToken) { showToast('Not authenticated'); return null; }
+        const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
+        if (!validTypes.includes(file.type)) { showToast('File type not supported'); return null; }
+        let processedFile = file;
+        if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
+        const formData = new FormData();
+        formData.append('image', processedFile);
+        const res = await fetch(`${API}/admin/upload-image`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminToken}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.error) { showToast('Upload Error: ' + data.error); return null; }
+        if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; }
+        showToast('Upload failed (no URL returned)');
+        return null;
+      } catch(e) { showToast('Network error: ' + e.message); return null; }
+    }
+
     async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
 
     async function uploadImage() {
@@ -1787,6 +1074,18 @@
       if (!file) return showToast('Select a file');
       const url = await uploadSingleMedia(file);
       if (url) showToast('Uploaded!');
+    }
+
+    async function resizeImage(file, maxWidth) {
+      const img = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      const ratio = maxWidth / img.width;
+      canvas.width = maxWidth;
+      canvas.height = img.height * ratio;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
+      return new File([blob], file.name, { type: 'image/jpeg' });
     }
 
     async function addMediaUrl() {
@@ -1798,9 +1097,9 @@
 
     async function deleteMedia(id) { await adminApiCall('DELETE', `/admin/media/${id}`); loadMediaLibrary(); }
 
-    // ================================================================
-    // TRANSLATIONS
-    // ================================================================
+    // ============================================================
+    //  TRANSLATIONS
+    // ============================================================
     async function loadTranslations() {
       const lang = prompt('Language code (bn/en/hi):', 'bn') || 'bn';
       const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
@@ -1835,9 +1134,9 @@
       }
     }
 
-    // ================================================================
-    // ASSESSMENTS
-    // ================================================================
+    // ============================================================
+    //  ASSESSMENTS
+    // ============================================================
     async function loadAssessments() {
       const questions = await adminApiCall('GET', '/admin/assessments');
       let html = `<div class="card"><h3>📋 Assessment Questions (Slider Parameters)</h3>
@@ -1903,9 +1202,9 @@
       loadAssessments();
     }
 
-    // ================================================================
-    // SLIDESHOW ADMIN
-    // ================================================================
+    // ============================================================
+    //  SLIDESHOW ADMIN
+    // ============================================================
     async function loadSlideshowAdmin() {
       const slides = await adminApiCall('GET', '/admin/slideshow');
       let html = `<div class="card"><h3>🖼️ Slideshow Images</h3>
@@ -1987,9 +1286,9 @@
       loadSlideshowAdmin();
     }
 
-    // ================================================================
-    // ACTIVITY LOG
-    // ================================================================
+    // ============================================================
+    //  ACTIVITY LOG
+    // ============================================================
     async function loadActivity() {
       const logs = await adminApiCall('GET', '/admin/activity-log');
       let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>';
@@ -2002,9 +1301,9 @@
       document.getElementById('panel-screen').innerHTML = html;
     }
 
-    // ================================================================
-    // SETTINGS with Backup/Restore
-    // ================================================================
+    // ============================================================
+    //  SETTINGS (Backup/Restore + Password)
+    // ============================================================
     function loadSettings() {
       document.getElementById('panel-screen').innerHTML = `
         <div class="card"><h3>⚙️ Admin Settings</h3>
@@ -2045,7 +1344,6 @@
       }
     }
 
-    // ----- Export Training Data -----
     async function exportTrainingData() {
       try {
         const res = await fetch(`${API}/admin/export/training`, {
@@ -2065,12 +1363,9 @@
         a.click();
         URL.revokeObjectURL(url);
         showToast('✅ Training data exported successfully!');
-      } catch (e) {
-        showToast('Export failed: ' + e.message);
-      }
+      } catch (e) { showToast('Export failed: ' + e.message); }
     }
 
-    // ----- Import Training Data -----
     async function importTrainingData() {
       const fileInput = document.getElementById('restore-file');
       const statusDiv = document.getElementById('restore-status');
@@ -2079,10 +1374,7 @@
         return;
       }
       const file = fileInput.files[0];
-      if (!file.name.endsWith('.json')) {
-        showToast('Please select a JSON file');
-        return;
-      }
+      if (!file.name.endsWith('.json')) { showToast('Please select a JSON file'); return; }
       try {
         statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>';
         const reader = new FileReader();
@@ -2091,10 +1383,7 @@
             const jsonData = JSON.parse(e.target.result);
             const res = await fetch(`${API}/admin/import/training`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${adminToken}`
-              },
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
               body: JSON.stringify(jsonData)
             });
             const result = await res.json();
@@ -2118,7 +1407,6 @@
       }
     }
 
-    // ----- Change Admin Password -----
     async function changeAdminPassword() {
       const current = document.getElementById('current-password').value;
       const newPass = document.getElementById('new-password').value;
@@ -2134,7 +1422,6 @@
       }
     }
 
-    // ----- Save Site Configuration -----
     async function saveSiteConfig() {
       const siteTitle = document.getElementById('site-title').value.trim();
       const corsOrigin = document.getElementById('cors-origin').value.trim();
@@ -2152,9 +1439,741 @@
       }
     }
 
-    // ================================================================
-    // INIT
-    // ================================================================
+    // ============================================================
+    //  CHAPTERS (FULL MULTILINGUAL + MAIN/SUB + TTS + DRAWER)
+    // ============================================================
+
+    // ----- Quill initialization (with custom toolbar) -----
+    function initQuill() {
+      destroyQuill();
+      const container = document.getElementById('chapter-quill-editor');
+      if (!container) return null;
+      container.innerHTML = '';
+      const editor = new Quill('#chapter-quill-editor', {
+        theme: 'snow',
+        modules: {
+          toolbar: {
+            container: [
+              [{ 'header': [1, 2, false] }],
+              ['bold', 'italic', 'underline'],
+              ['image', 'video'],
+              ['tts-section'],
+              ['subject-block']
+            ],
+            handlers: {
+              image: function() {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.click();
+                input.onchange = async () => {
+                  const file = input.files[0];
+                  if (!file) return;
+                  const url = await uploadSingleMedia(file, false);
+                  if (url) {
+                    const range = this.quill.getSelection(true);
+                    this.quill.insertEmbed(range.index, 'image', url);
+                    showToast('Image uploaded and inserted');
+                  }
+                };
+              }
+            }
+          }
+        }
+      });
+
+      // Attach custom button events
+      setTimeout(() => {
+        const ttsBtn = document.querySelector('.ql-tts-section');
+        if (ttsBtn) {
+          ttsBtn.onclick = () => {
+            const lang = document.getElementById('ch-lang').value || 'en';
+            const html = `<div class="tts-section" data-lang="${lang}">
+  <h2>New Section</h2>
+  <p>Write content here...</p>
+</div>`;
+            const range = editor.getSelection(true);
+            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
+            refreshSectionTree();
+          };
+        }
+        const subjectBtn = document.querySelector('.ql-subject-block');
+        if (subjectBtn) {
+          subjectBtn.onclick = () => {
+            const lang = document.getElementById('ch-lang').value || 'en';
+            const mainTitle = prompt('Enter Main Subject Title:');
+            if (mainTitle === null || mainTitle.trim() === '') return;
+            const html = `<div class="main-subject" data-main-title="${escapeHtml(mainTitle)}" data-lang="${lang}">
+  <h2>${escapeHtml(mainTitle)}</h2>
+  <div class="tts-section" data-lang="${lang}">
+    <h3>Sub-section 1</h3>
+    <p>Write content here...</p>
+  </div>
+</div>`;
+            const range = editor.getSelection(true);
+            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
+            refreshSectionTree();
+          };
+        }
+      }, 100);
+
+      return editor;
+    }
+
+    function destroyQuill() {
+      if (quillEditor) {
+        const container = document.getElementById('chapter-quill-editor');
+        if (container) container.innerHTML = '';
+        quillEditor = null;
+      }
+    }
+
+    // ----- Load chapters list -----
+    async function loadChapters() {
+      const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
+      if (!chapters) return;
+      let html = `<div class="card"><h3>📚 Chapters</h3><button class="btn" onclick="openChapterEditor(null)">+ New Chapter</button><table><thead><tr><th>#</th><th>Title</th><th>Questions</th><th>Passed</th><th>Actions</th></tr></thead><tbody>`;
+      chapters.forEach(c => {
+        html += `<tr><td>${c.order_index}</td><td>${escapeHtml(c.title)}</td><td>${c.question_count}</td><td>${c.passed_count}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="openChapterEditor(${c.id})">✏️</button>
+            <button class="btn btn-sm btn-outline" onclick="manageQuestions(${c.id}, '${escapeHtml(c.title)}')">📝 Questions</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteChapter(${c.id})">🗑</button>
+          </td></tr>`;
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('panel-screen').innerHTML = html;
+    }
+
+    // ----- Open chapter editor (with drawer) -----
+    async function openChapterEditor(id) {
+      document.getElementById('chapter-editor-modal').classList.remove('hidden');
+      // Reset fields
+      document.getElementById('images-container').innerHTML = '';
+      document.getElementById('videos-container').innerHTML = '';
+      document.getElementById('section-tree').innerHTML = '';
+      currentChapterLanguage = 'en';
+      document.getElementById('ch-lang').value = 'en';
+      document.getElementById('ch-edit-lang').value = 'en';
+      document.getElementById('ch-title').value = '';
+      document.getElementById('ch-order').value = '';
+      document.getElementById('ch-passing').value = 90;
+      document.getElementById('ch-edit-id').value = '';
+      document.getElementById('chapter-editor-title').textContent = 'New Chapter (English)';
+
+      // Init Quill
+      if (!quillEditor) {
+        quillEditor = initQuill();
+      } else {
+        quillEditor.setText('');
+      }
+      addImageField();
+      addVideoField();
+
+      if (id) {
+        currentChapterId = id;
+        const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
+        const ch = chapters.find(c => c.id == id);
+        if (ch) {
+          chapterMasterData = ch;
+          document.getElementById('ch-title').value = ch.title;
+          document.getElementById('ch-order').value = ch.order_index;
+          document.getElementById('ch-passing').value = ch.passing_score || 90;
+          document.getElementById('ch-edit-id').value = ch.id;
+          document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
+          setTimeout(() => {
+            quillEditor.root.innerHTML = ch.content_text || '';
+            refreshSectionTree();
+          }, 50);
+          if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url));
+          else addImageField();
+          if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url));
+          else addVideoField();
+        }
+      } else {
+        currentChapterId = null;
+        chapterMasterData = null;
+        setTimeout(() => {
+          refreshSectionTree();
+        }, 50);
+      }
+    }
+
+    // ----- Close chapter editor -----
+    function closeChapterEditor() {
+      document.getElementById('chapter-editor-modal').classList.add('hidden');
+      destroyQuill();
+      // Clear speech
+      if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
+      activeTTS = null;
+      document.getElementById('section-tree').innerHTML = '';
+    }
+
+    // ----- Switch editor language -----
+    async function switchEditorLanguage() {
+      const lang = document.getElementById('ch-lang').value;
+      currentChapterLanguage = lang;
+      document.getElementById('ch-edit-lang').value = lang;
+      if (!currentChapterId) {
+        document.getElementById('chapter-editor-title').textContent = `New Chapter (${lang})`;
+        return;
+      }
+      if (lang === 'en') {
+        if (chapterMasterData) {
+          document.getElementById('ch-title').value = chapterMasterData.title;
+          quillEditor.root.innerHTML = chapterMasterData.content_text || '';
+        }
+        document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
+      } else {
+        const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
+        if (trans && trans.title) {
+          document.getElementById('ch-title').value = trans.title;
+          quillEditor.root.innerHTML = trans.content_text || '';
+        } else {
+          document.getElementById('ch-title').value = '';
+          quillEditor.root.innerHTML = '';
+          showToast('No translation yet for this language.');
+        }
+        document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`;
+      }
+      refreshSectionTree();
+    }
+
+    // ----- Save chapter (handles main/sub structure + translations) -----
+    async function saveChapter() {
+      const lang = document.getElementById('ch-edit-lang').value;
+      const title = document.getElementById('ch-title').value.trim();
+      const order_index = parseInt(document.getElementById('ch-order').value);
+      const content_text = quillEditor.root.innerHTML;
+      const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
+      const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
+      const passing_score = parseInt(document.getElementById('ch-passing').value);
+      const chapterId = document.getElementById('ch-edit-id').value;
+
+      if (!title || !order_index) return showToast('Title and order required');
+
+      if (lang === 'en') {
+        const body = { course_id: 1, title, order_index, content_text, images, videos, passing_score, language: 'en' };
+        if (chapterId) {
+          await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body);
+        } else {
+          const res = await adminApiCall('POST', '/admin/chapter', body);
+          if (res) currentChapterId = res.id;
+        }
+        chapterMasterData = { title, content_text, images, videos, passing_score };
+      } else {
+        if (!currentChapterId) return showToast('Save English chapter first');
+        await adminApiCall('POST', '/admin/translations/content', {
+          table_name: 'chapters',
+          record_id: parseInt(currentChapterId),
+          language_code: lang,
+          translations: { title, content_text }
+        });
+      }
+      closeChapterEditor();
+      loadChapters();
+      showToast('✅ Chapter saved');
+    }
+
+    async function deleteChapter(id) {
+      if (!confirm('Delete this chapter?')) return;
+      await adminApiCall('DELETE', `/admin/chapter/${id}`);
+      loadChapters();
+    }
+
+    // ----- Image/Video field helpers -----
+    function addImageField(url = '') {
+      const container = document.getElementById('images-container');
+      const div = document.createElement('div');
+      div.className = 'flex';
+      div.style.marginBottom = '4px';
+      div.innerHTML = `
+        <input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}">
+        <input type="file" class="ch-image-upload" accept="image/*" style="display:none;">
+        <button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button>
+        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addVideoField(url = '') {
+      const container = document.getElementById('videos-container');
+      const div = document.createElement('div');
+      div.className = 'flex';
+      div.style.marginBottom = '4px';
+      div.innerHTML = `
+        <input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}">
+        <input type="file" class="ch-video-upload" accept="video/*" style="display:none;">
+        <button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button>
+        <button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>
+      `;
+      container.appendChild(div);
+    }
+
+    async function triggerChapterImageUpload(btn) {
+      const fileInput = btn.parentElement.querySelector('.ch-image-upload');
+      fileInput.click();
+      fileInput.addEventListener('change', async function handler(e) {
+        fileInput.removeEventListener('change', handler);
+        const file = e.target.files[0];
+        if (!file) return;
+        btn.disabled = true; btn.textContent = '⏳';
+        const url = await uploadSingleMedia(file);
+        if (url) {
+          btn.parentElement.querySelector('.ch-image-url').value = url;
+          showToast('Image uploaded');
+        }
+        btn.disabled = false; btn.textContent = '📷';
+      });
+    }
+
+    async function triggerChapterVideoUpload(btn) {
+      const fileInput = btn.parentElement.querySelector('.ch-video-upload');
+      fileInput.click();
+      fileInput.addEventListener('change', async function handler(e) {
+        fileInput.removeEventListener('change', handler);
+        const file = e.target.files[0];
+        if (!file) return;
+        btn.disabled = true; btn.textContent = '⏳';
+        const url = await uploadSingleMedia(file, true);
+        if (url) {
+          btn.parentElement.querySelector('.ch-video-url').value = url;
+          showToast('Video uploaded');
+        }
+        btn.disabled = false; btn.textContent = '🎬';
+      });
+    }
+
+    // ============================================================
+    //  MAIN SUBJECT LOGIC
+    // ============================================================
+
+    // Insert Main Subject via button
+    function insertMainSubject() {
+      const title = prompt('Main Subject Title:');
+      if (title === null || title.trim() === '') return;
+      const lang = document.getElementById('ch-lang').value || 'en';
+      const html = `<div class="main-subject" data-main-title="${escapeHtml(title)}" data-lang="${lang}">
+  <h2>${escapeHtml(title)}</h2>
+  <div class="tts-section" data-lang="${lang}">
+    <h3>Sub-section 1</h3>
+    <p>Write content here...</p>
+  </div>
+</div>`;
+      const range = quillEditor.getSelection(true);
+      quillEditor.clipboard.dangerouslyPasteHTML(range ? range.index : quillEditor.getLength(), html);
+      refreshSectionTree();
+    }
+
+    // Insert standalone TTS block (no main wrapper)
+    function insertTTSBlockDirect() {
+      const lang = document.getElementById('ch-lang').value || 'en';
+      const html = `<div class="tts-section" data-lang="${lang}">
+  <h2>New Section</h2>
+  <p>Write content here...</p>
+</div>`;
+      const range = quillEditor.getSelection(true);
+      quillEditor.clipboard.dangerouslyPasteHTML(range ? range.index : quillEditor.getLength(), html);
+      refreshSectionTree();
+    }
+
+    // Add Sub Subject to a specific Main
+    function addSubSection(mainIndex) {
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mainIndex >= mainDivs.length) return;
+      const mainDiv = mainDivs[mainIndex];
+      const lang = mainDiv.getAttribute('data-lang') || document.getElementById('ch-lang').value || 'en';
+      const subTitle = prompt('Sub-subject title:');
+      if (subTitle === null || subTitle.trim() === '') return;
+      const html = `<div class="tts-section" data-lang="${lang}">
+  <h3>${escapeHtml(subTitle)}</h3>
+  <p>Write content here...</p>
+</div>`;
+      mainDiv.insertAdjacentHTML('beforeend', html);
+      quillEditor.update();
+      refreshSectionTree();
+    }
+
+    // Edit Main Title
+    function editMainTitle(index) {
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (index >= mainDivs.length) return;
+      const current = mainDivs[index].getAttribute('data-main-title') || 'Untitled';
+      const newTitle = prompt('New Main Subject Title:', current);
+      if (newTitle === null || newTitle.trim() === '') return;
+      mainDivs[index].setAttribute('data-main-title', newTitle);
+      // Update h2
+      const h2 = mainDivs[index].querySelector('h2');
+      if (h2) h2.textContent = newTitle;
+      quillEditor.update();
+      refreshSectionTree();
+    }
+
+    // Delete Main (and all sub-sections)
+    function deleteMain(index) {
+      if (!confirm('Delete this main subject and all its sub-sections?')) return;
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (index < mainDivs.length) {
+        mainDivs[index].remove();
+        quillEditor.update();
+        refreshSectionTree();
+      }
+    }
+
+    // Edit Sub Title
+    function editSubTitle(mIdx, sIdx) {
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mIdx >= mainDivs.length) return;
+      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
+      if (sIdx >= subDivs.length) return;
+      const h3 = subDivs[sIdx].querySelector('h3');
+      const current = h3 ? h3.textContent : '';
+      const newTitle = prompt('New Sub-subject Title:', current);
+      if (newTitle === null || newTitle.trim() === '') return;
+      if (h3) h3.textContent = newTitle;
+      else {
+        const newH3 = document.createElement('h3');
+        newH3.textContent = newTitle;
+        subDivs[sIdx].prepend(newH3);
+      }
+      quillEditor.update();
+      refreshSectionTree();
+    }
+
+    // Delete Sub
+    function deleteSub(mIdx, sIdx) {
+      if (!confirm('Delete this sub-subject?')) return;
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mIdx >= mainDivs.length) return;
+      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
+      if (sIdx < subDivs.length) {
+        subDivs[sIdx].remove();
+        quillEditor.update();
+        refreshSectionTree();
+      }
+    }
+
+    // ============================================================
+    //  DRAWER / SECTION TREE (with TTS mini controls)
+    // ============================================================
+
+    function refreshSectionTree() {
+      const container = document.getElementById('section-tree');
+      if (!container) return;
+      if (!quillEditor) {
+        container.innerHTML = '<p class="empty-tree-msg">Editor not ready</p>';
+        return;
+      }
+
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mainDivs.length === 0) {
+        container.innerHTML = '<p class="empty-tree-msg">No main subject added yet. Click "Add Main Subject" to start.</p>';
+        return;
+      }
+
+      let html = '';
+      mainDivs.forEach((mainDiv, mIdx) => {
+        const mainTitle = mainDiv.getAttribute('data-main-title') || 'Untitled';
+        const lang = mainDiv.getAttribute('data-lang') || 'en';
+        const subDivs = mainDiv.querySelectorAll('.tts-section');
+
+        html += `
+          <div class="tree-main" data-main-index="${mIdx}">
+            <div class="tree-main-header" onclick="toggleTreeMain(this)">
+              <span class="toggle-icon">▶</span>
+              <span style="flex:1; margin-left:6px;">${escapeHtml(mainTitle)} <span style="font-size:0.7rem; color:var(--text-secondary);">(${lang})</span></span>
+              <div style="display:flex; gap:4px;">
+                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); addSubSection(${mIdx})" title="Add Sub">➕</button>
+                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); editMainTitle(${mIdx})" title="Edit">✏️</button>
+                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteMain(${mIdx})" title="Delete">🗑</button>
+                <button class="btn btn-sm btn-outline tts-play-main" onclick="event.stopPropagation(); playMainTTS(${mIdx}, this)" title="Read All">🔊</button>
+              </div>
+            </div>
+            <div class="tree-subs open">
+              ${subDivs.length === 0 ? '<p style="color:var(--text-secondary); font-size:0.8rem; padding:4px 0;">No sub-sections.</p>' : ''}
+              ${Array.from(subDivs).map((subDiv, sIdx) => {
+                const h3 = subDiv.querySelector('h3');
+                const subTitle = h3 ? h3.textContent : 'Untitled';
+                return `
+                  <div class="tree-sub-item">
+                    <span class="sub-title">${sIdx+1}. ${escapeHtml(subTitle)}</span>
+                    <div class="tts-mini-controls">
+                      <select class="tts-mini-speed" style="display:none;">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1.0" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2.0">2x</option>
+                      </select>
+                      <button class="tts-mini-btn play-btn" onclick="playSubTTS(${mIdx},${sIdx},this)" title="Play">▶</button>
+                      <button class="tts-mini-btn stop-btn" onclick="stopSubTTS()" style="display:none;" title="Stop">⏹️</button>
+                    </div>
+                    <div style="display:flex; gap:2px;">
+                      <button class="btn btn-sm btn-outline" onclick="editSubTitle(${mIdx},${sIdx})" title="Edit">✏️</button>
+                      <button class="btn btn-sm btn-danger" onclick="deleteSub(${mIdx},${sIdx})" title="Delete">🗑</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function toggleTreeMain(header) {
+      const subs = header.parentElement.querySelector('.tree-subs');
+      const icon = header.querySelector('.toggle-icon');
+      if (subs) {
+        subs.classList.toggle('open');
+        icon.classList.toggle('open');
+        icon.textContent = subs.classList.contains('open') ? '▼' : '▶';
+      }
+    }
+
+    // ============================================================
+    //  TTS ENGINE (Mini + Main)
+    // ============================================================
+
+    function getSubText(mIdx, sIdx) {
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mIdx >= mainDivs.length) return '';
+      const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
+      if (sIdx >= subDivs.length) return '';
+      return subDivs[sIdx].innerText;
+    }
+
+    function playSubTTS(mIdx, sIdx, btn) {
+      const text = getSubText(mIdx, sIdx);
+      if (!text) return;
+
+      // If already playing/paused for this controller, toggle
+      if (activeTTS && activeTTS.mIdx === mIdx && activeTTS.sIdx === sIdx) {
+        if (speechSynthesis.speaking) {
+          speechSynthesis.pause();
+          btn.textContent = '▶';
+          btn.classList.remove('active-play');
+          btn.classList.add('active-pause');
+          return;
+        } else if (speechSynthesis.paused) {
+          speechSynthesis.resume();
+          btn.textContent = '⏸️';
+          btn.classList.remove('active-pause');
+          btn.classList.add('active-play');
+          return;
+        }
+      }
+
+      // Stop any previous TTS
+      if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
+      resetAllTTSButtons();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
+      const stopBtn = btn.parentElement.querySelector('.stop-btn');
+      utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1.0;
+
+      // Voice selection
+      const voices = speechSynthesis.getVoices();
+      const lang = document.getElementById('ch-lang').value || 'en';
+      if (lang === 'bn') {
+        const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        utterance.lang = 'bn-BD';
+      } else if (lang === 'hi') {
+        const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+        if (hiVoice) utterance.voice = hiVoice;
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-US';
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+      }
+
+      btn.textContent = '⏸️';
+      btn.classList.add('active-play');
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+      if (speedSelect) speedSelect.style.display = 'inline-block';
+
+      utterance.onend = () => {
+        btn.textContent = '▶';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeTTS = null;
+      };
+      utterance.onerror = () => {
+        btn.textContent = '▶';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeTTS = null;
+      };
+      utterance.onpause = () => {
+        btn.textContent = '▶';
+        btn.classList.remove('active-play');
+        btn.classList.add('active-pause');
+      };
+      utterance.onresume = () => {
+        btn.textContent = '⏸️';
+        btn.classList.remove('active-pause');
+        btn.classList.add('active-play');
+      };
+
+      activeTTS = { mIdx, sIdx, utterance, playBtn: btn, stopBtn, speedSelect };
+      speechSynthesis.speak(utterance);
+    }
+
+    function stopSubTTS() {
+      if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
+      resetAllTTSButtons();
+      activeTTS = null;
+    }
+
+    function resetAllTTSButtons() {
+      document.querySelectorAll('.play-btn').forEach(b => {
+        b.textContent = '▶';
+        b.classList.remove('active-play', 'active-pause');
+      });
+      document.querySelectorAll('.stop-btn').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('.tts-mini-speed').forEach(s => s.style.display = 'none');
+    }
+
+    function playMainTTS(mIdx, btn) {
+      const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+      if (mIdx >= mainDivs.length) return;
+      const text = mainDivs[mIdx].innerText;
+      if (!text) return;
+
+      if (activeTTS && activeTTS.mainIndex === mIdx && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        resetAllTTSButtons();
+        activeTTS = null;
+        btn.textContent = '🔊';
+        return;
+      }
+
+      if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
+      resetAllTTSButtons();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const lang = document.getElementById('ch-lang').value || 'en';
+      const voices = speechSynthesis.getVoices();
+      if (lang === 'bn') {
+        const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        utterance.lang = 'bn-BD';
+      } else if (lang === 'hi') {
+        const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+        if (hiVoice) utterance.voice = hiVoice;
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-US';
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+      }
+      utterance.rate = 1.0;
+
+      btn.textContent = '⏸️';
+      utterance.onend = () => { btn.textContent = '🔊'; activeTTS = null; };
+      utterance.onerror = () => { btn.textContent = '🔊'; activeTTS = null; };
+      activeTTS = { mainIndex: mIdx, utterance, playBtn: btn };
+      speechSynthesis.speak(utterance);
+    }
+
+    // ============================================================
+    //  QUESTION MANAGER
+    // ============================================================
+    let currentQmChapterId;
+
+    async function manageQuestions(chapterId, title) {
+      currentQmChapterId = chapterId;
+      document.getElementById('qm-title').textContent = title + ' - Questions';
+      document.getElementById('qm-chapter-id').value = chapterId;
+      await loadQuestionsForChapter(chapterId);
+      document.getElementById('question-manager-modal').classList.remove('hidden');
+      document.getElementById('qm-question-form').classList.add('hidden');
+    }
+
+    function closeQuestionManager() {
+      document.getElementById('question-manager-modal').classList.add('hidden');
+    }
+
+    async function loadQuestionsForChapter(chapterId) {
+      const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
+      const list = document.getElementById('qm-questions-list');
+      if (!questions) return;
+      list.innerHTML = questions.map(q => `
+        <div class="card" style="padding:12px; margin:6px 0;">
+          <strong>${escapeHtml(q.question)}</strong><br>
+          <small>${q.options.map((o,i)=>`${i===q.correct_index?'✓':'○'} ${escapeHtml(o)}`).join(' | ')}</small>
+          ${q.explanation ? `<br><small style="color:var(--accent-bright);">${escapeHtml(q.explanation)}</small>` : ''}
+          <div style="margin-top:8px;">
+            <button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">🗑</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openQuestionForm(q = null) {
+      document.getElementById('qm-question-form').classList.remove('hidden');
+      document.getElementById('qm-edit-qid').value = '';
+      document.getElementById('qm-question-text').value = '';
+      for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = '';
+      document.getElementById('qm-correct').value = 0;
+      document.getElementById('qm-explanation').value = '';
+      if (q) {
+        document.getElementById('qm-edit-qid').value = q.id;
+        document.getElementById('qm-question-text').value = q.question;
+        q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt);
+        document.getElementById('qm-correct').value = q.correct_index;
+        document.getElementById('qm-explanation').value = q.explanation || '';
+      }
+    }
+
+    function cancelQuestionEdit() { document.getElementById('qm-question-form').classList.add('hidden'); }
+
+    async function editQuestion(qId, chapterId) {
+      const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
+      const q = questions.find(q => q.id == qId);
+      if (q) openQuestionForm(q);
+    }
+
+    async function saveQuestion() {
+      const chapterId = parseInt(document.getElementById('qm-chapter-id').value);
+      const qId = document.getElementById('qm-edit-qid').value;
+      const data = {
+        question: document.getElementById('qm-question-text').value,
+        options: [0,1,2,3].map(i => document.getElementById(`qm-opt${i}`).value),
+        correct_index: parseInt(document.getElementById('qm-correct').value),
+        explanation: document.getElementById('qm-explanation').value
+      };
+      if (!data.question || data.options.some(o=>!o) || isNaN(data.correct_index))
+        return showToast('All fields required');
+      if (qId) {
+        await adminApiCall('PUT', `/admin/question/${qId}`, data);
+      } else {
+        await adminApiCall('POST', `/admin/chapter/${chapterId}/question`, data);
+      }
+      cancelQuestionEdit();
+      loadQuestionsForChapter(chapterId);
+      showToast('✅ Question saved');
+    }
+
+    async function deleteQuestion(qId, chapterId) {
+      if (!confirm('Delete this question?')) return;
+      await adminApiCall('DELETE', `/admin/question/${qId}`);
+      loadQuestionsForChapter(chapterId);
+    }
+
+    // ============================================================
+    //  INIT
+    // ============================================================
+
     if (adminToken) {
       checkVersion();
       document.getElementById('login-screen').classList.add('hidden');
@@ -2164,57 +2183,34 @@
 
     // Expose all functions globally
     window.switchTab = switchTab;
-    window.loadStats = loadStats;
-    window.loadUsers = loadUsers;
-    window.loadSimulate = loadSimulate;
-    window.loadChapters = loadChapters;
-    window.loadCourses = loadCourses;
-    window.loadContentManager = loadContentManager;
-    window.loadThemeEditor = loadThemeEditor;
-    window.loadMediaLibrary = loadMediaLibrary;
-    window.loadTranslations = loadTranslations;
-    window.loadAssessments = loadAssessments;
-    window.loadSlideshowAdmin = loadSlideshowAdmin;
-    window.loadActivity = loadActivity;
-    window.loadSettings = loadSettings;
-    window.adminLogin = adminLogin;
     window.logout = logout;
-    window.exportTrainingData = exportTrainingData;
-    window.importTrainingData = importTrainingData;
-    window.changeAdminPassword = changeAdminPassword;
-    window.saveSiteConfig = saveSiteConfig;
+    window.adminLogin = adminLogin;
+    window.loadUsers = loadUsers;
     window.searchUsers = searchUsers;
     window.resetUserPassword = resetUserPassword;
     window.impersonateUser = impersonateUser;
     window.deleteUser = deleteUser;
     window.simulateUser = simulateUser;
+    window.loadChapters = loadChapters;
     window.openChapterEditor = openChapterEditor;
     window.closeChapterEditor = closeChapterEditor;
-    window.saveChapter = saveChapter;
     window.switchEditorLanguage = switchEditorLanguage;
-    window.insertMainSubject = insertMainSubject;
-    window.addSubSection = addSubSection;
-    window.refreshSectionTree = refreshSectionTree;
-    window.editMainTitle = editMainTitle;
-    window.deleteMain = deleteMain;
-    window.editSubTitle = editSubTitle;
-    window.deleteSub = deleteSub;
-    window.playSubTTS = playSubTTS;
-    window.stopSubTTS = stopSubTTS;
-    window.playMainTTS = playMainTTS;
-    window.toggleSubSections = toggleSubSections;
+    window.saveChapter = saveChapter;
+    window.deleteChapter = deleteChapter;
     window.manageQuestions = manageQuestions;
     window.closeQuestionManager = closeQuestionManager;
     window.openQuestionForm = openQuestionForm;
     window.cancelQuestionEdit = cancelQuestionEdit;
     window.saveQuestion = saveQuestion;
-    window.editQuestion = editQuestion;
     window.deleteQuestion = deleteQuestion;
+    window.editQuestion = editQuestion;
+    window.loadCourses = loadCourses;
     window.openCourseForm = openCourseForm;
     window.cancelCourseForm = cancelCourseForm;
     window.editCourse = editCourse;
     window.saveCourse = saveCourse;
     window.deleteCourse = deleteCourse;
+    window.loadContentManager = loadContentManager;
     window.setupContentForm = setupContentForm;
     window.addContent = addContent;
     window.loadContentList = loadContentList;
@@ -2222,25 +2218,61 @@
     window.closeContentEditModal = closeContentEditModal;
     window.saveContentEdit = saveContentEdit;
     window.deleteContent = deleteContent;
+    window.loadThemeEditor = loadThemeEditor;
+    window.updateThemeFromText = updateThemeFromText;
+    window.saveTheme = saveTheme;
+    window.resetTheme = resetTheme;
+    window.loadMediaLibrary = loadMediaLibrary;
+    window.uploadSingleMedia = uploadSingleMedia;
+    window.uploadFolderFiles = uploadFolderFiles;
     window.uploadImage = uploadImage;
     window.addMediaUrl = addMediaUrl;
     window.deleteMedia = deleteMedia;
-    window.uploadFolderFiles = uploadFolderFiles;
+    window.loadTranslations = loadTranslations;
     window.openTransAddModal = openTransAddModal;
     window.closeTransAddModal = closeTransAddModal;
     window.saveNewTranslation = saveNewTranslation;
     window.editTrans = editTrans;
+    window.loadAssessments = loadAssessments;
     window.openAssessModal = openAssessModal;
     window.closeAssessModal = closeAssessModal;
     window.saveAssessQuestion = saveAssessQuestion;
     window.deleteAssessQuestion = deleteAssessQuestion;
+    window.loadSlideshowAdmin = loadSlideshowAdmin;
     window.openSlideshowEdit = openSlideshowEdit;
     window.closeSlideshowModal = closeSlideshowModal;
     window.saveSlide = saveSlide;
     window.deleteSlide = deleteSlide;
-    window.saveTheme = saveTheme;
+    window.loadActivity = loadActivity;
+    window.loadSettings = loadSettings;
+    window.loadCurrentSiteConfig = loadCurrentSiteConfig;
+    window.exportTrainingData = exportTrainingData;
+    window.importTrainingData = importTrainingData;
+    window.changeAdminPassword = changeAdminPassword;
+    window.saveSiteConfig = saveSiteConfig;
+    window.insertMainSubject = insertMainSubject;
+    window.insertTTSBlockDirect = insertTTSBlockDirect;
+    window.addSubSection = addSubSection;
+    window.editMainTitle = editMainTitle;
+    window.deleteMain = deleteMain;
+    window.editSubTitle = editSubTitle;
+    window.deleteSub = deleteSub;
+    window.refreshSectionTree = refreshSectionTree;
+    window.toggleTreeMain = toggleTreeMain;
+    window.playSubTTS = playSubTTS;
+    window.stopSubTTS = stopSubTTS;
+    window.playMainTTS = playMainTTS;
+    window.addImageField = addImageField;
+    window.addVideoField = addVideoField;
+    window.triggerChapterImageUpload = triggerChapterImageUpload;
+    window.triggerChapterVideoUpload = triggerChapterVideoUpload;
+    window.showToast = showToast;
 
-    console.log('✅ Admin panel fully loaded');
+    // Make sure Quill gets voices loaded
+    if (speechSynthesis) {
+      speechSynthesis.getVoices();
+      speechSynthesis.onvoiceschanged = () => { speechSynthesis.getVoices(); };
+    }
   </script>
 </body>
 </html>

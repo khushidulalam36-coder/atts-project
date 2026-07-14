@@ -254,13 +254,8 @@
       box-shadow: 0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3);
       background: linear-gradient(135deg, #E8C97A, #60A5FA);
     }
-    .btn:active {
-      transform: scale(0.96);
-    }
-    .btn:focus-visible {
-      outline: 2px solid #E8C97A;
-      outline-offset: 3px;
-    }
+    .btn:active { transform: scale(0.96); }
+    .btn:focus-visible { outline: 2px solid #E8C97A; outline-offset: 3px; }
     .btn::after {
       content: '';
       position: absolute;
@@ -272,12 +267,7 @@
       transition: width 0.6s, height 0.6s, opacity 0.6s;
       opacity: 0;
     }
-    .btn:active::after {
-      width: 300px;
-      height: 300px;
-      opacity: 0;
-      transition: 0s;
-    }
+    .btn:active::after { width: 300px; height: 300px; opacity: 0; transition: 0s; }
     .btn-outline {
       background: transparent;
       border: 2px solid var(--gold);
@@ -301,9 +291,7 @@
       background: linear-gradient(135deg, var(--danger), #b91c1c);
       box-shadow: 0 4px 12px rgba(239,68,68,0.4);
     }
-    .btn-danger:hover {
-      box-shadow: 0 8px 20px rgba(239,68,68,0.6);
-    }
+    .btn-danger:hover { box-shadow: 0 8px 20px rgba(239,68,68,0.6); }
     .btn-sm { padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; }
     .btn-lg { padding: 16px 32px; font-size: 1.1rem; border-radius: 40px; }
 
@@ -439,115 +427,45 @@
       0% { opacity:0.5; transform:scale(0.98); }
       100% { opacity:1; transform:scale(1); }
     }
-    /* Chapter modal content fix */
-    #chapter-modal-content {
-      line-height:1.8; padding:4px 0;
-    }
-    #chapter-modal-content p, #chapter-modal-content h1, #chapter-modal-content h2,
-    #chapter-modal-content h3, #chapter-modal-content h4, #chapter-modal-content ul,
-    #chapter-modal-content ol, #chapter-modal-content blockquote {
-      margin-bottom:12px;
-    }
-    #chapter-modal-content img {
-      max-width:100%; border-radius:8px; margin:8px 0;
-    }
 
-    /* ========= TTS Controls Bar (for inline sections) ========= */
-    .tts-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 12px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 12px;
-      border: 1px solid rgba(200,167,91,0.2);
-      flex-wrap: wrap;
-    }
-    .tts-btn-sm {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border-gold);
-      color: var(--text);
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .tts-btn-sm:hover:not(:disabled) {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      box-shadow: 0 0 14px var(--accent);
-      transform: scale(1.05);
-    }
-    .tts-btn-sm.active-play {
-      background: var(--success);
-      border-color: var(--success);
-      color: #fff;
-    }
-    .tts-btn-sm.active-pause {
-      background: var(--warning);
-      border-color: var(--warning);
-      color: #000;
-    }
-    .tts-btn-sm:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-      filter: grayscale(0.6);
-    }
-    .tts-speed-control {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-left: auto;
-    }
-    .tts-speed-control label {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-    .tts-speed-control select {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border-gold);
-      color: var(--text);
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      width: 75px;
-      cursor: pointer;
-    }
-    .tts-speed-control select:focus {
-      border-color: var(--accent-bright);
-      box-shadow: 0 0 8px var(--accent);
-    }
-
-    /* ===== TOC SIDEBAR and MINI TTS CONTROLS ===== */
+    /* ===== CHAPTER MODAL TOC STYLES ===== */
     #chapter-modal .modal-content {
-      max-width: 1100px;
+      max-width: 1000px;
+      width: 95vw;
       display: flex;
       gap: 16px;
-      padding: 24px;
-      flex-direction: row;
+      padding: 20px;
+      max-height: 85vh;
     }
     #chapter-toc {
       flex: 1;
+      min-width: 220px;
+      max-width: 320px;
       border-right: 1px solid var(--border-gold);
-      padding-right: 12px;
-      max-height: 70vh;
+      padding-right: 16px;
+      max-height: 75vh;
       overflow-y: auto;
-      min-width: 200px;
+      display: flex;
+      flex-direction: column;
     }
     #chapter-toc h4 {
-      margin-top: 0;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+    #chapter-toc .full-chapter-btn {
+      flex-shrink: 0;
+      margin-bottom: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+    #toc-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
     }
     .toc-main {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .toc-main-title {
       cursor: pointer;
@@ -557,44 +475,76 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      font-size: 0.95rem;
     }
     .toc-main-title:hover {
       color: var(--gold-bright);
     }
     .toc-subs {
-      padding-left: 16px;
-      margin-top: 4px;
+      padding-left: 18px;
+      margin-top: 2px;
+      display: none;
+      border-left: 2px solid rgba(200,167,91,0.15);
+    }
+    .toc-subs.open {
+      display: block;
     }
     .toc-sub-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 4px 6px;
-      border-radius: 4px;
       margin: 2px 0;
-      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
       transition: background 0.2s;
-      font-size: 0.9rem;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .toc-sub-item:hover {
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
     }
-    .toc-sub-item .sub-label {
+    .toc-sub-item .sub-link {
       cursor: pointer;
       flex: 1;
       color: var(--text-secondary);
+      transition: color 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .toc-sub-item .sub-label:hover {
-      color: var(--text);
+    .toc-sub-item .sub-link:hover {
+      color: var(--gold-bright);
     }
+    .toc-sub-item .sub-link.active-section {
+      color: var(--gold-bright);
+      font-weight: 600;
+    }
+
+    /* TTS mini controls in TOC */
     .tts-mini-controls {
       display: inline-flex;
-      align-items: center;
       gap: 3px;
+      align-items: center;
       flex-shrink: 0;
     }
+    .tts-mini-speed {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      font-size: 0.6rem;
+      padding: 1px 4px;
+      border-radius: 4px;
+      width: 50px;
+      display: none;
+    }
+    .tts-mini-speed:focus {
+      outline: none;
+      border-color: var(--accent-bright);
+    }
     .tts-mini-btn {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.08);
       border: 1px solid var(--border-gold);
       color: var(--text);
       width: 26px;
@@ -607,61 +557,133 @@
       font-size: 0.7rem;
       transition: all 0.2s;
     }
-    .tts-mini-btn:hover:not(:disabled) {
+    .tts-mini-btn:hover {
       background: var(--accent);
-      color: #fff;
       border-color: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
+      color: #fff;
     }
     .tts-mini-btn.active-play {
       background: var(--success);
       border-color: var(--success);
       color: #fff;
     }
-    .tts-mini-speed {
+    .tts-mini-btn.active-pause {
+      background: var(--warning);
+      border-color: var(--warning);
+      color: #000;
+    }
+
+    /* Content area */
+    #chapter-content-area {
+      flex: 3;
+      max-height: 75vh;
+      overflow-y: auto;
+      padding-right: 8px;
+      min-width: 0;
+    }
+    #chapter-content-area h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+    /* Section highlight when TTS is playing or scrolled to */
+    .tts-section.active-tts {
+      background: rgba(37,99,235,0.12);
+      border-radius: 8px;
+      padding: 8px 12px;
+      border-left: 3px solid var(--accent-bright);
+      transition: background 0.3s;
+    }
+    .tts-section {
+      transition: background 0.3s;
+      padding: 4px 0;
+    }
+
+    /* TTS Controls Bar inside chapter content */
+    .chapter-tts-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(200,167,91,0.2);
+      flex-wrap: wrap;
+    }
+    .chapter-tts-bar .tts-btn-sm {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border-gold);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.25s;
+    }
+    .chapter-tts-bar .tts-btn-sm:hover:not(:disabled) {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+      transform: scale(1.05);
+    }
+    .chapter-tts-bar .tts-btn-sm:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+    }
+    .chapter-tts-bar .tts-speed-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .chapter-tts-bar .tts-speed-control label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .chapter-tts-bar .tts-speed-control select {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border-gold);
       color: var(--text);
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      width: 55px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      width: 70px;
       cursor: pointer;
     }
-    .tts-mini-speed:focus {
+    .chapter-tts-bar .tts-speed-control select:focus {
       border-color: var(--accent-bright);
-      outline: none;
-    }
-
-    #chapter-content-area {
-      flex: 3;
-      max-height: 70vh;
-      overflow-y: auto;
-      padding-right: 4px;
+      box-shadow: 0 0 8px var(--accent);
     }
 
     @media (max-width: 768px) {
       #chapter-modal .modal-content {
         flex-direction: column;
-        padding: 16px;
+        padding: 12px;
+        max-height: 90vh;
+        width: 95vw;
       }
       #chapter-toc {
+        flex: none;
+        max-width: 100%;
         border-right: none;
         border-bottom: 1px solid var(--border-gold);
         padding-right: 0;
         padding-bottom: 12px;
-        max-height: 30vh;
+        max-height: 35vh;
       }
       #chapter-content-area {
         max-height: 50vh;
       }
-    }
-
-    @media (max-width:600px) {
       .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
       .assessment-options { gap:20px; flex-wrap:wrap; }
-      .tts-controls { flex-direction: column; align-items: stretch; }
-      .tts-speed-control { margin-left: 0; margin-top: 4px; }
+      .toc-sub-item { flex-wrap: wrap; }
+      .toc-sub-item .sub-link { white-space: normal; }
     }
     @keyframes pulse {
       0% { transform:scale(1); } 50% { transform:scale(1.1); } 100% { transform:scale(1); }
@@ -948,42 +970,43 @@
     <div class="glass modal-content"><h3>🔑 Reset Password</h3><input type="email" id="reset-email" placeholder="Your email"><button class="btn" onclick="requestPasswordReset()">Send Link</button><button class="btn btn-outline" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')">Close</button></div>
   </div>
 
-  <!-- ===== UPDATED CHAPTER MODAL with TOC Sidebar ===== -->
+  <!-- ======================= UPDATED CHAPTER MODAL WITH TOC ======================= -->
   <div id="chapter-modal" class="modal-overlay hidden">
-    <div class="glass modal-content" style="max-width:1100px; display:flex; gap:16px; padding:24px; flex-direction:row;">
+    <div class="glass modal-content" style="max-width:1000px; width:95vw; display:flex; gap:16px; padding:20px; max-height:85vh;">
       <!-- TOC Sidebar -->
-      <div id="chapter-toc" style="flex:1; border-right:1px solid var(--border-gold); padding-right:12px; max-height:70vh; overflow-y:auto; min-width:200px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-          <h4 style="margin:0;">📑 Table of Contents</h4>
-          <button class="btn btn-sm btn-outline" onclick="speakFullChapter()" title="Read entire chapter aloud">🔊 Full Chapter</button>
-        </div>
-        <div id="toc-list"></div>
+      <div id="chapter-toc" style="flex:1; min-width:220px; max-width:320px; border-right:1px solid var(--border-gold); padding-right:16px; max-height:75vh; overflow-y:auto; display:flex; flex-direction:column;">
+        <h4 style="font-size:1.1rem; margin-bottom:8px; flex-shrink:0;">📑 Table of Contents</h4>
+        <button class="btn btn-sm btn-outline full-chapter-btn" onclick="speakFullChapter()" style="flex-shrink:0; margin-bottom:12px; width:100%; justify-content:center;">🔊 Read Full Chapter</button>
+        <div id="toc-list" style="flex:1; overflow-y:auto; padding-right:4px;"></div>
       </div>
       <!-- Content Area -->
-      <div id="chapter-content-area" style="flex:3; max-height:70vh; overflow-y:auto; padding-right:4px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-          <h2 id="chapter-modal-title" style="margin:0;"></h2>
-          <button class="btn btn-sm btn-outline" onclick="closeChapterModal()" style="flex-shrink:0;">✕</button>
+      <div id="chapter-content-area" style="flex:3; max-height:75vh; overflow-y:auto; padding-right:8px; min-width:0;">
+        <h2 id="chapter-modal-title" style="margin-top:0; font-size:1.5rem;"></h2>
+        <div id="chapter-modal-content" style="line-height:1.8;"></div>
+        <!-- TTS Controls Bar inside content (optional) -->
+        <div class="chapter-tts-bar" id="chapter-tts-bar">
+          <button class="tts-btn-sm" onclick="speakFullChapter()" title="Read Full Chapter">🔊</button>
+          <button class="tts-btn-sm" onclick="stopChapterTTS()" title="Stop" id="chapter-stop-tts-btn">⏹️</button>
+          <div class="tts-speed-control">
+            <label>Speed:</label>
+            <select id="chapter-tts-speed" onchange="updateChapterTTSSpeed()">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1.0" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2.0">2x</option>
+            </select>
+          </div>
+          <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:auto;" id="chapter-tts-status">⏸️ Idle</span>
         </div>
-        <div id="chapter-modal-content" style="line-height:1.8; padding:4px 0;"></div>
-        <hr style="border-color:var(--border-gold); margin:16px 0;">
-        <!-- Quiz area (unchanged) -->
-        <div style="display:flex; justify-content:space-between;">
-          <h3>🧪 Quiz</h3>
-          <select id="quiz-mode-select" onchange="setQuizMode()" style="width:auto;">
-            <option value="learning">Learning</option>
-            <option value="practice">Practice</option>
-          </select>
-        </div>
-        <div id="practice-timer" style="color:var(--accent-bright);"></div>
-        <div id="quiz-container"></div>
-        <div id="quiz-result" class="hidden"></div>
-        <button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()">Submit Answers</button>
       </div>
     </div>
   </div>
 
+  <!-- Final Exam Modal -->
   <div id="final-exam-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><h2>🏆 Final Exam</h2><p>⏳ <span id="overall-timer">20:00</span></p><div id="final-exam-questions"></div><button class="btn btn-accent btn-lg" onclick="submitFinalExam()">Submit</button><div id="final-exam-result" class="hidden"></div></div></div>
+
   <div id="toast" class="toast"></div>
   <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#0B1220; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;"><div style="border:4px solid rgba(200,167,91,0.15); border-top:4px solid #C8A75B; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div><span style="color:var(--gold-bright); font-weight:700; font-size:1.1rem;">AlamQuant ATTS</span></div>
 
@@ -1022,14 +1045,17 @@
     let speechSynth = window.speechSynthesis;
     let currentUtterance = null;
 
+    // Chapter TTS state
+    let chapterTTSActive = false;
+    let chapterTTSRate = 1.0;
+    let chapterTTSUtterance = null;
+    let currentHighlightedSection = null;
+
     // Slideshow state
     let slidesData = [];
     let currentSlideIndex = 0;
     let slideInterval = null;
     let slideAutoPlay = true;
-
-    // ==================== TTS Global State ====================
-    let activeTTSController = null;
 
     // ==================== Utility Functions ====================
     function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
@@ -1086,7 +1112,7 @@
       }
     };
 
-    // ==================== TTS Legacy Functions (removed toggleChapterTTS) ====================
+    // ==================== TTS Helpers ====================
     function speakText(elementId) {
       if (speechSynth.speaking) speechSynth.cancel();
       const element = document.getElementById(elementId);
@@ -1100,6 +1126,7 @@
       utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
       speechSynth.speak(utterance);
     }
+
     function speakElementContent(elementId) {
       if (speechSynth.speaking) speechSynth.cancel();
       const el = document.getElementById(elementId);
@@ -1114,182 +1141,584 @@
       speechSynth.speak(utterance);
     }
 
-    // ==================== Enhanced TTS Controller with Speed ====================
-    class TTSController {
-      constructor(element, lang) {
-        this.element = element;
-        this.lang = lang;
-        this.utterance = null;
-        this.state = 'stopped';
-        this.rate = 1.0;
-        this.controls = null;
-        this.buildUI();
-      }
+    // ==================== Chapter TOC & TTS Functions ====================
 
-      buildUI() {
-        const controls = document.createElement('div');
-        controls.className = 'tts-controls';
-        controls.innerHTML = `
-          <button class="tts-btn-sm play-btn" title="Play">▶️</button>
-          <button class="tts-btn-sm pause-btn" title="Pause" disabled>⏸️</button>
-          <button class="tts-btn-sm stop-btn" title="Stop" disabled>⏹️</button>
-          <div class="tts-speed-control">
-            <label>🐢</label>
-            <select class="tts-speed-select">
-              <option value="0.5">0.5x</option>
-              <option value="0.75">0.75x</option>
-              <option value="1.0" selected>1x</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2.0">2x</option>
-            </select>
-          </div>
-        `;
-        this.controls = controls;
-        this.element.appendChild(controls);
+    /** Build Table of Contents from chapter content */
+    function buildTOC() {
+      const contentDiv = document.getElementById('chapter-modal-content');
+      const tocContainer = document.getElementById('toc-list');
+      if (!contentDiv || !tocContainer) return;
 
-        this.playBtn = controls.querySelector('.play-btn');
-        this.pauseBtn = controls.querySelector('.pause-btn');
-        this.stopBtn = controls.querySelector('.stop-btn');
-        this.speedSelect = controls.querySelector('.tts-speed-select');
+      // Parse content to find main subjects and TTS sections
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(contentDiv.innerHTML, 'text/html');
+      const mainSubjects = doc.querySelectorAll('.main-subject');
 
-        this.playBtn.addEventListener('click', () => this.play());
-        this.pauseBtn.addEventListener('click', () => this.pause());
-        this.stopBtn.addEventListener('click', () => this.stop());
-        this.speedSelect.addEventListener('change', () => {
-          this.rate = parseFloat(this.speedSelect.value);
-          if (this.state === 'playing' || this.state === 'paused') {
-            const wasPlaying = this.state === 'playing';
-            this.stop();
-            if (wasPlaying) this.play();
+      let tocHtml = '';
+      if (mainSubjects.length === 0) {
+        // If no main subjects, look for direct tts-section elements
+        const directSections = doc.querySelectorAll('.tts-section');
+        if (directSections.length > 0) {
+          tocHtml += `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▼ Sections</div><div class="toc-subs open">`;
+          directSections.forEach((sec, idx) => {
+            const h2 = sec.querySelector('h2');
+            const title = h2 ? h2.textContent : `Section ${idx+1}`;
+            tocHtml += `
+              <div class="toc-sub-item" data-section-index="${idx}" data-is-direct="true">
+                <span class="sub-link" onclick="scrollToSectionDirect(${idx})">${idx+1}. ${escapeHtml(title)}</span>
+                <div class="tts-mini-controls">
+                  <select class="tts-mini-speed" style="display:none;">
+                    <option value="0.5">0.5x</option><option value="1.0" selected>1x</option><option value="1.5">1.5x</option><option value="2.0">2x</option>
+                  </select>
+                  <button class="tts-mini-btn play-btn" onclick="playSectionTTSDirect(${idx}, this)">🔊</button>
+                  <button class="tts-mini-btn stop-btn" onclick="stopSectionTTS()" style="display:none;">⏹️</button>
+                </div>
+              </div>`;
+          });
+          tocHtml += `</div></div>`;
+        } else {
+          tocHtml = '<p style="color:var(--text-secondary);">No sections found in this chapter.</p>';
+        }
+      } else {
+        mainSubjects.forEach((main, mIdx) => {
+          const mainTitle = main.getAttribute('data-main-title') || 'Untitled';
+          tocHtml += `<div class="toc-main">
+            <div class="toc-main-title" onclick="toggleTocSub(this)">▶ ${escapeHtml(mainTitle)}</div>
+            <div class="toc-subs">`;
+
+          const subSections = main.querySelectorAll('.tts-section');
+          if (subSections.length === 0) {
+            tocHtml += `<p style="color:var(--text-secondary); font-size:0.8rem; padding:4px 0;">No sub-sections.</p>`;
+          } else {
+            subSections.forEach((sub, sIdx) => {
+              const h2 = sub.querySelector('h2');
+              const subTitle = h2 ? h2.textContent : 'Untitled';
+              tocHtml += `
+                <div class="toc-sub-item" data-main="${mIdx}" data-sub="${sIdx}">
+                  <span class="sub-link" onclick="scrollToSection(${mIdx}, ${sIdx})">${mIdx+1}.${sIdx+1} ${escapeHtml(subTitle)}</span>
+                  <div class="tts-mini-controls">
+                    <select class="tts-mini-speed" style="display:none;">
+                      <option value="0.5">0.5x</option><option value="1.0" selected>1x</option><option value="1.5">1.5x</option><option value="2.0">2x</option>
+                    </select>
+                    <button class="tts-mini-btn play-btn" onclick="playSectionTTS(${mIdx},${sIdx}, this)">🔊</button>
+                    <button class="tts-mini-btn stop-btn" onclick="stopSectionTTS()" style="display:none;">⏹️</button>
+                  </div>
+                </div>`;
+            });
           }
+          tocHtml += `</div></div>`;
         });
       }
 
-      getText() {
-        return this.element.innerText.trim();
-      }
+      tocContainer.innerHTML = tocHtml;
 
-      async play() {
-        const text = this.getText();
-        if (!text) return;
+      // Add IDs to sections for scrolling
+      const contentArea = document.getElementById('chapter-modal-content');
+      const mainDivs = contentArea.querySelectorAll('.main-subject');
+      mainDivs.forEach((main, mIdx) => {
+        const subs = main.querySelectorAll('.tts-section');
+        subs.forEach((sub, sIdx) => {
+          if (!sub.id) sub.id = `section-${mIdx}-${sIdx}`;
+          // Add data attributes for tracking
+          sub.dataset.mainIdx = mIdx;
+          sub.dataset.subIdx = sIdx;
+        });
+      });
 
-        if (activeTTSController && activeTTSController !== this) {
-          activeTTSController.stop();
-        }
-
-        if (this.state === 'paused' && this.utterance) {
-          speechSynthesis.resume();
-          this.state = 'playing';
-          this.updateUI();
-          return;
-        }
-
-        if (this.utterance) speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voices = speechSynthesis.getVoices();
-
-        if (this.lang === 'bn') {
-          utterance.lang = 'bn-BD';
-          const bnVoice = voices.find(v => v.lang.startsWith('bn'));
-          if (bnVoice) utterance.voice = bnVoice;
-        } else if (this.lang === 'hi') {
-          utterance.lang = 'hi-IN';
-          const hiVoice = voices.find(v => v.lang.startsWith('hi'));
-          if (hiVoice) utterance.voice = hiVoice;
-        } else {
-          utterance.lang = 'en-US';
-          const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
-          if (femaleVoice) utterance.voice = femaleVoice;
-        }
-
-        utterance.rate = this.rate;
-
-        utterance.onstart = () => {
-          this.state = 'playing';
-          activeTTSController = this;
-          this.updateUI();
-        };
-        utterance.onend = () => {
-          this.state = 'stopped';
-          activeTTSController = null;
-          this.updateUI();
-        };
-        utterance.onerror = () => {
-          this.state = 'stopped';
-          activeTTSController = null;
-          this.updateUI();
-        };
-        utterance.onpause = () => {
-          this.state = 'paused';
-          this.updateUI();
-        };
-        utterance.onresume = () => {
-          this.state = 'playing';
-          this.updateUI();
-        };
-
-        this.utterance = utterance;
-        speechSynth.speak(utterance);
-      }
-
-      pause() {
-        if (speechSynth.speaking) {
-          speechSynth.pause();
-        }
-      }
-
-      stop() {
-        if (speechSynth.speaking || speechSynth.paused) {
-          speechSynth.cancel();
-        }
-        this.state = 'stopped';
-        activeTTSController = null;
-        this.updateUI();
-      }
-
-      updateUI() {
-        if (this.state === 'playing') {
-          this.playBtn.classList.add('active-play');
-          this.pauseBtn.classList.remove('active-pause');
-          this.pauseBtn.disabled = false;
-          this.stopBtn.disabled = false;
-        } else if (this.state === 'paused') {
-          this.playBtn.classList.remove('active-play');
-          this.pauseBtn.classList.add('active-pause');
-          this.pauseBtn.disabled = false;
-          this.stopBtn.disabled = false;
-        } else {
-          this.playBtn.classList.remove('active-play');
-          this.pauseBtn.classList.remove('active-pause');
-          this.pauseBtn.disabled = true;
-          this.stopBtn.disabled = true;
-        }
-      }
-    }
-
-    // ==================== Attach TTS Sections ====================
-    function attachTTSSections() {
-      const sections = document.querySelectorAll('#chapter-modal-content .tts-section');
-      sections.forEach(section => {
-        if (section.dataset.ttsAttached === 'true') return;
-        const lang = section.dataset.lang || 'en';
-        new TTSController(section, lang);
-        section.dataset.ttsAttached = 'true';
+      // Also handle direct tts-sections (not inside main-subject)
+      const directSections = contentArea.querySelectorAll('.tts-section:not([id])');
+      directSections.forEach((sec, idx) => {
+        sec.id = `section-direct-${idx}`;
+        sec.dataset.directIdx = idx;
+        sec.dataset.isDirect = 'true';
       });
     }
 
+    /** Toggle sub-sections in TOC */
+    function toggleTocSub(header) {
+      const subDiv = header.nextElementSibling;
+      if (subDiv) {
+        subDiv.classList.toggle('open');
+        const icon = header.textContent.trim()[0];
+        if (subDiv.classList.contains('open')) {
+          header.textContent = `▼ ${header.textContent.slice(2)}`;
+        } else {
+          header.textContent = `▶ ${header.textContent.slice(2)}`;
+        }
+      }
+    }
+
+    /** Scroll to a section (main + sub) */
+    function scrollToSection(mIdx, sIdx) {
+      const target = document.getElementById(`section-${mIdx}-${sIdx}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        highlightSection(target);
+        updateActiveTocItem(mIdx, sIdx);
+      }
+    }
+
+    /** Scroll to a direct section (not inside main-subject) */
+    function scrollToSectionDirect(idx) {
+      const target = document.getElementById(`section-direct-${idx}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        highlightSection(target);
+        updateActiveTocItemDirect(idx);
+      }
+    }
+
+    /** Highlight a section in the content */
+    function highlightSection(element) {
+      // Remove previous highlight
+      if (currentHighlightedSection) {
+        currentHighlightedSection.classList.remove('active-tts');
+      }
+      if (element) {
+        element.classList.add('active-tts');
+        currentHighlightedSection = element;
+      }
+    }
+
+    /** Update active state in TOC for main+sub */
+    function updateActiveTocItem(mIdx, sIdx) {
+      document.querySelectorAll('#toc-list .sub-link').forEach(el => el.classList.remove('active-section'));
+      const items = document.querySelectorAll(`#toc-list .toc-sub-item[data-main="${mIdx}"][data-sub="${sIdx}"] .sub-link`);
+      items.forEach(el => el.classList.add('active-section'));
+    }
+
+    /** Update active state in TOC for direct sections */
+    function updateActiveTocItemDirect(idx) {
+      document.querySelectorAll('#toc-list .sub-link').forEach(el => el.classList.remove('active-section'));
+      const items = document.querySelectorAll(`#toc-list .toc-sub-item[data-section-index="${idx}"][data-is-direct="true"] .sub-link`);
+      items.forEach(el => el.classList.add('active-section'));
+    }
+
+    // ==================== TTS for Sections ====================
+
+    let activeUserTTS = null;
+
+    /** Play TTS for a specific section (main+sub) */
+    function playSectionTTS(mIdx, sIdx, btn) {
+      const contentDiv = document.getElementById('chapter-modal-content');
+      const target = contentDiv.querySelector(`#section-${mIdx}-${sIdx}`);
+      if (!target) return;
+
+      // If already playing this section, toggle pause/play
+      if (activeUserTTS && activeUserTTS.mIdx === mIdx && activeUserTTS.sIdx === sIdx) {
+        if (speechSynth.speaking) {
+          speechSynth.pause();
+          btn.textContent = '▶';
+          btn.classList.remove('active-play');
+          btn.classList.add('active-pause');
+          return;
+        } else if (speechSynth.paused) {
+          speechSynth.resume();
+          btn.textContent = '⏸️';
+          btn.classList.remove('active-pause');
+          btn.classList.add('active-play');
+          return;
+        }
+      }
+
+      // Stop any previous TTS
+      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      resetAllSectionTTSButtons();
+
+      const text = target.innerText;
+      if (!text.trim()) return;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
+      const stopBtn = btn.parentElement.querySelector('.stop-btn');
+      utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1.0;
+
+      // Voice selection
+      const lang = document.getElementById('ch-lang')?.value || 'en';
+      const voices = speechSynth.getVoices();
+      if (lang === 'bn') {
+        const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        utterance.lang = 'bn-BD';
+      } else if (lang === 'hi') {
+        const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+        if (hiVoice) utterance.voice = hiVoice;
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-US';
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+      }
+
+      btn.textContent = '⏸️';
+      btn.classList.add('active-play');
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+      if (speedSelect) speedSelect.style.display = 'inline-block';
+
+      // Highlight the section
+      highlightSection(target);
+      updateActiveTocItem(mIdx, sIdx);
+
+      utterance.onend = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeUserTTS = null;
+        // Remove highlight after a delay
+        setTimeout(() => {
+          if (currentHighlightedSection && !speechSynth.speaking && !speechSynth.paused) {
+            currentHighlightedSection.classList.remove('active-tts');
+            currentHighlightedSection = null;
+          }
+        }, 1000);
+      };
+      utterance.onerror = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeUserTTS = null;
+      };
+      utterance.onpause = () => {
+        btn.textContent = '▶';
+        btn.classList.remove('active-play');
+        btn.classList.add('active-pause');
+      };
+      utterance.onresume = () => {
+        btn.textContent = '⏸️';
+        btn.classList.remove('active-pause');
+        btn.classList.add('active-play');
+      };
+
+      activeUserTTS = { mIdx, sIdx, utterance, playBtn: btn, stopBtn, speedSelect, isDirect: false };
+      speechSynth.speak(utterance);
+    }
+
+    /** Play TTS for a direct section (not inside main-subject) */
+    function playSectionTTSDirect(idx, btn) {
+      const contentDiv = document.getElementById('chapter-modal-content');
+      const target = contentDiv.querySelector(`#section-direct-${idx}`);
+      if (!target) return;
+
+      if (activeUserTTS && activeUserTTS.isDirect && activeUserTTS.idx === idx) {
+        if (speechSynth.speaking) {
+          speechSynth.pause();
+          btn.textContent = '▶';
+          btn.classList.remove('active-play');
+          btn.classList.add('active-pause');
+          return;
+        } else if (speechSynth.paused) {
+          speechSynth.resume();
+          btn.textContent = '⏸️';
+          btn.classList.remove('active-pause');
+          btn.classList.add('active-play');
+          return;
+        }
+      }
+
+      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      resetAllSectionTTSButtons();
+
+      const text = target.innerText;
+      if (!text.trim()) return;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
+      const stopBtn = btn.parentElement.querySelector('.stop-btn');
+      utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1.0;
+
+      const lang = document.getElementById('ch-lang')?.value || 'en';
+      const voices = speechSynth.getVoices();
+      if (lang === 'bn') {
+        const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        utterance.lang = 'bn-BD';
+      } else if (lang === 'hi') {
+        const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+        if (hiVoice) utterance.voice = hiVoice;
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-US';
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+      }
+
+      btn.textContent = '⏸️';
+      btn.classList.add('active-play');
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+      if (speedSelect) speedSelect.style.display = 'inline-block';
+
+      highlightSection(target);
+      updateActiveTocItemDirect(idx);
+
+      utterance.onend = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeUserTTS = null;
+        setTimeout(() => {
+          if (currentHighlightedSection && !speechSynth.speaking && !speechSynth.paused) {
+            currentHighlightedSection.classList.remove('active-tts');
+            currentHighlightedSection = null;
+          }
+        }, 1000);
+      };
+      utterance.onerror = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('active-play', 'active-pause');
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (speedSelect) speedSelect.style.display = 'none';
+        activeUserTTS = null;
+      };
+      utterance.onpause = () => {
+        btn.textContent = '▶';
+        btn.classList.remove('active-play');
+        btn.classList.add('active-pause');
+      };
+      utterance.onresume = () => {
+        btn.textContent = '⏸️';
+        btn.classList.remove('active-pause');
+        btn.classList.add('active-play');
+      };
+
+      activeUserTTS = { idx, utterance, playBtn: btn, stopBtn, speedSelect, isDirect: true };
+      speechSynth.speak(utterance);
+    }
+
+    /** Stop all section TTS */
+    function stopSectionTTS() {
+      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      resetAllSectionTTSButtons();
+      activeUserTTS = null;
+      // Remove highlight
+      if (currentHighlightedSection) {
+        currentHighlightedSection.classList.remove('active-tts');
+        currentHighlightedSection = null;
+      }
+      document.querySelectorAll('#toc-list .sub-link').forEach(el => el.classList.remove('active-section'));
+    }
+
+    /** Reset all TTS buttons in TOC */
+    function resetAllSectionTTSButtons() {
+      document.querySelectorAll('#toc-list .play-btn').forEach(b => {
+        b.textContent = '🔊';
+        b.classList.remove('active-play', 'active-pause');
+      });
+      document.querySelectorAll('#toc-list .stop-btn').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('#toc-list .tts-mini-speed').forEach(s => s.style.display = 'none');
+    }
+
+    // ==================== Full Chapter TTS ====================
+
+    /** Speak the entire chapter */
+    function speakFullChapter() {
+      const contentDiv = document.getElementById('chapter-modal-content');
+      const text = contentDiv.innerText;
+      if (!text.trim()) {
+        showToast('No content to read.');
+        return;
+      }
+
+      // If already speaking, stop
+      if (chapterTTSActive) {
+        if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+        chapterTTSActive = false;
+        chapterTTSUtterance = null;
+        document.getElementById('chapter-tts-status').textContent = '⏹️ Stopped';
+        // Reset all section buttons
+        resetAllSectionTTSButtons();
+        if (currentHighlightedSection) {
+          currentHighlightedSection.classList.remove('active-tts');
+          currentHighlightedSection = null;
+        }
+        return;
+      }
+
+      // Stop any section TTS
+      if (activeUserTTS) {
+        if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+        resetAllSectionTTSButtons();
+        activeUserTTS = null;
+      }
+
+      const speed = parseFloat(document.getElementById('chapter-tts-speed').value) || 1.0;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = speed;
+
+      const lang = document.getElementById('ch-lang')?.value || 'en';
+      const voices = speechSynth.getVoices();
+      if (lang === 'bn') {
+        const bnVoice = voices.find(v => v.lang.startsWith('bn'));
+        if (bnVoice) utterance.voice = bnVoice;
+        utterance.lang = 'bn-BD';
+      } else if (lang === 'hi') {
+        const hiVoice = voices.find(v => v.lang.startsWith('hi'));
+        if (hiVoice) utterance.voice = hiVoice;
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = 'en-US';
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+      }
+
+      chapterTTSActive = true;
+      chapterTTSUtterance = utterance;
+      document.getElementById('chapter-tts-status').textContent = '🔊 Playing...';
+
+      // Try to highlight sections as they are read (simplified: highlight all sections)
+      const allSections = contentDiv.querySelectorAll('.tts-section');
+      allSections.forEach(sec => sec.classList.add('active-tts'));
+
+      utterance.onend = () => {
+        chapterTTSActive = false;
+        chapterTTSUtterance = null;
+        document.getElementById('chapter-tts-status').textContent = '✅ Done';
+        allSections.forEach(sec => sec.classList.remove('active-tts'));
+        if (currentHighlightedSection) {
+          currentHighlightedSection.classList.remove('active-tts');
+          currentHighlightedSection = null;
+        }
+      };
+      utterance.onerror = () => {
+        chapterTTSActive = false;
+        chapterTTSUtterance = null;
+        document.getElementById('chapter-tts-status').textContent = '❌ Error';
+        allSections.forEach(sec => sec.classList.remove('active-tts'));
+      };
+      utterance.onpause = () => {
+        document.getElementById('chapter-tts-status').textContent = '⏸️ Paused';
+      };
+      utterance.onresume = () => {
+        document.getElementById('chapter-tts-status').textContent = '🔊 Playing...';
+      };
+
+      speechSynth.speak(utterance);
+    }
+
+    /** Stop full chapter TTS */
+    function stopChapterTTS() {
+      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      chapterTTSActive = false;
+      chapterTTSUtterance = null;
+      document.getElementById('chapter-tts-status').textContent = '⏹️ Stopped';
+      // Remove highlights
+      document.querySelectorAll('#chapter-modal-content .tts-section').forEach(sec => sec.classList.remove('active-tts'));
+      if (currentHighlightedSection) {
+        currentHighlightedSection.classList.remove('active-tts');
+        currentHighlightedSection = null;
+      }
+      resetAllSectionTTSButtons();
+    }
+
+    /** Update TTS speed for full chapter */
+    function updateChapterTTSSpeed() {
+      chapterTTSRate = parseFloat(document.getElementById('chapter-tts-speed').value) || 1.0;
+      if (chapterTTSUtterance) {
+        chapterTTSUtterance.rate = chapterTTSRate;
+      }
+    }
+
+    // ==================== Updated openChapterModal ====================
+
+    async function openChapterModal(id) {
+      currentChapterId = id;
+      const data = await apiCall('GET', `/training/chapter/${id}`);
+      if (!data) return;
+
+      document.getElementById('chapter-modal-title').textContent = data.title;
+      const contentDiv = document.getElementById('chapter-modal-content');
+      contentDiv.innerHTML = DOMPurify.sanitize(data.content_text || '<p style="color:var(--text-secondary);">📖 No content available for this chapter.</p>');
+
+      // Load images and videos
+      const gallery = document.getElementById('chapter-images-gallery');
+      if (gallery) {
+        gallery.innerHTML = (data.images || []).map(u => `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`).join('');
+      }
+      const videoContainer = document.getElementById('chapter-modal-video-container');
+      if (videoContainer) {
+        videoContainer.innerHTML = (data.videos || []).map(v => {
+          let embed = v;
+          if (v.includes('youtube.com/watch')) embed = `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`;
+          return `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`;
+        }).join('');
+      }
+
+      // Build TOC after content is set
+      setTimeout(() => {
+        buildTOC();
+        // Open all TOC sections by default
+        document.querySelectorAll('.toc-subs').forEach(el => el.classList.add('open'));
+        document.querySelectorAll('.toc-main-title').forEach(el => {
+          if (el.textContent.trim().startsWith('▶')) {
+            el.textContent = `▼ ${el.textContent.slice(2)}`;
+          }
+        });
+        // Reset TTS state
+        chapterTTSActive = false;
+        chapterTTSUtterance = null;
+        document.getElementById('chapter-tts-status').textContent = '⏸️ Idle';
+        document.querySelectorAll('#chapter-modal-content .tts-section').forEach(sec => sec.classList.remove('active-tts'));
+        if (currentHighlightedSection) {
+          currentHighlightedSection.classList.remove('active-tts');
+          currentHighlightedSection = null;
+        }
+        resetAllSectionTTSButtons();
+      }, 100);
+
+      // Show quiz if available
+      const quizContainer = document.getElementById('quiz-container');
+      if (quizContainer) {
+        currentChapterQuestions = data.questions || [];
+        if (data.user_progress?.passed) {
+          quizContainer.innerHTML = `<p style="color:var(--success);">✅ Passed! Score: ${data.user_progress.best_score}%</p>`;
+          document.getElementById('submit-quiz-btn')?.classList.add('hidden');
+        } else {
+          document.getElementById('submit-quiz-btn')?.classList.remove('hidden');
+          quizContainer.innerHTML = currentChapterQuestions.map((q, i) => `
+            <div class="question-block">
+              <p>${i+1}. ${escapeHtml(q.question)}</p>
+              ${q.options.map((o, j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}
+            </div>
+          `).join('');
+        }
+      }
+
+      document.getElementById('chapter-modal').classList.remove('hidden');
+    }
+
+    // ==================== Close Chapter Modal ====================
+
+    function closeChapterModal() {
+      if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+      chapterTTSActive = false;
+      chapterTTSUtterance = null;
+      activeUserTTS = null;
+      document.getElementById('chapter-tts-status').textContent = '⏸️ Idle';
+      document.querySelectorAll('#chapter-modal-content .tts-section').forEach(sec => sec.classList.remove('active-tts'));
+      if (currentHighlightedSection) {
+        currentHighlightedSection.classList.remove('active-tts');
+        currentHighlightedSection = null;
+      }
+      resetAllSectionTTSButtons();
+      document.getElementById('chapter-modal').classList.add('hidden');
+      clearInterval(practiceTimerInterval);
+      loadTrainingTab();
+    }
+
     // ==================== Language Filter for Training ====================
+
     function filterTrainingLanguage() {
       const selectedLang = document.getElementById('training-lang-select')?.value || 'all';
       localStorage.setItem('preferredTrainingLang', selectedLang);
-
+      // Filter TTS sections in chapter content
       document.querySelectorAll('#chapter-modal-content .tts-section').forEach(section => {
+        const sectionLang = section.getAttribute('data-lang') || 'en';
         if (selectedLang === 'all') {
           section.style.display = '';
         } else {
-          section.style.display = section.dataset.lang === selectedLang ? '' : 'none';
+          section.style.display = sectionLang === selectedLang ? '' : 'none';
         }
       });
     }
@@ -1593,7 +2022,6 @@
     }
 
     function goToSlide(index) { showSlide(index); resetAutoSlide(); }
-
     function nextSlide() { showSlide(currentSlideIndex + 1); resetAutoSlide(); }
     function prevSlide() { showSlide(currentSlideIndex - 1); resetAutoSlide(); }
 
@@ -1778,260 +2206,8 @@
     }
     async function loadEnergy() { const e = await apiCall('GET', '/energy'); if(e) { document.getElementById('energy-current').textContent = e.current_energy; document.getElementById('energy-max').textContent = e.max_energy; document.getElementById('energy-fill').style.width = (e.current_energy/e.max_energy*100)+'%'; } }
 
-    // ==================== openChapterModal with TOC build (no gallery/video references) ====================
-    async function openChapterModal(id) {
-      currentChapterId = id;
-      const d = await apiCall('GET', `/training/chapter/${id}`);
-      if (!d) return;
+    // Note: openChapterModal, closeChapterModal, and TOC functions are now defined above
 
-      document.getElementById('chapter-modal-title').textContent = d.title;
-      // Set lang attribute for TTS detection
-      document.getElementById('chapter-modal-title').setAttribute('lang', d.language || 'en');
-
-      const contentDiv = document.getElementById('chapter-modal-content');
-      const contentHtml = d.content_text || '';
-      contentDiv.innerHTML = contentHtml.trim()
-        ? DOMPurify.sanitize(contentHtml)
-        : '<p style="color:var(--text-secondary);">📖 No content available for this chapter.</p>';
-
-      // Quiz setup (unchanged)
-      currentChapterQuestions = d.questions || [];
-      if (d.user_progress?.passed) {
-        document.getElementById('quiz-container').innerHTML = `<p style="color:var(--success);">✅ Passed! Score: ${d.user_progress.best_score}%</p>`;
-        document.getElementById('submit-quiz-btn').classList.add('hidden');
-      } else {
-        document.getElementById('submit-quiz-btn').classList.remove('hidden');
-        document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q, i) => `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o, j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`).join('');
-      }
-
-      // ----- Build TOC -----
-      buildTOC();
-
-      // Show modal
-      document.getElementById('chapter-modal').classList.remove('hidden');
-
-      // Attach TTS controls to sections inside content
-      setTimeout(() => {
-        attachTTSSections();
-        filterTrainingLanguage();
-      }, 200);
-    }
-
-    // ==================== TOC BUILD FUNCTION ====================
-    function buildTOC() {
-      const contentDiv = document.getElementById('chapter-modal-content');
-      const tocContainer = document.getElementById('toc-list');
-      if (!contentDiv || !tocContainer) return;
-
-      const html = contentDiv.innerHTML;
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const mainSubjects = doc.querySelectorAll('.main-subject');
-
-      let tocHtml = '';
-      if (mainSubjects.length === 0) {
-        tocHtml = '<p style="color:var(--text-secondary);">No sections defined.</p>';
-      } else {
-        mainSubjects.forEach((main, mIdx) => {
-          const mainTitle = main.getAttribute('data-main-title') || 'Untitled';
-          const lang = main.getAttribute('data-lang') || 'en';
-          const subSections = main.querySelectorAll('.tts-section');
-
-          tocHtml += `
-            <div class="toc-main">
-              <div class="toc-main-title" onclick="toggleTocSub(this)">▶ ${escapeHtml(mainTitle)} (${lang})</div>
-              <div class="toc-subs" style="display:none; padding-left:16px;">`;
-
-          if (subSections.length === 0) {
-            tocHtml += `<div style="color:var(--text-secondary); font-size:0.85rem;">No sub-sections</div>`;
-          } else {
-            subSections.forEach((sub, sIdx) => {
-              const h2 = sub.querySelector('h2');
-              const subTitle = h2 ? h2.textContent : 'Untitled';
-              const sectionId = `section-${mIdx}-${sIdx}`;
-              tocHtml += `
-                <div class="toc-sub-item" data-main="${mIdx}" data-sub="${sIdx}">
-                  <span class="sub-label" onclick="scrollToSection(${mIdx}, ${sIdx})">${mIdx+1}.${sIdx+1} ${escapeHtml(subTitle)}</span>
-                  <div class="tts-mini-controls">
-                    <select class="tts-mini-speed" style="display:none; font-size:0.65rem; width:50px; background:rgba(255,255,255,0.08); border:1px solid var(--border-gold); color:var(--text); padding:2px 4px; border-radius:4px;">
-                      <option value="0.5">0.5x</option><option value="0.75">0.75x</option>
-                      <option value="1" selected>1x</option>
-                      <option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option>
-                    </select>
-                    <button class="tts-mini-btn play-btn" onclick="playSectionTTS(${mIdx},${sIdx},this)" title="Play">🔊</button>
-                    <button class="tts-mini-btn stop-btn" onclick="stopSectionTTS()" style="display:none;" title="Stop">⏹</button>
-                  </div>
-                </div>`;
-            });
-          }
-
-          tocHtml += `</div></div>`;
-        });
-      }
-
-      tocContainer.innerHTML = tocHtml;
-
-      // Assign ids to actual tts-section elements in the live DOM
-      const liveMainDivs = contentDiv.querySelectorAll('.main-subject');
-      liveMainDivs.forEach((main, mIdx) => {
-        const subs = main.querySelectorAll('.tts-section');
-        subs.forEach((sub, sIdx) => {
-          sub.id = `section-${mIdx}-${sIdx}`;
-        });
-      });
-    }
-
-    // ==================== TOC TOGGLE & SCROLL ====================
-    function toggleTocSub(header) {
-      const parent = header.parentElement;
-      const subs = parent.querySelector('.toc-subs');
-      if (!subs) return;
-      const isHidden = subs.style.display === 'none';
-      subs.style.display = isHidden ? 'block' : 'none';
-      const mainTitleSpan = header;
-      if (mainTitleSpan) {
-        mainTitleSpan.textContent = isHidden
-          ? mainTitleSpan.textContent.replace('▶', '▼')
-          : mainTitleSpan.textContent.replace('▼', '▶');
-      }
-    }
-
-    // Simplified scrollToSection using scrollIntoView
-    function scrollToSection(mIdx, sIdx) {
-      const target = document.getElementById(`section-${mIdx}-${sIdx}`);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-
-    // ==================== USER TTS FOR SECTIONS ====================
-    let activeUserTTS = null;
-
-    function playSectionTTS(mIdx, sIdx, btn) {
-      const contentDiv = document.getElementById('chapter-modal-content');
-      const target = contentDiv.querySelector(`#section-${mIdx}-${sIdx}`);
-      if (!target) return;
-      const text = target.innerText;
-      if (!text.trim()) return;
-
-      if (activeUserTTS && activeUserTTS.mIdx === mIdx && activeUserTTS.sIdx === sIdx) {
-        if (speechSynth.speaking) {
-          speechSynth.pause();
-          btn.textContent = '⏸';
-          return;
-        } else if (speechSynth.paused) {
-          speechSynth.resume();
-          btn.textContent = '▶';
-          return;
-        }
-      }
-
-      if (speechSynth.speaking || speechSynth.paused) {
-        speechSynth.cancel();
-        resetAllUserTTSButtons();
-        activeUserTTS = null;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-      const stopBtn = btn.parentElement.querySelector('.stop-btn');
-
-      utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-
-      // Detect language from chapter-modal-title lang attr, fallback en
-      const titleEl = document.getElementById('chapter-modal-title');
-      const lang = titleEl?.getAttribute('lang') || 'en';
-      const voices = speechSynth.getVoices();
-      if (lang === 'bn') {
-        utterance.lang = 'bn-BD';
-        const v = voices.find(v => v.lang.startsWith('bn'));
-        if (v) utterance.voice = v;
-      } else if (lang === 'hi') {
-        utterance.lang = 'hi-IN';
-        const v = voices.find(v => v.lang.startsWith('hi'));
-        if (v) utterance.voice = v;
-      } else {
-        utterance.lang = 'en-US';
-        const v = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
-        if (v) utterance.voice = v;
-      }
-
-      btn.textContent = '⏸';
-      if (speedSelect) speedSelect.style.display = 'inline-block';
-      if (stopBtn) stopBtn.style.display = 'inline-block';
-
-      activeUserTTS = { mIdx, sIdx, utterance, playBtn: btn, stopBtn, speedSelect };
-
-      utterance.onend = () => {
-        resetAllUserTTSButtons();
-        activeUserTTS = null;
-      };
-      utterance.onerror = () => {
-        resetAllUserTTSButtons();
-        activeUserTTS = null;
-      };
-
-      speechSynth.speak(utterance);
-    }
-
-    function stopSectionTTS() {
-      if (speechSynth.speaking || speechSynth.paused) {
-        speechSynth.cancel();
-      }
-      resetAllUserTTSButtons();
-      activeUserTTS = null;
-    }
-
-    function resetAllUserTTSButtons() {
-      document.querySelectorAll('#toc-list .play-btn').forEach(b => b.textContent = '🔊');
-      document.querySelectorAll('#toc-list .stop-btn').forEach(b => b.style.display = 'none');
-      document.querySelectorAll('#toc-list .tts-mini-speed').forEach(s => s.style.display = 'none');
-    }
-
-    // ==================== SPEAK FULL CHAPTER ====================
-    function speakFullChapter() {
-      const contentDiv = document.getElementById('chapter-modal-content');
-      const text = contentDiv.innerText;
-      if (!text.trim()) return;
-      if (speechSynth.speaking || speechSynth.paused) {
-        speechSynth.cancel();
-        resetAllUserTTSButtons();
-        activeUserTTS = null;
-        return;
-      }
-      const utterance = new SpeechSynthesisUtterance(text);
-      const titleEl = document.getElementById('chapter-modal-title');
-      const lang = titleEl?.getAttribute('lang') || 'en';
-      const voices = speechSynth.getVoices();
-      if (lang === 'bn') {
-        utterance.lang = 'bn-BD';
-        const v = voices.find(v => v.lang.startsWith('bn'));
-        if (v) utterance.voice = v;
-      } else if (lang === 'hi') {
-        utterance.lang = 'hi-IN';
-        const v = voices.find(v => v.lang.startsWith('hi'));
-        if (v) utterance.voice = v;
-      } else {
-        utterance.lang = 'en-US';
-        const v = voices.find(v => v.name.includes('female') || v.name.includes('Samantha'));
-        if (v) utterance.voice = v;
-      }
-      utterance.rate = 1;
-      speechSynth.speak(utterance);
-    }
-
-    // ==================== Close Chapter Modal ====================
-    function closeChapterModal() {
-      if (speechSynth.speaking || speechSynth.paused) {
-        speechSynth.cancel();
-      }
-      activeUserTTS = null;
-      document.getElementById('chapter-modal').classList.add('hidden');
-      clearInterval(practiceTimerInterval);
-      loadTrainingTab();
-    }
-
-    // ==================== Quiz Functions (unchanged) ====================
     function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode === 'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval); document.getElementById('practice-timer').classList.add('hidden'); } }
     function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining = totalSeconds; timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const secs = remaining % 60; timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0) { clearInterval(practiceTimerInterval); submitChapterQuiz(); } remaining--; }; update(); clearInterval(practiceTimerInterval); practiceTimerInterval = setInterval(update, 1000); }
     async function submitChapterQuiz() {
@@ -2385,7 +2561,6 @@
     window.startFinalExam = startFinalExam;
     window.submitFinalExam = submitFinalExam;
     window.setQuizMode = setQuizMode;
-    // window.toggleChapterTTS removed – not needed
     window.speakText = speakText;
     window.speakElementContent = speakElementContent;
     window.showAddHabitForm = showAddHabitForm;
@@ -2415,16 +2590,20 @@
     window.nextSlide = nextSlide;
     window.prevSlide = prevSlide;
     window.showSlide = showSlide;
-    window.attachTTSSections = attachTTSSections;
     window.filterTrainingLanguage = filterTrainingLanguage;
-    // New TOC & TTS functions
+
+    // TOC & TTS functions
     window.buildTOC = buildTOC;
     window.toggleTocSub = toggleTocSub;
     window.scrollToSection = scrollToSection;
+    window.scrollToSectionDirect = scrollToSectionDirect;
     window.playSectionTTS = playSectionTTS;
+    window.playSectionTTSDirect = playSectionTTSDirect;
     window.stopSectionTTS = stopSectionTTS;
-    window.resetAllUserTTSButtons = resetAllUserTTSButtons;
     window.speakFullChapter = speakFullChapter;
+    window.stopChapterTTS = stopChapterTTS;
+    window.updateChapterTTSSpeed = updateChapterTTSSpeed;
+    window.resetAllSectionTTSButtons = resetAllSectionTTSButtons;
   </script>
 </body>
 </html>
