@@ -1378,6 +1378,42 @@ async function apiHandler(req) {
       }
     }
 
+    // ==================== TRAINING SUBJECTS TREE (PUBLIC / USER) ====================
+    if (path === '/training/subjects' && req.method === 'GET') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const courseId = parseInt(getQueryParam('course_id')) || 1;
+      const lang = getQueryParam('lang') || (user ? await getUserLanguage(user.id) : 'en');
+      
+      const subjects = await sql`
+        SELECT s.*,
+               COALESCE(ct_title.translated_text, s.title) AS title,
+               COALESCE(ct_content.translated_text, s.content_text) AS content_text
+        FROM subjects s
+        LEFT JOIN content_translations ct_title ON ct_title.table_name='subjects' AND ct_title.record_id=s.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
+        LEFT JOIN content_translations ct_content ON ct_content.table_name='subjects' AND ct_content.record_id=s.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
+        WHERE s.course_id = ${courseId} AND s.is_active = true
+        ORDER BY s.order_index, s.id
+      `;
+      
+      // Build tree
+      const tree = [];
+      const map = {};
+      subjects.forEach(s => { 
+        const sub = { ...s, sub_subjects: [] };
+        map[s.id] = sub;
+      });
+      subjects.forEach(s => {
+        const item = map[s.id];
+        if (s.parent_id === null) {
+          tree.push(item);
+        } else if (map[s.parent_id]) {
+          map[s.parent_id].sub_subjects.push(item);
+        }
+      });
+      return json(tree);
+    }
+
     // ==================== ADMIN ENDPOINTS ====================
     // --- Admin Dashboard ---
     if (path === '/admin/dashboard' && req.method === 'GET') {
@@ -1495,7 +1531,7 @@ async function apiHandler(req) {
       return json({ success: true, inserted_days: inserted });
     }
 
-    // --- Subjects Management (NEW) ---
+    // --- Subjects Management (NEW with Quill support) ---
     if (path === '/admin/subjects' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1841,7 +1877,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Admin Image Upload (using req.formData()) – kept as fallback, but normally multipart handler above handles it first ---
+    // --- Admin Image Upload (using req.formData()) – kept as fallback ---
     if (path === '/admin/upload-image' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -2129,7 +2165,6 @@ async function apiHandler(req) {
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      // This route is now only reached for non-multipart or fallback; actual upload goes through multipart handler with auth
       try {
         const formData = await req.formData();
         const file = formData.get('image');

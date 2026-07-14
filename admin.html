@@ -76,10 +76,6 @@
         .ql-toolbar.ql-snow { border-color:var(--border-gold); background:rgba(255,255,255,0.05); }
         .ql-container.ql-snow { border-color:var(--border-gold); }
         .ql-editor { color:var(--text); }
-        .ql-tts-section, .ql-subject-block { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; background:transparent; font-size:1.2rem; border-radius:4px; transition:background 0.2s; }
-        .ql-tts-section:hover, .ql-subject-block:hover { background:rgba(255,255,255,0.15); }
-        .ql-tts-section::before { content:'🔊'; }
-        .ql-subject-block::before { content:'📚'; }
         .toast { position:fixed; top:20px; right:20px; background:var(--accent); color:white; padding:12px 20px; border-radius:20px; z-index:9999; font-weight:600; transition:opacity 0.3s; opacity:1; }
         .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
         .modal-content { background:var(--surface); border:1px solid var(--border-gold); border-radius:var(--radius); padding:24px; width:90%; max-width:700px; max-height:80vh; overflow-y:auto; }
@@ -87,6 +83,26 @@
         .drop-zone.dragover { border-color:var(--gold-bright); background:rgba(200,167,91,0.1); }
         .media-item { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; max-width:100%; overflow:hidden; }
         .media-item .url-text { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.8rem; }
+        /* Subject tree styles */
+        .subject-tree-main { border:1px solid rgba(255,255,255,0.1); border-radius:8px; margin-bottom:8px; padding:6px; background:rgba(255,255,255,0.02); }
+        .subject-tree-header { cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:2px 0; }
+        .subject-tree-header span { font-weight:600; font-size:0.85rem; color:var(--gold-light); }
+        .subject-tree-subs { padding-left:12px; margin-top:6px; display:none; }
+        .subject-tree-subs.open { display:block; }
+        .subject-tree-sub-item { display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px; margin:4px 0; gap:4px; }
+        .subject-tree-sub-item span { flex:1; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .search-section { margin-bottom:12px; }
+        @media (max-width:768px) {
+            .admin-sidebar { width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto; padding:12px; z-index:10; }
+            .admin-sidebar nav { display:flex; gap:8px; margin-top:0; }
+            .admin-sidebar nav a { padding:8px 12px; border-left:none; border-bottom:2px solid transparent; white-space:nowrap; }
+            .admin-sidebar nav a.active { border-bottom-color:var(--accent); }
+            .admin-main { margin-left:0; padding:16px; }
+            .grid-2 { grid-template-columns:1fr; }
+        }
+        /* Editor modal tweaks */
+        #chapter-editor-flex-row { display:flex; gap:16px; }
+        #chapter-editor-left { flex:2; min-width:0; }
         #section-drawer { flex:1; border-left:1px solid var(--border-gold); padding-left:12px; max-height:75vh; overflow-y:auto; min-width:220px; }
         #section-drawer h4 { color:var(--gold-light); margin-bottom:10px; font-size:0.95rem; }
         .tree-main { border:1px solid rgba(255,255,255,0.1); border-radius:8px; margin-bottom:8px; padding:6px; background:rgba(255,255,255,0.02); }
@@ -107,20 +123,9 @@
         .tree-sub-item.playing { background: rgba(200,167,91,0.2); }
         .bulk-check { width: auto; margin:0 4px; }
         .lang-tag { width: auto; padding:2px 4px; font-size:0.65rem; background:rgba(255,255,255,0.1); border:1px solid var(--border-gold); color:var(--text); border-radius:4px; }
-        .search-section { margin-bottom:8px; }
-        #chapter-editor-flex-row { display:flex; gap:16px; }
-        #chapter-editor-left { flex:2; min-width:0; }
         @media (max-width:900px) {
             #chapter-editor-flex-row { flex-direction:column; }
             #section-drawer { border-left:none; border-top:1px solid var(--border-gold); padding-left:0; padding-top:12px; max-height:40vh; min-width:auto; }
-        }
-        @media (max-width:768px) {
-            .admin-sidebar { width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto; padding:12px; z-index:10; }
-            .admin-sidebar nav { display:flex; gap:8px; margin-top:0; }
-            .admin-sidebar nav a { padding:8px 12px; border-left:none; border-bottom:2px solid transparent; white-space:nowrap; }
-            .admin-sidebar nav a.active { border-bottom-color:var(--accent); }
-            .admin-main { margin-left:0; padding:16px; }
-            .grid-2 { grid-template-columns:1fr; }
         }
     </style>
 </head>
@@ -180,9 +185,6 @@
                     </div>
                     <label>Content (HTML)</label>
                     <div id="chapter-quill-editor" style="height:350px;"></div>
-                    <div style="margin-top:8px;">
-                        <button class="btn btn-sm" onclick="insertMainSubject()">➕ Add Main Subject</button>
-                    </div>
                     <div style="margin-top:12px;"><h4>Images</h4><div id="images-container"></div></div>
                     <div style="margin-top:12px;"><h4>Videos</h4><div id="videos-container"></div></div>
                     <div class="grid-2">
@@ -314,19 +316,19 @@
         </div>
     </div>
 
-    <!-- Subject Edit Modal (new) -->
+    <!-- Subject Edit Modal (with Quill) -->
     <div id="subject-edit-modal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:800px;">
             <button class="btn btn-sm btn-outline" style="float:right;" onclick="closeSubjectModal()">✕</button>
             <h3 id="subject-modal-title">Subject Editor</h3>
             <input type="hidden" id="subj-edit-id">
             <input type="hidden" id="subj-parent-id" value="">
-            <label>Title</label>
-            <input type="text" id="subj-title" required>
-            <label>Content (HTML, optional)</label>
-            <textarea id="subj-content" rows="6"></textarea>
-            <label>Order Index</label>
-            <input type="number" id="subj-order" value="0">
+            <div class="grid-2">
+                <div><label>Title</label><input type="text" id="subj-title" required></div>
+                <div><label>Order</label><input type="number" id="subj-order" value="0"></div>
+            </div>
+            <label>Content (Rich Text)</label>
+            <div id="subject-quill-editor" style="height:300px;"></div>
             <button class="btn" onclick="saveSubject()">Save</button>
             <button class="btn btn-outline" onclick="closeSubjectModal()">Cancel</button>
         </div>
@@ -334,21 +336,14 @@
 
     <script>
         (function() {
-            const Block = Quill.import('blots/block');
-            class TtsSectionBlot extends Block {}
-            TtsSectionBlot.blotName = 'tts-section';
-            TtsSectionBlot.tagName = 'div';
-            Quill.register('formats/tts-section', TtsSectionBlot);
-
-            class SubjectBlockBlot extends Block {}
-            SubjectBlockBlot.blotName = 'subject-block';
-            SubjectBlockBlot.tagName = 'div';
-            Quill.register('formats/subject-block', SubjectBlockBlot);
-
+            // ==============================
+            // GLOBAL VARS
+            // ==============================
             const API = '/api/setup';
             const ADMIN_APP_VERSION = '2.0.1';
             let adminToken = localStorage.getItem('adminToken');
             let quillEditor = null;
+            let subjectQuill = null;
             let activeSectionTTS = null;
             let activeSectionTTSBtn = null;
             let currentChapterId = null;
@@ -357,37 +352,49 @@
             let autoSaveInterval = null;
             let sortableInstance = null;
 
-            function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) : ''; }
-            function showToast(msg, dur=3000) { const existing = document.querySelector('.toast'); if (existing) existing.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), dur); }
-            async function checkVersion() { try { const res = await fetch('/api/setup/version', { cache: 'no-store' }); const data = await res.json(); if (data.version !== ADMIN_APP_VERSION) { localStorage.clear(); sessionStorage.clear(); window.location.reload(true); } } catch(e) {} }
-
-            function logout() { localStorage.removeItem('adminToken'); adminToken = null; document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('panel-screen').classList.add('hidden'); clearInterval(autoSaveInterval); }
-
-            async function adminLogin() {
-                const email = document.getElementById('admin-email').value.trim();
-                const password = document.getElementById('admin-password').value;
-                if (!email || !password) {
-                    document.getElementById('login-error').textContent = 'Email and password required';
-                    document.getElementById('login-error').style.display = 'block';
-                    return;
-                }
-                const res = await fetch(`${API}/admin/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ email, password }) });
-                const data = await res.json();
-                if (data.token) {
-                    adminToken = data.token;
-                    localStorage.setItem('adminToken', adminToken);
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('panel-screen').classList.remove('hidden');
-                    switchTab('stats');
-                    if (data.require_password_change) showToast('Please change your password!');
-                } else {
-                    document.getElementById('login-error').textContent = data.error || 'Login failed';
-                    document.getElementById('login-error').style.display = 'block';
-                }
+            function escapeHtml(t) {
+                return t ? String(t).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) : '';
             }
 
-            async function adminApiCall(method, path, body, showError) {
-                if (showError === undefined) showError = true;
+            function showToast(msg, dur=3000) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const t = document.createElement('div');
+                t.className = 'toast';
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), dur);
+            }
+
+            async function checkVersion() {
+                try {
+                    const res = await fetch('/api/setup/version', { cache: 'no-store' });
+                    const data = await res.json();
+                    if (data.version !== ADMIN_APP_VERSION) {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.reload(true);
+                    }
+                } catch(e) {}
+            }
+
+            function logout() {
+                localStorage.removeItem('adminToken');
+                adminToken = null;
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('panel-screen').classList.add('hidden');
+                clearInterval(autoSaveInterval);
+                if (subjectQuill) {
+                    subjectQuill = null;
+                    document.getElementById('subject-quill-editor').innerHTML = '';
+                }
+                destroyQuill();
+            }
+
+            // ==============================
+            // API CALL WITH 401 HANDLING
+            // ==============================
+            async function adminApiCall(method, path, body, showError=true) {
                 if (!adminToken) { logout(); return null; }
                 const headers = { 'Content-Type': 'application/json' };
                 headers['Authorization'] = `Bearer ${adminToken}`;
@@ -417,6 +424,36 @@
                 }
             }
 
+            async function adminLogin() {
+                const email = document.getElementById('admin-email').value.trim();
+                const password = document.getElementById('admin-password').value;
+                if (!email || !password) {
+                    document.getElementById('login-error').textContent = 'Email and password required';
+                    document.getElementById('login-error').style.display = 'block';
+                    return;
+                }
+                const res = await fetch(`${API}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('panel-screen').classList.remove('hidden');
+                    switchTab('stats');
+                    if (data.require_password_change) showToast('Please change your password!');
+                } else {
+                    document.getElementById('login-error').textContent = data.error || 'Login failed';
+                    document.getElementById('login-error').style.display = 'block';
+                }
+            }
+
+            // ==============================
+            // TAB SWITCHER
+            // ==============================
             function switchTab(tab) {
                 document.querySelectorAll('.admin-sidebar nav a').forEach(a => a.classList.remove('active'));
                 const link = document.querySelector(`.admin-sidebar nav a[data-tab="${tab}"]`);
@@ -438,38 +475,100 @@
                 }
             }
 
-            // ===== DASHBOARD =====
+            // ==============================
+            // DASHBOARD
+            // ==============================
             async function loadStats() {
                 const data = await adminApiCall('GET', '/admin/dashboard');
                 if (!data) return;
-                document.getElementById('panel-screen').innerHTML = `<div class="stats"><div class="stat"><h3>${data.totalUsers}</h3><p>Total Users</p></div><div class="stat"><h3>${data.dailyActiveUsers}</h3><p>Active Today</p></div><div class="stat"><h3>${data.totalJournals}</h3><p>Journals</p></div><div class="stat"><h3>${data.completionRate}%</h3><p>Completion</p></div></div><div class="card"><p>Chapters: <strong>${data.totalChapters}</strong> | Certified: <strong>${data.completedTrainings}</strong></p></div>`;
+                document.getElementById('panel-screen').innerHTML = `
+                    <div class="stats">
+                        <div class="stat"><h3>${data.totalUsers}</h3><p>Total Users</p></div>
+                        <div class="stat"><h3>${data.dailyActiveUsers}</h3><p>Active Today</p></div>
+                        <div class="stat"><h3>${data.totalJournals}</h3><p>Journals</p></div>
+                        <div class="stat"><h3>${data.completionRate}%</h3><p>Completion</p></div>
+                    </div>
+                    <div class="card"><p>Chapters: <strong>${data.totalChapters}</strong> | Certified: <strong>${data.completedTrainings}</strong></p></div>
+                `;
             }
 
-            // ===== USERS =====
+            // ==============================
+            // USERS
+            // ==============================
             async function loadUsers() {
                 const res = await adminApiCall('GET', '/admin/users');
-                let html = `<div class="card"><h3>👥 Users</h3><input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:12px;"><table><thead><tr><th>Email</th><th>Name</th><th>XP</th><th>Level</th><th>Actions</th></tr></thead><tbody id="users-tbody">`;
-                if (res && res.users) res.users.forEach(u => html += `<tr><td>${escapeHtml(u.email)}</td><td>${escapeHtml(u.display_name||'')}</td><td>${u.xp}</td><td>${u.level}</td><td><button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button><button class="btn btn-sm btn-outline" onclick="impersonateUser('${u.id}')">👤 Login</button><button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button></td></tr>`);
+                let html = `<div class="card"><h3>👥 Users</h3>
+                    <input type="text" id="user-search" placeholder="Search by email or name..." oninput="searchUsers()" style="margin-bottom:12px;">
+                    <table><thead><tr><th>Email</th><th>Name</th><th>XP</th><th>Level</th><th>Actions</th></tr></thead><tbody id="users-tbody">`;
+                if (res && res.users) res.users.forEach(u => {
+                    html += `<tr>
+                        <td>${escapeHtml(u.email)}</td>
+                        <td>${escapeHtml(u.display_name||'')}</td>
+                        <td>${u.xp}</td>
+                        <td>${u.level}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button>
+                            <button class="btn btn-sm btn-outline" onclick="impersonateUser('${u.id}')">👤 Login</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
+                        </td>
+                    </tr>`;
+                });
                 html += '</tbody></table></div>';
                 document.getElementById('panel-screen').innerHTML = html;
             }
+
             async function searchUsers() {
                 const q = document.getElementById('user-search').value;
                 const res = await adminApiCall('GET', `/admin/users?search=${encodeURIComponent(q)}`);
                 const tbody = document.getElementById('users-tbody');
                 if (!res || !res.users) return;
-                tbody.innerHTML = res.users.map(u => `<tr><td>${escapeHtml(u.email)}</td><td>${escapeHtml(u.display_name||'')}</td><td>${u.xp}</td><td>${u.level}</td><td><button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button><button class="btn btn-sm btn-outline" onclick="impersonateUser('${u.id}')">👤 Login</button><button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button></td></tr>`).join('');
+                tbody.innerHTML = res.users.map(u => `
+                    <tr>
+                        <td>${escapeHtml(u.email)}</td>
+                        <td>${escapeHtml(u.display_name||'')}</td>
+                        <td>${u.xp}</td>
+                        <td>${u.level}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="resetUserPassword('${u.id}')">🔑</button>
+                            <button class="btn btn-sm btn-outline" onclick="impersonateUser('${u.id}')">👤 Login</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑</button>
+                        </td>
+                    </tr>
+                `).join('');
             }
-            function resetUserPassword(userId) { const p = prompt('New password (min 6 characters)'); if (p && p.length >= 6) { adminApiCall('POST', '/admin/reset-password', { user_id: userId, new_password: p }); showToast('✅ Password reset'); } }
-            async function impersonateUser(userId) { if (!confirm('Login as this user?')) return; const res = await adminApiCall('POST', '/admin/impersonate', { user_id: userId }); if (res && res.token) { localStorage.setItem('token', res.token); window.open('/', '_blank'); } else showToast('Impersonation failed'); }
-            async function deleteUser(userId) { if (!confirm('Delete this user permanently?')) return; const res = await adminApiCall('DELETE', `/admin/user/${userId}`); if (res && res.success) { loadUsers(); showToast('✅ User deleted'); } }
 
-            // ===== SUBJECTS (NEW TREE-BASED SYSTEM) =====
+            function resetUserPassword(userId) {
+                const p = prompt('New password (min 6 characters)');
+                if (p && p.length >= 6) {
+                    adminApiCall('POST', '/admin/reset-password', { user_id: userId, new_password: p });
+                    showToast('✅ Password reset');
+                }
+            }
+
+            async function impersonateUser(userId) {
+                if (!confirm('Login as this user?')) return;
+                const res = await adminApiCall('POST', '/admin/impersonate', { user_id: userId });
+                if (res && res.token) {
+                    localStorage.setItem('token', res.token);
+                    window.open('/', '_blank');
+                } else showToast('Impersonation failed');
+            }
+
+            async function deleteUser(userId) {
+                if (!confirm('Delete this user permanently?')) return;
+                const res = await adminApiCall('DELETE', `/admin/user/${userId}`);
+                if (res && res.success) { loadUsers(); showToast('✅ User deleted'); }
+            }
+
+            // ==============================
+            // SUBJECTS (MAIN/SUB) WITH QUILL
+            // ==============================
             async function loadSubjects() {
                 const data = await adminApiCall('GET', '/admin/subjects?course_id=1');
                 if (!data) return;
                 let html = `<div class="card"><h3>📚 Training Subjects</h3>
                     <button class="btn btn-sm" onclick="showSubjectModal(null, null)">➕ Add Main Subject</button>
+                    <input type="text" id="subject-search-admin" class="search-section" placeholder="🔍 Search subjects..." oninput="filterSubjectsAdmin()" style="margin-top:12px;">
                     <div style="display:flex; gap:20px; margin-top:20px; flex-wrap:wrap;">
                         <div style="flex:1; min-width:220px; max-width:300px; border-right:1px solid var(--border-gold); padding-right:10px;">
                             <h4>Main Subjects</h4>
@@ -495,7 +594,6 @@
                     <div class="flex" style="justify-content:space-between; padding:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1); margin:4px 0; border-radius:8px;">
                         <span onclick="selectMainSubject(${s.id})" style="flex:1;">📁 ${escapeHtml(s.title)}</span>
                         <div>
-                            <button class="tts-mini-btn play-btn" onclick="event.stopPropagation(); playMainSubjectTTS('${escapeHtml(s.title)}')">▶</button>
                             <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); showSubjectModal(${s.id}, null)">✏️</button>
                             <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); showSubjectModal(null, ${s.id})" title="Add Sub">➕</button>
                             <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteSubject(${s.id})">🗑</button>
@@ -516,7 +614,6 @@
                     <div class="flex" style="justify-content:space-between; padding:8px; border:1px solid var(--border-gold); margin:4px 0; border-radius:8px;">
                         <span>📄 ${escapeHtml(sub.title)}</span>
                         <div>
-                            <button class="tts-mini-btn play-btn" onclick="playSubSubjectTTS('${escapeHtml(sub.content_text || '')}')">▶</button>
                             <button class="btn btn-sm btn-outline" onclick="showSubjectModal(${sub.id}, ${mainId})">✏️</button>
                             <button class="btn btn-sm btn-danger" onclick="deleteSubject(${sub.id})">🗑</button>
                         </div>
@@ -524,27 +621,12 @@
                 `).join('');
             }
 
-            function showSubjectModal(id, parentId) {
-                const modal = document.getElementById('subject-edit-modal');
-                document.getElementById('subj-edit-id').value = id || '';
-                document.getElementById('subj-parent-id').value = parentId || '';
-                if (id) {
-                    adminApiCall('GET', '/admin/subjects?course_id=1').then(all => {
-                        const found = findSubjectById(all, id);
-                        if (found) {
-                            document.getElementById('subj-title').value = found.title;
-                            document.getElementById('subj-content').value = found.content_text || '';
-                            document.getElementById('subj-order').value = found.order_index || 0;
-                        }
-                    });
-                    document.getElementById('subject-modal-title').textContent = 'Edit Subject';
-                } else {
-                    document.getElementById('subj-title').value = '';
-                    document.getElementById('subj-content').value = '';
-                    document.getElementById('subj-order').value = 0;
-                    document.getElementById('subject-modal-title').textContent = parentId ? 'Add Sub-subject' : 'Add Main Subject';
-                }
-                modal.classList.remove('hidden');
+            function filterSubjectsAdmin() {
+                const q = document.getElementById('subject-search-admin').value.toLowerCase();
+                document.querySelectorAll('#main-subject-list .flex').forEach(el => {
+                    const text = el.querySelector('span').textContent.toLowerCase();
+                    el.style.display = text.includes(q) ? '' : 'none';
+                });
             }
 
             function findSubjectById(tree, id) {
@@ -558,13 +640,66 @@
                 return null;
             }
 
-            function closeSubjectModal() { document.getElementById('subject-edit-modal').classList.add('hidden'); }
+            // ----- Subject Modal with Quill -----
+            function showSubjectModal(id, parentId) {
+                const modal = document.getElementById('subject-edit-modal');
+                document.getElementById('subj-edit-id').value = id || '';
+                document.getElementById('subj-parent-id').value = parentId || '';
+                // Destroy previous subject Quill
+                if (subjectQuill) {
+                    subjectQuill = null;
+                    document.getElementById('subject-quill-editor').innerHTML = '';
+                }
+                // Create new Quill
+                subjectQuill = new Quill('#subject-quill-editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            [{ 'header': [1, 2, false] }],
+                            ['image', 'video']
+                        ]
+                    }
+                });
+
+                if (id) {
+                    // Load existing subject
+                    adminApiCall('GET', '/admin/subjects?course_id=1').then(all => {
+                        const found = findSubjectById(all, id);
+                        if (found) {
+                            document.getElementById('subj-title').value = found.title;
+                            document.getElementById('subj-order').value = found.order_index || 0;
+                            // Set content in Quill
+                            if (subjectQuill && found.content_text) {
+                                // Use setContents to preserve formatting
+                                const delta = subjectQuill.clipboard.convert(found.content_text || '');
+                                subjectQuill.setContents(delta, 'silent');
+                            }
+                        }
+                    });
+                    document.getElementById('subject-modal-title').textContent = 'Edit Subject';
+                } else {
+                    document.getElementById('subj-title').value = '';
+                    document.getElementById('subj-order').value = 0;
+                    if (subjectQuill) subjectQuill.root.innerHTML = '';
+                    document.getElementById('subject-modal-title').textContent = parentId ? 'Add Sub-Subject' : 'Add Main Subject';
+                }
+                modal.classList.remove('hidden');
+            }
+
+            function closeSubjectModal() {
+                document.getElementById('subject-edit-modal').classList.add('hidden');
+                if (subjectQuill) {
+                    subjectQuill = null;
+                    document.getElementById('subject-quill-editor').innerHTML = '';
+                }
+            }
 
             async function saveSubject() {
                 const id = document.getElementById('subj-edit-id').value;
                 const parentId = document.getElementById('subj-parent-id').value || null;
                 const title = document.getElementById('subj-title').value.trim();
-                const content = document.getElementById('subj-content').value.trim();
+                const content = subjectQuill ? subjectQuill.root.innerHTML : '';
                 const order = parseInt(document.getElementById('subj-order').value) || 0;
                 if (!title) return showToast('Title required');
                 const body = { course_id: 1, parent_id: parentId ? parseInt(parentId) : null, title, content_text: content, order_index: order };
@@ -585,25 +720,16 @@
                 showToast('Subject deleted');
             }
 
-            function playMainSubjectTTS(title) {
-                if (speechSynthesis.speaking) speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(title);
-                utterance.lang = 'en-US';
-                speechSynthesis.speak(utterance);
-            }
-
-            function playSubSubjectTTS(content) {
-                if (!content) return showToast('No content to read');
-                if (speechSynthesis.speaking) speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(content.replace(/<[^>]*>/g, ''));
-                utterance.lang = 'en-US';
-                speechSynthesis.speak(utterance);
-            }
-
-            // ===== QUILL EDITOR & SECTION TREE =====
+            // ==============================
+            // QUILL EDITOR FOR CHAPTERS (without subject blots)
+            // ==============================
             function destroyQuill() {
-                if (quillEditor) { document.getElementById('chapter-quill-editor').innerHTML = ''; quillEditor = null; }
-                activeSectionTTS = null; activeSectionTTSBtn = null;
+                if (quillEditor) {
+                    document.getElementById('chapter-quill-editor').innerHTML = '';
+                    quillEditor = null;
+                }
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null;
                 clearInterval(autoSaveInterval);
             }
 
@@ -612,6 +738,7 @@
                 const container = document.getElementById('chapter-quill-editor');
                 if (!container) return null;
                 container.innerHTML = '';
+                // Standard toolbar – no custom blots
                 const editor = new Quill('#chapter-quill-editor', {
                     theme: 'snow',
                     modules: {
@@ -619,9 +746,7 @@
                             container: [
                                 [{ 'header': [1, 2, false] }],
                                 ['bold', 'italic', 'underline'],
-                                ['image', 'video'],
-                                ['tts-section'],
-                                ['subject-block']
+                                ['image', 'video']
                             ],
                             handlers: {
                                 image: function() {
@@ -644,115 +769,29 @@
                         }
                     }
                 });
-
-                setTimeout(() => {
-                    const ttsBtn = document.querySelector('.ql-tts-section');
-                    if (ttsBtn) {
-                        ttsBtn.onclick = () => {
-                            const lang = document.getElementById('ch-lang').value || 'en';
-                            const html = `<div class="tts-section" data-lang="${lang}"><h2>Title here</h2><p>Content here</p></div>`;
-                            const range = editor.getSelection(true);
-                            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
-                            refreshSectionTree();
-                        };
-                    }
-                    const subjectBtn = document.querySelector('.ql-subject-block');
-                    if (subjectBtn) {
-                        subjectBtn.onclick = () => {
-                            const lang = document.getElementById('ch-lang').value || 'en';
-                            const mainTitle = prompt('Enter Main Subject Title:');
-                            if (!mainTitle) return;
-                            const subCount = parseInt(prompt('How many sub-subjects? (0 for none)', '2'));
-                            if (isNaN(subCount) || subCount < 0) return;
-                            const subTitles = [];
-                            for (let i=0; i<subCount; i++) {
-                                const subTitle = prompt(`Sub-subject ${i+1} title:`);
-                                if (subTitle === null) return;
-                                if (subTitle.trim() !== '') subTitles.push(subTitle.trim());
-                            }
-                            if (subTitles.length === 0) { showToast('No sub-subjects added'); return; }
-                            let html = '';
-                            subTitles.forEach(subTitle => {
-                                html += `<div class="tts-section" data-lang="${lang}"><h2 style="color:#E8C97A;">${escapeHtml(mainTitle)} – ${escapeHtml(subTitle)}</h2><p>Write content here for "${escapeHtml(subTitle)}"</p></div>`;
-                            });
-                            const range = editor.getSelection(true);
-                            editor.clipboard.dangerouslyPasteHTML(range ? range.index : 0, html);
-                            refreshSectionTree();
-                            showToast(`✅ ${subTitles.length} sub-subject(s) added`);
-                        };
-                    }
-                }, 100);
                 return editor;
             }
 
+            // Section tree (for chapters) – reused but without subject blots
             function refreshSectionTree() {
                 if (!quillEditor) return;
                 const container = document.getElementById('section-tree');
                 if (!container) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+                // For chapters, we may still want to show sections, but we won't have subject blocks.
+                // We can show headings for TTS, but let's keep it simple: list h2 tags.
+                const h2s = quillEditor.root.querySelectorAll('h2');
                 let html = '';
-
-                // Assign IDs to sections
-                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                ttsSections.forEach((sub, sIdx) => { if (!sub.id.startsWith('section-')) sub.id = `section-direct-${sIdx}`; });
-                mainDivs.forEach((mainDiv, mIdx) => {
-                    const subDivs = mainDiv.querySelectorAll('.tts-section');
-                    subDivs.forEach((sub, sIdx) => { sub.id = `section-${mIdx}-${sIdx}`; });
-                });
-
-                if (mainDivs.length === 0) {
-                    if (ttsSections.length > 0) {
-                        html += `<div class="tree-main"><div class="tree-main-header" onclick="toggleSubSections(this)"><span>▶ Content (Direct)</span><div><button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); addSubSectionDirect()" title="Add Sub">➕</button></div></div><div class="tree-subs">`;
-                        ttsSections.forEach((sub, sIdx) => {
-                            const h2 = sub.querySelector('h2');
-                            const subTitle = h2 ? h2.textContent : 'Untitled';
-                            html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="-1" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="-1" data-sub="${sIdx}"><option value="en" ${sub.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${sub.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${sub.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playDirectSubTTS(${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div><div><button class="btn btn-sm btn-outline" onclick="editDirectSubTitle(${sIdx})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteDirectSub(${sIdx})">🗑</button></div></div>`;
-                        });
-                        html += `</div></div>`;
-                    } else {
-                        html = '<p style="color:var(--text-secondary);">No main subject or sections added yet. Use <strong>Add Main Subject</strong> or toolbar buttons.</p>';
-                    }
+                if (h2s.length === 0) {
+                    html = '<p style="color:var(--text-secondary);">No sections (H2) found.</p>';
                 } else {
-                    mainDivs.forEach((mainDiv, mIdx) => {
-                        const mainTitle = mainDiv.getAttribute('data-main-title') || 'Untitled';
-                        const lang = mainDiv.getAttribute('data-lang') || 'en';
-                        const subDivs = mainDiv.querySelectorAll('.tts-section');
-                        const icon = mainDiv.getAttribute('data-icon') || '📁';
-                        html += `<div class="tree-main" data-main-index="${mIdx}"><div class="tree-main-header" onclick="toggleSubSections(this)"><span>▶ ${icon} ${escapeHtml(mainTitle)} (${lang})</span><div><button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); addSubSection(${mIdx})" title="Add Sub">➕</button><button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); editMainTitle(${mIdx})" title="Edit">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteMain(${mIdx})" title="Delete">🗑</button><button class="btn btn-sm btn-outline tts-play-main" onclick="event.stopPropagation(); playMainTTS(${mIdx},this)" title="TTS">🔊</button></div></div><div class="tree-subs">`;
-                        subDivs.forEach((subDiv, sIdx) => {
-                            const h2 = subDiv.querySelector('h2');
-                            const subTitle = h2 ? h2.textContent : 'Untitled';
-                            html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="${mIdx}" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="${mIdx}" data-sub="${sIdx}"><option value="en" ${subDiv.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${subDiv.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${subDiv.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSubTTS(${mIdx},${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div><div><button class="btn btn-sm btn-outline" onclick="editSubTitle(${mIdx},${sIdx})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSub(${mIdx},${sIdx})">🗑</button></div></div>`;
-                        });
-                        html += `</div></div>`;
+                    html += `<div class="tree-main"><div class="tree-main-header"><span>▶ Sections</span></div><div class="tree-subs open">`;
+                    h2s.forEach((h2, idx) => {
+                        const text = h2.textContent || `Section ${idx+1}`;
+                        html += `<div class="tree-sub-item"><span>${idx+1}. ${escapeHtml(text)}</span></div>`;
                     });
+                    html += `</div></div>`;
                 }
                 container.innerHTML = html;
-
-                if (sortableInstance) sortableInstance.destroy();
-                sortableInstance = new Sortable(container, {
-                    group: 'sections',
-                    handle: '.tree-main-header',
-                    animation: 150,
-                    onEnd: function(evt) {
-                        const treeMains = document.querySelectorAll('#section-tree .tree-main');
-                        const mainDivs = Array.from(quillEditor.root.querySelectorAll('.main-subject'));
-                        const parent = mainDivs.length > 0 ? mainDivs[0].parentNode : null;
-                        if (!parent) return;
-                        const reordered = [];
-                        treeMains.forEach(tree => {
-                            const idx = parseInt(tree.dataset.mainIndex);
-                            if (!isNaN(idx) && idx < mainDivs.length) {
-                                reordered.push(mainDivs[idx]);
-                            }
-                        });
-                        if (reordered.length === mainDivs.length) {
-                            mainDivs.forEach(m => m.remove());
-                            reordered.forEach(m => parent.appendChild(m));
-                            quillEditor.update();
-                        }
-                    }
-                });
             }
 
             function filterSections() {
@@ -764,295 +803,12 @@
             }
 
             function deleteSelectedSections() {
-                const checks = document.querySelectorAll('.bulk-check:checked');
-                if (!checks.length) return showToast('No sections selected');
-                if (!confirm(`Delete ${checks.length} section(s)?`)) return;
-                checks.forEach(cb => {
-                    const mIdx = parseInt(cb.dataset.main);
-                    const sIdx = parseInt(cb.dataset.sub);
-                    if (mIdx === -1) { deleteDirectSub(sIdx); } else { deleteSub(mIdx, sIdx); }
-                });
-                refreshSectionTree();
+                showToast('Section deletion not implemented in this version.');
             }
 
-            function updateLangTag(sel) {
-                const mIdx = parseInt(sel.dataset.main);
-                const sIdx = parseInt(sel.dataset.sub);
-                const newLang = sel.value;
-                let section;
-                if (mIdx === -1) {
-                    const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                    if (sIdx < ttsSections.length) section = ttsSections[sIdx];
-                } else {
-                    const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                    if (mIdx < mainDivs.length) {
-                        const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-                        if (sIdx < subDivs.length) section = subDivs[sIdx];
-                    }
-                }
-                if (section) {
-                    section.setAttribute('data-lang', newLang);
-                    quillEditor.update();
-                }
-            }
-
-            function toggleSubSections(header) {
-                const mainDiv = header.closest('.tree-main');
-                if (!mainDiv) return;
-                const subs = mainDiv.querySelector('.tree-subs');
-                if (subs) {
-                    const isOpen = subs.classList.contains('open');
-                    if (isOpen) { subs.classList.remove('open'); header.querySelector('span').textContent = '▶ ' + header.querySelector('span').textContent.slice(2); }
-                    else { subs.classList.add('open'); header.querySelector('span').textContent = '▼ ' + header.querySelector('span').textContent.slice(2); }
-                }
-            }
-
-            function insertMainSubject() {
-                if (!quillEditor) return;
-                const title = prompt('Main Subject Title:');
-                if (!title) return;
-                const icon = prompt('Choose icon (📊📈📉💰📁):', '📁');
-                const lang = document.getElementById('ch-lang').value;
-                const html = `<div class="main-subject" data-main-title="${escapeHtml(title)}" data-icon="${icon}" data-lang="${lang}"></div>`;
-                quillEditor.clipboard.dangerouslyPasteHTML(quillEditor.getLength(), html);
-                quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 200);
-                showToast('Main subject added');
-            }
-
-            function addSubSection(mIdx) {
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (mIdx >= mainDivs.length) return;
-                const mainDiv = mainDivs[mIdx];
-                const lang = mainDiv.getAttribute('data-lang') || document.getElementById('ch-lang').value;
-                const template = prompt('Choose template:\n1. Definition+Example\n2. Bullet Points\n3. Key Points\nCancel for blank', '');
-                let html = '';
-                if (template === '1') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>New Term</h2><p><strong>Definition:</strong> ...</p><p><strong>Example:</strong> ...</p></div>`;
-                } else if (template === '2') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>List</h2><ul><li>Point 1</li><li>Point 2</li></ul></div>`;
-                } else if (template === '3') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>Key Points</h2><p>...</p></div>`;
-                } else {
-                    const subTitle = prompt('Sub-subject title:');
-                    if (!subTitle) return;
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>${escapeHtml(subTitle)}</h2><p>Write content here...</p></div>`;
-                }
-                mainDiv.insertAdjacentHTML('beforeend', html);
-                quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 200);
-                showToast('Sub-subject added');
-            }
-
-            function addSubSectionDirect() {
-                if (!quillEditor) return;
-                const lang = document.getElementById('ch-lang').value;
-                const template = prompt('Choose template:\n1. Definition+Example\n2. Bullet Points\n3. Key Points\nCancel for blank', '');
-                let html = '';
-                if (template === '1') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>New Term</h2><p><strong>Definition:</strong> ...</p><p><strong>Example:</strong> ...</p></div>`;
-                } else if (template === '2') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>List</h2><ul><li>Point 1</li><li>Point 2</li></ul></div>`;
-                } else if (template === '3') {
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>Key Points</h2><p>...</p></div>`;
-                } else {
-                    const subTitle = prompt('Sub-subject title:');
-                    if (!subTitle) return;
-                    html = `<div class="tts-section" data-lang="${lang}"><h2>${escapeHtml(subTitle)}</h2><p>Write content here...</p></div>`;
-                }
-                quillEditor.clipboard.dangerouslyPasteHTML(quillEditor.getLength(), html);
-                quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 200);
-                showToast('Sub-subject added');
-            }
-
-            function editMainTitle(index) {
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (index >= mainDivs.length) return;
-                const currentTitle = mainDivs[index].getAttribute('data-main-title');
-                const newTitle = prompt('New Main Subject Title:', currentTitle);
-                if (newTitle === null) return;
-                mainDivs[index].setAttribute('data-main-title', newTitle);
-                quillEditor.update();
-                refreshSectionTree();
-            }
-
-            function deleteMain(index) {
-                if (!confirm('Delete this main subject and all its sub-sections?')) return;
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (index < mainDivs.length) { mainDivs[index].remove(); quillEditor.update(); refreshSectionTree(); }
-            }
-
-            function editSubTitle(mIdx, sIdx) {
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (mIdx >= mainDivs.length) return;
-                const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-                if (sIdx >= subDivs.length) return;
-                const h2 = subDivs[sIdx].querySelector('h2');
-                const current = h2 ? h2.textContent : '';
-                const newTitle = prompt('New Sub-subject Title:', current);
-                if (newTitle === null) return;
-                if (h2) { h2.textContent = newTitle; } else { const newH2 = document.createElement('h2'); newH2.textContent = newTitle; subDivs[sIdx].prepend(newH2); }
-                quillEditor.update();
-                refreshSectionTree();
-            }
-
-            function deleteSub(mIdx, sIdx) {
-                if (!confirm('Delete this sub-subject?')) return;
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (mIdx >= mainDivs.length) return;
-                const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-                if (sIdx < subDivs.length) { subDivs[sIdx].remove(); quillEditor.update(); refreshSectionTree(); }
-            }
-
-            function editDirectSubTitle(sIdx) {
-                if (!quillEditor) return;
-                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                if (sIdx >= ttsSections.length) return;
-                const h2 = ttsSections[sIdx].querySelector('h2');
-                const current = h2 ? h2.textContent : '';
-                const newTitle = prompt('New Sub-subject Title:', current);
-                if (newTitle === null) return;
-                if (h2) { h2.textContent = newTitle; } else { const newH2 = document.createElement('h2'); newH2.textContent = newTitle; ttsSections[sIdx].prepend(newH2); }
-                quillEditor.update();
-                refreshSectionTree();
-            }
-
-            function deleteDirectSub(sIdx) {
-                if (!confirm('Delete this sub-subject?')) return;
-                if (!quillEditor) return;
-                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                if (sIdx < ttsSections.length) { ttsSections[sIdx].remove(); quillEditor.update(); refreshSectionTree(); }
-            }
-
-            function stopAllTTS() {
-                if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel();
-                resetAllTTSButtons();
-                activeSectionTTS = null;
-                activeSectionTTSBtn = null;
-            }
-
-            function resetAllTTSButtons() {
-                document.querySelectorAll('#section-tree .play-btn').forEach(b => { b.textContent = '▶'; b.classList.remove('active-play'); });
-                document.querySelectorAll('#section-tree .stop-btn').forEach(b => b.classList.remove('visible'));
-                document.querySelectorAll('#section-tree .tts-mini-speed').forEach(s => s.classList.remove('visible'));
-                document.querySelectorAll('#section-tree .tts-play-main').forEach(b => { if (b.textContent === '⏸️') b.textContent = '🔊'; });
-                document.querySelectorAll('.tree-sub-item').forEach(el => el.classList.remove('playing'));
-                document.querySelectorAll('.tts-section').forEach(el => el.style.background = '');
-            }
-
-            function highlightPlayingSection(btn) {
-                document.querySelectorAll('.tree-sub-item').forEach(el => el.classList.remove('playing'));
-                const subItem = btn.closest('.tree-sub-item');
-                if (subItem) subItem.classList.add('playing');
-                document.querySelectorAll('.tts-section').forEach(el => el.style.background = '');
-                const cb = subItem ? subItem.querySelector('.bulk-check') : null;
-                if (cb) {
-                    const mIdx = cb.dataset.main;
-                    const sIdx = cb.dataset.sub;
-                    let sectionId = mIdx === '-1' ? `section-direct-${sIdx}` : `section-${mIdx}-${sIdx}`;
-                    const target = document.getElementById(sectionId);
-                    if (target) target.style.background = 'rgba(200,167,91,0.15)';
-                }
-            }
-
-            function playSubTTS(mIdx, sIdx, btn) {
-                const text = getSubTextFromEditor(mIdx, sIdx);
-                if (!text) return;
-                if (activeSectionTTS && activeSectionTTSBtn === btn) {
-                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); return; }
-                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); highlightPlayingSection(btn); return; }
-                }
-                stopAllTTS();
-                const utterance = new SpeechSynthesisUtterance(text);
-                const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-                const stopBtnEl = btn.parentElement.querySelector('.stop-btn');
-                utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-                utterance.lang = 'en-US';
-                const voices = speechSynthesis.getVoices();
-                const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-                if (femaleVoice) utterance.voice = femaleVoice;
-                btn.textContent = '⏸️'; btn.classList.add('active-play');
-                stopBtnEl.classList.add('visible');
-                if (speedSelect) speedSelect.classList.add('visible');
-                activeSectionTTS = { utterance, playBtn: btn, stopBtn: stopBtnEl, speedSelect, state: 'playing' };
-                activeSectionTTSBtn = btn;
-                highlightPlayingSection(btn);
-                utterance.onend = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-                utterance.onerror = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-                speechSynthesis.speak(utterance);
-            }
-
-            function playDirectSubTTS(sIdx, btn) {
-                const text = getDirectSubText(sIdx);
-                if (!text) return;
-                if (activeSectionTTS && activeSectionTTSBtn === btn) {
-                    if (speechSynthesis.speaking) { speechSynthesis.pause(); btn.textContent = '▶'; btn.classList.remove('active-play'); return; }
-                    else if (speechSynthesis.paused && activeSectionTTS && activeSectionTTS.state === 'paused') { speechSynthesis.resume(); btn.textContent = '⏸️'; btn.classList.add('active-play'); highlightPlayingSection(btn); return; }
-                }
-                stopAllTTS();
-                const utterance = new SpeechSynthesisUtterance(text);
-                const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-                const stopBtnEl = btn.parentElement.querySelector('.stop-btn');
-                utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-                utterance.lang = 'en-US';
-                const voices = speechSynthesis.getVoices();
-                const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-                if (femaleVoice) utterance.voice = femaleVoice;
-                btn.textContent = '⏸️'; btn.classList.add('active-play');
-                stopBtnEl.classList.add('visible');
-                if (speedSelect) speedSelect.classList.add('visible');
-                activeSectionTTS = { utterance, playBtn: btn, stopBtn: stopBtnEl, speedSelect, state: 'playing' };
-                activeSectionTTSBtn = btn;
-                highlightPlayingSection(btn);
-                utterance.onend = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-                utterance.onerror = () => { resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-                speechSynthesis.speak(utterance);
-            }
-
-            function playMainTTS(mIdx, btn) {
-                if (!quillEditor) return;
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (mIdx >= mainDivs.length) return;
-                const text = mainDivs[mIdx].innerText;
-                if (!text) return;
-                if (activeSectionTTS) { stopAllTTS(); if (btn.textContent === '⏸️') { btn.textContent = '🔊'; return; } }
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1;
-                utterance.lang = 'en-US';
-                const voices = speechSynthesis.getVoices();
-                const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-                if (femaleVoice) utterance.voice = femaleVoice;
-                btn.textContent = '⏸️';
-                activeSectionTTS = { utterance, playBtn: btn, state: 'playing' };
-                activeSectionTTSBtn = btn;
-                utterance.onend = () => { btn.textContent = '🔊'; activeSectionTTS = null; activeSectionTTSBtn = null; };
-                utterance.onerror = () => { btn.textContent = '🔊'; activeSectionTTS = null; activeSectionTTSBtn = null; };
-                speechSynthesis.speak(utterance);
-            }
-
-            function getSubTextFromEditor(mIdx, sIdx) {
-                if (!quillEditor) return '';
-                const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
-                if (mIdx >= mainDivs.length) return '';
-                const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
-                if (sIdx >= subDivs.length) return '';
-                return subDivs[sIdx].innerText;
-            }
-
-            function getDirectSubText(sIdx) {
-                if (!quillEditor) return '';
-                const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
-                if (sIdx >= ttsSections.length) return '';
-                return ttsSections[sIdx].innerText;
-            }
-
-            // ===== CHAPTERS =====
+            // ==============================
+            // CHAPTERS (Legacy)
+            // ==============================
             async function loadChapters() {
                 const chapters = await adminApiCall('GET', '/admin/chapters?course_id=1');
                 if (!chapters) return;
@@ -1083,9 +839,17 @@
                         document.getElementById('ch-language').value = 'en';
                         document.getElementById('ch-edit-id').value = ch.id;
                         document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
-                        setTimeout(() => {
-                            if (quillEditor) { quillEditor.root.innerHTML = ch.content_text || ''; refreshSectionTree(); }
-                        }, 400);
+                        // Load content with setContents
+                        if (quillEditor && ch.content_text) {
+                            try {
+                                const delta = quillEditor.clipboard.convert(ch.content_text || '');
+                                quillEditor.setContents(delta, 'silent');
+                            } catch(e) {
+                                quillEditor.root.innerHTML = ch.content_text || '';
+                            }
+                            quillEditor.update();
+                            setTimeout(() => refreshSectionTree(), 200);
+                        }
                         if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url)); else addImageField();
                         if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url)); else addVideoField();
                     }
@@ -1106,28 +870,236 @@
                 startAutoSave();
             }
 
-            function startAutoSave() { clearInterval(autoSaveInterval); autoSaveInterval = setInterval(() => { if (!quillEditor) return; const draft = { id: document.getElementById('ch-edit-id').value, title: document.getElementById('ch-title').value, order: document.getElementById('ch-order').value, passing: document.getElementById('ch-passing').value, lang: document.getElementById('ch-edit-lang').value, content: quillEditor.root.innerHTML }; localStorage.setItem('chapterDraft', JSON.stringify(draft)); }, 30000); }
-            async function switchEditorLanguage() { const lang = document.getElementById('ch-lang').value; currentChapterLanguage = lang; document.getElementById('ch-edit-lang').value = lang; if (!currentChapterId) return; if (lang === 'en') { if (chapterMasterData) { document.getElementById('ch-title').value = chapterMasterData.title; if (quillEditor) { quillEditor.root.innerHTML = chapterMasterData.content_text || ''; setTimeout(() => refreshSectionTree(), 200); } document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)'; } } else { const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false); if (trans && trans.title) { document.getElementById('ch-title').value = trans.title; if (quillEditor) { quillEditor.root.innerHTML = trans.content_text || ''; setTimeout(() => refreshSectionTree(), 200); } } else { document.getElementById('ch-title').value = ''; if (quillEditor) quillEditor.root.innerHTML = ''; showToast('No translation yet for this language.'); } document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`; } }
-            function addImageField(url='') { const container = document.getElementById('images-container'); const div = document.createElement('div'); div.className = 'flex'; div.style.marginBottom = '4px'; div.innerHTML = `<input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}"><input type="file" class="ch-image-upload" accept="image/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
-            function addVideoField(url='') { const container = document.getElementById('videos-container'); const div = document.createElement('div'); div.className = 'flex'; div.style.marginBottom = '4px'; div.innerHTML = `<input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}"><input type="file" class="ch-video-upload" accept="video/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
-            async function triggerChapterImageUpload(btn) { const fileInput = btn.parentElement.querySelector('.ch-image-upload'); fileInput.click(); fileInput.addEventListener('change', async function handler(e) { fileInput.removeEventListener('change', handler); const file = e.target.files[0]; if (!file) return; btn.disabled = true; btn.textContent = '⏳'; const url = await uploadSingleMedia(file); if (url) { btn.parentElement.querySelector('.ch-image-url').value = url; showToast('Image uploaded'); } btn.disabled = false; btn.textContent = '📷'; }); }
-            async function triggerChapterVideoUpload(btn) { const fileInput = btn.parentElement.querySelector('.ch-video-upload'); fileInput.click(); fileInput.addEventListener('change', async function handler(e) { fileInput.removeEventListener('change', handler); const file = e.target.files[0]; if (!file) return; btn.disabled = true; btn.textContent = '⏳'; const url = await uploadSingleMedia(file, true); if (url) { btn.parentElement.querySelector('.ch-video-url').value = url; showToast('Video uploaded'); } btn.disabled = false; btn.textContent = '🎬'; }); }
-            function closeChapterEditor() { stopAllTTS(); clearInterval(autoSaveInterval); document.getElementById('chapter-editor-modal').classList.add('hidden'); destroyQuill(); document.getElementById('section-tree').innerHTML = ''; localStorage.removeItem('chapterDraft'); }
-            async function saveChapter() { const lang = document.getElementById('ch-edit-lang').value; const title = document.getElementById('ch-title').value.trim(); const order_index = parseInt(document.getElementById('ch-order').value); const content_text = quillEditor ? quillEditor.root.innerHTML : ''; const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u); const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u); const passing_score = parseInt(document.getElementById('ch-passing').value); const chapterId = document.getElementById('ch-edit-id').value; if (!title || !order_index) return showToast('Title and order required'); if (lang === 'en') { const body = { course_id:1, title, order_index, content_text, images, videos, passing_score, language:'en' }; if (chapterId) { await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body); } else { const res = await adminApiCall('POST', '/admin/chapter', body); if (res) currentChapterId = res.id; } chapterMasterData = { title, content_text, images, videos, passing_score }; } else { if (!currentChapterId) return showToast('Save English chapter first'); await adminApiCall('POST', '/admin/translations/content', { table_name:'chapters', record_id:parseInt(currentChapterId), language_code:lang, translations:{ title, content_text } }); } closeChapterEditor(); loadChapters(); showToast('✅ Chapter saved'); localStorage.removeItem('chapterDraft'); }
-            async function deleteChapter(id) { if (!confirm('Delete this chapter?')) return; await adminApiCall('DELETE', `/admin/chapter/${id}`); loadChapters(); }
+            function startAutoSave() {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = setInterval(() => {
+                    if (!quillEditor) return;
+                    const draft = {
+                        id: document.getElementById('ch-edit-id').value,
+                        title: document.getElementById('ch-title').value,
+                        order: document.getElementById('ch-order').value,
+                        passing: document.getElementById('ch-passing').value,
+                        lang: document.getElementById('ch-edit-lang').value,
+                        content: quillEditor.root.innerHTML
+                    };
+                    localStorage.setItem('chapterDraft', JSON.stringify(draft));
+                }, 30000);
+            }
 
-            // ===== QUESTIONS =====
+            async function switchEditorLanguage() {
+                const lang = document.getElementById('ch-lang').value;
+                currentChapterLanguage = lang;
+                document.getElementById('ch-edit-lang').value = lang;
+                if (!currentChapterId) return;
+                if (lang === 'en') {
+                    if (chapterMasterData) {
+                        document.getElementById('ch-title').value = chapterMasterData.title;
+                        if (quillEditor) {
+                            const delta = quillEditor.clipboard.convert(chapterMasterData.content_text || '');
+                            quillEditor.setContents(delta, 'silent');
+                            setTimeout(() => refreshSectionTree(), 200);
+                        }
+                        document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
+                    }
+                } else {
+                    const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
+                    if (trans && trans.title) {
+                        document.getElementById('ch-title').value = trans.title;
+                        if (quillEditor) {
+                            const delta = quillEditor.clipboard.convert(trans.content_text || '');
+                            quillEditor.setContents(delta, 'silent');
+                            setTimeout(() => refreshSectionTree(), 200);
+                        }
+                    } else {
+                        document.getElementById('ch-title').value = '';
+                        if (quillEditor) quillEditor.root.innerHTML = '';
+                        showToast('No translation yet for this language.');
+                    }
+                    document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`;
+                }
+            }
+
+            function addImageField(url='') {
+                const container = document.getElementById('images-container');
+                const div = document.createElement('div');
+                div.className = 'flex';
+                div.style.marginBottom = '4px';
+                div.innerHTML = `<input type="text" class="ch-image-url" placeholder="Image URL" value="${escapeHtml(url)}"><input type="file" class="ch-image-upload" accept="image/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterImageUpload(this)">📷</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+                container.appendChild(div);
+            }
+
+            function addVideoField(url='') {
+                const container = document.getElementById('videos-container');
+                const div = document.createElement('div');
+                div.className = 'flex';
+                div.style.marginBottom = '4px';
+                div.innerHTML = `<input type="text" class="ch-video-url" placeholder="Video URL" value="${escapeHtml(url)}"><input type="file" class="ch-video-upload" accept="video/*" style="display:none;"><button class="btn btn-sm" onclick="triggerChapterVideoUpload(this)">🎬</button><button class="btn btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+                container.appendChild(div);
+            }
+
+            async function triggerChapterImageUpload(btn) {
+                const fileInput = btn.parentElement.querySelector('.ch-image-upload');
+                fileInput.click();
+                fileInput.addEventListener('change', async function handler(e) {
+                    fileInput.removeEventListener('change', handler);
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    btn.disabled = true;
+                    btn.textContent = '⏳';
+                    const url = await uploadSingleMedia(file);
+                    if (url) {
+                        btn.parentElement.querySelector('.ch-image-url').value = url;
+                        showToast('Image uploaded');
+                    }
+                    btn.disabled = false;
+                    btn.textContent = '📷';
+                });
+            }
+
+            async function triggerChapterVideoUpload(btn) {
+                const fileInput = btn.parentElement.querySelector('.ch-video-upload');
+                fileInput.click();
+                fileInput.addEventListener('change', async function handler(e) {
+                    fileInput.removeEventListener('change', handler);
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    btn.disabled = true;
+                    btn.textContent = '⏳';
+                    const url = await uploadSingleMedia(file, true);
+                    if (url) {
+                        btn.parentElement.querySelector('.ch-video-url').value = url;
+                        showToast('Video uploaded');
+                    }
+                    btn.disabled = false;
+                    btn.textContent = '🎬';
+                });
+            }
+
+            function closeChapterEditor() {
+                clearInterval(autoSaveInterval);
+                document.getElementById('chapter-editor-modal').classList.add('hidden');
+                destroyQuill();
+                document.getElementById('section-tree').innerHTML = '';
+                localStorage.removeItem('chapterDraft');
+            }
+
+            async function saveChapter() {
+                const lang = document.getElementById('ch-edit-lang').value;
+                const title = document.getElementById('ch-title').value.trim();
+                const order_index = parseInt(document.getElementById('ch-order').value);
+                if (!quillEditor) return;
+                const content_text = quillEditor.root.innerHTML;
+                const images = Array.from(document.querySelectorAll('.ch-image-url')).map(inp => inp.value.trim()).filter(u => u);
+                const videos = Array.from(document.querySelectorAll('.ch-video-url')).map(inp => inp.value.trim()).filter(u => u);
+                const passing_score = parseInt(document.getElementById('ch-passing').value);
+                const chapterId = document.getElementById('ch-edit-id').value;
+                if (!title || !order_index) return showToast('Title and order required');
+                if (quillEditor.getText().trim().length === 0 && !confirm('Content is empty. Save anyway?')) return;
+                if (lang === 'en') {
+                    const body = { course_id:1, title, order_index, content_text, images, videos, passing_score, language:'en' };
+                    if (chapterId) {
+                        await adminApiCall('PUT', `/admin/chapter/${chapterId}`, body);
+                    } else {
+                        const res = await adminApiCall('POST', '/admin/chapter', body);
+                        if (res) currentChapterId = res.id;
+                    }
+                    chapterMasterData = { title, content_text, images, videos, passing_score };
+                } else {
+                    if (!currentChapterId) return showToast('Save English chapter first');
+                    await adminApiCall('POST', '/admin/translations/content', { table_name:'chapters', record_id:parseInt(currentChapterId), language_code:lang, translations:{ title, content_text } });
+                }
+                closeChapterEditor();
+                loadChapters();
+                showToast('✅ Chapter saved');
+                localStorage.removeItem('chapterDraft');
+            }
+
+            async function deleteChapter(id) {
+                if (!confirm('Delete this chapter?')) return;
+                await adminApiCall('DELETE', `/admin/chapter/${id}`);
+                loadChapters();
+            }
+
+            // ==============================
+            // QUESTIONS
+            // ==============================
             let currentQmChapterId;
-            async function manageQuestions(chapterId, title) { currentQmChapterId = chapterId; document.getElementById('qm-title').textContent = title + ' - Questions'; document.getElementById('qm-chapter-id').value = chapterId; await loadQuestionsForChapter(chapterId); document.getElementById('question-manager-modal').classList.remove('hidden'); document.getElementById('qm-question-form').classList.add('hidden'); }
-            function closeQuestionManager() { document.getElementById('question-manager-modal').classList.add('hidden'); }
-            async function loadQuestionsForChapter(chapterId) { const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`); const list = document.getElementById('qm-questions-list'); if (!questions) return; list.innerHTML = questions.map(q => `<div class="card" style="padding:12px; margin:6px 0;"><strong>${escapeHtml(q.question)}</strong><br><small>${q.options.map((o,i)=>`${i===q.correct_index?'✓':'○'} ${escapeHtml(o)}`).join(' | ')}</small>${q.explanation ? `<br><small style="color:var(--accent-bright);">${escapeHtml(q.explanation)}</small>` : ''}<div style="margin-top:8px;"><button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">🗑</button></div></div>`).join(''); }
-            function openQuestionForm(q) { document.getElementById('qm-question-form').classList.remove('hidden'); document.getElementById('qm-edit-qid').value = ''; document.getElementById('qm-question-text').value = ''; for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = ''; document.getElementById('qm-correct').value = 0; document.getElementById('qm-explanation').value = ''; if (q) { document.getElementById('qm-edit-qid').value = q.id; document.getElementById('qm-question-text').value = q.question; q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt); document.getElementById('qm-correct').value = q.correct_index; document.getElementById('qm-explanation').value = q.explanation || ''; } }
-            function cancelQuestionEdit() { document.getElementById('qm-question-form').classList.add('hidden'); }
-            async function editQuestion(qId, chapterId) { const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`); const q = questions.find(q => q.id == qId); if (q) openQuestionForm(q); }
-            async function saveQuestion() { const chapterId = parseInt(document.getElementById('qm-chapter-id').value); const qId = document.getElementById('qm-edit-qid').value; const data = { question: document.getElementById('qm-question-text').value, options: [0,1,2,3].map(i => document.getElementById(`qm-opt${i}`).value), correct_index: parseInt(document.getElementById('qm-correct').value), explanation: document.getElementById('qm-explanation').value }; if (!data.question || data.options.some(o => !o) || isNaN(data.correct_index)) return showToast('All fields required'); if (qId) { await adminApiCall('PUT', `/admin/question/${qId}`, data); } else { await adminApiCall('POST', `/admin/chapter/${chapterId}/question`, data); } cancelQuestionEdit(); loadQuestionsForChapter(chapterId); showToast('✅ Question saved'); }
-            async function deleteQuestion(qId, chapterId) { if (!confirm('Delete this question?')) return; await adminApiCall('DELETE', `/admin/question/${qId}`); loadQuestionsForChapter(chapterId); }
 
-            // ===== COURSES =====
+            async function manageQuestions(chapterId, title) {
+                currentQmChapterId = chapterId;
+                document.getElementById('qm-title').textContent = title + ' - Questions';
+                document.getElementById('qm-chapter-id').value = chapterId;
+                await loadQuestionsForChapter(chapterId);
+                document.getElementById('question-manager-modal').classList.remove('hidden');
+                document.getElementById('qm-question-form').classList.add('hidden');
+            }
+
+            function closeQuestionManager() {
+                document.getElementById('question-manager-modal').classList.add('hidden');
+            }
+
+            async function loadQuestionsForChapter(chapterId) {
+                const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
+                const list = document.getElementById('qm-questions-list');
+                if (!questions) return;
+                list.innerHTML = questions.map(q => `<div class="card" style="padding:12px; margin:6px 0;"><strong>${escapeHtml(q.question)}</strong><br><small>${q.options.map((o,i)=>`${i===q.correct_index?'✓':'○'} ${escapeHtml(o)}`).join(' | ')}</small>${q.explanation ? `<br><small style="color:var(--accent-bright);">${escapeHtml(q.explanation)}</small>` : ''}<div style="margin-top:8px;"><button class="btn btn-sm btn-outline" onclick="editQuestion(${q.id}, ${chapterId})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteQuestion(${q.id}, ${chapterId})">🗑</button></div></div>`).join('');
+            }
+
+            function openQuestionForm(q) {
+                document.getElementById('qm-question-form').classList.remove('hidden');
+                document.getElementById('qm-edit-qid').value = '';
+                document.getElementById('qm-question-text').value = '';
+                for(let i=0;i<4;i++) document.getElementById(`qm-opt${i}`).value = '';
+                document.getElementById('qm-correct').value = 0;
+                document.getElementById('qm-explanation').value = '';
+                if (q) {
+                    document.getElementById('qm-edit-qid').value = q.id;
+                    document.getElementById('qm-question-text').value = q.question;
+                    q.options.forEach((opt,i) => document.getElementById(`qm-opt${i}`).value = opt);
+                    document.getElementById('qm-correct').value = q.correct_index;
+                    document.getElementById('qm-explanation').value = q.explanation || '';
+                }
+            }
+
+            function cancelQuestionEdit() {
+                document.getElementById('qm-question-form').classList.add('hidden');
+            }
+
+            async function editQuestion(qId, chapterId) {
+                const questions = await adminApiCall('GET', `/admin/chapter/${chapterId}/questions`);
+                const q = questions.find(q => q.id == qId);
+                if (q) openQuestionForm(q);
+            }
+
+            async function saveQuestion() {
+                const chapterId = parseInt(document.getElementById('qm-chapter-id').value);
+                const qId = document.getElementById('qm-edit-qid').value;
+                const data = {
+                    question: document.getElementById('qm-question-text').value,
+                    options: [0,1,2,3].map(i => document.getElementById(`qm-opt${i}`).value),
+                    correct_index: parseInt(document.getElementById('qm-correct').value),
+                    explanation: document.getElementById('qm-explanation').value
+                };
+                if (!data.question || data.options.some(o => !o) || isNaN(data.correct_index)) return showToast('All fields required');
+                if (qId) {
+                    await adminApiCall('PUT', `/admin/question/${qId}`, data);
+                } else {
+                    await adminApiCall('POST', `/admin/chapter/${chapterId}/question`, data);
+                }
+                cancelQuestionEdit();
+                loadQuestionsForChapter(chapterId);
+                showToast('✅ Question saved');
+            }
+
+            async function deleteQuestion(qId, chapterId) {
+                if (!confirm('Delete this question?')) return;
+                await adminApiCall('DELETE', `/admin/question/${qId}`);
+                loadQuestionsForChapter(chapterId);
+            }
+
+            // ==============================
+            // COURSES
+            // ==============================
             async function loadCourses() {
                 const courses = await adminApiCall('GET', '/admin/courses');
                 if (!courses) return;
@@ -1136,26 +1108,159 @@
                 html += '</tbody></table></div>';
                 document.getElementById('panel-screen').innerHTML = html;
             }
-            function openCourseForm() { document.getElementById('course-form').classList.remove('hidden'); document.getElementById('course-edit-id').value = ''; document.getElementById('course-title').value = ''; document.getElementById('course-desc').value = ''; }
-            function cancelCourseForm() { document.getElementById('course-form').classList.add('hidden'); }
-            function editCourse(id, title, desc) { document.getElementById('course-form').classList.remove('hidden'); document.getElementById('course-edit-id').value = id; document.getElementById('course-title').value = title; document.getElementById('course-desc').value = desc; }
-            async function saveCourse() { const title = document.getElementById('course-title').value; const description = document.getElementById('course-desc').value; const id = document.getElementById('course-edit-id').value; if (!title) return showToast('Title required'); if (id) { await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active:true }); } else { await adminApiCall('POST', '/admin/course', { title, description }); } cancelCourseForm(); loadCourses(); showToast('✅ Course saved'); }
-            async function deleteCourse(id) { if (!confirm('Deleting course will delete all chapters!')) return; await adminApiCall('DELETE', `/admin/course/${id}`); loadCourses(); }
 
-            // ===== CONTENT MANAGER =====
+            function openCourseForm() {
+                document.getElementById('course-form').classList.remove('hidden');
+                document.getElementById('course-edit-id').value = '';
+                document.getElementById('course-title').value = '';
+                document.getElementById('course-desc').value = '';
+            }
+
+            function cancelCourseForm() {
+                document.getElementById('course-form').classList.add('hidden');
+            }
+
+            function editCourse(id, title, desc) {
+                document.getElementById('course-form').classList.remove('hidden');
+                document.getElementById('course-edit-id').value = id;
+                document.getElementById('course-title').value = title;
+                document.getElementById('course-desc').value = desc;
+            }
+
+            async function saveCourse() {
+                const title = document.getElementById('course-title').value;
+                const description = document.getElementById('course-desc').value;
+                const id = document.getElementById('course-edit-id').value;
+                if (!title) return showToast('Title required');
+                if (id) {
+                    await adminApiCall('PUT', `/admin/course/${id}`, { title, description, is_active:true });
+                } else {
+                    await adminApiCall('POST', '/admin/course', { title, description });
+                }
+                cancelCourseForm();
+                loadCourses();
+                showToast('✅ Course saved');
+            }
+
+            async function deleteCourse(id) {
+                if (!confirm('Deleting course will delete all chapters!')) return;
+                await adminApiCall('DELETE', `/admin/course/${id}`);
+                loadCourses();
+            }
+
+            // ==============================
+            // CONTENT MANAGER
+            // ==============================
             async function loadContentManager() {
                 document.getElementById('panel-screen').innerHTML = `<div class="card"><h3>📝 Content Manager</h3><select id="content-type-select" onchange="setupContentForm()"><option value="lesson">Lesson</option><option value="quiz">Quiz</option><option value="video">Video</option></select><div id="content-form-fields" style="margin-top:12px;"></div><button class="btn" onclick="addContent()">Add</button><h4 style="margin-top:20px;">Existing Content</h4><select id="content-list-type" onchange="loadContentList()"><option value="lesson">Lesson</option><option value="quiz">Quiz</option><option value="video">Video</option></select><div id="content-list-section" style="margin-top:12px;"></div><h4 style="margin-top:20px;">Image Upload</h4><input type="file" id="image-upload" accept="image/*" style="margin-top:6px;"><button class="btn btn-sm" onclick="uploadImage()">Upload</button><span id="upload-status" style="margin-left:10px; font-size:0.9rem;"></span></div>`;
                 setupContentForm(); loadContentList();
             }
-            function setupContentForm() { const type = document.getElementById('content-type-select').value; const fields = document.getElementById('content-form-fields'); if (type==='lesson') fields.innerHTML = `<input id="content-day" type="number" placeholder="Day"><input id="content-phase" placeholder="Phase"><input id="content-title" placeholder="Title"><textarea id="content-body" placeholder="Content"></textarea>`; else if (type==='quiz') fields.innerHTML = `<input id="content-question" placeholder="Question"><input id="content-options" placeholder='Options (JSON) e.g. ["A","B","C","D"]'><input id="content-correct" type="number" placeholder="Correct index">`; else if (type==='video') fields.innerHTML = `<input id="content-vtitle" placeholder="Title"><textarea id="content-vdesc" placeholder="Description"></textarea><input id="content-ytid" placeholder="YouTube ID"><input id="content-duration" placeholder="Duration"><input id="content-category" placeholder="Category">`; }
-            async function addContent() { const type = document.getElementById('content-type-select').value; let body = { type }; if (type==='lesson') { body.day = parseInt(document.getElementById('content-day').value); body.phase = document.getElementById('content-phase').value; body.title = document.getElementById('content-title').value; body.content = document.getElementById('content-body').value; } else if (type==='quiz') { body.question = document.getElementById('content-question').value; body.options = JSON.parse(document.getElementById('content-options').value); body.correct = parseInt(document.getElementById('content-correct').value); } else if (type==='video') { body.category = document.getElementById('content-category').value; body.title = document.getElementById('content-vtitle').value; body.description = document.getElementById('content-vdesc').value; body.youtube_id = document.getElementById('content-ytid').value; body.duration = document.getElementById('content-duration').value; } const res = await adminApiCall('POST', '/admin/content', body); if (res && res.success) { showToast('✅ Content added'); loadContentList(); } }
-            async function loadContentList() { const type = document.getElementById('content-list-type').value; const res = await adminApiCall('GET', `/admin/content/list?type=${type}`); const container = document.getElementById('content-list-section'); if (!res || res.error) { container.innerHTML = '<p>Load failed</p>'; return; } if (type==='lesson') container.innerHTML = res.map(l => `<div class="flex" style="justify-content:space-between;">${l.day}. ${escapeHtml(l.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('lesson',${l.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button></span></div>`).join(''); else if (type==='quiz') container.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between;">${escapeHtml(q.question)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('quiz',${q.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('quiz',${q.id})">🗑</button></span></div>`).join(''); else if (type==='video') container.innerHTML = res.map(v => `<div class="flex" style="justify-content:space-between;">${escapeHtml(v.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('video',${v.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('video',${v.id})">🗑</button></span></div>`).join(''); }
-            async function openContentEditModal(type, id) { document.getElementById('content-edit-modal').classList.remove('hidden'); document.getElementById('ce-id').value = id; document.getElementById('ce-type').value = type; const fields = document.getElementById('ce-fields'); if (type==='lesson') fields.innerHTML = `<input type="number" id="ce-day" placeholder="Day"><input type="text" id="ce-phase" placeholder="Phase"><input type="text" id="ce-title" placeholder="Title"><textarea id="ce-content" placeholder="Content"></textarea>`; else if (type==='quiz') fields.innerHTML = `<input type="text" id="ce-question" placeholder="Question"><input type="text" id="ce-options" placeholder='["A","B","C","D"]'><input type="number" id="ce-correct" placeholder="Correct index">`; else if (type==='video') fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="Title"><textarea id="ce-vdesc" placeholder="Description"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="Duration"><input type="text" id="ce-category" placeholder="Category">`; try { const res = await adminApiCall('GET', `/admin/content/list?type=${type}`, null, false); if (res) { const item = res.find(x => x.id == id); if (item) { if (type==='lesson') { document.getElementById('ce-day').value = item.day || ''; document.getElementById('ce-phase').value = item.phase || ''; document.getElementById('ce-title').value = item.title || ''; document.getElementById('ce-content').value = item.content || ''; } else if (type==='quiz') { document.getElementById('ce-question').value = item.question || ''; document.getElementById('ce-options').value = JSON.stringify(item.options) || ''; document.getElementById('ce-correct').value = item.correct || 0; } else if (type==='video') { document.getElementById('ce-vtitle').value = item.title || ''; document.getElementById('ce-vdesc').value = item.description || ''; document.getElementById('ce-ytid').value = item.youtube_id || ''; document.getElementById('ce-duration').value = item.duration || ''; document.getElementById('ce-category').value = item.category || ''; } } } } catch(e) {} }
-            function closeContentEditModal() { document.getElementById('content-edit-modal').classList.add('hidden'); }
-            async function saveContentEdit() { const type = document.getElementById('ce-type').value; const id = document.getElementById('ce-id').value; let body = {}; if (type==='lesson') { body = { day:parseInt(document.getElementById('ce-day').value), phase:document.getElementById('ce-phase').value, title:document.getElementById('ce-title').value, content:document.getElementById('ce-content').value }; } else if (type==='quiz') { body = { question:document.getElementById('ce-question').value, options:JSON.parse(document.getElementById('ce-options').value), correct:parseInt(document.getElementById('ce-correct').value) }; } else if (type==='video') { body = { category:document.getElementById('ce-category').value, title:document.getElementById('ce-vtitle').value, description:document.getElementById('ce-vdesc').value, youtube_id:document.getElementById('ce-ytid').value, duration:document.getElementById('ce-duration').value }; } await adminApiCall('PUT', `/admin/content/${type}/${id}`, body); closeContentEditModal(); loadContentList(); showToast('Content updated'); }
-            async function deleteContent(type, id) { if (!confirm('Delete?')) return; await adminApiCall('DELETE', `/admin/content/${type}/${id}`); loadContentList(); }
 
-            // ===== THEME EDITOR =====
+            function setupContentForm() {
+                const type = document.getElementById('content-type-select').value;
+                const fields = document.getElementById('content-form-fields');
+                if (type==='lesson') fields.innerHTML = `<input id="content-day" type="number" placeholder="Day"><input id="content-phase" placeholder="Phase"><input id="content-title" placeholder="Title"><textarea id="content-body" placeholder="Content"></textarea>`;
+                else if (type==='quiz') fields.innerHTML = `<input id="content-question" placeholder="Question"><input id="content-options" placeholder='Options (JSON) e.g. ["A","B","C","D"]'><input id="content-correct" type="number" placeholder="Correct index">`;
+                else if (type==='video') fields.innerHTML = `<input id="content-vtitle" placeholder="Title"><textarea id="content-vdesc" placeholder="Description"></textarea><input id="content-ytid" placeholder="YouTube ID"><input id="content-duration" placeholder="Duration"><input id="content-category" placeholder="Category">`;
+            }
+
+            async function addContent() {
+                const type = document.getElementById('content-type-select').value;
+                let body = { type };
+                if (type==='lesson') {
+                    body.day = parseInt(document.getElementById('content-day').value);
+                    body.phase = document.getElementById('content-phase').value;
+                    body.title = document.getElementById('content-title').value;
+                    body.content = document.getElementById('content-body').value;
+                } else if (type==='quiz') {
+                    body.question = document.getElementById('content-question').value;
+                    body.options = JSON.parse(document.getElementById('content-options').value);
+                    body.correct = parseInt(document.getElementById('content-correct').value);
+                } else if (type==='video') {
+                    body.category = document.getElementById('content-category').value;
+                    body.title = document.getElementById('content-vtitle').value;
+                    body.description = document.getElementById('content-vdesc').value;
+                    body.youtube_id = document.getElementById('content-ytid').value;
+                    body.duration = document.getElementById('content-duration').value;
+                }
+                const res = await adminApiCall('POST', '/admin/content', body);
+                if (res && res.success) { showToast('✅ Content added'); loadContentList(); }
+            }
+
+            async function loadContentList() {
+                const type = document.getElementById('content-list-type').value;
+                const res = await adminApiCall('GET', `/admin/content/list?type=${type}`);
+                const container = document.getElementById('content-list-section');
+                if (!res || res.error) { container.innerHTML = '<p>Load failed</p>'; return; }
+                if (type==='lesson') container.innerHTML = res.map(l => `<div class="flex" style="justify-content:space-between;">${l.day}. ${escapeHtml(l.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('lesson',${l.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('lesson',${l.id})">🗑</button></span></div>`).join('');
+                else if (type==='quiz') container.innerHTML = res.map(q => `<div class="flex" style="justify-content:space-between;">${escapeHtml(q.question)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('quiz',${q.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('quiz',${q.id})">🗑</button></span></div>`).join('');
+                else if (type==='video') container.innerHTML = res.map(v => `<div class="flex" style="justify-content:space-between;">${escapeHtml(v.title)} <span><button class="btn btn-sm btn-outline" onclick="openContentEditModal('video',${v.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteContent('video',${v.id})">🗑</button></span></div>`).join('');
+            }
+
+            async function openContentEditModal(type, id) {
+                document.getElementById('content-edit-modal').classList.remove('hidden');
+                document.getElementById('ce-id').value = id;
+                document.getElementById('ce-type').value = type;
+                const fields = document.getElementById('ce-fields');
+                if (type==='lesson') fields.innerHTML = `<input type="number" id="ce-day" placeholder="Day"><input type="text" id="ce-phase" placeholder="Phase"><input type="text" id="ce-title" placeholder="Title"><textarea id="ce-content" placeholder="Content"></textarea>`;
+                else if (type==='quiz') fields.innerHTML = `<input type="text" id="ce-question" placeholder="Question"><input type="text" id="ce-options" placeholder='["A","B","C","D"]'><input type="number" id="ce-correct" placeholder="Correct index">`;
+                else if (type==='video') fields.innerHTML = `<input type="text" id="ce-vtitle" placeholder="Title"><textarea id="ce-vdesc" placeholder="Description"></textarea><input type="text" id="ce-ytid" placeholder="YouTube ID"><input type="text" id="ce-duration" placeholder="Duration"><input type="text" id="ce-category" placeholder="Category">`;
+                try {
+                    const res = await adminApiCall('GET', `/admin/content/list?type=${type}`, null, false);
+                    if (res) {
+                        const item = res.find(x => x.id == id);
+                        if (item) {
+                            if (type==='lesson') {
+                                document.getElementById('ce-day').value = item.day || '';
+                                document.getElementById('ce-phase').value = item.phase || '';
+                                document.getElementById('ce-title').value = item.title || '';
+                                document.getElementById('ce-content').value = item.content || '';
+                            } else if (type==='quiz') {
+                                document.getElementById('ce-question').value = item.question || '';
+                                document.getElementById('ce-options').value = JSON.stringify(item.options) || '';
+                                document.getElementById('ce-correct').value = item.correct || 0;
+                            } else if (type==='video') {
+                                document.getElementById('ce-vtitle').value = item.title || '';
+                                document.getElementById('ce-vdesc').value = item.description || '';
+                                document.getElementById('ce-ytid').value = item.youtube_id || '';
+                                document.getElementById('ce-duration').value = item.duration || '';
+                                document.getElementById('ce-category').value = item.category || '';
+                            }
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            function closeContentEditModal() {
+                document.getElementById('content-edit-modal').classList.add('hidden');
+            }
+
+            async function saveContentEdit() {
+                const type = document.getElementById('ce-type').value;
+                const id = document.getElementById('ce-id').value;
+                let body = {};
+                if (type==='lesson') {
+                    body = { day:parseInt(document.getElementById('ce-day').value), phase:document.getElementById('ce-phase').value, title:document.getElementById('ce-title').value, content:document.getElementById('ce-content').value };
+                } else if (type==='quiz') {
+                    body = { question:document.getElementById('ce-question').value, options:JSON.parse(document.getElementById('ce-options').value), correct:parseInt(document.getElementById('ce-correct').value) };
+                } else if (type==='video') {
+                    body = { category:document.getElementById('ce-category').value, title:document.getElementById('ce-vtitle').value, description:document.getElementById('ce-vdesc').value, youtube_id:document.getElementById('ce-ytid').value, duration:document.getElementById('ce-duration').value };
+                }
+                await adminApiCall('PUT', `/admin/content/${type}/${id}`, body);
+                closeContentEditModal();
+                loadContentList();
+                showToast('Content updated');
+            }
+
+            async function deleteContent(type, id) {
+                if (!confirm('Delete?')) return;
+                await adminApiCall('DELETE', `/admin/content/${type}/${id}`);
+                loadContentList();
+            }
+
+            // ==============================
+            // THEME EDITOR
+            // ==============================
             async function loadThemeEditor() {
                 const vars = ['--bg','--surface','--gold','--gold-bright','--gold-light','--accent','--accent-bright','--accent2','--purple','--cyan','--orange','--text','--text-secondary','--danger','--success','--warning','--border-gold','--border-accent'];
                 let html = `<div class="card"><h3>🎨 Theme Customization</h3><div class="theme-grid" id="theme-grid">`;
@@ -1163,11 +1268,42 @@
                 html += `</div><button class="btn" onclick="saveTheme()">Save</button> <button class="btn btn-outline" onclick="resetTheme()">↺ Reset Default</button><div id="theme-msg" style="margin-top:8px;"></div></div>`;
                 document.getElementById('panel-screen').innerHTML = html;
             }
-            function updateThemeFromText(input) { const varName = input.dataset.var; const val = input.value.trim(); document.documentElement.style.setProperty(varName, val); const preview = input.parentElement.querySelector('.color-preview'); if (preview) preview.style.background = val; }
-            async function saveTheme() { const inputs = document.querySelectorAll('#theme-grid input[type="text"]'); const themeObj = {}; inputs.forEach(inp => { const val = inp.value.trim(); if (val) themeObj[inp.dataset.var] = val; }); const res = await adminApiCall('PUT', '/admin/settings', themeObj); if (res && res.success) { for (const [k,v] of Object.entries(themeObj)) document.documentElement.style.setProperty(k, v); document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">Theme saved</span>'; } }
-            function resetTheme() { const defaults = {'--bg':'#0B1220','--surface':'rgba(17,24,39,0.92)','--gold':'#C8A75B','--gold-bright':'#E8C97A','--gold-light':'#F6E4B5','--accent':'#2563EB','--accent-bright':'#60A5FA','--accent2':'#7C3AED','--purple':'#8B5CF6','--cyan':'#22D3EE','--orange':'#F59E0B','--text':'#F9FAFB','--text-secondary':'#9CA3AF','--danger':'#EF4444','--success':'#22C55E','--warning':'#F59E0B','--border-gold':'rgba(200,167,91,0.35)','--border-accent':'rgba(37,99,235,0.30)'}; for (const [k,v] of Object.entries(defaults)) document.documentElement.style.setProperty(k, v); document.querySelectorAll('.color-picker-group').forEach(g => { const input = g.querySelector('input[type="text"]'); const varName = input.dataset.var; input.value = defaults[varName] || ''; const preview = g.querySelector('.color-preview'); if (preview) preview.style.background = defaults[varName] || ''; }); adminApiCall('PUT', '/admin/settings', defaults); }
 
-            // ===== MEDIA LIBRARY =====
+            function updateThemeFromText(input) {
+                const varName = input.dataset.var;
+                const val = input.value.trim();
+                document.documentElement.style.setProperty(varName, val);
+                const preview = input.parentElement.querySelector('.color-preview');
+                if (preview) preview.style.background = val;
+            }
+
+            async function saveTheme() {
+                const inputs = document.querySelectorAll('#theme-grid input[type="text"]');
+                const themeObj = {};
+                inputs.forEach(inp => { const val = inp.value.trim(); if (val) themeObj[inp.dataset.var] = val; });
+                const res = await adminApiCall('PUT', '/admin/settings', themeObj);
+                if (res && res.success) {
+                    for (const [k,v] of Object.entries(themeObj)) document.documentElement.style.setProperty(k, v);
+                    document.getElementById('theme-msg').innerHTML = '<span style="color:var(--success);">Theme saved</span>';
+                }
+            }
+
+            function resetTheme() {
+                const defaults = {'--bg':'#0B1220','--surface':'rgba(17,24,39,0.92)','--gold':'#C8A75B','--gold-bright':'#E8C97A','--gold-light':'#F6E4B5','--accent':'#2563EB','--accent-bright':'#60A5FA','--accent2':'#7C3AED','--purple':'#8B5CF6','--cyan':'#22D3EE','--orange':'#F59E0B','--text':'#F9FAFB','--text-secondary':'#9CA3AF','--danger':'#EF4444','--success':'#22C55E','--warning':'#F59E0B','--border-gold':'rgba(200,167,91,0.35)','--border-accent':'rgba(37,99,235,0.30)'};
+                for (const [k,v] of Object.entries(defaults)) document.documentElement.style.setProperty(k, v);
+                document.querySelectorAll('.color-picker-group').forEach(g => {
+                    const input = g.querySelector('input[type="text"]');
+                    const varName = input.dataset.var;
+                    input.value = defaults[varName] || '';
+                    const preview = g.querySelector('.color-preview');
+                    if (preview) preview.style.background = defaults[varName] || '';
+                });
+                adminApiCall('PUT', '/admin/settings', defaults);
+            }
+
+            // ==============================
+            // MEDIA LIBRARY
+            // ==============================
             async function loadMediaLibrary() {
                 const res = await adminApiCall('GET', '/admin/media');
                 let html = `<div class="card"><h3>🖼️ Media Library</h3><div class="drop-zone" id="media-drop-zone"><p>📁 Drag & drop images/videos here or click</p><input type="file" id="media-file-input" accept="image/*,video/*" multiple style="display:none;"></div><div class="flex" style="gap:8px; margin-bottom:12px;"><button class="btn btn-sm" onclick="document.getElementById('media-folder-input').click()">📂 Folder Upload</button><input type="file" id="media-folder-input" webkitdirectory multiple style="display:none;" onchange="uploadFolderFiles(this.files)"><input type="text" id="media-url-input" placeholder="Or paste URL" style="flex:1;"><button class="btn btn-sm" onclick="addMediaUrl()">Add URL</button></div><div id="media-list" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">`;
@@ -1176,39 +1312,261 @@
                 document.getElementById('panel-screen').innerHTML = html;
                 initMediaDropZone();
             }
-            function initMediaDropZone() { const dz = document.getElementById('media-drop-zone'); const fi = document.getElementById('media-file-input'); if (!dz || !fi) return; dz.addEventListener('click', () => fi.click()); dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); }); dz.addEventListener('dragleave', () => dz.classList.remove('dragover')); dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length) for (let f of files) uploadSingleMedia(f); }); fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); }); }
-            async function uploadSingleMedia(file, allowVideo=false) { try { if (!adminToken) { showToast('Not authenticated'); return null; } const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif']; if (!validTypes.includes(file.type)) { showToast('File type not supported'); return null; } let processedFile = file; if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200); const formData = new FormData(); formData.append('image', processedFile); const res = await fetch(`${API}/admin/upload-image`, { method:'POST', headers:{'Authorization':`Bearer ${adminToken}`}, body:formData }); const data = await res.json(); if (data.error) { showToast('Upload Error: ' + data.error); return null; } if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; } showToast('Upload failed'); return null; } catch(e) { showToast('Network error: ' + e.message); return null; } }
-            async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
-            async function uploadImage() { const file = document.getElementById('image-upload').files[0]; if (!file) return showToast('Select a file'); const url = await uploadSingleMedia(file); if (url) showToast('Uploaded!'); }
-            async function resizeImage(file, maxWidth) { const img = await createImageBitmap(file); const canvas = document.createElement('canvas'); const ratio = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * ratio; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8)); return new File([blob], file.name, { type:'image/jpeg' }); }
-            async function addMediaUrl() { const url = document.getElementById('media-url-input').value.trim(); if (!url) return showToast('Enter URL'); await adminApiCall('POST', '/admin/media/url', { url }); loadMediaLibrary(); }
-            async function deleteMedia(id) { await adminApiCall('DELETE', `/admin/media/${id}`); loadMediaLibrary(); }
 
-            // ===== TRANSLATIONS =====
-            async function loadTranslations() { const lang = prompt('Language code (bn/en/hi):','bn') || 'bn'; const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`); let html = `<div class="card"><h3>🌐 Translations (${lang})</h3><select id="trans-lang-select" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`; if (rows) rows.forEach(t => { html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span><button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`; }); html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ New</button></div></div>`; document.getElementById('panel-screen').innerHTML = html; }
-            function openTransAddModal() { document.getElementById('translation-add-modal').classList.remove('hidden'); }
-            function closeTransAddModal() { document.getElementById('translation-add-modal').classList.add('hidden'); }
-            async function saveNewTranslation() { const key = document.getElementById('trans-key').value.trim(); const value = document.getElementById('trans-value').value.trim(); const lang = document.getElementById('trans-lang').value; if (!key || !value) return showToast('All fields required'); await adminApiCall('POST', '/admin/translations', { key, lang, value }); closeTransAddModal(); loadTranslations(); showToast('Translation added'); }
-            function editTrans(key, lang, current) { const newVal = prompt('New value:', current); if (newVal !== null) { adminApiCall('POST', '/admin/translations', { key, lang, value:newVal }); loadTranslations(); } }
+            function initMediaDropZone() {
+                const dz = document.getElementById('media-drop-zone');
+                const fi = document.getElementById('media-file-input');
+                if (!dz || !fi) return;
+                dz.addEventListener('click', () => fi.click());
+                dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+                dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+                dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length) for (let f of files) uploadSingleMedia(f); });
+                fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
+            }
 
-            // ===== ASSESSMENTS =====
-            async function loadAssessments() { const questions = await adminApiCall('GET', '/admin/assessments'); let html = `<div class="card"><h3>📋 Assessment Questions</h3><button class="btn" onclick="openAssessModal(null)">+ New Question</button><table><thead><tr><th>Order</th><th>Question</th><th>Category</th><th>Actions</th></tr></thead><tbody>`; if (questions) questions.forEach(q => { html += `<tr><td>${q.order_index}</td><td>${escapeHtml(q.question)}</td><td>${escapeHtml(q.category||'')}</td><td><button class="btn btn-sm btn-outline" onclick="openAssessModal(${q.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteAssessQuestion(${q.id})">🗑</button></td></tr>`; }); html += '</tbody></table></div>'; document.getElementById('panel-screen').innerHTML = html; }
-            function openAssessModal(id) { const modal = document.getElementById('assess-modal'); document.getElementById('assess-edit-id').value = id || ''; if (id) { adminApiCall('GET', '/admin/assessments').then(all => { const q = all.find(x => x.id == id); if (q) { document.getElementById('assess-question').value = q.question; document.getElementById('assess-category').value = q.category || ''; document.getElementById('assess-order').value = q.order_index; } }); document.getElementById('assess-modal-title').textContent = 'Edit Assessment Question'; } else { document.getElementById('assess-question').value = ''; document.getElementById('assess-category').value = ''; document.getElementById('assess-order').value = '1'; document.getElementById('assess-modal-title').textContent = 'New Assessment Question'; } modal.classList.remove('hidden'); }
-            function closeAssessModal() { document.getElementById('assess-modal').classList.add('hidden'); }
-            async function saveAssessQuestion() { const question = document.getElementById('assess-question').value.trim(); const category = document.getElementById('assess-category').value.trim(); const order_index = parseInt(document.getElementById('assess-order').value); const id = document.getElementById('assess-edit-id').value; if (!question) return showToast('Question required'); const body = { question, category, order_index }; if (id) { await adminApiCall('PUT', `/admin/assessments/${id}`, body); } else { await adminApiCall('POST', '/admin/assessments', body); } closeAssessModal(); loadAssessments(); showToast('Assessment question saved'); }
-            async function deleteAssessQuestion(id) { if (!confirm('Delete this question?')) return; await adminApiCall('DELETE', `/admin/assessments/${id}`); loadAssessments(); }
+            async function uploadSingleMedia(file, allowVideo=false) {
+                try {
+                    if (!adminToken) { showToast('Not authenticated'); return null; }
+                    const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
+                    if (!validTypes.includes(file.type)) { showToast('File type not supported'); return null; }
+                    let processedFile = file;
+                    if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
+                    const formData = new FormData();
+                    formData.append('image', processedFile);
+                    const res = await fetch(`${API}/admin/upload-image`, {
+                        method:'POST',
+                        headers:{'Authorization':`Bearer ${adminToken}`},
+                        body:formData
+                    });
+                    const data = await res.json();
+                    if (data.error) { showToast('Upload Error: ' + data.error); return null; }
+                    if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; }
+                    showToast('Upload failed');
+                    return null;
+                } catch(e) { showToast('Network error: ' + e.message); return null; }
+            }
 
-            // ===== SLIDESHOW =====
-            async function loadSlideshowAdmin() { const slides = await adminApiCall('GET', '/admin/slideshow'); let html = `<div class="card"><h3>🖼️ Slideshow Images</h3><button class="btn" onclick="openSlideshowEdit(null)">+ Add Slide</button><table><thead><tr><th>Order</th><th>Desktop</th><th>Mobile</th><th>Title</th><th>Active</th><th>Actions</th></tr></thead><tbody>`; if (slides) slides.forEach(s => { html += `<tr><td>${s.sort_order}</td><td><img src="${s.image_url_desktop}" class="media-thumb" onerror="this.style.display='none'"></td><td><img src="${s.image_url_mobile}" class="media-thumb" onerror="this.style.display='none'"></td><td>${escapeHtml(s.title||'')}</td><td>${s.is_active?'✅':'❌'}</td><td><button class="btn btn-sm btn-outline" onclick="openSlideshowEdit(${s.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSlide(${s.id})">🗑</button></td></tr>`; }); html += '</tbody></table></div>'; document.getElementById('panel-screen').innerHTML = html; }
-            function openSlideshowEdit(id) { const modal = document.getElementById('slideshow-edit-modal'); document.getElementById('ss-edit-id').value = id || ''; if (id) { adminApiCall('GET', '/admin/slideshow').then(all => { const s = all.find(x => x.id == id); if (s) { document.getElementById('ss-desktop-url').value = s.image_url_desktop; document.getElementById('ss-mobile-url').value = s.image_url_mobile; document.getElementById('ss-title').value = s.title || ''; document.getElementById('ss-link').value = s.link_url || ''; document.getElementById('ss-order').value = s.sort_order || 0; document.getElementById('ss-active').value = s.is_active ? 'true' : 'false'; document.getElementById('slideshow-modal-title').textContent = 'Edit Slide'; } }); } else { document.getElementById('ss-desktop-url').value = ''; document.getElementById('ss-mobile-url').value = ''; document.getElementById('ss-title').value = ''; document.getElementById('ss-link').value = ''; document.getElementById('ss-order').value = 0; document.getElementById('ss-active').value = 'true'; document.getElementById('slideshow-modal-title').textContent = 'Add New Slide'; } modal.classList.remove('hidden'); }
-            function closeSlideshowModal() { document.getElementById('slideshow-edit-modal').classList.add('hidden'); }
-            async function saveSlide() { const id = document.getElementById('ss-edit-id').value; const body = { image_url_desktop: document.getElementById('ss-desktop-url').value.trim(), image_url_mobile: document.getElementById('ss-mobile-url').value.trim(), title: document.getElementById('ss-title').value.trim(), link_url: document.getElementById('ss-link').value.trim(), sort_order: parseInt(document.getElementById('ss-order').value) || 0, is_active: document.getElementById('ss-active').value === 'true' }; if (!body.image_url_desktop || !body.image_url_mobile) return showToast('Both image URLs required'); if (id) { await adminApiCall('PUT', `/admin/slideshow/${id}`, body); } else { await adminApiCall('POST', '/admin/slideshow', body); } closeSlideshowModal(); loadSlideshowAdmin(); showToast('Slide saved'); }
-            async function deleteSlide(id) { if (!confirm('Delete this slide?')) return; await adminApiCall('DELETE', `/admin/slideshow/${id}`); loadSlideshowAdmin(); }
+            async function uploadFolderFiles(fileList) {
+                for (let file of fileList) await uploadSingleMedia(file, true);
+            }
 
-            // ===== ACTIVITY LOG =====
-            async function loadActivity() { const logs = await adminApiCall('GET', '/admin/activity-log'); let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>'; if (logs) logs.forEach(l => { const details = JSON.stringify(l.details).substring(0,60); html += `<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.admin_name || l.admin_email}</td><td>${l.action}</td><td>${details}</td></tr>`; }); html += '</table></div>'; document.getElementById('panel-screen').innerHTML = html; }
+            async function uploadImage() {
+                const file = document.getElementById('image-upload').files[0];
+                if (!file) return showToast('Select a file');
+                const url = await uploadSingleMedia(file);
+                if (url) showToast('Uploaded!');
+            }
 
-            // ===== SETTINGS =====
+            async function resizeImage(file, maxWidth) {
+                const img = await createImageBitmap(file);
+                const canvas = document.createElement('canvas');
+                const ratio = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * ratio;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
+                return new File([blob], file.name, { type:'image/jpeg' });
+            }
+
+            async function addMediaUrl() {
+                const url = document.getElementById('media-url-input').value.trim();
+                if (!url) return showToast('Enter URL');
+                await adminApiCall('POST', '/admin/media/url', { url });
+                loadMediaLibrary();
+            }
+
+            async function deleteMedia(id) {
+                await adminApiCall('DELETE', `/admin/media/${id}`);
+                loadMediaLibrary();
+            }
+
+            // ==============================
+            // TRANSLATIONS
+            // ==============================
+            async function loadTranslations() {
+                const lang = prompt('Language code (bn/en/hi):','bn') || 'bn';
+                const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
+                let html = `<div class="card"><h3>🌐 Translations (${lang})</h3><select id="trans-lang-select" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`;
+                if (rows) rows.forEach(t => { html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span><button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`; });
+                html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ New</button></div></div>`;
+                document.getElementById('panel-screen').innerHTML = html;
+            }
+
+            function openTransAddModal() {
+                document.getElementById('translation-add-modal').classList.remove('hidden');
+            }
+
+            function closeTransAddModal() {
+                document.getElementById('translation-add-modal').classList.add('hidden');
+            }
+
+            async function saveNewTranslation() {
+                const key = document.getElementById('trans-key').value.trim();
+                const value = document.getElementById('trans-value').value.trim();
+                const lang = document.getElementById('trans-lang').value;
+                if (!key || !value) return showToast('All fields required');
+                await adminApiCall('POST', '/admin/translations', { key, lang, value });
+                closeTransAddModal();
+                loadTranslations();
+                showToast('Translation added');
+            }
+
+            function editTrans(key, lang, current) {
+                const newVal = prompt('New value:', current);
+                if (newVal !== null) {
+                    adminApiCall('POST', '/admin/translations', { key, lang, value:newVal });
+                    loadTranslations();
+                }
+            }
+
+            // ==============================
+            // ASSESSMENTS
+            // ==============================
+            async function loadAssessments() {
+                const questions = await adminApiCall('GET', '/admin/assessments');
+                let html = `<div class="card"><h3>📋 Assessment Questions</h3><button class="btn" onclick="openAssessModal(null)">+ New Question</button><table><thead><tr><th>Order</th><th>Question</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
+                if (questions) questions.forEach(q => { html += `<tr><td>${q.order_index}</td><td>${escapeHtml(q.question)}</td><td>${escapeHtml(q.category||'')}</td><td><button class="btn btn-sm btn-outline" onclick="openAssessModal(${q.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteAssessQuestion(${q.id})">🗑</button></td></tr>`; });
+                html += '</tbody></table></div>';
+                document.getElementById('panel-screen').innerHTML = html;
+            }
+
+            function openAssessModal(id) {
+                const modal = document.getElementById('assess-modal');
+                document.getElementById('assess-edit-id').value = id || '';
+                if (id) {
+                    adminApiCall('GET', '/admin/assessments').then(all => {
+                        const q = all.find(x => x.id == id);
+                        if (q) {
+                            document.getElementById('assess-question').value = q.question;
+                            document.getElementById('assess-category').value = q.category || '';
+                            document.getElementById('assess-order').value = q.order_index;
+                        }
+                    });
+                    document.getElementById('assess-modal-title').textContent = 'Edit Assessment Question';
+                } else {
+                    document.getElementById('assess-question').value = '';
+                    document.getElementById('assess-category').value = '';
+                    document.getElementById('assess-order').value = '1';
+                    document.getElementById('assess-modal-title').textContent = 'New Assessment Question';
+                }
+                modal.classList.remove('hidden');
+            }
+
+            function closeAssessModal() {
+                document.getElementById('assess-modal').classList.add('hidden');
+            }
+
+            async function saveAssessQuestion() {
+                const question = document.getElementById('assess-question').value.trim();
+                const category = document.getElementById('assess-category').value.trim();
+                const order_index = parseInt(document.getElementById('assess-order').value);
+                const id = document.getElementById('assess-edit-id').value;
+                if (!question) return showToast('Question required');
+                const body = { question, category, order_index };
+                if (id) {
+                    await adminApiCall('PUT', `/admin/assessments/${id}`, body);
+                } else {
+                    await adminApiCall('POST', '/admin/assessments', body);
+                }
+                closeAssessModal();
+                loadAssessments();
+                showToast('Assessment question saved');
+            }
+
+            async function deleteAssessQuestion(id) {
+                if (!confirm('Delete this question?')) return;
+                await adminApiCall('DELETE', `/admin/assessments/${id}`);
+                loadAssessments();
+            }
+
+            // ==============================
+            // SLIDESHOW
+            // ==============================
+            async function loadSlideshowAdmin() {
+                const slides = await adminApiCall('GET', '/admin/slideshow');
+                let html = `<div class="card"><h3>🖼️ Slideshow Images</h3><button class="btn" onclick="openSlideshowEdit(null)">+ Add Slide</button><table><thead><tr><th>Order</th><th>Desktop</th><th>Mobile</th><th>Title</th><th>Active</th><th>Actions</th></tr></thead><tbody>`;
+                if (slides) slides.forEach(s => { html += `<tr><td>${s.sort_order}</td><td><img src="${s.image_url_desktop}" class="media-thumb" onerror="this.style.display='none'"></td><td><img src="${s.image_url_mobile}" class="media-thumb" onerror="this.style.display='none'"></td><td>${escapeHtml(s.title||'')}</td><td>${s.is_active?'✅':'❌'}</td><td><button class="btn btn-sm btn-outline" onclick="openSlideshowEdit(${s.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSlide(${s.id})">🗑</button></td></tr>`; });
+                html += '</tbody></table></div>';
+                document.getElementById('panel-screen').innerHTML = html;
+            }
+
+            function openSlideshowEdit(id) {
+                const modal = document.getElementById('slideshow-edit-modal');
+                document.getElementById('ss-edit-id').value = id || '';
+                if (id) {
+                    adminApiCall('GET', '/admin/slideshow').then(all => {
+                        const s = all.find(x => x.id == id);
+                        if (s) {
+                            document.getElementById('ss-desktop-url').value = s.image_url_desktop;
+                            document.getElementById('ss-mobile-url').value = s.image_url_mobile;
+                            document.getElementById('ss-title').value = s.title || '';
+                            document.getElementById('ss-link').value = s.link_url || '';
+                            document.getElementById('ss-order').value = s.sort_order || 0;
+                            document.getElementById('ss-active').value = s.is_active ? 'true' : 'false';
+                            document.getElementById('slideshow-modal-title').textContent = 'Edit Slide';
+                        }
+                    });
+                } else {
+                    document.getElementById('ss-desktop-url').value = '';
+                    document.getElementById('ss-mobile-url').value = '';
+                    document.getElementById('ss-title').value = '';
+                    document.getElementById('ss-link').value = '';
+                    document.getElementById('ss-order').value = 0;
+                    document.getElementById('ss-active').value = 'true';
+                    document.getElementById('slideshow-modal-title').textContent = 'Add New Slide';
+                }
+                modal.classList.remove('hidden');
+            }
+
+            function closeSlideshowModal() {
+                document.getElementById('slideshow-edit-modal').classList.add('hidden');
+            }
+
+            async function saveSlide() {
+                const id = document.getElementById('ss-edit-id').value;
+                const body = {
+                    image_url_desktop: document.getElementById('ss-desktop-url').value.trim(),
+                    image_url_mobile: document.getElementById('ss-mobile-url').value.trim(),
+                    title: document.getElementById('ss-title').value.trim(),
+                    link_url: document.getElementById('ss-link').value.trim(),
+                    sort_order: parseInt(document.getElementById('ss-order').value) || 0,
+                    is_active: document.getElementById('ss-active').value === 'true'
+                };
+                if (!body.image_url_desktop || !body.image_url_mobile) return showToast('Both image URLs required');
+                if (id) {
+                    await adminApiCall('PUT', `/admin/slideshow/${id}`, body);
+                } else {
+                    await adminApiCall('POST', '/admin/slideshow', body);
+                }
+                closeSlideshowModal();
+                loadSlideshowAdmin();
+                showToast('Slide saved');
+            }
+
+            async function deleteSlide(id) {
+                if (!confirm('Delete this slide?')) return;
+                await adminApiCall('DELETE', `/admin/slideshow/${id}`);
+                loadSlideshowAdmin();
+            }
+
+            // ==============================
+            // ACTIVITY LOG
+            // ==============================
+            async function loadActivity() {
+                const logs = await adminApiCall('GET', '/admin/activity-log');
+                let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>';
+                if (logs) logs.forEach(l => {
+                    const details = JSON.stringify(l.details).substring(0,60);
+                    html += `<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.admin_name || l.admin_email}</td><td>${l.action}</td><td>${details}</td></tr>`;
+                });
+                html += '</table></div>';
+                document.getElementById('panel-screen').innerHTML = html;
+            }
+
+            // ==============================
+            // SETTINGS
+            // ==============================
             function loadSettings() {
                 document.getElementById('panel-screen').innerHTML = `
                     <div class="card"><h3>⚙️ Admin Settings</h3><input type="password" id="current-password" placeholder="Current password"><input type="password" id="new-password" placeholder="New password"><input type="password" id="confirm-password" placeholder="Confirm new password"><button class="btn" onclick="changeAdminPassword()">Change Password</button><div id="settings-message" style="margin-top:12px;"></div></div>
@@ -1217,16 +1575,105 @@
                 `;
                 loadCurrentSiteConfig();
             }
-            async function loadCurrentSiteConfig() { const settings = await adminApiCall('GET', '/admin/settings', null, false); if (settings) { document.getElementById('site-title').value = settings.site_title || ''; document.getElementById('cors-origin').value = settings.cors_origin || ''; document.getElementById('blob-url').value = settings.blob_url || ''; } }
-            async function exportTrainingData() { try { const res = await fetch(`${API}/admin/export/training`, { headers: { 'Authorization': `Bearer ${adminToken}` } }); if (!res.ok) { const err = await res.json(); showToast('Export failed: ' + (err.error || 'Unknown error')); return; } const data = await res.json(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `training-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); showToast('✅ Training data exported!'); } catch(e) { showToast('Export failed: ' + e.message); } }
-            async function importTrainingData() { const fileInput = document.getElementById('restore-file'); const statusDiv = document.getElementById('restore-status'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('Please select a JSON backup file first'); return; } const file = fileInput.files[0]; if (!file.name.endsWith('.json')) { showToast('Please select a JSON file'); return; } try { statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>'; const reader = new FileReader(); reader.onload = async (e) => { try { const jsonData = JSON.parse(e.target.result); const res = await fetch(`${API}/admin/import/training`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${adminToken}`}, body:JSON.stringify(jsonData) }); const result = await res.json(); if (result.success) { statusDiv.innerHTML = `<span style="color:var(--success);">✅ ${result.message}</span>`; showToast('✅ Training data restored!'); fileInput.value = ''; } else { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${result.error || 'Restore failed'}</span>`; showToast('Restore failed: ' + (result.error || 'Unknown error')); } } catch (parseErr) { statusDiv.innerHTML = '<span style="color:var(--danger);">❌ Invalid JSON file</span>'; showToast('Invalid JSON file'); } }; reader.readAsText(file); } catch(e) { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`; showToast('Import failed: ' + e.message); } }
-            async function changeAdminPassword() { const current = document.getElementById('current-password').value; const newPass = document.getElementById('new-password').value; const confirm = document.getElementById('confirm-password').value; if (newPass !== confirm) return showToast('Passwords do not match'); if (newPass.length < 6) return showToast('Password must be at least 6 characters'); const res = await adminApiCall('PUT', '/admin/change-password', { current_password:current, new_password:newPass }); if (res && res.success) { showToast('✅ Password changed'); document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">Success</span>'; } else { document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; } }
-            async function saveSiteConfig() { const siteTitle = document.getElementById('site-title').value.trim(); const corsOrigin = document.getElementById('cors-origin').value.trim(); const blobUrl = document.getElementById('blob-url').value.trim(); const body = {}; if (siteTitle) body.site_title = siteTitle; if (corsOrigin) body.cors_origin = corsOrigin; if (blobUrl) body.blob_url = blobUrl; const res = await adminApiCall('PUT', '/admin/settings', body); if (res && res.success) { document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>'; showToast('✅ Configuration saved'); } else { document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; } }
 
-            // ===== INIT =====
-            if (adminToken) { checkVersion(); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('panel-screen').classList.remove('hidden'); switchTab('stats'); }
+            async function loadCurrentSiteConfig() {
+                const settings = await adminApiCall('GET', '/admin/settings', null, false);
+                if (settings) {
+                    document.getElementById('site-title').value = settings.site_title || '';
+                    document.getElementById('cors-origin').value = settings.cors_origin || '';
+                    document.getElementById('blob-url').value = settings.blob_url || '';
+                }
+            }
 
-            // Expose all functions globally
+            async function exportTrainingData() {
+                try {
+                    const res = await fetch(`${API}/admin/export/training`, { headers: { 'Authorization': `Bearer ${adminToken}` } });
+                    if (!res.ok) { const err = await res.json(); showToast('Export failed: ' + (err.error || 'Unknown error')); return; }
+                    const data = await res.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `training-backup-${new Date().toISOString().slice(0,10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast('✅ Training data exported!');
+                } catch(e) { showToast('Export failed: ' + e.message); }
+            }
+
+            async function importTrainingData() {
+                const fileInput = document.getElementById('restore-file');
+                const statusDiv = document.getElementById('restore-status');
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('Please select a JSON backup file first'); return; }
+                const file = fileInput.files[0];
+                if (!file.name.endsWith('.json')) { showToast('Please select a JSON file'); return; }
+                try {
+                    statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>';
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        try {
+                            const jsonData = JSON.parse(e.target.result);
+                            const res = await fetch(`${API}/admin/import/training`, {
+                                method:'POST',
+                                headers:{'Content-Type':'application/json','Authorization':`Bearer ${adminToken}`},
+                                body:JSON.stringify(jsonData)
+                            });
+                            const result = await res.json();
+                            if (result.success) {
+                                statusDiv.innerHTML = `<span style="color:var(--success);">✅ ${result.message}</span>`;
+                                showToast('✅ Training data restored!');
+                                fileInput.value = '';
+                            } else {
+                                statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${result.error || 'Restore failed'}</span>`;
+                                showToast('Restore failed: ' + (result.error || 'Unknown error'));
+                            }
+                        } catch (parseErr) {
+                            statusDiv.innerHTML = '<span style="color:var(--danger);">❌ Invalid JSON file</span>';
+                            showToast('Invalid JSON file');
+                        }
+                    };
+                    reader.readAsText(file);
+                } catch(e) {
+                    statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`;
+                    showToast('Import failed: ' + e.message);
+                }
+            }
+
+            async function changeAdminPassword() {
+                const current = document.getElementById('current-password').value;
+                const newPass = document.getElementById('new-password').value;
+                const confirm = document.getElementById('confirm-password').value;
+                if (newPass !== confirm) return showToast('Passwords do not match');
+                if (newPass.length < 6) return showToast('Password must be at least 6 characters');
+                const res = await adminApiCall('PUT', '/admin/change-password', { current_password:current, new_password:newPass });
+                if (res && res.success) {
+                    showToast('✅ Password changed');
+                    document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">Success</span>';
+                } else {
+                    document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`;
+                }
+            }
+
+            async function saveSiteConfig() {
+                const siteTitle = document.getElementById('site-title').value.trim();
+                const corsOrigin = document.getElementById('cors-origin').value.trim();
+                const blobUrl = document.getElementById('blob-url').value.trim();
+                const body = {};
+                if (siteTitle) body.site_title = siteTitle;
+                if (corsOrigin) body.cors_origin = corsOrigin;
+                if (blobUrl) body.blob_url = blobUrl;
+                const res = await adminApiCall('PUT', '/admin/settings', body);
+                if (res && res.success) {
+                    document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>';
+                    showToast('✅ Configuration saved');
+                } else {
+                    document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`;
+                }
+            }
+
+            // ==============================
+            // EXPOSE GLOBAL FUNCTIONS
+            // ==============================
             window.switchTab = switchTab;
             window.adminLogin = adminLogin;
             window.logout = logout;
@@ -1242,8 +1689,7 @@
             window.saveSubject = saveSubject;
             window.deleteSubject = deleteSubject;
             window.selectMainSubject = selectMainSubject;
-            window.playMainSubjectTTS = playMainSubjectTTS;
-            window.playSubSubjectTTS = playSubSubjectTTS;
+            window.filterSubjectsAdmin = filterSubjectsAdmin;
             window.openChapterEditor = openChapterEditor;
             window.closeChapterEditor = closeChapterEditor;
             window.saveChapter = saveChapter;
@@ -1256,28 +1702,13 @@
             window.editQuestion = editQuestion;
             window.deleteQuestion = deleteQuestion;
             window.switchEditorLanguage = switchEditorLanguage;
-            window.insertMainSubject = insertMainSubject;
-            window.addSubSection = addSubSection;
-            window.addSubSectionDirect = addSubSectionDirect;
-            window.editMainTitle = editMainTitle;
-            window.deleteMain = deleteMain;
-            window.editSubTitle = editSubTitle;
-            window.deleteSub = deleteSub;
-            window.editDirectSubTitle = editDirectSubTitle;
-            window.deleteDirectSub = deleteDirectSub;
-            window.playSubTTS = playSubTTS;
-            window.playDirectSubTTS = playDirectSubTTS;
-            window.playMainTTS = playMainTTS;
-            window.stopAllTTS = stopAllTTS;
-            window.toggleSubSections = toggleSubSections;
+            window.addImageField = addImageField;
+            window.addVideoField = addVideoField;
+            window.triggerChapterImageUpload = triggerChapterImageUpload;
+            window.triggerChapterVideoUpload = triggerChapterVideoUpload;
             window.refreshSectionTree = refreshSectionTree;
             window.filterSections = filterSections;
             window.deleteSelectedSections = deleteSelectedSections;
-            window.updateLangTag = updateLangTag;
-            window.triggerChapterImageUpload = triggerChapterImageUpload;
-            window.triggerChapterVideoUpload = triggerChapterVideoUpload;
-            window.addImageField = addImageField;
-            window.addVideoField = addVideoField;
             window.openCourseForm = openCourseForm;
             window.cancelCourseForm = cancelCourseForm;
             window.editCourse = editCourse;
@@ -1316,6 +1747,14 @@
             window.loadSettings = loadSettings;
             window.uploadSingleMedia = uploadSingleMedia;
             window.resizeImage = resizeImage;
+
+            // Init
+            if (adminToken) {
+                checkVersion();
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('panel-screen').classList.remove('hidden');
+                switchTab('stats');
+            }
         })();
     </script>
 </body>
