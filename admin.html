@@ -550,7 +550,6 @@
                 const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
                 let html = '';
 
-                // Assign IDs for highlighting
                 mainDivs.forEach((mainDiv, mIdx) => {
                     const subDivs = mainDiv.querySelectorAll('.tts-section');
                     subDivs.forEach((sub, sIdx) => { sub.id = `section-${mIdx}-${sIdx}`; });
@@ -568,7 +567,7 @@
                         });
                         html += `</div></div>`;
                     } else {
-                        html = '<p style="color:var(--text-secondary);">No main subject or sections added yet.</p>';
+                        html = '<p style="color:var(--text-secondary);">No main subject or sections added yet. Use <strong>Add Main Subject</strong> or toolbar buttons.</p>';
                     }
                 } else {
                     mainDivs.forEach((mainDiv, mIdx) => {
@@ -587,7 +586,6 @@
                 }
                 container.innerHTML = html;
 
-                // Destroy previous sortable instance
                 if (sortableInstance) sortableInstance.destroy();
                 sortableInstance = new Sortable(container, {
                     group: 'sections',
@@ -598,7 +596,6 @@
                         const mainDivs = Array.from(quillEditor.root.querySelectorAll('.main-subject'));
                         const parent = mainDivs.length > 0 ? mainDivs[0].parentNode : null;
                         if (!parent) return;
-
                         const reordered = [];
                         treeMains.forEach(tree => {
                             const idx = parseInt(tree.dataset.mainIndex);
@@ -630,11 +627,7 @@
                 checks.forEach(cb => {
                     const mIdx = parseInt(cb.dataset.main);
                     const sIdx = parseInt(cb.dataset.sub);
-                    if (mIdx === -1) {
-                        deleteDirectSub(sIdx);
-                    } else {
-                        deleteSub(mIdx, sIdx);
-                    }
+                    if (mIdx === -1) { deleteDirectSub(sIdx); } else { deleteSub(mIdx, sIdx); }
                 });
                 refreshSectionTree();
             }
@@ -680,7 +673,7 @@
                 const html = `<div class="main-subject" data-main-title="${escapeHtml(title)}" data-icon="${icon}" data-lang="${lang}"></div>`;
                 quillEditor.clipboard.dangerouslyPasteHTML(quillEditor.getLength(), html);
                 quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 150);
+                setTimeout(() => refreshSectionTree(), 200);
                 showToast('Main subject added');
             }
 
@@ -705,7 +698,7 @@
                 }
                 mainDiv.insertAdjacentHTML('beforeend', html);
                 quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 150);
+                setTimeout(() => refreshSectionTree(), 200);
                 showToast('Sub-subject added');
             }
 
@@ -727,7 +720,7 @@
                 }
                 quillEditor.clipboard.dangerouslyPasteHTML(quillEditor.getLength(), html);
                 quillEditor.update();
-                setTimeout(() => refreshSectionTree(), 150);
+                setTimeout(() => refreshSectionTree(), 200);
                 showToast('Sub-subject added');
             }
 
@@ -794,7 +787,7 @@
                 if (sIdx < ttsSections.length) { ttsSections[sIdx].remove(); quillEditor.update(); refreshSectionTree(); }
             }
 
-            // ===== TTS with pause/resume and highlighting =====
+            // ===== TTS =====
             function stopAllTTS() { if (speechSynthesis.speaking || speechSynthesis.paused) speechSynthesis.cancel(); resetAllTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; }
             function resetAllTTSButtons() {
                 document.querySelectorAll('#section-tree .play-btn').forEach(b => { b.textContent = '▶'; b.classList.remove('active-play'); });
@@ -813,12 +806,7 @@
                 if (cb) {
                     const mIdx = cb.dataset.main;
                     const sIdx = cb.dataset.sub;
-                    let sectionId = '';
-                    if (mIdx === '-1') {
-                        sectionId = `section-direct-${sIdx}`;
-                    } else {
-                        sectionId = `section-${mIdx}-${sIdx}`;
-                    }
+                    let sectionId = mIdx === '-1' ? `section-direct-${sIdx}` : `section-${mIdx}-${sIdx}`;
                     const target = document.getElementById(sectionId);
                     if (target) target.style.background = 'rgba(200,167,91,0.15)';
                 }
@@ -839,8 +827,7 @@
                 const voices = speechSynthesis.getVoices();
                 const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
                 if (femaleVoice) utterance.voice = femaleVoice;
-                btn.textContent = '⏸️';
-                btn.classList.add('active-play');
+                btn.textContent = '⏸️'; btn.classList.add('active-play');
                 stopBtnEl.classList.add('visible');
                 if (speedSelect) speedSelect.classList.add('visible');
                 activeSectionTTS = { utterance, playBtn: btn, stopBtn: stopBtnEl, speedSelect, state: 'playing' };
@@ -866,8 +853,7 @@
                 const voices = speechSynthesis.getVoices();
                 const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
                 if (femaleVoice) utterance.voice = femaleVoice;
-                btn.textContent = '⏸️';
-                btn.classList.add('active-play');
+                btn.textContent = '⏸️'; btn.classList.add('active-play');
                 stopBtnEl.classList.add('visible');
                 if (speedSelect) speedSelect.classList.add('visible');
                 activeSectionTTS = { utterance, playBtn: btn, stopBtn: stopBtnEl, speedSelect, state: 'playing' };
@@ -933,7 +919,7 @@
                         document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
                         setTimeout(() => {
                             if (quillEditor) { quillEditor.root.innerHTML = ch.content_text || ''; refreshSectionTree(); }
-                        }, 300);
+                        }, 400);
                         if (ch.images && ch.images.length) ch.images.forEach(url => addImageField(url)); else addImageField();
                         if (ch.videos && ch.videos.length) ch.videos.forEach(url => addVideoField(url)); else addVideoField();
                     }
@@ -951,22 +937,18 @@
                     addVideoField();
                     setTimeout(() => refreshSectionTree(), 200);
                 }
-                // Restore draft if exists
                 const draft = localStorage.getItem('chapterDraft');
                 if (draft) {
                     try {
                         const obj = JSON.parse(draft);
-                        if (obj.id === id || (!id && !obj.id)) {
+                        if ((!id && !obj.id) || (id == obj.id)) {
                             if (confirm('You have an unsaved draft. Restore it?')) {
-                                document.getElementById('ch-title').value = obj.title || '';
-                                document.getElementById('ch-order').value = obj.order || '';
-                                document.getElementById('ch-passing').value = obj.passing || 90;
-                                document.getElementById('ch-edit-lang').value = obj.lang || 'en';
-                                if (obj.content && quillEditor) quillEditor.root.innerHTML = obj.content;
-                                refreshSectionTree();
-                            } else {
-                                localStorage.removeItem('chapterDraft');
-                            }
+                                if (obj.title) document.getElementById('ch-title').value = obj.title;
+                                if (obj.order) document.getElementById('ch-order').value = obj.order;
+                                if (obj.passing) document.getElementById('ch-passing').value = obj.passing;
+                                if (obj.lang) { document.getElementById('ch-edit-lang').value = obj.lang; document.getElementById('ch-lang').value = obj.lang; }
+                                if (obj.content && quillEditor) { quillEditor.root.innerHTML = obj.content; refreshSectionTree(); }
+                            } else { localStorage.removeItem('chapterDraft'); }
                         }
                     } catch(e) {}
                 }
@@ -1103,30 +1085,8 @@
                 document.getElementById('panel-screen').innerHTML = html;
                 initMediaDropZone();
             }
-            function initMediaDropZone() {
-                const dz = document.getElementById('media-drop-zone'); const fi = document.getElementById('media-file-input');
-                if (!dz || !fi) return;
-                dz.addEventListener('click', () => fi.click());
-                dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
-                dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-                dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length) for (let f of files) uploadSingleMedia(f); });
-                fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); });
-            }
-            async function uploadSingleMedia(file, allowVideo=false) {
-                try {
-                    if (!adminToken) { showToast('Not authenticated'); return null; }
-                    const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif'];
-                    if (!validTypes.includes(file.type)) { showToast('File type not supported'); return null; }
-                    let processedFile = file;
-                    if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
-                    const formData = new FormData(); formData.append('image', processedFile);
-                    const res = await fetch(`${API}/admin/upload-image`, { method:'POST', headers:{'Authorization':`Bearer ${adminToken}`}, body:formData });
-                    const data = await res.json();
-                    if (data.error) { showToast('Upload Error: ' + data.error); return null; }
-                    if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; }
-                    showToast('Upload failed'); return null;
-                } catch(e) { showToast('Network error: ' + e.message); return null; }
-            }
+            function initMediaDropZone() { const dz = document.getElementById('media-drop-zone'); const fi = document.getElementById('media-file-input'); if (!dz || !fi) return; dz.addEventListener('click', () => fi.click()); dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); }); dz.addEventListener('dragleave', () => dz.classList.remove('dragover')); dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length) for (let f of files) uploadSingleMedia(f); }); fi.addEventListener('change', (e) => { for (let f of e.target.files) uploadSingleMedia(f); }); }
+            async function uploadSingleMedia(file, allowVideo=false) { try { if (!adminToken) { showToast('Not authenticated'); return null; } const validTypes = allowVideo ? ['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'] : ['image/png','image/jpeg','image/webp','image/gif']; if (!validTypes.includes(file.type)) { showToast('File type not supported'); return null; } let processedFile = file; if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200); const formData = new FormData(); formData.append('image', processedFile); const res = await fetch(`${API}/admin/upload-image`, { method:'POST', headers:{'Authorization':`Bearer ${adminToken}`}, body:formData }); const data = await res.json(); if (data.error) { showToast('Upload Error: ' + data.error); return null; } if (data.url) { showToast('Upload successful'); loadMediaLibrary(); return data.url; } showToast('Upload failed'); return null; } catch(e) { showToast('Network error: ' + e.message); return null; } }
             async function uploadFolderFiles(fileList) { for (let file of fileList) await uploadSingleMedia(file, true); }
             async function uploadImage() { const file = document.getElementById('image-upload').files[0]; if (!file) return showToast('Select a file'); const url = await uploadSingleMedia(file); if (url) showToast('Uploaded!'); }
             async function resizeImage(file, maxWidth) { const img = await createImageBitmap(file); const canvas = document.createElement('canvas'); const ratio = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * ratio; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8)); return new File([blob], file.name, { type:'image/jpeg' }); }
@@ -1134,53 +1094,28 @@
             async function deleteMedia(id) { await adminApiCall('DELETE', `/admin/media/${id}`); loadMediaLibrary(); }
 
             // ===== TRANSLATIONS =====
-            async function loadTranslations() {
-                const lang = prompt('Language code (bn/en/hi):','bn') || 'bn';
-                const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`);
-                let html = `<div class="card"><h3>🌐 Translations (${lang})</h3><select id="trans-lang-select" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`;
-                if (rows) rows.forEach(t => { html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span><button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`; });
-                html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ New</button></div></div>`;
-                document.getElementById('panel-screen').innerHTML = html;
-            }
+            async function loadTranslations() { const lang = prompt('Language code (bn/en/hi):','bn') || 'bn'; const rows = await adminApiCall('GET', `/admin/translations?lang=${lang}`); let html = `<div class="card"><h3>🌐 Translations (${lang})</h3><select id="trans-lang-select" onchange="loadTranslations()"><option>bn</option><option>en</option><option>hi</option></select><div id="trans-list" style="margin-top:12px;">`; if (rows) rows.forEach(t => { html += `<div class="flex" style="justify-content:space-between; padding:6px; background:rgba(255,255,255,0.05); margin:4px 0; border-radius:6px;"><span><strong>${escapeHtml(t.key)}</strong>: ${escapeHtml(t.value)}</span><button class="btn btn-sm btn-outline" onclick="editTrans('${t.key}','${lang}','${escapeHtml(t.value)}')">✏️</button></div>`; }); html += `<button class="btn btn-sm" onclick="openTransAddModal()">+ New</button></div></div>`; document.getElementById('panel-screen').innerHTML = html; }
             function openTransAddModal() { document.getElementById('translation-add-modal').classList.remove('hidden'); }
             function closeTransAddModal() { document.getElementById('translation-add-modal').classList.add('hidden'); }
             async function saveNewTranslation() { const key = document.getElementById('trans-key').value.trim(); const value = document.getElementById('trans-value').value.trim(); const lang = document.getElementById('trans-lang').value; if (!key || !value) return showToast('All fields required'); await adminApiCall('POST', '/admin/translations', { key, lang, value }); closeTransAddModal(); loadTranslations(); showToast('Translation added'); }
             function editTrans(key, lang, current) { const newVal = prompt('New value:', current); if (newVal !== null) { adminApiCall('POST', '/admin/translations', { key, lang, value:newVal }); loadTranslations(); } }
 
             // ===== ASSESSMENTS =====
-            async function loadAssessments() {
-                const questions = await adminApiCall('GET', '/admin/assessments');
-                let html = `<div class="card"><h3>📋 Assessment Questions</h3><button class="btn" onclick="openAssessModal(null)">+ New Question</button><table><thead><tr><th>Order</th><th>Question</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
-                if (questions) questions.forEach(q => { html += `<tr><td>${q.order_index}</td><td>${escapeHtml(q.question)}</td><td>${escapeHtml(q.category||'')}</td><td><button class="btn btn-sm btn-outline" onclick="openAssessModal(${q.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteAssessQuestion(${q.id})">🗑</button></td></tr>`; });
-                html += '</tbody></table></div>';
-                document.getElementById('panel-screen').innerHTML = html;
-            }
+            async function loadAssessments() { const questions = await adminApiCall('GET', '/admin/assessments'); let html = `<div class="card"><h3>📋 Assessment Questions</h3><button class="btn" onclick="openAssessModal(null)">+ New Question</button><table><thead><tr><th>Order</th><th>Question</th><th>Category</th><th>Actions</th></tr></thead><tbody>`; if (questions) questions.forEach(q => { html += `<tr><td>${q.order_index}</td><td>${escapeHtml(q.question)}</td><td>${escapeHtml(q.category||'')}</td><td><button class="btn btn-sm btn-outline" onclick="openAssessModal(${q.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteAssessQuestion(${q.id})">🗑</button></td></tr>`; }); html += '</tbody></table></div>'; document.getElementById('panel-screen').innerHTML = html; }
             function openAssessModal(id) { const modal = document.getElementById('assess-modal'); document.getElementById('assess-edit-id').value = id || ''; if (id) { adminApiCall('GET', '/admin/assessments').then(all => { const q = all.find(x => x.id == id); if (q) { document.getElementById('assess-question').value = q.question; document.getElementById('assess-category').value = q.category || ''; document.getElementById('assess-order').value = q.order_index; } }); document.getElementById('assess-modal-title').textContent = 'Edit Assessment Question'; } else { document.getElementById('assess-question').value = ''; document.getElementById('assess-category').value = ''; document.getElementById('assess-order').value = '1'; document.getElementById('assess-modal-title').textContent = 'New Assessment Question'; } modal.classList.remove('hidden'); }
             function closeAssessModal() { document.getElementById('assess-modal').classList.add('hidden'); }
             async function saveAssessQuestion() { const question = document.getElementById('assess-question').value.trim(); const category = document.getElementById('assess-category').value.trim(); const order_index = parseInt(document.getElementById('assess-order').value); const id = document.getElementById('assess-edit-id').value; if (!question) return showToast('Question required'); const body = { question, category, order_index }; if (id) { await adminApiCall('PUT', `/admin/assessments/${id}`, body); } else { await adminApiCall('POST', '/admin/assessments', body); } closeAssessModal(); loadAssessments(); showToast('Assessment question saved'); }
             async function deleteAssessQuestion(id) { if (!confirm('Delete this question?')) return; await adminApiCall('DELETE', `/admin/assessments/${id}`); loadAssessments(); }
 
             // ===== SLIDESHOW =====
-            async function loadSlideshowAdmin() {
-                const slides = await adminApiCall('GET', '/admin/slideshow');
-                let html = `<div class="card"><h3>🖼️ Slideshow Images</h3><button class="btn" onclick="openSlideshowEdit(null)">+ Add Slide</button><table><thead><tr><th>Order</th><th>Desktop</th><th>Mobile</th><th>Title</th><th>Active</th><th>Actions</th></tr></thead><tbody>`;
-                if (slides) slides.forEach(s => { html += `<tr><td>${s.sort_order}</td><td><img src="${s.image_url_desktop}" class="media-thumb" onerror="this.style.display='none'"></td><td><img src="${s.image_url_mobile}" class="media-thumb" onerror="this.style.display='none'"></td><td>${escapeHtml(s.title||'')}</td><td>${s.is_active?'✅':'❌'}</td><td><button class="btn btn-sm btn-outline" onclick="openSlideshowEdit(${s.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSlide(${s.id})">🗑</button></td></tr>`; });
-                html += '</tbody></table></div>';
-                document.getElementById('panel-screen').innerHTML = html;
-            }
+            async function loadSlideshowAdmin() { const slides = await adminApiCall('GET', '/admin/slideshow'); let html = `<div class="card"><h3>🖼️ Slideshow Images</h3><button class="btn" onclick="openSlideshowEdit(null)">+ Add Slide</button><table><thead><tr><th>Order</th><th>Desktop</th><th>Mobile</th><th>Title</th><th>Active</th><th>Actions</th></tr></thead><tbody>`; if (slides) slides.forEach(s => { html += `<tr><td>${s.sort_order}</td><td><img src="${s.image_url_desktop}" class="media-thumb" onerror="this.style.display='none'"></td><td><img src="${s.image_url_mobile}" class="media-thumb" onerror="this.style.display='none'"></td><td>${escapeHtml(s.title||'')}</td><td>${s.is_active?'✅':'❌'}</td><td><button class="btn btn-sm btn-outline" onclick="openSlideshowEdit(${s.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSlide(${s.id})">🗑</button></td></tr>`; }); html += '</tbody></table></div>'; document.getElementById('panel-screen').innerHTML = html; }
             function openSlideshowEdit(id) { const modal = document.getElementById('slideshow-edit-modal'); document.getElementById('ss-edit-id').value = id || ''; if (id) { adminApiCall('GET', '/admin/slideshow').then(all => { const s = all.find(x => x.id == id); if (s) { document.getElementById('ss-desktop-url').value = s.image_url_desktop; document.getElementById('ss-mobile-url').value = s.image_url_mobile; document.getElementById('ss-title').value = s.title || ''; document.getElementById('ss-link').value = s.link_url || ''; document.getElementById('ss-order').value = s.sort_order || 0; document.getElementById('ss-active').value = s.is_active ? 'true' : 'false'; document.getElementById('slideshow-modal-title').textContent = 'Edit Slide'; } }); } else { document.getElementById('ss-desktop-url').value = ''; document.getElementById('ss-mobile-url').value = ''; document.getElementById('ss-title').value = ''; document.getElementById('ss-link').value = ''; document.getElementById('ss-order').value = 0; document.getElementById('ss-active').value = 'true'; document.getElementById('slideshow-modal-title').textContent = 'Add New Slide'; } modal.classList.remove('hidden'); }
             function closeSlideshowModal() { document.getElementById('slideshow-edit-modal').classList.add('hidden'); }
             async function saveSlide() { const id = document.getElementById('ss-edit-id').value; const body = { image_url_desktop: document.getElementById('ss-desktop-url').value.trim(), image_url_mobile: document.getElementById('ss-mobile-url').value.trim(), title: document.getElementById('ss-title').value.trim(), link_url: document.getElementById('ss-link').value.trim(), sort_order: parseInt(document.getElementById('ss-order').value) || 0, is_active: document.getElementById('ss-active').value === 'true' }; if (!body.image_url_desktop || !body.image_url_mobile) return showToast('Both image URLs required'); if (id) { await adminApiCall('PUT', `/admin/slideshow/${id}`, body); } else { await adminApiCall('POST', '/admin/slideshow', body); } closeSlideshowModal(); loadSlideshowAdmin(); showToast('Slide saved'); }
             async function deleteSlide(id) { if (!confirm('Delete this slide?')) return; await adminApiCall('DELETE', `/admin/slideshow/${id}`); loadSlideshowAdmin(); }
 
             // ===== ACTIVITY LOG =====
-            async function loadActivity() {
-                const logs = await adminApiCall('GET', '/admin/activity-log');
-                let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>';
-                if (logs) logs.forEach(l => { const details = JSON.stringify(l.details).substring(0,60); html += `<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.admin_name || l.admin_email}</td><td>${l.action}</td><td>${details}</td></tr>`; });
-                html += '</table></div>';
-                document.getElementById('panel-screen').innerHTML = html;
-            }
+            async function loadActivity() { const logs = await adminApiCall('GET', '/admin/activity-log'); let html = '<div class="card"><h3>📋 Activity Log</h3><table><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>'; if (logs) logs.forEach(l => { const details = JSON.stringify(l.details).substring(0,60); html += `<tr><td>${new Date(l.created_at).toLocaleString()}</td><td>${l.admin_name || l.admin_email}</td><td>${l.action}</td><td>${details}</td></tr>`; }); html += '</table></div>'; document.getElementById('panel-screen').innerHTML = html; }
 
             // ===== SETTINGS =====
             function loadSettings() {
@@ -1193,41 +1128,12 @@
             }
             async function loadCurrentSiteConfig() { const settings = await adminApiCall('GET', '/admin/settings', null, false); if (settings) { document.getElementById('site-title').value = settings.site_title || ''; document.getElementById('cors-origin').value = settings.cors_origin || ''; document.getElementById('blob-url').value = settings.blob_url || ''; } }
             async function exportTrainingData() { try { const res = await fetch(`${API}/admin/export/training`, { headers: { 'Authorization': `Bearer ${adminToken}` } }); if (!res.ok) { const err = await res.json(); showToast('Export failed: ' + (err.error || 'Unknown error')); return; } const data = await res.json(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `training-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); showToast('✅ Training data exported!'); } catch(e) { showToast('Export failed: ' + e.message); } }
-            async function importTrainingData() {
-                const fileInput = document.getElementById('restore-file'); const statusDiv = document.getElementById('restore-status');
-                if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('Please select a JSON backup file first'); return; }
-                const file = fileInput.files[0];
-                if (!file.name.endsWith('.json')) { showToast('Please select a JSON file'); return; }
-                try {
-                    statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>';
-                    const reader = new FileReader();
-                    reader.onload = async (e) => {
-                        try {
-                            const jsonData = JSON.parse(e.target.result);
-                            const res = await fetch(`${API}/admin/import/training`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${adminToken}`}, body:JSON.stringify(jsonData) });
-                            const result = await res.json();
-                            if (result.success) { statusDiv.innerHTML = `<span style="color:var(--success);">✅ ${result.message}</span>`; showToast('✅ Training data restored!'); fileInput.value = ''; }
-                            else { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${result.error || 'Restore failed'}</span>`; showToast('Restore failed: ' + (result.error || 'Unknown error')); }
-                        } catch (parseErr) { statusDiv.innerHTML = '<span style="color:var(--danger);">❌ Invalid JSON file</span>'; showToast('Invalid JSON file'); }
-                    };
-                    reader.readAsText(file);
-                } catch(e) { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`; showToast('Import failed: ' + e.message); }
-            }
-            async function changeAdminPassword() {
-                const current = document.getElementById('current-password').value; const newPass = document.getElementById('new-password').value; const confirm = document.getElementById('confirm-password').value;
-                if (newPass !== confirm) return showToast('Passwords do not match');
-                if (newPass.length < 6) return showToast('Password must be at least 6 characters');
-                const res = await adminApiCall('PUT', '/admin/change-password', { current_password:current, new_password:newPass });
-                if (res && res.success) { showToast('✅ Password changed'); document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">Success</span>'; }
-                else { document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; }
-            }
-            async function saveSiteConfig() {
-                const siteTitle = document.getElementById('site-title').value.trim(); const corsOrigin = document.getElementById('cors-origin').value.trim(); const blobUrl = document.getElementById('blob-url').value.trim();
-                const body = {}; if (siteTitle) body.site_title = siteTitle; if (corsOrigin) body.cors_origin = corsOrigin; if (blobUrl) body.blob_url = blobUrl;
-                const res = await adminApiCall('PUT', '/admin/settings', body);
-                if (res && res.success) { document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>'; showToast('✅ Configuration saved'); }
-                else { document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; }
-            }
+            async function importTrainingData() { const fileInput = document.getElementById('restore-file'); const statusDiv = document.getElementById('restore-status'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('Please select a JSON backup file first'); return; } const file = fileInput.files[0]; if (!file.name.endsWith('.json')) { showToast('Please select a JSON file'); return; } try { statusDiv.innerHTML = '<span style="color:var(--warning);">⏳ Restoring training data...</span>'; const reader = new FileReader(); reader.onload = async (e) => { try { const jsonData = JSON.parse(e.target.result); const res = await fetch(`${API}/admin/import/training`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${adminToken}`}, body:JSON.stringify(jsonData) }); const result = await res.json(); if (result.success) { statusDiv.innerHTML = `<span style="color:var(--success);">✅ ${result.message}</span>`; showToast('✅ Training data restored!'); fileInput.value = ''; } else { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${result.error || 'Restore failed'}</span>`; showToast('Restore failed: ' + (result.error || 'Unknown error')); } } catch (parseErr) { statusDiv.innerHTML = '<span style="color:var(--danger);">❌ Invalid JSON file</span>'; showToast('Invalid JSON file'); } }; reader.readAsText(file); } catch(e) { statusDiv.innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`; showToast('Import failed: ' + e.message); } }
+            async function changeAdminPassword() { const current = document.getElementById('current-password').value; const newPass = document.getElementById('new-password').value; const confirm = document.getElementById('confirm-password').value; if (newPass !== confirm) return showToast('Passwords do not match'); if (newPass.length < 6) return showToast('Password must be at least 6 characters'); const res = await adminApiCall('PUT', '/admin/change-password', { current_password:current, new_password:newPass }); if (res && res.success) { showToast('✅ Password changed'); document.getElementById('settings-message').innerHTML = '<span style="color:var(--success);">Success</span>'; } else { document.getElementById('settings-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; } }
+            async function saveSiteConfig() { const siteTitle = document.getElementById('site-title').value.trim(); const corsOrigin = document.getElementById('cors-origin').value.trim(); const blobUrl = document.getElementById('blob-url').value.trim(); const body = {}; if (siteTitle) body.site_title = siteTitle; if (corsOrigin) body.cors_origin = corsOrigin; if (blobUrl) body.blob_url = blobUrl; const res = await adminApiCall('PUT', '/admin/settings', body); if (res && res.success) { document.getElementById('config-message').innerHTML = '<span style="color:var(--success);">Configuration saved</span>'; showToast('✅ Configuration saved'); } else { document.getElementById('config-message').innerHTML = `<span style="color:var(--danger);">${res?.error || 'Error'}</span>`; } }
+
+            // ===== INIT =====
+            if (adminToken) { checkVersion(); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('panel-screen').classList.remove('hidden'); switchTab('stats'); }
 
             // Expose all functions globally
             window.switchTab = switchTab;
@@ -1312,9 +1218,6 @@
             window.loadSettings = loadSettings;
             window.uploadSingleMedia = uploadSingleMedia;
             window.resizeImage = resizeImage;
-
-            // Initialization
-            if (adminToken) { checkVersion(); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('panel-screen').classList.remove('hidden'); switchTab('stats'); }
         })();
     </script>
 </body>
