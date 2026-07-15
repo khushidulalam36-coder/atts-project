@@ -11,14 +11,10 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="/icon-192.png">
     <link rel="apple-touch-icon" href="/icon-192.png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1">
-    </script>
-    <script src="https://accounts.google.com/gsi/client" async defer>
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -59,126 +55,20 @@
             --border-gold: rgba(200, 167, 91, 0.5);
             --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #eef2ff 100%);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.15);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        @keyframes float {
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        @keyframes bgSlide {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        @keyframes shine {
-            0% {
-                background-position: -200% 0;
-            }
-            100% {
-                background-position: 200% 0;
-            }
-        }
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, 0) scale(0.5);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -80px) scale(1.2);
-            }
-        }
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-        @keyframes goldShine {
-            0% {
-                background-position: 0% center;
-            }
-            100% {
-                background-position: 200% center;
-            }
-        }
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes slideFade {
-            0% {
-                opacity: 0.4;
-                transform: scale(0.98);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        @keyframes tocHighlight {
-            0% {
-                background: rgba(37, 99, 235, 0.3);
-            }
-            100% {
-                background: rgba(37, 99, 235, 0.05);
-            }
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        @keyframes spin { 100%{transform:rotate(360deg);} }
+        @keyframes bounceIn { 0%{transform:scale(0);opacity:0;} 60%{transform:scale(1.15);opacity:1;} 100%{transform:scale(1);} }
+        @keyframes float { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-10px);} }
+        @keyframes bgSlide { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+        @keyframes shine { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+        @keyframes floatUp { 0%{opacity:1;transform:translate(-50%,0) scale(0.5);} 100%{opacity:0;transform:translate(-50%,-80px) scale(1.2);} }
+        @keyframes ripple { to{transform:scale(4);opacity:0;} }
+        @keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+        @keyframes goldShine { 0%{background-position:0% center;} 100%{background-position:200% center;} }
+        @keyframes rotate { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        @keyframes slideFade { 0%{opacity:0.4;transform:scale(0.98);} 100%{opacity:1;transform:scale(1);} }
+        @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.1);} 100%{transform:scale(1);} }
+        @keyframes tocHighlight { 0%{background:rgba(37,99,235,0.3);} 100%{background:rgba(37,99,235,0.05);} }
         body {
             font-family: var(--font-en), 'Inter', 'Hind Siliguri', sans-serif;
             background: var(--bg-gradient);
@@ -193,23 +83,19 @@
         body::before {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
             background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 70% 20%, rgba(200, 167, 91, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+                        radial-gradient(circle at 70% 20%, rgba(200, 167, 91, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
             animation: rotate 30s linear infinite;
             z-index: 0;
             pointer-events: none;
         }
         #main-header {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
+            top:0; left:0; right:0;
+            z-index:100;
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -232,8 +118,7 @@
             flex: 1;
             text-align: center;
         }
-        .hamburger-btn,
-        .icon-btn {
+        .hamburger-btn, .icon-btn {
             background: none;
             border: none;
             color: var(--text);
@@ -247,13 +132,8 @@
             border-radius: 50%;
             transition: background 0.2s;
         }
-        .hamburger-btn:hover,
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .desktop-nav {
-            display: none;
-        }
+        .hamburger-btn:hover, .icon-btn:hover { background: rgba(255,255,255,0.1); }
+        .desktop-nav { display: none; }
         .mobile-tabs {
             display: flex;
             overflow-x: auto;
@@ -265,9 +145,7 @@
             align-items: center;
             scrollbar-width: none;
         }
-        .mobile-tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .mobile-tabs::-webkit-scrollbar { display: none; }
         .nav-tab {
             background: transparent;
             border: none;
@@ -284,18 +162,15 @@
             font-family: inherit;
             font-size: 0.9rem;
         }
-        .nav-tab:hover,
-        .nav-tab.active {
+        .nav-tab:hover, .nav-tab.active {
             color: var(--gold-bright);
-            background: rgba(200, 167, 91, 0.12);
+            background: rgba(200,167,91,0.12);
         }
         .drawer {
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top:0; left:0; bottom:0;
             width: 280px;
-            background: rgba(15, 23, 42, 0.98);
+            background: rgba(15,23,42,0.98);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             transform: translateX(-100%);
@@ -305,9 +180,7 @@
             overflow-y: auto;
             border-right: 1px solid var(--border-gold);
         }
-        .drawer.open {
-            transform: translateX(0);
-        }
+        .drawer.open { transform: translateX(0); }
         .drawer nav a {
             display: flex;
             align-items: center;
@@ -319,24 +192,15 @@
             transition: 0.2s;
             cursor: pointer;
         }
-        .drawer nav a:hover,
-        .drawer nav a.active {
-            background: rgba(200, 167, 91, 0.15);
-            color: var(--gold-bright);
-        }
+        .drawer nav a:hover, .drawer nav a.active { background: rgba(200,167,91,0.15); color: var(--gold-bright); }
         .drawer-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 150;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.6);
+            z-index:150;
             display: none;
         }
-        .drawer-overlay.show {
-            display: block;
-        }
+        .drawer-overlay.show { display: block; }
         main#main-content {
             margin-top: calc(var(--navbar-height) + var(--tabs-height) + 8px);
             padding: 20px;
@@ -345,34 +209,20 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .page-content {
-            display: block;
-        }
-        .page-content.hidden {
-            display: none !important;
-        }
-        @media (min-width: 768px) {
-            .mobile-tabs {
-                display: none;
-            }
-            .desktop-nav {
-                display: flex;
-                gap: 12px;
-                flex-wrap: nowrap;
-            }
-            .top-bar .logo {
-                text-align: left;
-            }
-            main#main-content {
-                margin-top: calc(var(--navbar-height) + 8px);
-            }
+        .page-content { display: block; }
+        .page-content.hidden { display: none !important; }
+        @media (min-width:768px) {
+            .mobile-tabs { display: none; }
+            .desktop-nav { display: flex; gap:12px; flex-wrap:nowrap; }
+            .top-bar .logo { text-align: left; }
+            main#main-content { margin-top: calc(var(--navbar-height) + 8px); }
         }
         .glass {
-            background: rgba(17, 24, 39, 0.65);
+            background: rgba(17,24,39,0.65);
             backdrop-filter: blur(24px) saturate(200%);
             -webkit-backdrop-filter: blur(24px) saturate(200%);
             border: 1px solid var(--border-gold);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.03);
             border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 18px;
@@ -381,15 +231,8 @@
             max-width: 100%;
             word-wrap: break-word;
         }
-        .glass:hover {
-            border-color: var(--gold-bright);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), var(--glow-gold);
-            transform: translateY(-4px);
-        }
-        h1,
-        h2,
-        h3,
-        h4 {
+        .glass:hover { border-color: var(--gold-bright); box-shadow: 0 12px 40px rgba(0,0,0,0.6), var(--glow-gold); transform: translateY(-4px); }
+        h1,h2,h3,h4 {
             background: linear-gradient(135deg, var(--gold-bright), var(--gold-light), var(--gold));
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -399,102 +242,24 @@
             margin-bottom: 12px;
             animation: goldShine 4s linear infinite;
         }
-        h2 {
-            font-size: 1.6rem;
-        }
-        h3 {
-            font-size: 1.25rem;
-        }
-        .btn {
-            background: linear-gradient(135deg, #C8A75B, #2563EB);
-            color: #fff;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            box-shadow: 0 4px 12px rgba(200, 167, 91, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(200, 167, 91, 0.5), 0 0 20px rgba(37, 99, 235, 0.3);
-            background: linear-gradient(135deg, #E8C97A, #60A5FA);
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn:focus-visible {
-            outline: 2px solid #E8C97A;
-            outline-offset: 3px;
-        }
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s, opacity 0.6s;
-            opacity: 0;
-        }
-        .btn:active::after {
-            width: 300px;
-            height: 300px;
-            opacity: 0;
-            transition: 0s;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            box-shadow: none;
-        }
-        .btn-outline:hover {
-            background: rgba(200, 167, 91, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(200, 167, 91, 0.4);
-        }
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent), #1d4ed8);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-        }
-        .btn-accent:hover {
-            background: linear-gradient(135deg, var(--accent-bright), #2563EB);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.6);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #b91c1c);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-        }
-        .btn-danger:hover {
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
-        }
-        .btn-sm {
-            padding: 6px 16px;
-            font-size: 0.8rem;
-            border-radius: 20px;
-        }
-        .btn-lg {
-            padding: 16px 32px;
-            font-size: 1.1rem;
-            border-radius: 40px;
-        }
-        input,
-        textarea,
-        select {
-            background: rgba(255, 255, 255, 0.08);
+        h2 { font-size: 1.6rem; }
+        h3 { font-size: 1.25rem; }
+        .btn { background: linear-gradient(135deg, #C8A75B, #2563EB); color:#fff; border:none; padding:10px 24px; border-radius:30px; font-weight:600; cursor:pointer; transition: all 0.3s ease; font-size:0.95rem; letter-spacing:0.5px; position:relative; overflow:hidden; z-index:1; box-shadow:0 4px 12px rgba(200,167,91,0.3); display:inline-flex; align-items:center; gap:8px; }
+        .btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(200,167,91,0.5), 0 0 20px rgba(37,99,235,0.3); background:linear-gradient(135deg, #E8C97A, #60A5FA); }
+        .btn:active { transform:scale(0.96); }
+        .btn:focus-visible { outline:2px solid #E8C97A; outline-offset:3px; }
+        .btn::after { content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-radius:50%; background:rgba(255,255,255,0.3); transform:translate(-50%,-50%); transition:width 0.6s, height 0.6s, opacity 0.6s; opacity:0; }
+        .btn:active::after { width:300px; height:300px; opacity:0; transition:0s; }
+        .btn-outline { background:transparent; border:2px solid var(--gold); color:var(--gold); box-shadow:none; }
+        .btn-outline:hover { background:rgba(200,167,91,0.1); transform:translateY(-2px); box-shadow:0 4px 15px rgba(200,167,91,0.4); }
+        .btn-accent { background:linear-gradient(135deg, var(--accent), #1d4ed8); box-shadow:0 4px 12px rgba(37,99,235,0.4); }
+        .btn-accent:hover { background:linear-gradient(135deg, var(--accent-bright), #2563EB); box-shadow:0 8px 20px rgba(37,99,235,0.6); }
+        .btn-danger { background:linear-gradient(135deg, var(--danger), #b91c1c); box-shadow:0 4px 12px rgba(239,68,68,0.4); }
+        .btn-danger:hover { box-shadow:0 8px 20px rgba(239,68,68,0.6); }
+        .btn-sm { padding:6px 16px; font-size:0.8rem; border-radius:20px; }
+        .btn-lg { padding:16px 32px; font-size:1.1rem; border-radius:40px; }
+        input,textarea,select {
+            background: rgba(255,255,255,0.08);
             border: 1px solid var(--border-gold);
             color: var(--text);
             padding: 10px 16px;
@@ -506,1103 +271,92 @@
             outline: none;
             font-size: 0.95rem;
         }
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: var(--accent-bright);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-            background: rgba(255, 255, 255, 0.12);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-        .flex {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .badge {
-            background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-            color: #020617;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .badge-accent {
-            background: linear-gradient(135deg, var(--accent), var(--accent-bright));
-        }
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            height: 14px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-bright));
-            border-radius: 20px;
-            box-shadow: 0 0 10px var(--accent);
-            width: 0%;
-            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .chart-container {
-            margin-top: 20px;
-            max-height: 280px;
-            position: relative;
-            z-index: 1;
-        }
-        .phase-tag {
-            background: var(--gold);
-            color: #020617;
-            padding: 5px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-        .post {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
-        }
-        .post:hover {
-            background: rgba(255, 255, 255, 0.06);
-        }
-        .slider-item {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 12px 0;
-            padding: 8px 0;
-        }
-        .slider-item label {
-            flex: 2;
-            min-width: 180px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .slider-item input[type="range"] {
-            flex: 3;
-            accent-color: var(--accent);
-        }
-        .slider-item span {
-            font-weight: 700;
-            color: var(--gold-light);
-            min-width: 24px;
-            text-align: center;
-        }
-        .xp-bar-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-            height: 24px;
-            overflow: hidden;
-            position: relative;
-            margin: 10px 0;
-        }
-        .xp-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-bright));
-            background-size: 200% 100%;
-            animation: shine 3s linear infinite;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: width 0.8s;
-        }
-        .xp-text {
-            color: #fff;
-            font-weight: bold;
-            font-size: 0.75rem;
-            z-index: 1;
-        }
-        .float-xp {
-            position: fixed;
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--gold-bright);
-            text-shadow: 0 0 20px black;
-            animation: floatUp 2s ease-out forwards;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
-        }
-        .habit-card {
-            transition: all 0.3s;
-            margin-bottom: 12px;
-        }
-        .habit-time-slot {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 4px 12px;
-            margin: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .habit-time-slot.done {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid #10b981;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--accent);
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 30px;
-            z-index: 9999;
-            font-weight: 700;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            opacity: 0;
-            transform: translateX(120%);
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .mini-stat {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
-            padding: 8px 14px;
-            border: 1px solid var(--border-gold);
-            backdrop-filter: blur(5px);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-        .streak-fire {
-            background: linear-gradient(135deg, #ff9100, #ff3d00);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            animation: pulse 1.5s infinite;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            backdrop-filter: blur(4px);
-        }
-        .modal-content {
-            max-width: 90vw;
-            max-height: 85vh;
-            overflow-y: auto;
-            width: 500px;
-        }
-        .gold-text {
-            background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .quest-card {
-            border: 1px solid var(--gold-bright);
-            background: radial-gradient(circle at top left, rgba(200, 167, 91, 0.15), rgba(12, 14, 34, 0.8));
-        }
-        .quest-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .xp-reward {
-            color: var(--gold-bright);
-            font-weight: bold;
-        }
-        .quest-progress {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .fab {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(200, 167, 91, 0.5);
-            cursor: pointer;
-            font-size: 28px;
-            z-index: 2000;
-            transition: transform 0.3s;
-        }
-        .fab:hover {
-            transform: scale(1.1);
-        }
-        .mood-picker {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 16px 0;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px;
-            border-radius: 12px;
-        }
-        .mood-emoji {
-            font-size: 28px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            padding: 4px;
-            border-radius: 50%;
-        }
-        .mood-emoji.selected {
-            transform: scale(1.3);
-            background: rgba(200, 167, 91, 0.2);
-            box-shadow: 0 0 12px var(--gold);
-        }
-        .evolution-tree {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            border-radius: 12px;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .evolution-tree .stage {
-            text-align: center;
-            padding: 8px;
-            border-radius: 8px;
-            opacity: 0.4;
-            transition: 0.3s;
-            font-size: 0.8rem;
-        }
-        .evolution-tree .stage.active {
-            opacity: 1;
-            background: rgba(37, 99, 235, 0.2);
-            box-shadow: 0 0 15px var(--accent);
-        }
-        .chapter-card {
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .chapter-card:hover:not(.locked) {
-            transform: translateY(-5px);
-            box-shadow: var(--glow-gold);
-        }
-        .chapter-card.locked {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .skeleton {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: var(--radius-sm);
-            height: 80px;
-        }
-        .video-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            margin-bottom: 16px;
-            transition: var(--transition);
-        }
-        .video-card iframe {
-            aspect-ratio: 16/9;
-            width: 100%;
-            height: auto;
-            border: 0;
-        }
-        .video-info {
-            padding: 12px;
-        }
-        .reply-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 6px 0;
-            font-size: 0.9rem;
-        }
-        .quiz-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 4px 0;
-        }
-        .quiz-option input[type="radio"] {
-            width: auto;
-            margin: 0;
-            accent-color: var(--gold);
-        }
-        .quiz-option label {
-            flex: 1;
-            cursor: pointer;
-            color: var(--text);
-        }
-        .question-block {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .drop-zone {
-            border: 2px dashed var(--border-gold);
-            border-radius: var(--radius);
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            background: rgba(255, 255, 255, 0.02);
-            margin: 12px 0;
-        }
-        .drop-zone.dragover {
-            border-color: var(--gold-bright);
-            background: rgba(200, 167, 91, 0.1);
-        }
-        .tts-btn {
-            background: none;
-            border: none;
-            color: var(--accent-bright);
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        .tts-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .assessment-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .assessment-item {
-            margin-bottom: 18px;
-            border-bottom: 1px solid var(--border-gold);
-            padding-bottom: 16px;
-        }
-        .assessment-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .assessment-question {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .assessment-options {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-            padding-left: 2px;
-        }
-        .assessment-options label {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.95rem;
-            user-select: none;
-            white-space: nowrap;
-        }
-        .assessment-options input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            margin: 0;
-            accent-color: var(--gold);
-            flex-shrink: 0;
-        }
-        .password-wrapper {
-            position: relative;
-        }
-        .password-wrapper input {
-            padding-right: 40px;
-        }
-        .password-wrapper .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-        .slider-item input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 50%), rgba(255, 255, 255, 0.2) var(--fill-percent, 50%), rgba(255, 255, 255, 0.2) 100%);
-            border-radius: 5px;
-            outline: none;
-        }
-        .slider-item input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--accent-bright);
-            border: 2px solid white;
-            box-shadow: 0 0 10px var(--accent);
-            cursor: pointer;
-        }
-        #hero-slideshow {
-            padding: 0;
-            border-radius: var(--radius);
-            overflow: hidden;
-            position: relative;
-            background: rgba(0, 0, 0, 0.3);
-        }
-        #slides-container {
-            display: flex;
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: transform;
-        }
-        #slides-container .slide-item {
-            flex: 0 0 100%;
-            display: block;
-            position: relative;
-            overflow: hidden;
-        }
-        #slides-container .slide-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: cover;
-            max-height: 420px;
-            animation: slideFade 0.8s ease;
-        }
-        #slide-dots {
-            position: absolute;
-            bottom: 12px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            z-index: 5;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 4px;
-        }
-        #slide-dots .dot {
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.5);
-            transition: color 0.3s, transform 0.3s;
-            background: transparent;
-            border: none;
-            padding: 4px;
-            line-height: 1;
-        }
-        #slide-dots .dot.active {
-            color: var(--gold-bright);
-            transform: scale(1.4);
-        }
-        #slide-dots .dot:hover {
-            color: var(--gold-light);
-        }
-        .slide-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 5;
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .slide-arrow:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-        .slide-arrow.prev {
-            left: 8px;
-        }
-        .slide-arrow.next {
-            right: 8px;
-        }
-        @media (max-width:768px) {
-            .slide-arrow {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
-            }
-            #slides-container .slide-item img {
-                max-height: 240px;
-            }
-            #slide-dots .dot {
-                font-size: 0.9rem;
-            }
-        }
-        @keyframes slideFade {
-            0% {
-                opacity: 0.5;
-                transform: scale(0.98);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        #chapter-modal-content {
-            line-height: 1.8;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding: 4px 0;
-        }
-        #chapter-modal-content p,
-        #chapter-modal-content h1,
-        #chapter-modal-content h2,
-        #chapter-modal-content h3,
-        #chapter-modal-content h4,
-        #chapter-modal-content ul,
-        #chapter-modal-content ol,
-        #chapter-modal-content blockquote {
-            margin-bottom: 12px;
-        }
-        #chapter-modal-content img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-        .tts-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            border: 1px solid rgba(200, 167, 91, 0.2);
-            flex-wrap: wrap;
-        }
-        .tts-btn-sm {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border-gold);
-            color: var(--text);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-        .tts-btn-sm:hover:not(:disabled) {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 0 14px var(--accent);
-            transform: scale(1.05);
-        }
-        .tts-btn-sm.active-play {
-            background: var(--success);
-            border-color: var(--success);
-            color: #fff;
-        }
-        .tts-btn-sm.active-pause {
-            background: var(--warning);
-            border-color: var(--warning);
-            color: #000;
-        }
-        .tts-btn-sm:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            filter: grayscale(0.6);
-        }
-        .tts-speed-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-left: auto;
-        }
-        .tts-speed-control label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .tts-speed-control select {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--border-gold);
-            color: var(--text);
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            width: 75px;
-            cursor: pointer;
-        }
-        .tts-speed-control select:focus {
-            border-color: var(--accent-bright);
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        /* ========= TOC Sidebar Styles ========= */
-        #chapter-toc-sidebar {
-            flex: 1;
-            min-width: 180px;
-            max-width: 260px;
-            border-right: 1px solid var(--border-gold);
-            padding-right: 12px;
-            max-height: 55vh;
-            overflow-y: auto;
-        }
-        #chapter-toc-sidebar h4 {
-            margin-bottom: 8px;
-            font-size: 1rem;
-            white-space: nowrap;
-        }
-        #chapter-content-scroll {
-            flex: 3;
-            max-height: 55vh;
-            overflow-y: auto;
-        }
-        #chapter-content-scroll #chapter-modal-content {
-            max-height: none;
-            overflow-y: visible;
-        }
-        .toc-main {
-            margin-bottom: 4px;
-        }
-        .toc-main-title {
-            cursor: pointer;
-            padding: 6px 4px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: background 0.2s;
-            font-size: 0.9rem;
-            color: var(--gold-light);
-            user-select: none;
-        }
-        .toc-main-title:hover {
-            background: rgba(200, 167, 91, 0.15);
-        }
-        .toc-subs {
-            padding-left: 12px;
-            margin: 2px 0 6px;
-            display: none;
-        }
-        .toc-subs.open {
-            display: block;
-        }
-        .toc-sub-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 4px 6px;
-            border-radius: 6px;
-            transition: background 0.2s;
-            font-size: 0.85rem;
-            gap: 4px;
-        }
-        .toc-sub-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .toc-sub-item.toc-active {
-            background: rgba(37, 99, 235, 0.15);
-            animation: tocHighlight 1.2s ease forwards;
-        }
-        .toc-sub-link {
-            cursor: pointer;
-            color: var(--text-secondary);
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .toc-sub-link:hover {
-            color: var(--accent-bright);
-        }
-        .tts-mini-controls {
-            display: inline-flex;
-            gap: 2px;
-            align-items: center;
-            margin-left: 4px;
-            flex-shrink: 0;
-        }
-        .tts-mini-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border-gold);
-            color: var(--text);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            transition: all 0.25s;
-            padding: 0;
-            flex-shrink: 0;
-        }
-        .tts-mini-btn:hover:not(:disabled) {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-        }
-        .tts-mini-btn.active-play {
-            background: var(--success);
-            border-color: var(--success);
-            color: #fff;
-        }
-        .tts-mini-btn.active-pause {
-            background: var(--warning);
-            border-color: var(--warning);
-            color: #000;
-        }
-        .tts-mini-speed {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--border-gold);
-            color: var(--text);
-            padding: 2px 4px;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            width: 40px;
-            cursor: pointer;
-            display: none;
-        }
-        .tts-mini-speed.visible {
-            display: inline-block;
-        }
-        .tts-mini-stop {
-            display: none;
-        }
-        .tts-mini-stop.visible {
-            display: inline-flex;
-        }
-        #chapter-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        #chapter-modal-header h2 {
-            margin: 0;
-            flex: 1;
-            min-width: 200px;
-        }
-        #chapter-modal-header .header-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        #chapter-modal-flex-row {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-        }
-        @media (max-width:768px) {
-            #chapter-modal-flex-row {
-                flex-direction: column;
-            }
-            #chapter-toc-sidebar {
-                max-width: 100% !important;
-                min-width: auto;
-                border-right: none !important;
-                border-bottom: 1px solid var(--border-gold);
-                padding-right: 0 !important;
-                padding-bottom: 8px;
-                max-height: 30vh !important;
-                margin-bottom: 8px;
-            }
-            #chapter-content-scroll {
-                max-height: 40vh !important;
-            }
-            #chapter-modal-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            #chapter-modal-header .header-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-        }
+        input:focus,textarea:focus,select:focus { border-color: var(--accent-bright); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); background: rgba(255,255,255,0.12); }
+        textarea { resize: vertical; min-height: 60px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .flex { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .hidden { display: none !important; }
+        .badge { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color:#020617; padding:4px 12px; border-radius:20px; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:4px; }
+        .badge-accent { background: linear-gradient(135deg, var(--accent), var(--accent-bright)); }
+        .progress-bar { background: rgba(255,255,255,0.1); border-radius:20px; height:14px; overflow:hidden; margin:10px 0; }
+        .progress-fill { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); border-radius:20px; box-shadow:0 0 10px var(--accent); width:0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+        .chart-container { margin-top:20px; max-height:280px; position:relative; z-index:1; }
+        .phase-tag { background: var(--gold); color:#020617; padding:5px 16px; border-radius:20px; font-weight:700; font-size:0.85rem; display:inline-block; }
+        .post { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); padding:16px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.05); transition:var(--transition); }
+        .post:hover { background:rgba(255,255,255,0.06); }
+        .slider-item { display: flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; padding:8px 0; }
+        .slider-item label { flex:2; min-width:180px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; }
+        .slider-item input[type="range"] { flex:3; accent-color: var(--accent); }
+        .slider-item span { font-weight:700; color:var(--gold-light); min-width:24px; text-align:center; }
+        .xp-bar-container { background:rgba(255,255,255,0.05); border-radius:30px; height:24px; overflow:hidden; position:relative; margin:10px 0; }
+        .xp-bar-fill { height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-bright)); background-size:200% 100%; animation:shine 3s linear infinite; border-radius:30px; display:flex; align-items:center; justify-content:center; transition:width 0.8s; }
+        .xp-text { color:#fff; font-weight:bold; font-size:0.75rem; z-index:1; }
+        .float-xp { position:fixed; top:30%; left:50%; transform:translate(-50%,-50%); font-size:2rem; font-weight:900; color:var(--gold-bright); text-shadow:0 0 20px black; animation:floatUp 2s ease-out forwards; z-index:9999; pointer-events:none; }
+        .ripple { position:absolute; border-radius:50%; background:rgba(255,255,255,0.3); transform:scale(0); animation:ripple 0.6s linear; pointer-events:none; }
+        .habit-card { transition:all 0.3s; margin-bottom:12px; }
+        .habit-time-slot { display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,0.05); border-radius:20px; padding:4px 12px; margin:4px; cursor:pointer; transition:0.2s; font-size:0.9rem; }
+        .habit-time-slot.done { background:rgba(16,185,129,0.2); border:1px solid #10b981; }
+        .toast { position:fixed; top:20px; right:20px; background:var(--accent); color:#fff; padding:14px 22px; border-radius:30px; z-index:9999; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.6); opacity:0; transform:translateX(120%); transition:0.4s cubic-bezier(0.4,0,0.2,1); }
+        .toast.show { opacity:1; transform:translateX(0); }
+        .mini-stat { background:rgba(255,255,255,0.04); border-radius:16px; padding:8px 14px; border:1px solid var(--border-gold); backdrop-filter:blur(5px); display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+        .streak-fire { background:linear-gradient(135deg, #ff9100, #ff3d00); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; font-weight:900; animation:pulse 1.5s infinite; }
+        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:10000; backdrop-filter:blur(4px); }
+        .modal-content { max-width:90vw; max-height:85vh; overflow-y:auto; width:500px; }
+        .gold-text { background:linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+        .quest-card { border:1px solid var(--gold-bright); background:radial-gradient(circle at top left, rgba(200,167,91,0.15), rgba(12,14,34,0.8)); }
+        .quest-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+        .xp-reward { color:var(--gold-bright); font-weight:bold; }
+        .quest-progress { display:flex; align-items:center; gap:10px; margin-top:10px; }
+        .fab { position:fixed; bottom:90px; right:20px; width:56px; height:56px; background:radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold)); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(200,167,91,0.5); cursor:pointer; font-size:28px; z-index:2000; transition:transform 0.3s; }
+        .fab:hover { transform:scale(1.1); }
+        .mood-picker { display:flex; align-items:center; gap:8px; margin:16px 0; background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; }
+        .mood-emoji { font-size:28px; cursor:pointer; transition:transform 0.2s; padding:4px; border-radius:50%; }
+        .mood-emoji.selected { transform:scale(1.3); background:rgba(200,167,91,0.2); box-shadow:0 0 12px var(--gold); }
+        .evolution-tree { display:flex; justify-content:space-between; margin-top:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:12px; flex-wrap:wrap; gap:6px; }
+        .evolution-tree .stage { text-align:center; padding:8px; border-radius:8px; opacity:0.4; transition:0.3s; font-size:0.8rem; }
+        .evolution-tree .stage.active { opacity:1; background:rgba(37,99,235,0.2); box-shadow:0 0 15px var(--accent); }
+        .chapter-card { cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
+        .chapter-card:hover:not(.locked) { transform:translateY(-5px); box-shadow:var(--glow-gold); }
+        .chapter-card.locked { opacity:0.5; pointer-events:none; }
+        .skeleton { background:linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:var(--radius-sm); height:80px; }
+        .video-card { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); overflow:hidden; margin-bottom:16px; transition:var(--transition); }
+        .video-card iframe { aspect-ratio:16/9; width:100%; height:auto; border:0; }
+        .video-info { padding:12px; }
+        .reply-item { background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin:6px 0; font-size:0.9rem; }
+        .quiz-option { display:flex; align-items:center; gap:10px; padding:4px 0; }
+        .quiz-option input[type="radio"] { width:auto; margin:0; accent-color: var(--gold); }
+        .quiz-option label { flex:1; cursor:pointer; color:var(--text); }
+        .question-block { background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); padding:16px; margin-bottom:16px; }
+        .drop-zone { border:2px dashed var(--border-gold); border-radius:var(--radius); padding:30px; text-align:center; cursor:pointer; transition:0.3s; background:rgba(255,255,255,0.02); margin:12px 0; }
+        .drop-zone.dragover { border-color:var(--gold-bright); background:rgba(200,167,91,0.1); }
+        .tts-btn { background:none; border:none; color:var(--accent-bright); cursor:pointer; font-size:1.2rem; margin-left:8px; vertical-align:middle; }
+        .tts-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .assessment-container { max-width:600px; margin:0 auto; }
+        .assessment-item { margin-bottom:18px; border-bottom:1px solid var(--border-gold); padding-bottom:16px; }
+        .assessment-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+        .assessment-question { font-weight:600; margin-bottom:12px; color:var(--text); font-size:0.95rem; line-height:1.5; }
+        .assessment-options { display:flex; gap:40px; align-items:center; padding-left:2px; }
+        .assessment-options label { display:inline-flex; align-items:center; gap:8px; color:var(--text-secondary); cursor:pointer; font-size:0.95rem; user-select:none; white-space:nowrap; }
+        .assessment-options input[type="radio"] { width:18px; height:18px; margin:0; accent-color:var(--gold); flex-shrink:0; }
+        .password-wrapper { position:relative; }
+        .password-wrapper input { padding-right:40px; }
+        .password-wrapper .toggle-password { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.1rem; }
+        .slider-item input[type="range"] { -webkit-appearance:none; appearance:none; height:8px; background:linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 50%), rgba(255,255,255,0.2) var(--fill-percent, 50%), rgba(255,255,255,0.2) 100%); border-radius:5px; outline:none; }
+        .slider-item input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent-bright); border:2px solid white; box-shadow:0 0 10px var(--accent); cursor:pointer; }
+        /* Training tree styles */
+        .subject-sidebar { min-width:200px; max-width:280px; border-right:1px solid var(--border-gold); padding-right:12px; overflow-y:auto; max-height:70vh; }
+        .subject-tree-item { padding:8px; cursor:pointer; border-radius:8px; margin-bottom:4px; transition:0.2s; display:flex; align-items:center; gap:6px; }
+        .subject-tree-item:hover, .subject-tree-item.active { background:rgba(200,167,91,0.1); }
+        .lesson-card { cursor:pointer; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:8px; margin-bottom:8px; transition:0.3s; }
+        .lesson-card:hover { border-color:var(--gold-bright); box-shadow:0 4px 12px rgba(200,167,91,0.2); }
+        .lesson-modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+        .lesson-nav { display:flex; gap:8px; }
         @media (max-width:600px) {
-            .grid-2,
-            .grid-3,
-            .grid-4 {
-                grid-template-columns: 1fr;
-            }
-            .assessment-options {
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-            .tts-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .tts-speed-control {
-                margin-left: 0;
-                margin-top: 4px;
-            }
-        }
-
-        /* ========= NEW TRAINING STYLES ========= */
-        .subject-tree-container {
-            max-height: 70vh;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-        .subject-tree-container::-webkit-scrollbar {
-            width: 4px;
-        }
-        .subject-tree-container::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 10px;
-        }
-        .tree-item-main {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 6px;
-            margin: 4px 0;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            color: var(--gold-light);
-            user-select: none;
-        }
-        .tree-item-main:hover {
-            background: rgba(200, 167, 91, 0.15);
-        }
-        .tree-item-main.active {
-            background: rgba(37, 99, 235, 0.2);
-            border-left: 3px solid var(--accent);
-        }
-        .tree-item-main .arrow {
-            transition: transform 0.3s;
-            display: inline-block;
-            font-size: 0.8rem;
-            width: 20px;
-        }
-        .tree-item-main .arrow.open {
-            transform: rotate(90deg);
-        }
-        .sub-list {
-            margin-left: 20px;
-            padding-left: 8px;
-            border-left: 2px solid var(--border-gold);
-            display: none;
-        }
-        .sub-list.open {
-            display: block;
-        }
-        .sub-item {
-            padding: 6px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin: 2px 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sub-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-        }
-        .sub-item.active {
-            background: rgba(37, 99, 235, 0.15);
-            color: var(--gold-bright);
-        }
-        .lesson-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.3s;
-        }
-        .lesson-card:hover {
-            border-color: var(--gold);
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateX(4px);
-        }
-        .lesson-card .lesson-title {
-            font-weight: 600;
-            color: var(--gold-light);
-        }
-        .lesson-card .lesson-preview {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-clamp: 2;
-            overflow: hidden;
-        }
-        .lesson-search-input {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border-gold);
-            border-radius: 30px;
-            padding: 8px 16px;
-            color: var(--text);
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        .lesson-search-input:focus {
-            border-color: var(--accent-bright);
-            outline: none;
-        }
-        .training-layout {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .training-sidebar {
-            flex: 1 1 260px;
-            max-width: 280px;
-            min-width: 200px;
-            border-right: 1px solid var(--border-gold);
-            padding-right: 12px;
-        }
-        .training-content {
-            flex: 2 1 300px;
-            min-width: 250px;
-        }
-        @media (max-width:768px) {
-            .training-sidebar {
-                flex: 1 1 100%;
-                max-width: 100%;
-                border-right: none;
-                padding-right: 0;
-                border-bottom: 1px solid var(--border-gold);
-                padding-bottom: 12px;
-                margin-bottom: 12px;
-            }
-            .training-content {
-                flex: 1 1 100%;
-            }
-        }
-        .lesson-detail-modal .modal-content {
-            max-width: 900px;
-            width: 95vw;
-        }
-        .lesson-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 16px;
-            gap: 12px;
-        }
-        .lesson-bookmark-btn {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: 0.3s;
-        }
-        .lesson-bookmark-btn.active {
-            color: var(--gold-bright);
-            transform: scale(1.1);
-        }
-        .lesson-note-area {
-            margin-top: 12px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .lesson-note-area textarea {
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-gold);
-            border-radius: 6px;
-            padding: 8px;
-            color: var(--text);
-            resize: vertical;
-            min-height: 60px;
-            font-family: inherit;
-        }
-        .lesson-note-area textarea:focus {
-            border-color: var(--accent-bright);
-            outline: none;
+            .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+            .subject-sidebar { min-width:100%; max-width:100%; border-right:none; border-bottom:1px solid var(--border-gold); padding-right:0; padding-bottom:12px; max-height:40vh; margin-bottom:12px; }
         }
     </style>
 </head>
@@ -1756,34 +510,28 @@
                     <div id="feedback-area" class="hidden"><hr><h4>🧠 AI Coach Feedback <button class="tts-btn" onclick="speakText('feedback-text')">🔊</button></h4><p id="feedback-text" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; border-left:4px solid var(--accent-bright);"></p><p><strong style="color:var(--gold);">📌 Tomorrow's Mission:</strong> <span id="tomorrow-mission"></span></p><div id="new-badges" class="flex"></div><button id="mystery-box-btn" class="btn btn-accent hidden" onclick="showMysteryBox()">🎁 Mystery Box</button></div>
                 </div>
             </div>
-            <!-- =================== NEW TRAINING PAGE =================== -->
             <div id="page-training" class="page-content hidden">
                 <div class="glass"><div style="display:flex; justify-content:space-between;"><span>⚡ Energy</span><span><strong id="energy-current">50</strong>/<span id="energy-max">100</span></span></div><div class="progress-bar"><div id="energy-fill" class="progress-fill" style="width:100%;"></div></div></div>
                 <div class="glass" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                     <label style="color:var(--text-secondary);">🌐 Training Language:</label>
-                    <select id="training-lang-select" onchange="loadTrainingTab()" style="width:auto; padding:6px 12px;">
+                    <select id="training-lang-select" onchange="filterTrainingLanguage()" style="width:auto; padding:6px 12px;">
+                        <option value="all">All Languages</option>
                         <option value="en">English</option>
                         <option value="bn">বাংলা</option>
                         <option value="hi">हिन्दी</option>
                     </select>
-                    <button class="btn btn-sm btn-outline" onclick="refreshTrainingTree()">🔄 Refresh</button>
                 </div>
-                <div class="glass training-layout">
-                    <div class="training-sidebar">
-                        <h4 style="margin-top:0;">📚 Subjects</h4>
-                        <input type="text" id="subject-search" class="lesson-search-input" placeholder="🔍 Search subjects..." oninput="filterSubjectTree()">
-                        <div id="subject-tree-container" class="subject-tree-container"></div>
+                <div class="glass" style="display:flex; gap:16px; flex-wrap:wrap; min-height:55vh;">
+                    <div class="subject-sidebar" id="subject-sidebar">
+                        <h4>📚 Main Subjects</h4>
+                        <div id="subject-tree"></div>
                     </div>
-                    <div class="training-content">
-                        <div id="lesson-area">
-                            <h4 id="lesson-area-title" style="margin-top:0;">Select a Subject</h4>
-                            <div id="lesson-list"><p style="color:var(--text-secondary);">Choose a subject from the left to see lessons.</p></div>
-                        </div>
+                    <div style="flex:3; min-width:280px;">
+                        <h4 id="lesson-list-title">Select a Subject</h4>
+                        <div id="lesson-cards" class="grid-2"></div>
                     </div>
                 </div>
-                <div id="final-exam-section" class="glass hidden" style="text-align:center;"><h3>🏆 Final Exam</h3><button class="btn btn-accent btn-lg" onclick="startFinalExam()">Start</button></div>
             </div>
-            <!-- =================== END TRAINING =================== -->
             <div id="page-habits" class="page-content hidden">
                 <div class="glass" style="text-align:right;"><button class="btn btn-sm btn-accent" onclick="showAddHabitForm()">+ New Habit</button></div>
                 <div id="habits-list"></div>
@@ -1864,14 +612,12 @@
     <div id="forgot-password-modal" class="modal-overlay hidden">
         <div class="glass modal-content"><h3>🔑 Reset Password</h3><input type="email" id="reset-email" placeholder="Your email"><button class="btn" onclick="requestPasswordReset()">Send Link</button><button class="btn btn-outline" onclick="document.getElementById('forgot-password-modal').classList.add('hidden')">Close</button></div>
     </div>
-    <!-- =================== LESSON DETAIL MODAL (reuses chapter-modal) =================== -->
-    <div id="chapter-modal" class="modal-overlay hidden lesson-detail-modal">
+    <div id="chapter-modal" class="modal-overlay hidden">
         <div class="glass modal-content" style="max-width:1050px; width:95vw;">
             <div id="chapter-modal-header">
                 <h2 id="chapter-modal-title" style="margin:0;"></h2>
                 <div class="header-actions">
-                    <button class="lesson-bookmark-btn" id="lesson-bookmark-btn" onclick="toggleLessonBookmark()" title="Bookmark">☆</button>
-                    <button class="btn btn-sm btn-outline" onclick="speakFullChapter()" title="Read Full Lesson">🔊 Read Full</button>
+                    <button class="btn btn-sm btn-outline" onclick="speakFullChapter()" title="Read Full Chapter">🔊 Read Full Chapter</button>
                     <button class="btn btn-sm btn-outline" onclick="closeChapterModal()">✕</button>
                 </div>
             </div>
@@ -1886,10 +632,6 @@
                     <div id="chapter-modal-content" style="line-height:1.8; padding:4px 0;"></div>
                 </div>
             </div>
-            <div class="lesson-note-area">
-                <label><strong>📝 My Notes</strong></label>
-                <textarea id="lesson-note-text" placeholder="Write your notes here..." oninput="saveLessonNote()"></textarea>
-            </div>
             <hr>
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                 <h3>🧪 Quiz</h3>
@@ -1902,13 +644,26 @@
             <div id="quiz-container"></div>
             <div id="quiz-result" class="hidden"></div>
             <button class="btn btn-accent btn-lg" id="submit-quiz-btn" onclick="submitChapterQuiz()">Submit Answers</button>
-            <div class="lesson-nav">
-                <button class="btn btn-sm btn-outline" id="prev-lesson-btn" onclick="navigateLesson(-1)">◀ Previous</button>
-                <button class="btn btn-sm btn-outline" id="next-lesson-btn" onclick="navigateLesson(1)">Next ▶</button>
-            </div>
         </div>
     </div>
     <div id="final-exam-modal" class="modal-overlay hidden"><div class="glass modal-content" style="max-width:800px;"><h2>🏆 Final Exam</h2><p>⏳ <span id="overall-timer">20:00</span></p><div id="final-exam-questions"></div><button class="btn btn-accent btn-lg" onclick="submitFinalExam()">Submit</button><div id="final-exam-result" class="hidden"></div></div></div>
+    <div id="lesson-modal" class="modal-overlay hidden">
+        <div class="glass modal-content" style="max-width:900px; width:95vw;">
+            <div class="lesson-modal-header">
+                <h2 id="lesson-modal-title"></h2>
+                <div class="lesson-nav">
+                    <button class="btn btn-sm btn-outline" onclick="navigateLesson(-1)">◀ Previous</button>
+                    <button class="btn btn-sm btn-outline" onclick="navigateLesson(1)">Next ▶</button>
+                    <button class="btn btn-sm" onclick="closeLessonModal()">✕</button>
+                </div>
+            </div>
+            <div id="lesson-modal-content" style="line-height:1.8; max-height:60vh; overflow-y:auto;"></div>
+            <div style="margin-top:12px;">
+                <button class="btn btn-sm btn-outline tts-btn" id="lesson-tts-btn" onclick="toggleLessonTTS()">🔊 Listen</button>
+                <button class="btn btn-sm btn-outline" onclick="bookmarkLesson()">⭐ Bookmark</button>
+            </div>
+        </div>
+    </div>
     <div id="toast" class="toast"></div>
     <div id="loading-screen" style="position:fixed; top:0;left:0;right:0;bottom:0; background:#0B1220; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; gap:20px;"><div style="border:4px solid rgba(200,167,91,0.15); border-top:4px solid #C8A75B; border-radius:50%; width:52px; height:52px; animation:spin 0.8s linear infinite;"></div><span style="color:var(--gold-bright); font-weight:700; font-size:1.1rem;">AlamQuant ATTS</span></div>
     <script>
@@ -1951,14 +706,12 @@
         let activeSectionTTS = null;
         let activeSectionTTSBtn = null;
 
-        // ========== TRAINING TREE VARIABLES ==========
-        let subjectTreeData = [];
-        let selectedMainSubjectId = null;
-        let currentLessonId = null;
-        let lessonHistory = [];
-        let lessonHistoryIndex = -1;
-        let bookmarks = JSON.parse(localStorage.getItem('lessonBookmarks') || '{}');
-        let lessonNotes = JSON.parse(localStorage.getItem('lessonNotes') || '{}');
+        // Training state
+        let subjectsTree = [];
+        let selectedSubjectId = null;
+        let currentLessonList = [];
+        let currentLessonIndex = 0;
+        let lessonTTSUtterance = null;
 
         function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[
             m])) : ''; }
@@ -2009,7 +762,7 @@
             } };
 
         function speakText(elementId) { if (speechSynth.speaking) speechSynth.cancel(); const element = document
-                .getElementById(elementId); if (!element) return; const text = element.innerText || element.textContent; if (
+            .getElementById(elementId); if (!element) return; const text = element.innerText || element.textContent; if (
                 !text.trim()) return; const utterance = new SpeechSynthesisUtterance(text); const voices = speechSynth
                 .getVoices(); const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Female') ||
                 v.name.includes('Samantha') || v.name.includes('Zira')); if (femaleVoice) utterance.voice =
@@ -2018,7 +771,7 @@
             speechSynth.speak(utterance); }
 
         function speakElementContent(elementId) { if (speechSynth.speaking) speechSynth.cancel(); const el = document
-                .getElementById(elementId); if (!el) return; const text = el.innerText || el.textContent; if (!text.trim())
+            .getElementById(elementId); if (!el) return; const text = el.innerText || el.textContent; if (!text.trim())
                 return; const utterance = new SpeechSynthesisUtterance(text); const voices = speechSynth.getVoices(); const
                 femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Female') || v.name.includes(
                     'Samantha') || v.name.includes('Zira')); if (femaleVoice) utterance.voice = femaleVoice;
@@ -2205,7 +958,8 @@
                 updateDateDisplay();
                 loadSlideshow();
                 loadWeeklyChallenge(); break; case 'training':
-                loadTrainingTab(); break; case 'habits':
+                loadSubjectsTree();
+                loadEnergy(); break; case 'habits':
                 loadHabits(); break; case 'progress':
                 loadProgress(); break; case 'community':
                 loadCommunity(); break; case 'profile':
@@ -2494,938 +1248,603 @@
             showFloatingXp(15);
             loadDailyQuest();
             loadProfile(); } }
+        async function loadEnergy() { const e = await apiCall('GET', '/energy'); if (e) { document.getElementById(
+                    'energy-current').textContent = e.current_energy;
+                document.getElementById('energy-max').textContent = e.max_energy;
+                document.getElementById('energy-fill').style.width = (e.current_energy / e.max_energy * 100) +
+                '%'; } }
 
-        // =================== NEW TRAINING FUNCTIONS ===================
-        async function loadTrainingTab() {
-            await loadEnergy();
-            const lang = document.getElementById('training-lang-select').value;
-            // Fetch subject tree
-            const tree = await apiCall('GET', `/training/subjects?course_id=1&lang=${lang}`);
-            if (!tree) {
-                document.getElementById('subject-tree-container').innerHTML = '<p style="color:var(--text-secondary);">No subjects found.</p>';
+        // ========= TRAINING LOGIC =========
+        async function loadSubjectsTree() {
+            const data = await apiCall('GET', '/admin/subjects/tree?course_id=1', null, false);
+            if (!data) return;
+            subjectsTree = data;
+            renderSubjectTree(data);
+        }
+        function renderSubjectTree(tree) {
+            const container = document.getElementById('subject-tree');
+            container.innerHTML = '';
+            tree.forEach((node, i) => {
+                const div = document.createElement('div');
+                div.className = 'subject-tree-item';
+                div.innerHTML = `<span>${node.children && node.children.length ? '📁' : '📄'}</span> ${escapeHtml(node.title)}`;
+                div.onclick = () => selectSubject(node.id);
+                container.appendChild(div);
+            });
+        }
+        async function selectSubject(subjectId) {
+            selectedSubjectId = subjectId;
+            const subs = await apiCall('GET', `/admin/subjects/${subjectId}/sub`, null, false);
+            if (!subs) return;
+            currentLessonList = subs;
+            currentLessonIndex = 0;
+            renderLessonList(subs);
+            // highlight active subject
+            document.querySelectorAll('.subject-tree-item').forEach(el => el.classList.remove('active'));
+            const items = document.querySelectorAll('.subject-tree-item');
+            subjectsTree.forEach((node, i) => { if (node.id == subjectId && items[i]) items[i].classList.add('active'); });
+        }
+        function renderLessonList(lessons) {
+            const titleEl = document.getElementById('lesson-list-title');
+            titleEl.textContent = 'Lessons';
+            const container = document.getElementById('lesson-cards');
+            container.innerHTML = '';
+            lessons.forEach((lesson, idx) => {
+                const card = document.createElement('div');
+                card.className = 'lesson-card';
+                card.innerHTML = `<strong>📄 ${escapeHtml(lesson.title)}</strong>`;
+                card.onclick = () => openLessonModal(idx);
+                container.appendChild(card);
+            });
+        }
+        function openLessonModal(index) {
+            if (!currentLessonList || index < 0 || index >= currentLessonList.length) return;
+            currentLessonIndex = index;
+            const lesson = currentLessonList[index];
+            document.getElementById('lesson-modal-title').textContent = lesson.title;
+            document.getElementById('lesson-modal-content').innerHTML = DOMPurify.sanitize(lesson.content_text || '<p>No content yet.</p>');
+            document.getElementById('lesson-modal').classList.remove('hidden');
+            if (speechSynth.speaking) speechSynth.cancel();
+            document.getElementById('lesson-tts-btn').textContent = '🔊 Listen';
+        }
+        function closeLessonModal() {
+            document.getElementById('lesson-modal').classList.add('hidden');
+            if (speechSynth.speaking) speechSynth.cancel();
+            document.getElementById('lesson-tts-btn').textContent = '🔊 Listen';
+        }
+        function navigateLesson(delta) {
+            if (!currentLessonList) return;
+            const newIdx = currentLessonIndex + delta;
+            if (newIdx >= 0 && newIdx < currentLessonList.length) {
+                openLessonModal(newIdx);
+            }
+        }
+        function toggleLessonTTS() {
+            const contentEl = document.getElementById('lesson-modal-content');
+            const btn = document.getElementById('lesson-tts-btn');
+            if (!contentEl) return;
+            if (speechSynth.speaking) {
+                speechSynth.cancel();
+                btn.textContent = '🔊 Listen';
                 return;
             }
-            subjectTreeData = tree;
-            renderSubjectTree(tree);
-            // Auto-select first main subject
-            if (tree.length > 0) {
-                selectMainSubject(tree[0].id);
-            } else {
-                document.getElementById('lesson-area-title').textContent = 'Select a Subject';
-                document.getElementById('lesson-list').innerHTML = '<p style="color:var(--text-secondary);">No subjects available.</p>';
-            }
+            const text = contentEl.innerText;
+            if (!text.trim()) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = speechSynth.getVoices();
+            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
+            if (femaleVoice) utterance.voice = femaleVoice;
+            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
+            utterance.onstart = () => btn.textContent = '⏸️ Pause';
+            utterance.onend = () => btn.textContent = '🔊 Listen';
+            speechSynth.speak(utterance);
+            lessonTTSUtterance = utterance;
         }
-
-        function renderSubjectTree(subjects) {
-            const container = document.getElementById('subject-tree-container');
-            let html = '';
-            subjects.forEach(s => {
-                const subs = s.sub_subjects || [];
-                const hasSubs = subs.length > 0;
-                const isActive = (selectedMainSubjectId === s.id);
-                html += `<div class="tree-item-main ${isActive ? 'active' : ''}" data-id="${s.id}" onclick="selectMainSubject(${s.id})">
-                    <span class="arrow ${isActive ? 'open' : ''}">${hasSubs ? '▶' : '•'}</span>
-                    📁 ${escapeHtml(s.title)}
-                </div>`;
-                if (hasSubs) {
-                    html += `<div class="sub-list ${isActive ? 'open' : ''}" id="sub-list-${s.id}">`;
-                    subs.forEach(sub => {
-                        html += `<div class="sub-item" onclick="event.stopPropagation(); openSubjectLesson(${sub.id})">
-                            📄 ${escapeHtml(sub.title)}
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
-            });
-            container.innerHTML = html;
-            // After rendering, attach toggle events for arrows
-            document.querySelectorAll('.tree-item-main').forEach(el => {
-                el.addEventListener('click', function(e) {
-                    // Already handled by onclick, but we need to toggle sub-list visibility
-                    const id = parseInt(this.dataset.id);
-                    const subList = document.getElementById('sub-list-' + id);
-                    if (subList) {
-                        subList.classList.toggle('open');
-                        const arrow = this.querySelector('.arrow');
-                        if (arrow) arrow.classList.toggle('open');
-                    }
-                    // Also update active class
-                    document.querySelectorAll('.tree-item-main').forEach(elm => elm.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            // Apply search filter
-            filterSubjectTree();
-        }
-
-        function filterSubjectTree() {
-            const query = document.getElementById('subject-search').value.toLowerCase();
-            const items = document.querySelectorAll('.tree-item-main');
-            const subLists = document.querySelectorAll('.sub-list');
-            // Show/hide main items and sub-items based on search
-            items.forEach(main => {
-                const title = main.textContent.toLowerCase();
-                const id = parseInt(main.dataset.id);
-                const subList = document.getElementById('sub-list-' + id);
-                let match = title.includes(query);
-                if (subList) {
-                    const subItems = subList.querySelectorAll('.sub-item');
-                    let subMatch = false;
-                    subItems.forEach(sub => {
-                        const subTitle = sub.textContent.toLowerCase();
-                        if (subTitle.includes(query)) {
-                            subMatch = true;
-                            sub.style.display = '';
-                        } else {
-                            sub.style.display = query ? 'none' : '';
-                        }
-                    });
-                    if (query && subMatch) {
-                        subList.classList.add('open');
-                        const arrow = main.querySelector('.arrow');
-                        if (arrow) arrow.classList.add('open');
-                        match = true;
-                    } else if (query && !subMatch) {
-                        subList.classList.remove('open');
-                        const arrow = main.querySelector('.arrow');
-                        if (arrow) arrow.classList.remove('open');
-                    }
-                }
-                main.style.display = match ? '' : 'none';
-            });
-        }
-
-        async function selectMainSubject(mainId) {
-            selectedMainSubjectId = mainId;
-            // Update tree highlighting and expand sub-list
-            document.querySelectorAll('.tree-item-main').forEach(el => el.classList.remove('active'));
-            const mainEl = document.querySelector(`.tree-item-main[data-id="${mainId}"]`);
-            if (mainEl) mainEl.classList.add('active');
-            // Find main subject data
-            const main = subjectTreeData.find(s => s.id == mainId);
-            if (!main) return;
-            const subs = main.sub_subjects || [];
-            document.getElementById('lesson-area-title').textContent = main.title;
-            const listDiv = document.getElementById('lesson-list');
-            if (subs.length === 0) {
-                listDiv.innerHTML = '<p style="color:var(--text-secondary);">No lessons under this subject.</p>';
-                return;
-            }
-            listDiv.innerHTML = subs.map(sub => `
-                <div class="lesson-card" onclick="openSubjectLesson(${sub.id})">
-                    <div class="lesson-title">📄 ${escapeHtml(sub.title)}</div>
-                    <div class="lesson-preview">${stripHtml(sub.content_text || '').substring(0, 120)}</div>
-                </div>
-            `).join('');
-            // Update sub-list visibility and arrow
-            document.querySelectorAll('.sub-list').forEach(el => el.classList.remove('open'));
-            const targetSubList = document.getElementById('sub-list-' + mainId);
-            if (targetSubList) {
-                targetSubList.classList.add('open');
-                const arrow = mainEl?.querySelector('.arrow');
-                if (arrow) arrow.classList.add('open');
-            }
-            // Reset lesson history when selecting new main
-            lessonHistory = [];
-            lessonHistoryIndex = -1;
-        }
-
-        function refreshTrainingTree() {
-            loadTrainingTab();
-        }
-
-        function stripHtml(html) {
-            const tmp = document.createElement('DIV');
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || '';
-        }
-
-        function findSubjectById(tree, id) {
-            for (const main of tree) {
-                if (main.id == id) return main;
-                if (main.sub_subjects) {
-                    const found = main.sub_subjects.find(s => s.id == id);
-                    if (found) return found;
-                }
-            }
-            return null;
-        }
-
-        // ----- Lesson Modal (reuses chapter-modal) -----
-        let currentLessonSubject = null;
-        let currentLessonData = null;
-
-        async function openSubjectLesson(subId) {
-            const subject = findSubjectById(subjectTreeData, subId);
-            if (!subject) return;
-            currentLessonId = subId;
-            currentLessonData = subject;
-            // Find parent subject for navigation
-            let parent = null;
-            for (const main of subjectTreeData) {
-                if (main.sub_subjects && main.sub_subjects.some(s => s.id == subId)) {
-                    parent = main;
-                    break;
-                }
-            }
-            currentLessonSubject = parent || subjectTreeData.find(s => s.id == subId);
-            // Update history
-            lessonHistory.push(subId);
-            lessonHistoryIndex = lessonHistory.length - 1;
-
-            // Populate modal
-            document.getElementById('chapter-modal-title').textContent = subject.title;
-            // Images/videos from content? We'll extract from content if any.
-            const contentHtml = subject.content_text || '';
-            document.getElementById('chapter-modal-content').innerHTML = DOMPurify.sanitize(contentHtml);
-            document.getElementById('chapter-images-gallery').innerHTML = '';
-            document.getElementById('chapter-modal-video-container').innerHTML = '';
-            // If content has images, we can parse, but let's keep simple.
-            // TOC build
-            buildTOC();
-            // Quiz: if any? For now, we don't have quiz for subjects, we can hide quiz or keep empty.
-            currentChapterQuestions = [];
-            document.getElementById('quiz-container').innerHTML = '<p>No quiz for this lesson yet.</p>';
-            document.getElementById('submit-quiz-btn').classList.add('hidden');
-            document.getElementById('quiz-result').classList.add('hidden');
-            document.getElementById('quiz-mode-select').disabled = true;
-
-            // Bookmark and note
-            updateBookmarkUI();
-            loadLessonNote();
-
-            // Navigation buttons
-            updateNavigationButtons();
-
-            // Show modal
-            document.getElementById('chapter-modal').classList.remove('hidden');
-            // TTS attachment
-            setTimeout(() => { attachTTSSections(); }, 200);
-        }
-
-        function updateBookmarkUI() {
-            const btn = document.getElementById('lesson-bookmark-btn');
-            if (bookmarks[currentLessonId]) {
-                btn.textContent = '★';
-                btn.classList.add('active');
-            } else {
-                btn.textContent = '☆';
-                btn.classList.remove('active');
-            }
-        }
-
-        function toggleLessonBookmark() {
-            if (!currentLessonId) return;
-            if (bookmarks[currentLessonId]) {
-                delete bookmarks[currentLessonId];
+        function bookmarkLesson() {
+            const lesson = currentLessonList ? currentLessonList[currentLessonIndex] : null;
+            if (!lesson) return;
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarkedLessons') || '[]');
+            if (bookmarks.includes(lesson.id)) {
+                bookmarks = bookmarks.filter(id => id !== lesson.id);
                 showToast('Bookmark removed');
             } else {
-                bookmarks[currentLessonId] = true;
-                showToast('Bookmarked!');
+                bookmarks.push(lesson.id);
+                showToast('✅ Bookmarked');
             }
-            localStorage.setItem('lessonBookmarks', JSON.stringify(bookmarks));
-            updateBookmarkUI();
+            localStorage.setItem('bookmarkedLessons', JSON.stringify(bookmarks));
         }
 
-        function loadLessonNote() {
-            const noteText = document.getElementById('lesson-note-text');
-            if (lessonNotes[currentLessonId]) {
-                noteText.value = lessonNotes[currentLessonId];
-            } else {
-                noteText.value = '';
-            }
-        }
+        function buildTOC() { const contentDiv = document.getElementById('chapter-modal-content'); const tocContainer =
+                document.getElementById('toc-list'); if (!contentDiv || !tocContainer) return; const htmlContent = contentDiv
+                .innerHTML; const parser = new DOMParser(); const doc = parser.parseFromString(htmlContent,
+            'text/html'); const mainSubjects = doc.querySelectorAll('.main-subject'); let tocHtml = ''; if (
+                mainSubjects.length > 0) { mainSubjects.forEach((main, mIdx) => { const mainTitle = main
+                        .getAttribute('data-main-title') || `Section ${mIdx+1}`;
+                    tocHtml +=
+                        `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ ${escapeHtml(mainTitle)}</div><div class="toc-subs">`
+                        ; const subSections = main.querySelectorAll('.tts-section');
+                    subSections.forEach((sub, sIdx) => { const h2 = sub.querySelector(
+                    'h2'); const subTitle = h2 ? h2.textContent : `Part ${sIdx+1}`;
+                        tocHtml +=
+                            `<div class="toc-sub-item" data-main="${mIdx}" data-sub="${sIdx}"><span class="toc-sub-link" onclick="scrollToSection(${mIdx}, ${sIdx})">${mIdx+1}.${sIdx+1} ${escapeHtml(subTitle)}</span><div class="tts-mini-controls"><select class="tts-mini-speed" onchange="updateMiniTtsSpeed(this, ${mIdx}, ${sIdx})"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSectionTTS(${mIdx},${sIdx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`
+                            ; });
+                    tocHtml += `</div></div>`; }); } else { const ttsSections = doc.querySelectorAll(
+                    '.tts-section'); if (ttsSections.length > 0) {
+                tocHtml +=
+                    `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ Content</div><div class="toc-subs">`
+                    ;
+                ttsSections.forEach((sub, sIdx) => { const h2 = sub.querySelector('h2'); const
+                    subTitle = h2 ? h2.textContent : `Part ${sIdx+1}`;
+                    tocHtml +=
+                        `<div class="toc-sub-item" data-main="0" data-sub="${sIdx}"><span class="toc-sub-link" onclick="scrollToSection(0, ${sIdx})">${sIdx+1}. ${escapeHtml(subTitle)}</span><div class="tts-mini-controls"><select class="tts-mini-speed" onchange="updateMiniTtsSpeed(this, 0, ${sIdx})"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSectionTTS(0,${sIdx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`
+                        ; });
+                tocHtml += `</div></div>`; } else { const h2s = doc.querySelectorAll('h2'); if (h2s
+                    .length > 0) {
+                tocHtml +=
+                    `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ Content</div><div class="toc-subs">`
+                    ;
+                h2s.forEach((h2, idx) => {
+                    tocHtml +=
+                        `<div class="toc-sub-item" data-main="0" data-sub="${idx}"><span class="toc-sub-link" onclick="scrollToHeading(${idx})">${idx+1}. ${escapeHtml(h2.textContent)}</span><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playHeadingTTS(${idx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`
+                        ; });
+                tocHtml += `</div></div>`; } else { tocHtml =
+                    '<p style="color:var(--text-secondary); font-size:0.85rem;">No structured sections found</p>'
+                    ; } } }
+            tocContainer.innerHTML = tocHtml; const mainDivs = contentDiv.querySelectorAll('.main-subject');
+            mainDivs.forEach((main, mIdx) => { const subs = main.querySelectorAll('.tts-section');
+                subs.forEach((sub, sIdx) => { sub.id = `section-${mIdx}-${sIdx}`; }); }); if (mainDivs.length ===
+                0) { const ttsSectionsDirect = contentDiv.querySelectorAll('.tts-section');
+                ttsSectionsDirect.forEach((sub, sIdx) => { sub.id = `section-0-${sIdx}`; }); if (
+                    ttsSectionsDirect.length === 0) { const h2sDirect = contentDiv.querySelectorAll('h2');
+                    h2sDirect.forEach((h2, idx) => { h2.id = `heading-${idx}`; }); } } }
 
-        function saveLessonNote() {
-            if (!currentLessonId) return;
-            const note = document.getElementById('lesson-note-text').value;
-            if (note.trim()) {
-                lessonNotes[currentLessonId] = note;
-            } else {
-                delete lessonNotes[currentLessonId];
-            }
-            localStorage.setItem('lessonNotes', JSON.stringify(lessonNotes));
-        }
+        function scrollToSection(mIdx, sIdx) { const target = document.getElementById(`section-${mIdx}-${sIdx}`); if (
+            target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            highlightTocItem(mIdx, sIdx); } }
 
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prev-lesson-btn');
-            const nextBtn = document.getElementById('next-lesson-btn');
-            if (lessonHistoryIndex <= 0) {
-                prevBtn.disabled = true;
-            } else {
-                prevBtn.disabled = false;
-            }
-            // Check if there is next in history
-            if (lessonHistoryIndex < lessonHistory.length - 1) {
-                nextBtn.disabled = false;
-            } else {
-                // Check if there is next lesson in the current subject
-                const currentSubject = currentLessonSubject;
-                if (currentSubject && currentSubject.sub_subjects) {
-                    const subs = currentSubject.sub_subjects;
-                    const currentIdx = subs.findIndex(s => s.id == currentLessonId);
-                    if (currentIdx < subs.length - 1) {
-                        nextBtn.disabled = false;
-                    } else {
-                        nextBtn.disabled = true;
-                    }
-                } else {
-                    nextBtn.disabled = true;
-                }
-            }
-        }
+        function scrollToHeading(idx) { const target = document.getElementById(`heading-${idx}`); if (target) { target
+                .scrollIntoView({ behavior: 'smooth', block: 'start' });
+            highlightTocItem(0, idx); } }
 
-        function navigateLesson(direction) {
-            if (direction === -1) {
-                if (lessonHistoryIndex > 0) {
-                    lessonHistoryIndex--;
-                    const prevId = lessonHistory[lessonHistoryIndex];
-                    openSubjectLesson(prevId);
-                }
-            } else if (direction === 1) {
-                // Try next in history first
-                if (lessonHistoryIndex < lessonHistory.length - 1) {
-                    lessonHistoryIndex++;
-                    const nextId = lessonHistory[lessonHistoryIndex];
-                    openSubjectLesson(nextId);
-                    return;
-                }
-                // Else next in current subject
-                const currentSubject = currentLessonSubject;
-                if (currentSubject && currentSubject.sub_subjects) {
-                    const subs = currentSubject.sub_subjects;
-                    const currentIdx = subs.findIndex(s => s.id == currentLessonId);
-                    if (currentIdx < subs.length - 1) {
-                        const nextSub = subs[currentIdx + 1];
-                        openSubjectLesson(nextSub.id);
-                    }
-                }
-            }
-        }
+        function highlightTocItem(mIdx, sIdx) { document.querySelectorAll('.toc-sub-item').forEach(item => item.classList
+                .remove('toc-active')); const item = document.querySelector(`.toc-sub-item[data-main="${mIdx}"][data-sub="${sIdx}"]`
+                ); if (item) { item.classList.add('toc-active');
+            setTimeout(() => item.classList.remove('toc-active'), 2000); } }
 
-        function closeChapterModal() {
-            if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
-            document.getElementById('chapter-modal').classList.add('hidden');
-            clearInterval(practiceTimerInterval);
-            // Also reload training tab to refresh progress (if needed)
-        }
-
-        // ----- Override submitChapterQuiz for subject (no quiz) -----
-        async function submitChapterQuiz() {
-            showToast('No quiz available for this lesson.');
-        }
-
-        // ----- TOC building function (reuse from previous but adapt) -----
-        function buildTOC() {
-            const contentDiv = document.getElementById('chapter-modal-content');
-            const tocContainer = document.getElementById('toc-list');
-            if (!contentDiv || !tocContainer) return;
-            const htmlContent = contentDiv.innerHTML;
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlContent, 'text/html');
-            const mainSubjects = doc.querySelectorAll('.main-subject');
-            let tocHtml = '';
-            if (mainSubjects.length > 0) {
-                mainSubjects.forEach((main, mIdx) => {
-                    const mainTitle = main.getAttribute('data-main-title') || `Section ${mIdx+1}`;
-                    tocHtml += `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ ${escapeHtml(mainTitle)}</div><div class="toc-subs">`;
-                    const subSections = main.querySelectorAll('.tts-section');
-                    subSections.forEach((sub, sIdx) => {
-                        const h2 = sub.querySelector('h2');
-                        const subTitle = h2 ? h2.textContent : `Part ${sIdx+1}`;
-                        tocHtml += `<div class="toc-sub-item" data-main="${mIdx}" data-sub="${sIdx}"><span class="toc-sub-link" onclick="scrollToSection(${mIdx}, ${sIdx})">${mIdx+1}.${sIdx+1} ${escapeHtml(subTitle)}</span><div class="tts-mini-controls"><select class="tts-mini-speed" onchange="updateMiniTtsSpeed(this, ${mIdx}, ${sIdx})"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSectionTTS(${mIdx},${sIdx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`;
-                    });
-                    tocHtml += `</div></div>`;
-                });
-            } else {
-                const ttsSections = doc.querySelectorAll('.tts-section');
-                if (ttsSections.length > 0) {
-                    tocHtml += `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ Content</div><div class="toc-subs">`;
-                    ttsSections.forEach((sub, sIdx) => {
-                        const h2 = sub.querySelector('h2');
-                        const subTitle = h2 ? h2.textContent : `Part ${sIdx+1}`;
-                        tocHtml += `<div class="toc-sub-item" data-main="0" data-sub="${sIdx}"><span class="toc-sub-link" onclick="scrollToSection(0, ${sIdx})">${sIdx+1}. ${escapeHtml(subTitle)}</span><div class="tts-mini-controls"><select class="tts-mini-speed" onchange="updateMiniTtsSpeed(this, 0, ${sIdx})"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSectionTTS(0,${sIdx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`;
-                    });
-                    tocHtml += `</div></div>`;
-                } else {
-                    const h2s = doc.querySelectorAll('h2');
-                    if (h2s.length > 0) {
-                        tocHtml += `<div class="toc-main"><div class="toc-main-title" onclick="toggleTocSub(this)">▶ Content</div><div class="toc-subs">`;
-                        h2s.forEach((h2, idx) => {
-                            tocHtml += `<div class="toc-sub-item" data-main="0" data-sub="${idx}"><span class="toc-sub-link" onclick="scrollToHeading(${idx})">${idx+1}. ${escapeHtml(h2.textContent)}</span><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playHeadingTTS(${idx},this)" title="Play">🔊</button><button class="tts-mini-btn tts-mini-stop stop-btn" onclick="stopSectionTTS()" title="Stop">⏹️</button></div></div>`;
-                        });
-                        tocHtml += `</div></div>`;
-                    } else {
-                        tocHtml = '<p style="color:var(--text-secondary); font-size:0.85rem;">No structured sections found</p>';
-                    }
-                }
-            }
-            tocContainer.innerHTML = tocHtml;
-        }
-
-        // ---- TOC helper functions (minimal) ----
-        function toggleTocSub(header) {
-            const subDiv = header.nextElementSibling;
-            if (subDiv) {
-                const isOpen = subDiv.classList.contains('open');
-                if (isOpen) { subDiv.classList.remove('open'); header.textContent = '▶ ' + header.textContent.slice(2); }
-                else { subDiv.classList.add('open'); header.textContent = '▼ ' + header.textContent.slice(2); }
-            }
-        }
-
-        function scrollToSection(mIdx, sIdx) {
-            const target = document.getElementById(`section-${mIdx}-${sIdx}`);
-            if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }
-
-        function scrollToHeading(idx) {
-            const target = document.getElementById(`heading-${idx}`);
-            if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }
-
-        function playSectionTTS(mIdx, sIdx, btn) {
-            const contentDiv = document.getElementById('chapter-modal-content');
-            const target = contentDiv ? contentDiv.querySelector(`#section-${mIdx}-${sIdx}`) : null;
-            if (!target) return;
-            if (activeSectionTTS && activeSectionTTSBtn === btn) { stopSectionTTS(); return; }
-            stopSectionTTS();
-            const text = target.innerText;
-            if (!text.trim()) return;
-            const utterance = new SpeechSynthesisUtterance(text);
-            const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-            const stopBtn = btn.parentElement.querySelector('.tts-mini-stop');
+        function playSectionTTS(mIdx, sIdx, btn) { const contentDiv = document.getElementById('chapter-modal-content'); const
+                target = contentDiv ? contentDiv.querySelector(`#section-${mIdx}-${sIdx}`) : null; if (!target) return; if (
+                activeSectionTTS && activeSectionTTSBtn === btn) { stopSectionTTS(); return; }
+            stopSectionTTS(); const text = target.innerText; if (!text.trim()) return; const utterance = new
+                SpeechSynthesisUtterance(text); const speedSelect = btn.parentElement.querySelector('.tts-mini-speed'); const
+                stopBtn = btn.parentElement.querySelector('.tts-mini-stop');
             utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
-            const voices = speechSynth.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-            if (femaleVoice) utterance.voice = femaleVoice;
+            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US'; const voices =
+                speechSynth.getVoices(); const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes(
+                    'Samantha') || v.name.includes('Zira')); if (femaleVoice) utterance.voice = femaleVoice;
             btn.textContent = '⏸️';
             btn.classList.add('active-pause');
             stopBtn.classList.add('visible');
             speedSelect.classList.add('visible');
             activeSectionTTS = utterance;
             activeSectionTTSBtn = btn;
-            utterance.onend = () => { resetAllSectionTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-            utterance.onerror = () => { resetAllSectionTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-            speechSynth.speak(utterance);
-        }
+            utterance.onend = () => { resetAllSectionTTSButtons();
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null; };
+            utterance.onerror = () => { resetAllSectionTTSButtons();
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null; };
+            speechSynth.speak(utterance); }
 
-        function playHeadingTTS(idx, btn) {
-            const contentDiv = document.getElementById('chapter-modal-content');
-            const target = contentDiv ? contentDiv.querySelector(`#heading-${idx}`) : null;
-            if (!target) return;
-            if (activeSectionTTS && activeSectionTTSBtn === btn) { stopSectionTTS(); return; }
-            stopSectionTTS();
-            let text = target.innerText;
-            const nextEl = target.nextElementSibling;
-            if (nextEl && nextEl.tagName && !nextEl.tagName.startsWith('H')) { text += ' ' + nextEl.innerText; }
-            if (!text.trim()) return;
-            const utterance = new SpeechSynthesisUtterance(text);
-            const speedSelect = btn.parentElement.querySelector('.tts-mini-speed');
-            const stopBtn = btn.parentElement.querySelector('.tts-mini-stop');
+        function playHeadingTTS(idx, btn) { const contentDiv = document.getElementById('chapter-modal-content'); const
+                target = contentDiv ? contentDiv.querySelector(`#heading-${idx}`) : null; if (!target) return; if (
+                activeSectionTTS && activeSectionTTSBtn === btn) { stopSectionTTS(); return; }
+            stopSectionTTS(); let text = target.innerText; const nextEl = target.nextElementSibling; if (nextEl && nextEl
+                .tagName && !nextEl.tagName.startsWith('H')) { text += ' ' + nextEl.innerText; } if (!text.trim())
+            return; const utterance = new SpeechSynthesisUtterance(text); const speedSelect = btn.parentElement
+            .querySelector('.tts-mini-speed'); const stopBtn = btn.parentElement.querySelector('.tts-mini-stop');
             utterance.rate = speedSelect ? parseFloat(speedSelect.value) : 1;
-            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
-            const voices = speechSynth.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-            if (femaleVoice) utterance.voice = femaleVoice;
+            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US'; const voices =
+                speechSynth.getVoices(); const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes(
+                    'Samantha') || v.name.includes('Zira')); if (femaleVoice) utterance.voice = femaleVoice;
             btn.textContent = '⏸️';
             btn.classList.add('active-pause');
             stopBtn.classList.add('visible');
             speedSelect.classList.add('visible');
             activeSectionTTS = utterance;
             activeSectionTTSBtn = btn;
-            utterance.onend = () => { resetAllSectionTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-            utterance.onerror = () => { resetAllSectionTTSButtons(); activeSectionTTS = null; activeSectionTTSBtn = null; };
-            speechSynth.speak(utterance);
-        }
+            utterance.onend = () => { resetAllSectionTTSButtons();
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null; };
+            utterance.onerror = () => { resetAllSectionTTSButtons();
+                activeSectionTTS = null;
+                activeSectionTTSBtn = null; };
+            speechSynth.speak(utterance); }
 
-        function stopSectionTTS() {
-            if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
+        function stopSectionTTS() { if (speechSynth.speaking || speechSynth.paused) { speechSynth.cancel(); }
             resetAllSectionTTSButtons();
             activeSectionTTS = null;
-            activeSectionTTSBtn = null;
-        }
+            activeSectionTTSBtn = null; }
 
-        function resetAllSectionTTSButtons() {
-            document.querySelectorAll('#toc-list .play-btn').forEach(b => { b.textContent = '🔊'; b.classList.remove('active-pause'); });
+        function resetAllSectionTTSButtons() { document.querySelectorAll('#toc-list .play-btn').forEach(b => { b
+                .textContent = '🔊';
+                b.classList.remove('active-pause'); });
             document.querySelectorAll('#toc-list .tts-mini-stop').forEach(b => b.classList.remove('visible'));
-            document.querySelectorAll('#toc-list .tts-mini-speed').forEach(s => s.classList.remove('visible'));
-        }
+            document.querySelectorAll('#toc-list .tts-mini-speed').forEach(s => s.classList.remove('visible')); }
 
-        function updateMiniTtsSpeed(select, mIdx, sIdx) {
-            // optional speed update
-        }
+        function updateMiniTtsSpeed(select, mIdx, sIdx) { const val = parseFloat(select.value); if (activeSectionTTS &&
+                activeSectionTTSBtn) { const btnDataMain = activeSectionTTSBtn.parentElement.parentElement?.dataset
+                ?.main; const btnDataSub = activeSectionTTSBtn.parentElement.parentElement?.dataset?.sub; if (
+                    parseInt(btnDataMain) === mIdx && parseInt(btnDataSub) === sIdx) { stopSectionTTS();
+                setTimeout(() => { const btn = document.querySelector(
+                        `.toc-sub-item[data-main="${mIdx}"][data-sub="${sIdx}"] .play-btn`
+                        ); if (btn) playSectionTTS(mIdx, sIdx, btn); }, 100); } } }
 
-        function speakFullChapter() {
-            const contentDiv = document.getElementById('chapter-modal-content');
-            if (!contentDiv) return;
-            const text = contentDiv.innerText;
-            if (!text.trim()) return;
-            if (speechSynth.speaking || speechSynth.paused) speechSynth.cancel();
-            stopSectionTTS();
-            const utterance = new SpeechSynthesisUtterance(text);
+        function speakFullChapter() { const contentDiv = document.getElementById('chapter-modal-content'); if (!contentDiv)
+            return; const text = contentDiv.innerText; if (!text.trim()) return; if (speechSynth.speaking || speechSynth
+            .paused) { speechSynth.cancel(); }
+            stopSectionTTS(); const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1.0;
-            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US';
-            const voices = speechSynth.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
-            if (femaleVoice) utterance.voice = femaleVoice;
-            utterance.onstart = () => { const fullChapterBtn = document.querySelector('#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn.textContent = '⏸️ Reading...'; };
-            utterance.onend = () => { const fullChapterBtn = document.querySelector('#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn.textContent = '🔊 Read Full'; };
-            utterance.onerror = () => { const fullChapterBtn = document.querySelector('#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn.textContent = '🔊 Read Full'; };
-            speechSynth.speak(utterance);
-        }
+            utterance.lang = i18n.lang === 'bn' ? 'bn-BD' : i18n.lang === 'hi' ? 'hi-IN' : 'en-US'; const voices =
+                speechSynth.getVoices(); const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes(
+                    'Samantha') || v.name.includes('Zira')); if (femaleVoice) utterance.voice = femaleVoice;
+            utterance.onstart = () => { const fullChapterBtn = document.querySelector(
+                    '#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn
+                    .textContent = '⏸️ Reading...'; };
+            utterance.onend = () => { const fullChapterBtn = document.querySelector(
+                    '#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn
+                    .textContent = '🔊 Read Full Chapter'; };
+            utterance.onerror = () => { const fullChapterBtn = document.querySelector(
+                    '#chapter-modal-header .header-actions .btn-outline'); if (fullChapterBtn) fullChapterBtn
+                    .textContent = '🔊 Read Full Chapter'; };
+            speechSynth.speak(utterance); }
 
-        // ----- End TOC helpers -----
+        function toggleTocSub(header) { const subDiv = header.nextElementSibling; if (subDiv) { const isOpen = subDiv
+                .classList.contains('open'); if (isOpen) { subDiv.classList.remove('open');
+                header.textContent = `▶ ${header.textContent.slice(2)}`; } else { subDiv.classList.add('open');
+                header.textContent = `▼ ${header.textContent.slice(2)}`; } } }
+        async function openChapterModal(id) { currentChapterId = id; const d = await apiCall('GET',
+                `/training/chapter/${id}`); if (!d) return;
+            document.getElementById('chapter-modal-title').textContent = d.title; const contentDiv = document
+            .getElementById('chapter-modal-content'); const contentHtml = d.content_text || '';
+            contentDiv.innerHTML = contentHtml.trim() ? DOMPurify.sanitize(contentHtml) :
+                '<p style="color:var(--text-secondary);">📖 No content available for this chapter.</p>';
+            document.getElementById('chapter-images-gallery').innerHTML = (d.images || []).map(u =>
+                `<img src="${u}" style="max-width:100%; border-radius:12px; max-height:300px;" onerror="this.style.display='none'">`
+                ).join('');
+            document.getElementById('chapter-modal-video-container').innerHTML = (d.videos || []).map(v => { let embed =
+                    v; if (v.includes('youtube.com/watch')) embed =
+                    `https://www.youtube.com/embed/${new URL(v).searchParams.get('v')}`; return
+                    `<iframe width="100%" height="200" src="${embed}" allowfullscreen></iframe>`; }).join('');
+            currentChapterQuestions = d.questions || []; if (d.user_progress?.passed) { document.getElementById(
+                    'quiz-container').innerHTML =
+                    `<p style="color:var(--success);">✅ Passed! Score: ${d.user_progress.best_score}%</p>`;
+                document.getElementById('submit-quiz-btn').classList.add('hidden'); } else { document.getElementById(
+                    'submit-quiz-btn').classList.remove('hidden');
+                document.getElementById('quiz-container').innerHTML = currentChapterQuestions.map((q, i) =>
+                    `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="q_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`
+                    ).join(''); }
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('chapter-modal').classList.remove('hidden');
+            buildTOC();
+            setTimeout(() => { attachTTSSections();
+                filterTrainingLanguage(); }, 200); }
 
-        // =================== END NEW TRAINING ===================
+        function closeChapterModal() { if (speechSynth.speaking || speechSynth.paused) { speechSynth.cancel(); }
+            stopSectionTTS();
+            activeTTSController = null;
+            activeSectionTTS = null;
+            activeSectionTTSBtn = null;
+            document.getElementById('chapter-modal').classList.add('hidden');
+            clearInterval(practiceTimerInterval);
+            const fullChapterBtn = document.querySelector('#chapter-modal-header .header-actions .btn-outline'); if (
+            fullChapterBtn) fullChapterBtn.textContent = '🔊 Read Full Chapter'; }
 
-        // =================== OTHER FUNCTIONS (Existing) ===================
-        async function loadEnergy() {
-            const e = await apiCall('GET', '/energy');
-            if (e) {
-                document.getElementById('energy-current').textContent = e.current_energy;
-                document.getElementById('energy-max').textContent = e.max_energy;
-                document.getElementById('energy-fill').style.width = (e.current_energy / e.max_energy * 100) + '%';
-            }
-        }
+        function setQuizMode() { currentQuizMode = document.getElementById('quiz-mode-select').value; if (currentQuizMode ===
+                'practice') startPracticeTimer(600); else { clearInterval(practiceTimerInterval);
+                document.getElementById('practice-timer').classList.add('hidden'); } }
 
-        async function loadHabits() {
-            const date = new Date().toLocaleDateString('en-CA');
-            const defs = await apiCall('GET', '/habits/definitions');
-            const logs = await apiCall('GET', `/habits/logs?date=${date}`);
-            habitDefinitions = defs || [];
-            todayLogs = logs || [];
-            document.getElementById('habits-list').innerHTML = defs.map(h => {
-                const log = logs.find(l => l.habit_id === h.id);
-                const times = (h.reminder_times || []);
-                return `
-                    <div class="glass habit-card" style="border-left:4px solid ${h.color};">
-                        <div class="flex"><span style="font-size:24px;">${h.icon}</span> <strong>${escapeHtml(h.title)}</strong></div>
-                        <div class="habit-times-grid">${times.map(t => `<div class="habit-time-slot ${log?.completed_times?.[t] ? 'done' : ''}" onclick="toggleHabitTime('${h.id}','${t}')">${t} ${log?.completed_times?.[t]?'✅':'⏳'}</div>`).join('')}</div>
-                    </div>`;
-            }).join('');
-        }
+        function startPracticeTimer(totalSeconds) { const timerEl = document.getElementById('practice-timer'); let remaining =
+                totalSeconds;
+            timerEl.classList.remove('hidden'); const update = () => { const mins = Math.floor(remaining / 60); const
+                    secs = remaining % 60;
+                timerEl.textContent = `⏳ ${mins}:${secs.toString().padStart(2,'0')}`; if (remaining <= 0)
+                { clearInterval(practiceTimerInterval);
+                    submitChapterQuiz(); }
+                remaining--; };
+            update();
+            clearInterval(practiceTimerInterval);
+            practiceTimerInterval = setInterval(update, 1000); }
+        async function submitChapterQuiz() { const answers = currentChapterQuestions.map(q => { const r = document
+                .querySelector(`input[name="q_${q.id}"]:checked`); return r ? { question_id: q.id,
+                    selected_index: parseInt(r.value) } : null; }).filter(a => a); if (answers.length !==
+                currentChapterQuestions.length) return showToast('Answer all questions'); const r = await apiCall('POST',
+                `/training/chapter/${currentChapterId}/quiz`, { answers }); if (!r) return; let resultHtml =
+                `<div class="glass"><h4 style="color:${r.passed ? 'var(--success)' : 'var(--danger)'};">${r.passed ? '✅ Passed!' : '❌ Failed'}</h4><p>Score: ${r.score.toFixed(0)}%</p>`
+                ; if (r.explanations) { resultHtml +=
+                    '<div style="margin-top:12px;"><h5>Explanations:</h5><ul>';
+                r.explanations.forEach(exp => { const q = currentChapterQuestions.find(q => q.id === exp
+                        .question_id); if (q) resultHtml +=
+                        `<li><strong>${escapeHtml(q.question)}</strong>: ${escapeHtml(exp.explanation || 'No explanation')}</li>`
+                        ; });
+                resultHtml += '</ul></div>'; }
+            resultHtml += !r.passed ? '<button onclick="closeChapterModal()">Read again</button>' : '';
+            resultHtml += '</div>';
+            document.getElementById('quiz-result').innerHTML = resultHtml;
+            document.getElementById('quiz-result').classList.remove('hidden');
+            clearInterval(practiceTimerInterval);
+            document.getElementById('submit-quiz-btn').classList.add('hidden'); }
+        async function startFinalExam() { const d = await apiCall('GET', '/training/final-exam'); if (!d || d.passed) return
+            showToast(d?.passed ? 'Already passed!' : 'Error');
+            window._examSessionId = d.session_id; const timer = document.getElementById('overall-timer'); const expiry =
+                new Date(d.expiry).getTime();
+            window._finalExamTimer = setInterval(() => { const diff = expiry - Date.now(); if (diff <= 0)
+            { clearInterval(window._finalExamTimer);
+                    submitFinalExam(); } const mins = Math.floor(diff / 60000),
+                    secs = Math.floor((diff % 60000) / 1000);
+                timer.textContent = `${mins}:${secs}`; }, 1000);
+            document.getElementById('final-exam-questions').innerHTML = d.questions.map((q, i) =>
+                `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="feq_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`
+                ).join('');
+            document.getElementById('final-exam-modal').classList.remove('hidden'); }
+        async function submitFinalExam() { clearInterval(window._finalExamTimer); const answers = [];
+            document.querySelectorAll('#final-exam-questions input:checked').forEach(r => answers.push({ question_id: parseInt(
+                r.name.replace('feq_', '')), selected_index: parseInt(r.value) })); const r = await apiCall('POST',
+                '/training/final-exam', { session_id: window._examSessionId, answers }); if (r) { let resultHtml =
+                    `<div class="glass"><h3>${r.passed ? '🏆 Passed!' : '❌ Failed'}</h3><p>Score: ${r.score.toFixed(0)}%</p>`
+                    ; if (r.explanations) { resultHtml +=
+                        '<div style="margin-top:12px;"><h5>Explanations:</h5><ul>';
+                    r.explanations.forEach(exp => { const q = r.questions?.find(q => q.id === exp
+                            .question_id); if (q) resultHtml +=
+                            `<li><strong>${escapeHtml(q.question)}</strong>: ${escapeHtml(exp.explanation || 'No explanation')}</li>`
+                            ; });
+                    resultHtml += '</ul></div>'; }
+                resultHtml += '</div>';
+                document.getElementById('final-exam-result').innerHTML = resultHtml;
+                document.getElementById('final-exam-result').classList.remove('hidden'); } }
+        async function loadHabits() { const date = new Date().toLocaleDateString('en-CA'); const defs = await fetch(
+                `${API}/habits/definitions`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r
+            .json()); const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json());
+            habitDefinitions = defs;
+            todayLogs = logs;
+            document.getElementById('habits-list').innerHTML = defs.map(h => { const log = logs.find(l => l.habit_id ===
+                    h.id); const times = (h.reminder_times || []); return `
+                <div class="glass habit-card" style="border-left:4px solid ${h.color};">
+                    <div class="flex"><span style="font-size:24px;">${h.icon}</span> <strong>${escapeHtml(h.title)}</strong></div>
+                    <div class="habit-times-grid">${times.map(t => `<div class="habit-time-slot ${log?.completed_times?.[t] ? 'done' : ''}" onclick="toggleHabitTime('${h.id}','${t}')">${t} ${log?.completed_times?.[t]?'✅':'⏳'}</div>`).join('')}</div>
+                </div>`; }).join(''); }
 
-        function showAddHabitForm() {
-            document.getElementById('add-habit-modal').classList.remove('hidden');
-        }
-
-        async function saveHabit() {
-            const title = document.getElementById('new-habit-title').value.trim();
-            if (!title) return showToast('Name required');
-            await apiCall('POST', '/habits/definitions', {
-                title,
-                icon: document.getElementById('new-habit-icon').value,
-                color: document.getElementById('new-habit-color').value,
-                reminder_times: document.getElementById('new-habit-times').value.split(',').map(t => t.trim()).filter(t => t)
-            });
+        function showAddHabitForm() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
+        async function saveHabit() { const title = document.getElementById('new-habit-title').value.trim(); if (!title)
+            return showToast('Name required'); await apiCall('POST', '/habits/definitions', { title, icon: document
+                .getElementById('new-habit-icon').value, color: document.getElementById('new-habit-color').value,
+                reminder_times: document.getElementById('new-habit-times').value.split(',').map(t => t.trim()).filter(
+                    t => t) });
             document.getElementById('add-habit-modal').classList.add('hidden');
-            loadHabits();
-        }
-
-        async function toggleHabitTime(habitId, time) {
-            const date = new Date().toLocaleDateString('en-CA');
-            const log = todayLogs.find(l => l.habit_id === habitId);
-            const completed = !(log?.completed_times?.[time] ?? false);
-            await apiCall('POST', '/habits/logs', { habit_id: habitId, date, time, completed });
-            loadHabits();
-        }
-
-        async function loadCommunity() {
-            const ps = await apiCall('GET', '/community');
+            loadHabits(); }
+        async function toggleHabitTime(habitId, time) { const date = new Date().toLocaleDateString('en-CA'); const log =
+                todayLogs.find(l => l.habit_id === habitId); const completed = !(log?.completed_times?.[time] ?? false); await
+            fetch(`${API}/habits/logs`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' }, body: JSON.stringify({ habit_id: habitId, date,
+                    time, completed }) });
+            loadHabits(); }
+        async function loadCommunity() { const ps = await apiCall('GET', '/community');
             document.getElementById('posts-container').innerHTML = ps.map(p =>
                 `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><div class="post-content" id="post-text-${p.id}">${DOMPurify.sanitize(p.content)}</div><button class="tts-btn" onclick="speakElementContent('post-text-${p.id}')">🔊</button><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`
-            ).join('');
-        }
-
-        async function submitPost() {
-            const content = document.getElementById('post-content').value.trim();
-            const videoFiles = document.getElementById('post-video').files;
-            const imageFiles = document.getElementById('post-image').files;
-            const allFiles = [...Array.from(imageFiles || []), ...Array.from(videoFiles || [])];
-            if (!content && allFiles.length === 0) return showToast('Write something or add media');
-            const mediaUrls = [];
-            for (let file of allFiles) {
-                const url = await uploadMedia(file);
-                if (url) mediaUrls.push({ url, type: file.type.startsWith('image/') ? 'image' : 'video' });
-            }
-            let finalContent = content;
-            mediaUrls.forEach(m => {
-                if (m.type === 'image') finalContent += ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
-                else finalContent += ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
-            });
-            await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
+                ).join(''); }
+        async function submitPost() { const content = document.getElementById('post-content').value.trim(); const videoFiles =
+                document.getElementById('post-video').files; const imageFiles = document.getElementById('post-image')
+            .files; const allFiles = [...Array.from(imageFiles || []), ...Array.from(videoFiles || [])]; if (!content &&
+                allFiles.length === 0) return showToast('Write something or add media'); const mediaUrls = []; for (let
+                file of allFiles) { const url = await uploadMedia(file); if (url) mediaUrls.push({ url, type: file.type
+                    .startsWith('image/') ? 'image' : 'video' }); } let finalContent = content;
+            mediaUrls.forEach(m => { if (m.type === 'image') finalContent +=
+                    ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`; else
+                    finalContent +=
+                    ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`
+                    ; }); await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById(
+                    'post-type').value });
             postImages = [];
             document.getElementById('post-image').value = '';
             document.getElementById('post-video').value = '';
             document.getElementById('post-image-folder').value = '';
             document.getElementById('post-image-preview').innerHTML = '';
-            loadCommunity();
-        }
-
-        async function handleFolderUpload(event, type) {
-            const files = event.target.files;
-            for (let file of files) {
-                if (file.type.startsWith('image/')) {
-                    const url = await uploadMedia(file);
-                    if (url) postImages.push({ url, type: 'image' });
-                }
-            }
-            document.getElementById('post-image-preview').innerHTML = postImages.map(f => `<span>${f.url}</span>`).join(', ');
-        }
-
-        async function likePost(id) {
-            await apiCall('POST', '/like-post', { post_id: id });
-            loadCommunity();
-        }
-
-        async function toggleReply(postId) {
-            const container = document.getElementById('replies-' + postId);
-            container.classList.toggle('hidden');
-            if (!container.classList.contains('hidden') && !container.dataset.loaded) {
-                container.dataset.loaded = 'true';
-                const replies = await apiCall('GET', `/replies?post_id=${postId}`);
-                container.innerHTML = replies.map(r =>
-                    `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`
-                ).join('');
-            }
-        }
-
-        async function uploadMedia(file) {
-            try {
-                let processedFile = file;
-                if (file.type.startsWith('image/')) processedFile = await resizeImage(file, 1200);
-                const formData = new FormData();
-                formData.append('image', processedFile);
-                const res = await fetch(`${API}/upload-image`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-                const data = await res.json();
-                if (data.error) { showToast('Upload Error: ' + data.error); return null; }
-                return data.url || null;
-            } catch (e) { showToast('Network error: ' + e.message); return null; }
-        }
-
-        async function resizeImage(file, maxWidth) {
-            const img = await createImageBitmap(file);
-            const canvas = document.createElement('canvas');
-            const ratio = maxWidth / img.width;
+            loadCommunity(); }
+        async function handleFolderUpload(event, type) { const files = event.target.files; for (let file of files) { if (file
+                .type.startsWith('image/')) { const url = await uploadMedia(file); if (url) postImages.push({ url,
+                    type: 'image' }); } }
+            document.getElementById('post-image-preview').innerHTML = postImages.map(f => `<span>${f.url}</span>`).join(
+            ', '); }
+        async function likePost(id) { await apiCall('POST', '/like-post', { post_id: id });
+            loadCommunity(); }
+        async function toggleReply(postId) { const container = document.getElementById('replies-' + postId);
+            container.classList.toggle('hidden'); if (!container.classList.contains('hidden') && !container.dataset
+                .loaded) { container.dataset.loaded = 'true'; const replies = await apiCall('GET',
+                `/replies?post_id=${postId}`);
+            container.innerHTML = replies.map(r =>
+                `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`
+                ).join(''); } }
+        async function uploadMedia(file) { try { let processedFile = file; if (file.type.startsWith('image/'))
+                processedFile = await resizeImage(file, 1200); const formData = new FormData();
+            formData.append('image', processedFile); const res = await fetch(`${API}/upload-image`, { method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }, body: formData }); const data = await res
+            .json(); if (data.error) { showToast('Upload Error: ' + data.error); return null; } return data.url ||
+                null; } catch (e) { showToast('Network error: ' + e.message); return null; } }
+        async function resizeImage(file, maxWidth) { const img = await createImageBitmap(file); const canvas = document
+            .createElement('canvas'); const ratio = maxWidth / img.width;
             canvas.width = maxWidth;
-            canvas.height = img.height * ratio;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
-            return new File([blob], file.name, { type: 'image/jpeg' });
-        }
-
-        async function loadLeaderboard() {
-            const d = await apiCall('GET', '/leaderboard');
+            canvas.height = img.height * ratio; const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const blob = await new Promise(res => canvas.toBlob(res,
+                'image/jpeg', 0.8)); return new File([blob], file.name, { type: 'image/jpeg' }); }
+        async function loadLeaderboard() { const d = await apiCall('GET', '/leaderboard');
             document.getElementById('leaderboard-list').innerHTML = d.map((u, i) =>
-                `<div>${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}</div>`
-            ).join('');
-        }
-
-        async function loadLessons() {
-            const ls = await apiCall('GET', '/lessons');
+                `<div>${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}</div>`).join(''); }
+        async function loadLessons() { const ls = await apiCall('GET', '/lessons');
             document.getElementById('lessons-list').innerHTML = ls.map(l =>
                 `<div class="flex" style="justify-content:space-between;"><span id="lesson-title-${l.id}">${escapeHtml(l.title)}</span><span><button class="tts-btn" onclick="speakElementContent('lesson-title-${l.id}')">🔊</button><button class="btn btn-sm" onclick="completeLesson(${l.id})">${l.completed_at?'✅':'Complete'}</button></span></div>`
-            ).join('');
-        }
-
-        async function completeLesson(id) {
-            await apiCall('POST', '/complete-lesson', { lesson_id: id });
+                ).join(''); }
+        async function completeLesson(id) { await apiCall('POST', '/complete-lesson', { lesson_id: id });
             loadLessons();
-            showToast('+3 XP!');
-        }
-
-        async function loadVideos() {
-            const vs = await apiCall('GET', '/videos');
+            showToast('+3 XP!'); }
+        async function loadVideos() { const vs = await apiCall('GET', '/videos');
             document.getElementById('video-grid').innerHTML = vs.map(v =>
                 `<div class="video-card">${v.youtube_id ? `<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>` : ''}<div class="video-info">${escapeHtml(v.title)}</div></div>`
-            ).join('');
-        }
-
-        async function loadInsights() {
-            const r = await apiCall('GET', '/insights');
+                ).join(''); }
+        async function loadInsights() { const r = await apiCall('GET', '/insights');
             document.getElementById('insights-content').innerHTML = r ?
-                `Total Journals: ${r.totalJournals}, Streak: ${r.currentStreak}, Top Mistake: ${r.topMistake}` : '';
-        }
-
-        async function loadProgress() {
-            const d = await apiCall('GET', '/progress');
-            if (!d) return;
+                `Total Journals: ${r.totalJournals}, Streak: ${r.currentStreak}, Top Mistake: ${r.topMistake}` : ''; }
+        async function loadProgress() { const d = await apiCall('GET', '/progress'); if (!d) return;
             document.getElementById('progress-fill').style.width = Math.min(100, (d.totalDays / 30) * 100) + '%';
             document.getElementById('progress-text').textContent = Math.round((d.totalDays / 30) * 100) + '%';
             document.getElementById('discipline-streak-text').textContent = d.disciplineStreak;
-            document.getElementById('identity-phase-text').textContent = d.identity_level;
-            const heatmapDiv = document.getElementById('heatmap');
-            heatmapDiv.innerHTML = '';
-            const days = d.days || [];
-            const last30Days = [];
-            for (let i = 29; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().slice(0, 10);
-                const journal = days.find(j => j.date === dateStr);
-                last30Days.push({ date: dateStr, hasJournal: !!journal });
-            }
-            last30Days.forEach(day => {
-                const box = document.createElement('div');
+            document.getElementById('identity-phase-text').textContent = d.identity_level; const heatmapDiv = document
+            .getElementById('heatmap');
+            heatmapDiv.innerHTML = ''; const days = d.days || []; const last30Days = []; for (let i = 29; i >= 0; i--)
+            { const date = new Date();
+                date.setDate(date.getDate() - i); const dateStr = date.toISOString().slice(0, 10); const journal = days
+                    .find(j => j.date === dateStr);
+                last30Days.push({ date: dateStr, hasJournal: !!journal }); }
+            last30Days.forEach(day => { const box = document.createElement('div');
                 box.style.width = '14px';
                 box.style.height = '14px';
                 box.style.borderRadius = '3px';
                 box.style.backgroundColor = day.hasJournal ? 'var(--accent)' : 'rgba(255,255,255,0.1)';
                 box.title = day.date;
-                heatmapDiv.appendChild(box);
-            });
+                heatmapDiv.appendChild(box); });
             document.getElementById('badges-list').innerHTML = (d.badges || []).map(b =>
-                `<span class="badge">${b}</span>`
-            ).join('');
-            if (radarChart) radarChart.destroy();
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            const radarToday = d.radar_today || {};
-            const radarYesterday = d.radar_yesterday || {};
-            radarChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Planning', 'Execution', 'Risk', 'Psychology', 'Improvement'],
-                    datasets: [
-                        {
-                            label: 'Today',
-                            data: [radarToday.planning || 0, radarToday.execution || 0, radarToday.risk || 0, radarToday.psychology || 0, radarToday.improvement || 0],
-                            borderColor: 'var(--accent)',
-                            backgroundColor: 'rgba(37,99,235,0.2)'
-                        },
-                        {
-                            label: 'Yesterday',
-                            data: [radarYesterday.planning || 0, radarYesterday.execution || 0, radarYesterday.risk || 0, radarYesterday.psychology || 0, radarYesterday.improvement || 0],
-                            borderColor: 'var(--text-secondary)',
-                            backgroundColor: 'rgba(156,163,175,0.1)'
-                        }
-                    ]
-                },
-                options: { scales: { r: { suggestedMin: 0, suggestedMax: 20 } } }
-            });
-            const certBtn = document.getElementById('certificate-btn');
-            if (d.totalDays >= 30) certBtn.classList.remove('hidden');
-            else certBtn.classList.add('hidden');
-        }
-
-        async function loadProfilePage() {
-            const d = await apiCall('GET', '/profile');
-            if (!d) return;
+                `<span class="badge">${b}</span>`).join(''); if (radarChart) radarChart.destroy(); const ctx = document
+                .getElementById('radarChart').getContext('2d'); const radarToday = d.radar_today || {}; const
+                radarYesterday = d.radar_yesterday || {};
+            radarChart = new Chart(ctx, { type: 'radar', data: { labels: ['Planning', 'Execution', 'Risk',
+                    'Psychology', 'Improvement'
+                    ], datasets: [{ label: 'Today', data: [radarToday.planning || 0, radarToday
+                            .execution || 0, radarToday.risk || 0, radarToday.psychology || 0,
+                            radarToday.improvement || 0
+                        ], borderColor: 'var(--accent)',
+                        backgroundColor: 'rgba(37,99,235,0.2)'
+                    }, { label: 'Yesterday', data: [radarYesterday.planning || 0,
+                            radarYesterday.execution || 0, radarYesterday.risk || 0,
+                            radarYesterday.psychology || 0, radarYesterday.improvement || 0
+                        ], borderColor: 'var(--text-secondary)',
+                        backgroundColor: 'rgba(156,163,175,0.1)'
+                    }] }, options: { scales: { r: { suggestedMin: 0,
+                        suggestedMax: 20 } } } }); }
+        async function loadProfilePage() { const d = await apiCall('GET', '/profile'); if (!d) return;
             document.getElementById('profile-name').textContent = d.user.display_name;
             document.getElementById('profile-email').textContent = d.user.email;
             document.getElementById('profile-avatar').textContent = d.user.avatar_emoji;
-            document.getElementById('avatar-select').value = d.user.avatar_emoji;
-            const prog = await apiCall('GET', '/progress');
+            document.getElementById('avatar-select').value = d.user.avatar_emoji; const prog = await apiCall('GET',
+                '/progress');
             document.getElementById('profile-badges').innerHTML = prog.badges.map(b =>
-                `<span class="badge">${b}</span>`
-            ).join('');
+                `<span class="badge">${b}</span>`).join('');
             updateEvolutionTree(d.user.identity_level);
             initProfileDropZone();
-            loadReminderSettings();
-            const freezeData = await apiCall('GET', '/streak-freeze');
-            const freezeCount = freezeData?.quantity || 0;
-            const existingFreezeEl = document.getElementById('profile-streak-freeze');
-            if (existingFreezeEl) {
-                existingFreezeEl.innerHTML =
-                    `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>`;
-            } else {
-                const container = document.getElementById('profile-badges');
-                if (container) {
-                    const div = document.createElement('div');
+            loadReminderSettings(); const freezeData = await apiCall('GET', '/streak-freeze'); const freezeCount =
+                freezeData?.quantity || 0; const existingFreezeEl = document.getElementById('profile-streak-freeze'); if (
+                existingFreezeEl) { existingFreezeEl.innerHTML =
+                    `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>`
+                    ; } else { const container = document.getElementById('profile-badges'); if (container) { const div =
+                        document.createElement('div');
                     div.id = 'profile-streak-freeze';
                     div.innerHTML =
-                        `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>`;
-                    container.parentNode.insertBefore(div, container.nextSibling);
-                }
-            }
-        }
-
-        async function changeAvatar() {
-            const e = document.getElementById('avatar-select').value;
-            await apiCall('POST', '/profile', { avatar_emoji: e });
+                        `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount < 1 ? 'disabled' : ''}>Use Streak Freeze</button>`
+                        ;
+                    container.parentNode.insertBefore(div, container.nextSibling); } } }
+        async function changeAvatar() { const e = document.getElementById('avatar-select').value; await apiCall('POST',
+                '/profile', { avatar_emoji: e });
             document.getElementById('profile-avatar').textContent = e;
-            document.getElementById('user-avatar').textContent = e;
-        }
+            document.getElementById('user-avatar').textContent = e; }
+        async function changeLanguage(lang) { await apiCall('POST', '/settings', { language: lang });
+            i18n.load(lang); }
 
-        async function changeLanguage(lang) {
-            await apiCall('POST', '/settings', { language: lang });
-            i18n.load(lang);
-        }
-
-        function initProfileDropZone() {
-            const dropZone = document.getElementById('profile-drop-zone');
-            const fileInput = document.getElementById('profile-image-upload');
-            if (!dropZone || !fileInput) return;
+        function initProfileDropZone() { const dropZone = document.getElementById('profile-drop-zone'); const fileInput =
+                document.getElementById('profile-image-upload'); if (!dropZone || !fileInput) return;
             dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault();
+                dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length) handleProfileImageUpload(files[0]);
-            });
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length) handleProfileImageUpload(e.target.files[0]);
-            });
-        }
+            dropZone.addEventListener('drop', (e) => { e.preventDefault();
+                dropZone.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length)
+                    handleProfileImageUpload(files[0]); });
+            fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleProfileImageUpload(e.target
+                    .files[0]); }); }
+        async function handleProfileImageUpload(file) { document.getElementById('profile-upload-status').textContent =
+                'Compressing...'; try { const resizedFile = await resizeImage(file, 400);
+                document.getElementById('profile-upload-status').textContent = 'Uploading...'; const formData = new
+                    FormData();
+                formData.append('image', resizedFile); const res = await fetch(`${API}/upload-image`, { method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }, body: formData }); const data = await res
+                .json(); if (data.url) { await apiCall('POST', '/profile', { avatar_emoji: data.url });
+                    document.getElementById('profile-avatar').innerHTML =
+                        `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`
+                        ;
+                    document.getElementById('user-avatar').innerHTML =
+                        `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`
+                        ;
+                    document.getElementById('profile-upload-status').textContent =
+                    '✅ Upload successful!'; } else { document.getElementById('profile-upload-status')
+                        .textContent = 'Upload failed'; } } catch (e) { document.getElementById(
+                    'profile-upload-status').textContent = 'Error'; } }
+        async function useStreakFreeze() { if (!confirm(
+                    'Use one streak freeze? This will protect your streak today.')) return; const res = await apiCall(
+                'POST', '/use-streak-freeze'); if (res?.success) { showToast(
+                    `Streak freeze used! Remaining: ${res.remaining}`);
+                loadProfilePage(); } else { showToast(res?.error || 'Failed'); } }
 
-        async function handleProfileImageUpload(file) {
-            document.getElementById('profile-upload-status').textContent = 'Compressing...';
-            try {
-                const resizedFile = await resizeImage(file, 400);
-                document.getElementById('profile-upload-status').textContent = 'Uploading...';
-                const formData = new FormData();
-                formData.append('image', resizedFile);
-                const res = await fetch(`${API}/upload-image`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-                const data = await res.json();
-                if (data.url) {
-                    await apiCall('POST', '/profile', { avatar_emoji: data.url });
-                    document.getElementById('profile-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
-                    document.getElementById('user-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
-                    document.getElementById('profile-upload-status').textContent = '✅ Upload successful!';
-                } else {
-                    document.getElementById('profile-upload-status').textContent = 'Upload failed';
-                }
-            } catch (e) {
-                document.getElementById('profile-upload-status').textContent = 'Error';
-            }
-        }
+        function startReminderScheduler() { if (reminderInterval) clearInterval(reminderInterval);
+            reminderInterval = setInterval(() => { if (!currentUser) return; const now = new Date(); const time =
+                    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+                    ;
+                habitDefinitions.forEach(h => { if (h.reminder_times && h.reminder_times.includes(time))
+                { if (Notification.permission === 'granted') new Notification(`🧩 ${h.title}`, { body: `Time for ${h.title}` });
+                        showToast(`⏰ Time for ${h.title}`); } }); }, 60000); }
 
-        async function useStreakFreeze() {
-            if (!confirm('Use one streak freeze? This will protect your streak today.')) return;
-            const res = await apiCall('POST', '/use-streak-freeze');
-            if (res?.success) {
-                showToast(`Streak freeze used! Remaining: ${res.remaining}`);
-                loadProfilePage();
-            } else {
-                showToast(res?.error || 'Failed');
-            }
-        }
-
-        function startReminderScheduler() {
-            if (reminderInterval) clearInterval(reminderInterval);
-            reminderInterval = setInterval(() => {
-                if (!currentUser) return;
-                const now = new Date();
-                const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-                habitDefinitions.forEach(h => {
-                    if (h.reminder_times && h.reminder_times.includes(time)) {
-                        if (Notification.permission === 'granted') new Notification(`🧩 ${h.title}`, { body: `Time for ${h.title}` });
-                        showToast(`⏰ Time for ${h.title}`);
-                    }
-                });
-            }, 60000);
-        }
-
-        function clearAllReminders() {
-            if (reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; }
-        }
-
-        function initDashboard(user) {
+        function clearAllReminders() { if (reminderInterval) { clearInterval(reminderInterval);
+                reminderInterval = null; } }
+        async function initDashboard(user) { await checkVersion();
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('dashboard').classList.remove('hidden');
             currentUser = user;
-            previousLevel = user.level;
-            if (!window.history.state || !window.history.state.page) {
-                window.history.replaceState({ page: 'journey' }, '', '#/journey');
-            }
+            previousLevel = user.level; if (!window.history.state || !window.history.state.page)
+            { window.history.replaceState({ page: 'journey' }, '', '#/journey'); }
             showPage('journey');
             renderSliders();
             startReminderScheduler();
             initProfileDropZone();
-            applyAdminTheme();
-            if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
-            updateDateDisplay();
-        }
+            applyAdminTheme(); if (user.language) { i18n.load(user.language); } else { i18n.load('en'); }
+            updateDateDisplay(); }
+        window.addEventListener('load', async () => { if ('serviceWorker' in navigator) { try { const registration =
+                        await navigator.serviceWorker.register('/sw.js');
+                    registration.addEventListener('updatefound', () => { const newWorker = registration
+                        .installing;
+                        newWorker.addEventListener('statechange', () => { if (newWorker.state ===
+                                'installed' && navigator.serviceWorker.controller)
+                            { showToast('🔄 New update available! Reloading...');
+                                setTimeout(() => window.location.reload(true), 2000); } }); }); } catch (
+                    e) { console.error('SW registration failed', e); } } await i18n.init();
+            applyAdminTheme(); try { const r = await fetch(`${API}/admin/settings`); const s = await r.json(); if (s
+                    .site_title) document.getElementById('app-title').textContent = s.site_title; } catch (e) {} if (
+                token) { const d = await apiCall('GET', '/profile'); if (d) initDashboard(d.user); else
+            logout(); } else { document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('auth-screen').classList.remove('hidden'); } });
+        async function requestPasswordReset() { const email = document.getElementById('reset-email').value.trim(); if (
+                !email) return showToast('Please enter your email'); const res = await apiCall('POST',
+                '/request-password-reset', { email }); if (res) showToast(
+                'If the email exists, a reset link has been sent.');
+            document.getElementById('forgot-password-modal').classList.add('hidden'); }
 
-        // ---- Final Exam functions ----
-        async function startFinalExam() {
-            const d = await apiCall('GET', '/training/final-exam');
-            if (!d || d.passed) return showToast(d?.passed ? 'Already passed!' : 'Error');
-            window._examSessionId = d.session_id;
-            const timer = document.getElementById('overall-timer');
-            const expiry = new Date(d.expiry).getTime();
-            window._finalExamTimer = setInterval(() => {
-                const diff = expiry - Date.now();
-                if (diff <= 0) { clearInterval(window._finalExamTimer); submitFinalExam(); }
-                const mins = Math.floor(diff / 60000), secs = Math.floor((diff % 60000) / 1000);
-                timer.textContent = `${mins}:${secs}`;
-            }, 1000);
-            document.getElementById('final-exam-questions').innerHTML = d.questions.map((q, i) =>
-                `<div class="question-block"><p>${i+1}. ${escapeHtml(q.question)}</p>${q.options.map((o,j) => `<div class="quiz-option"><input type="radio" name="feq_${q.id}" value="${j}"> <label>${escapeHtml(o)}</label></div>`).join('')}</div>`
-            ).join('');
-            document.getElementById('final-exam-modal').classList.remove('hidden');
-        }
+        function showMysteryBox() { document.getElementById('mystery-box-modal').classList.remove('hidden');
+            document.getElementById('mystery-result').textContent = ''; }
+        async function openMysteryBox() { const res = await apiCall('POST', '/open-box'); if (res && res.reward)
+        { document.getElementById('mystery-result').textContent = `🎉 You got: ${res.reward}`;
+            celebrate(`🎁 ${res.reward}`); if (res.reward.includes('XP')) { const xp = parseInt(res.reward) ||
+                0; if (xp) showFloatingXp(xp); }
+            document.getElementById('mystery-box-btn').classList.add('hidden'); } else { document.getElementById(
+                'mystery-result').textContent = 'No box available today.'; } }
+        async function downloadCertificate() { window.open(`${API}/certificate`, '_blank'); }
 
-        async function submitFinalExam() {
-            clearInterval(window._finalExamTimer);
-            const answers = [];
-            document.querySelectorAll('#final-exam-questions input:checked').forEach(r => answers.push({ question_id: parseInt(r.name.replace('feq_', '')), selected_index: parseInt(r.value) }));
-            const r = await apiCall('POST', '/training/final-exam', { session_id: window._examSessionId, answers });
-            if (r) {
-                let resultHtml = `<div class="glass"><h3>${r.passed ? '🏆 Passed!' : '❌ Failed'}</h3><p>Score: ${r.score.toFixed(0)}%</p>`;
-                if (r.explanations) {
-                    resultHtml += '<div style="margin-top:12px;"><h5>Explanations:</h5><ul>';
-                    r.explanations.forEach(exp => {
-                        const q = r.questions?.find(q => q.id === exp.question_id);
-                        if (q) resultHtml += `<li><strong>${escapeHtml(q.question)}</strong>: ${escapeHtml(exp.explanation || 'No explanation')}</li>`;
-                    });
-                    resultHtml += '</ul></div>';
-                }
-                resultHtml += '</div>';
-                document.getElementById('final-exam-result').innerHTML = resultHtml;
-                document.getElementById('final-exam-result').classList.remove('hidden');
-            }
-        }
-
-        function setQuizMode() {
-            // placeholder for chapter quizzes; not used for subjects
-        }
-
-        // ------- Helper for certificate download -------
-        async function downloadCertificate() {
-            window.open(`${API}/certificate`, '_blank');
-        }
-
-        // ------- Password reset -------
-        async function requestPasswordReset() {
-            const email = document.getElementById('reset-email').value.trim();
-            if (!email) return showToast('Please enter your email');
-            const res = await apiCall('POST', '/request-password-reset', { email });
-            if (res) showToast('If the email exists, a reset link has been sent.');
-            document.getElementById('forgot-password-modal').classList.add('hidden');
-        }
-
-        // ------- Mystery Box -------
-        function showMysteryBox() {
-            document.getElementById('mystery-box-modal').classList.remove('hidden');
-            document.getElementById('mystery-result').textContent = '';
-        }
-
-        async function openMysteryBox() {
-            const res = await apiCall('POST', '/open-box');
-            if (res && res.reward) {
-                document.getElementById('mystery-result').textContent = `🎉 You got: ${res.reward}`;
-                celebrate(`🎁 ${res.reward}`);
-                if (res.reward.includes('XP')) { const xp = parseInt(res.reward) || 0; if (xp) showFloatingXp(xp); }
-                document.getElementById('mystery-box-btn').classList.add('hidden');
-            } else {
-                document.getElementById('mystery-result').textContent = 'No box available today.';
-            }
-        }
-
-        // =================== GLOBAL EXPOSURE ===================
+        // Expose all functions globally
         window.showPage = showPage;
         window.logout = logout;
         window.login = login;
@@ -3490,48 +1909,13 @@
         window.toggleTocSub = toggleTocSub;
         window.updateMiniTtsSpeed = updateMiniTtsSpeed;
         window.resetAllSectionTTSButtons = resetAllSectionTTSButtons;
-        // New training
-        window.loadTrainingTab = loadTrainingTab;
-        window.selectMainSubject = selectMainSubject;
-        window.openSubjectLesson = openSubjectLesson;
-        window.toggleLessonBookmark = toggleLessonBookmark;
-        window.saveLessonNote = saveLessonNote;
+        window.loadSubjectsTree = loadSubjectsTree;
+        window.selectSubject = selectSubject;
+        window.openLessonModal = openLessonModal;
+        window.closeLessonModal = closeLessonModal;
         window.navigateLesson = navigateLesson;
-        window.refreshTrainingTree = refreshTrainingTree;
-        window.filterSubjectTree = filterSubjectTree;
-
-        // =================== FINAL INIT ===================
-        window.addEventListener('load', async () => {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register('/sw.js');
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                showToast('🔄 New update available! Reloading...');
-                                setTimeout(() => window.location.reload(true), 2000);
-                            }
-                        });
-                    });
-                } catch(e) { console.error('SW registration failed', e); }
-            }
-            await i18n.init();
-            applyAdminTheme();
-            try {
-                const r = await fetch(`${API}/admin/settings`);
-                const s = await r.json();
-                if (s.site_title) document.getElementById('app-title').textContent = s.site_title;
-            } catch(e) {}
-            if (token) {
-                const d = await apiCall('GET', '/profile');
-                if (d) initDashboard(d.user);
-                else logout();
-            } else {
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('auth-screen').classList.remove('hidden');
-            }
-        });
+        window.toggleLessonTTS = toggleLessonTTS;
+        window.bookmarkLesson = bookmarkLesson;
     </script>
 </body>
 </html>

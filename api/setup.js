@@ -607,7 +607,6 @@ async function apiHandler(req) {
   }
 
   try {
-    // Helper to get query params consistently
     const getQueryParam = (paramName) => {
       const url = new URL(req.url, `${protocol}://${host}`);
       return url.searchParams.get(paramName);
@@ -1340,7 +1339,7 @@ async function apiHandler(req) {
       return json({ version: '2.0.1' });
     }
 
-    // ==================== PUBLIC SLIDESHOW (with error handling) ====================
+    // ==================== PUBLIC SLIDESHOW ====================
     if (path === '/slideshow' && req.method === 'GET') {
       try {
         const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
@@ -1376,42 +1375,6 @@ async function apiHandler(req) {
         Sentry.captureException(e);
         return errorJson('Failed to update subscription', 500);
       }
-    }
-
-    // ==================== TRAINING SUBJECTS TREE (PUBLIC / USER) ====================
-    if (path === '/training/subjects' && req.method === 'GET') {
-      const user = await authenticate(req);
-      if (!user) return errorJson('Authentication required', 401);
-      const courseId = parseInt(getQueryParam('course_id')) || 1;
-      const lang = getQueryParam('lang') || (user ? await getUserLanguage(user.id) : 'en');
-      
-      const subjects = await sql`
-        SELECT s.*,
-               COALESCE(ct_title.translated_text, s.title) AS title,
-               COALESCE(ct_content.translated_text, s.content_text) AS content_text
-        FROM subjects s
-        LEFT JOIN content_translations ct_title ON ct_title.table_name='subjects' AND ct_title.record_id=s.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
-        LEFT JOIN content_translations ct_content ON ct_content.table_name='subjects' AND ct_content.record_id=s.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
-        WHERE s.course_id = ${courseId} AND s.is_active = true
-        ORDER BY s.order_index, s.id
-      `;
-      
-      // Build tree
-      const tree = [];
-      const map = {};
-      subjects.forEach(s => { 
-        const sub = { ...s, sub_subjects: [] };
-        map[s.id] = sub;
-      });
-      subjects.forEach(s => {
-        const item = map[s.id];
-        if (s.parent_id === null) {
-          tree.push(item);
-        } else if (map[s.parent_id]) {
-          map[s.parent_id].sub_subjects.push(item);
-        }
-      });
-      return json(tree);
     }
 
     // ==================== ADMIN ENDPOINTS ====================
@@ -1465,12 +1428,10 @@ async function apiHandler(req) {
       return json({ token });
     }
 
-    // ✅ FULL MANUAL CASCADE USER DELETE (with all related tables)
     if (path.match(/^\/admin\/user\/(.+)$/) && req.method === 'DELETE') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const userId = path.split('/')[3];
-
       try {
         await sql`DELETE FROM daily_journals WHERE user_id = ${userId}`;
         await sql`DELETE FROM badges WHERE user_id = ${userId}`;
@@ -1497,41 +1458,16 @@ async function apiHandler(req) {
         await sql`DELETE FROM mentor_assignments WHERE mentor_id = ${userId} OR student_id = ${userId}`;
         await sql`DELETE FROM user_assessments WHERE user_id = ${userId}`;
         await sql`DELETE FROM exam_sessions WHERE user_id = ${userId}`;
-        // Finally, delete the user
         await sql`DELETE FROM users WHERE id = ${userId}`;
-
         await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
         return json({ success: true });
       } catch (err) {
-        console.error('Delete user failed:', err);
         Sentry.captureException(err);
         return errorJson('Failed to delete user', 500);
       }
     }
 
-    if (path === '/admin/simulate-day' && req.method === 'POST') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const { email, days, start_day } = await req.json();
-      if (!email || !days) return errorJson('email and days required', 400);
-      const [user] = await sql`SELECT id FROM users WHERE email = ${email}`;
-      if (!user) return errorJson('User not found', 404);
-      let inserted = 0;
-      for (let i = 0; i < days; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - (start_day + i));
-        const d = date.toISOString().slice(0,10);
-        const [existing] = await sql`SELECT id FROM daily_journals WHERE user_id = ${user.id} AND date = ${d}`;
-        if (!existing) {
-          await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment) VALUES (${user.id}, ${d}, true, 'Simulated')`;
-          inserted++;
-        }
-      }
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'simulate', ${JSON.stringify({email, days, inserted})})`;
-      return json({ success: true, inserted_days: inserted });
-    }
-
-    // --- Subjects Management (NEW with Quill support) ---
+    // --- Subjects Management (NEW) ---
     if (path === '/admin/subjects' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1556,6 +1492,7 @@ async function apiHandler(req) {
     }
 
     if (path === '/admin/subjects/tree' && req.method === 'GET') {
+      // Public for users too (no admin check needed)
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const courseId = getQueryParam('course_id') || 1;
@@ -1615,8 +1552,7 @@ async function apiHandler(req) {
     }
 
     if (path.match(/^\/admin\/subjects\/(\d+)\/sub$/) && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
+      // Public: no admin required
       const mainId = parseInt(path.split('/')[3]);
       const subs = await sql`
         SELECT * FROM subjects 
@@ -1877,7 +1813,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Admin Image Upload (using req.formData()) – kept as fallback ---
+    // --- Admin Image Upload (fallback via formData) ---
     if (path === '/admin/upload-image' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1963,13 +1899,11 @@ async function apiHandler(req) {
         const body = await req.json();
         const { question, category, order_index } = body;
         await sql`UPDATE assessment_questions SET question = COALESCE(${question}, question), category = COALESCE(${category}, category), order_index = COALESCE(${order_index}, order_index) WHERE id = ${assessmentId}`;
-        await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_assessment_question', ${JSON.stringify({id: assessmentId})})`;
         return json({ success: true });
       } else if (req.method === 'DELETE') {
         const admin = await authenticateAdmin(req);
         if (!admin) return errorJson('Forbidden', 403);
         await sql`DELETE FROM assessment_questions WHERE id = ${assessmentId}`;
-        await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_assessment_question', ${JSON.stringify({id: assessmentId})})`;
         return json({ success: true });
       }
     }
@@ -2013,7 +1947,6 @@ async function apiHandler(req) {
           is_active = COALESCE(${is_active}, is_active)
         WHERE id = ${slideId}
       `;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_slideshow', ${JSON.stringify({id: slideId})})`;
       return json({ success: true });
     }
 
@@ -2022,7 +1955,6 @@ async function apiHandler(req) {
       if (!admin) return errorJson('Forbidden', 403);
       const slideId = parseInt(path.split('/')[3]);
       await sql`DELETE FROM slideshow_images WHERE id = ${slideId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_slideshow', ${JSON.stringify({id: slideId})})`;
       return json({ success: true });
     }
 
@@ -2030,42 +1962,19 @@ async function apiHandler(req) {
     if (path === '/admin/export/training' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-
       try {
         const courses = await sql`SELECT * FROM courses WHERE is_active = true`;
         const result = [];
-
         for (const course of courses) {
-          const chapters = await sql`
-            SELECT * FROM chapters 
-            WHERE course_id = ${course.id} AND is_active = true 
-            ORDER BY order_index
-          `;
+          const chapters = await sql`SELECT * FROM chapters WHERE course_id = ${course.id} AND is_active = true ORDER BY order_index`;
           const chaptersWithQuestions = [];
-
           for (const ch of chapters) {
-            const questions = await sql`
-              SELECT * FROM chapter_quiz_questions 
-              WHERE chapter_id = ${ch.id}
-              ORDER BY order_index
-            `;
-            chaptersWithQuestions.push({
-              ...ch,
-              questions: questions
-            });
+            const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${ch.id} ORDER BY order_index`;
+            chaptersWithQuestions.push({ ...ch, questions: questions });
           }
-
-          result.push({
-            ...course,
-            chapters: chaptersWithQuestions
-          });
+          result.push({ ...course, chapters: chaptersWithQuestions });
         }
-
-        return json({
-          exported_at: new Date().toISOString(),
-          version: '2.0',
-          data: result
-        });
+        return json({ exported_at: new Date().toISOString(), version: '2.0', data: result });
       } catch (err) {
         Sentry.captureException(err);
         return errorJson('Export failed: ' + err.message, 500);
@@ -2075,18 +1984,9 @@ async function apiHandler(req) {
     if (path === '/admin/import/training' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-
       let body;
-      try {
-        body = await req.json();
-      } catch {
-        return errorJson('Invalid JSON file', 400);
-      }
-
-      if (!body.data || !Array.isArray(body.data)) {
-        return errorJson('Invalid backup format: missing data array', 400);
-      }
-
+      try { body = await req.json(); } catch { return errorJson('Invalid JSON file', 400); }
+      if (!body.data || !Array.isArray(body.data)) return errorJson('Invalid backup format: missing data array', 400);
       try {
         for (const course of body.data) {
           const [existingCourse] = await sql`SELECT id FROM courses WHERE id = ${course.id}`;
@@ -2095,7 +1995,6 @@ async function apiHandler(req) {
           } else {
             await sql`INSERT INTO courses (id, title, description) VALUES (${course.id}, ${course.title}, ${course.description})`;
           }
-
           for (const ch of (course.chapters || [])) {
             const [existingChapter] = await sql`SELECT id FROM chapters WHERE id = ${ch.id}`;
             if (existingChapter) {
@@ -2103,14 +2002,12 @@ async function apiHandler(req) {
             } else {
               await sql`INSERT INTO chapters (id, course_id, title, order_index, content_text, images, videos, passing_score, language) VALUES (${ch.id}, ${course.id}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.images}, ${ch.videos}, ${ch.passing_score}, ${ch.language})`;
             }
-
             await sql`DELETE FROM chapter_quiz_questions WHERE chapter_id = ${ch.id}`;
             for (const q of (ch.questions || [])) {
               await sql`INSERT INTO chapter_quiz_questions (id, chapter_id, question, options, correct_index, explanation, order_index) VALUES (${q.id}, ${ch.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation}, ${q.order_index})`;
             }
           }
         }
-
         return json({ success: true, message: 'Training data imported successfully' });
       } catch (err) {
         Sentry.captureException(err);
@@ -2141,7 +2038,6 @@ async function apiHandler(req) {
 
     // --- Site Settings (Admin GET is public for theme sync; PUT protected) ---
     if (path === '/admin/settings' && req.method === 'GET') {
-      // Public – used by frontend to fetch theme
       const rows = await sql`SELECT * FROM site_settings`;
       const map = {};
       rows.forEach(r => map[r.key] = r.value);
@@ -2208,7 +2104,6 @@ async function apiHandler(req) {
           whatsapp_number = ${body.whatsapp_number},
           language = COALESCE(${body.language}, user_settings.language)
       `;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'update_settings', ${JSON.stringify(body)}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2226,7 +2121,6 @@ async function apiHandler(req) {
       const body = await req.json();
       const { mood, date } = body;
       await sql`INSERT INTO mood_logs (user_id, date, mood) VALUES (${user.id}, ${date || new Date().toISOString().slice(0,10)}, ${mood}) ON CONFLICT (user_id, date) DO UPDATE SET mood = ${mood}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'mood_logged', ${JSON.stringify({mood, date})}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2263,7 +2157,6 @@ async function apiHandler(req) {
       if (!quest.completed) return errorJson('Quest not completed yet', 400);
       await sql`UPDATE daily_quests SET claimed = true WHERE id = ${quest.id}`;
       await sql`UPDATE users SET xp = xp + 15 WHERE id = ${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'claim_quest', ${JSON.stringify({quest_id: quest.id})}, ${ip})`;
       return json({ success: true, xp: 15 });
     }
 
@@ -2272,7 +2165,6 @@ async function apiHandler(req) {
       const [item] = await sql`SELECT quantity FROM streak_freeze_items WHERE user_id = ${user.id}`;
       if (!item || item.quantity < 1) return errorJson('No freeze available', 400);
       await sql`UPDATE streak_freeze_items SET quantity = quantity - 1 WHERE user_id = ${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'use_streak_freeze', ${JSON.stringify({})}, ${ip})`;
       return json({ success: true, remaining: item.quantity - 1 });
     }
 
@@ -2299,7 +2191,6 @@ async function apiHandler(req) {
       if (!exists) {
         await sql`INSERT INTO daily_rewards (user_id, date) VALUES (${user.id}, CURRENT_DATE)`;
         await sql`UPDATE users SET xp = xp + 1 WHERE id = ${user.id}`;
-        await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'claim_daily_reward', ${JSON.stringify({})}, ${ip})`;
         return json({ claimed: true, xp: 1 });
       }
       return json({ claimed: false, message: 'Daily bonus already claimed' });
@@ -2313,15 +2204,9 @@ async function apiHandler(req) {
       const reward = rewards[Math.floor(Math.random() * rewards.length)];
       if (!box) await sql`INSERT INTO mystery_boxes (user_id, date, opened, reward) VALUES (${user.id}, CURRENT_DATE, true, ${reward})`;
       else await sql`UPDATE mystery_boxes SET opened = true, reward = ${reward} WHERE user_id = ${user.id} AND date = CURRENT_DATE`;
-      if (reward.includes('XP')) {
-        const xp = parseInt(reward);
-        await sql`UPDATE users SET xp = xp + ${xp} WHERE id = ${user.id}`;
-      } else if (reward.includes('Badge')) {
-        await sql`INSERT INTO badges (user_id, badge_type) VALUES (${user.id}, 'lucky-trader') ON CONFLICT DO NOTHING`;
-      } else if (reward === 'Streak Freeze') {
-        await sql`INSERT INTO streak_freeze_items (user_id, quantity) VALUES (${user.id}, 1) ON CONFLICT (user_id) DO UPDATE SET quantity = streak_freeze_items.quantity + 1`;
-      }
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'open_mystery_box', ${JSON.stringify({reward})}, ${ip})`;
+      if (reward.includes('XP')) { const xp = parseInt(reward); await sql`UPDATE users SET xp = xp + ${xp} WHERE id = ${user.id}`; }
+      else if (reward.includes('Badge')) await sql`INSERT INTO badges (user_id, badge_type) VALUES (${user.id}, 'lucky-trader') ON CONFLICT DO NOTHING`;
+      else if (reward === 'Streak Freeze') await sql`INSERT INTO streak_freeze_items (user_id, quantity) VALUES (${user.id}, 1) ON CONFLICT (user_id) DO UPDATE SET quantity = streak_freeze_items.quantity + 1`;
       return json({ reward });
     }
 
@@ -2331,7 +2216,6 @@ async function apiHandler(req) {
       const { post_id, reaction } = body;
       if (!['👍','🔥','❤️'].includes(reaction)) return errorJson('Invalid reaction', 400);
       await sql`UPDATE community_posts SET reactions = jsonb_set(COALESCE(reactions, '{}'), ARRAY[${reaction}], COALESCE((reactions->>${reaction})::int, 0)::int + 1::text::jsonb) WHERE id = ${post_id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'react_post', ${JSON.stringify({post_id, reaction})}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2360,13 +2244,7 @@ async function apiHandler(req) {
         is_admin: !!adminExists,
         language: settings?.language || 'en'
       };
-      return json({
-        user: userData,
-        today_entry: today,
-        totalDays: total,
-        streak,
-        disciplineStreak
-      });
+      return json({ user: userData, today_entry: today, totalDays: total, streak, disciplineStreak });
     }
 
     if (path === '/profile' && req.method === 'POST') {
@@ -2374,7 +2252,6 @@ async function apiHandler(req) {
       const { avatar_emoji, display_name } = body;
       if (avatar_emoji) await sql`UPDATE users SET avatar_emoji = ${avatar_emoji} WHERE id = ${user.id}`;
       if (display_name) await sql`UPDATE users SET display_name = ${display_name} WHERE id = ${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'profile_update', ${JSON.stringify(body)}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2384,11 +2261,10 @@ async function apiHandler(req) {
       const { mindfulness_done, commitment, date } = body;
       const effectiveDate = date || new Date().toISOString().slice(0,10);
       await sql`INSERT INTO daily_journals (user_id, date, mindfulness_done, commitment) VALUES (${user.id}, ${effectiveDate}, ${mindfulness_done}, ${commitment}) ON CONFLICT (user_id, date) DO UPDATE SET mindfulness_done = ${mindfulness_done}, commitment = ${commitment}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'checkin', ${JSON.stringify({mindfulness_done, commitment})}, ${ip})`;
       return json({ success: true });
     }
 
-    // --- Evaluation (with Zod) ---
+    // --- Evaluation ---
     if (path === '/evaluation' && req.method === 'POST') {
       const body = await req.json();
       const parsed = evaluationSchema.safeParse(body);
@@ -2436,8 +2312,6 @@ async function apiHandler(req) {
       const level = calculateLevel(newXp);
       const [box] = await sql`SELECT * FROM mystery_boxes WHERE user_id = ${user.id} AND date = ${effectiveDate}`;
 
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'evaluation_submitted', ${JSON.stringify({date: effectiveDate, q6: scores.q6})}, ${ip})`;
-
       return json({ feedback, mission, badges, identity_level: phase, streak, disciplineStreak, totalDays: total, xp: newXp, level, radar_scores: radar, xpGain, bonus, box_available: !box || !box.opened });
     }
 
@@ -2461,9 +2335,9 @@ async function apiHandler(req) {
       const mistakeCounts = await sql`SELECT SUM(CASE WHEN stop_loss_moved = true THEN 1 ELSE 0 END) as sl_moved, SUM(CASE WHEN revenge_trade = true THEN 1 ELSE 0 END) as revenge, SUM(CASE WHEN fomo_entry = true THEN 1 ELSE 0 END) as fomo, SUM(CASE WHEN overtrading = true THEN 1 ELSE 0 END) as overtrade FROM daily_journals WHERE user_id = ${user.id}`;
       const mc = mistakeCounts[0];
       const mistakes = { 'Stop loss moved': mc.sl_moved, 'Revenge trade': mc.revenge, 'FOMO': mc.fomo, 'Overtrading': mc.overtrade };
-      const topMistake = Object.entries(mistakes).sort((a,b) => b[1]-a[1])[0];
+      const topMistake = Object.entries(mistakes).sort((a,b)=>b[1]-a[1])[0];
       const avgDiscipline = (await sql`SELECT AVG((scores->>'q6')::int)::float FROM daily_journals WHERE user_id = ${user.id}`)[0].avg;
-      return json({ totalJournals, currentStreak, topMistake: topMistake[1] > 0 ? topMistake[0] : 'No mistakes!', avgDiscipline });
+      return json({ totalJournals, currentStreak, topMistake: topMistake[1]>0?topMistake[0]:'No mistakes!', avgDiscipline });
     }
 
     // --- Lessons ---
@@ -2476,7 +2350,6 @@ async function apiHandler(req) {
       const { lesson_id } = body;
       await sql`INSERT INTO user_lessons (user_id, lesson_id) VALUES (${user.id}, ${lesson_id}) ON CONFLICT DO NOTHING`;
       await sql`UPDATE users SET xp = xp + 3 WHERE id = ${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'complete_lesson', ${JSON.stringify({lesson_id})}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2490,21 +2363,18 @@ async function apiHandler(req) {
       const { content, post_type } = body;
       if (!['lesson','mistake','rule','general'].includes(post_type)) return errorJson('Invalid type', 400);
       await sql`INSERT INTO community_posts (user_id, content, post_type) VALUES (${user.id}, ${content}, ${post_type})`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'create_post', ${JSON.stringify({post_type})}, ${ip})`;
       return json({ success: true });
     }
     if (path === '/like-post' && req.method === 'POST') {
       const body = await req.json();
       const { post_id } = body;
       await sql`UPDATE community_posts SET likes = likes + 1 WHERE id = ${post_id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'like_post', ${JSON.stringify({post_id})}, ${ip})`;
       return json({ success: true });
     }
     if (path === '/reply-post' && req.method === 'POST') {
       const body = await req.json();
       const { post_id, content } = body;
       await sql`INSERT INTO replies (post_id, user_id, content) VALUES (${post_id}, ${user.id}, ${content})`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'reply_post', ${JSON.stringify({post_id})}, ${ip})`;
       return json({ success: true });
     }
     if (path === '/replies' && req.method === 'GET') {
@@ -2534,7 +2404,7 @@ async function apiHandler(req) {
       if (!quiz) return errorJson('Invalid quiz', 404);
       const correct = answer === quiz.correct;
       await sql`INSERT INTO quiz_attempts (user_id, quiz_id, date, correct) VALUES (${user.id}, ${quiz_id}, CURRENT_DATE, ${correct}) ON CONFLICT DO NOTHING`;
-      if (correct) { await sql`UPDATE users SET xp = xp + 10 WHERE id = ${user.id}`; await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'quiz_correct', ${JSON.stringify({quiz_id})}, ${ip})`; return json({ correct: true, message: 'Correct! +10 XP' }); }
+      if (correct) { await sql`UPDATE users SET xp = xp + 10 WHERE id = ${user.id}`; return json({ correct: true, message: 'Correct! +10 XP' }); }
       return json({ correct: false, message: 'Wrong answer' });
     }
 
@@ -2547,7 +2417,6 @@ async function apiHandler(req) {
       const body = await req.json();
       const { email, push, subscription } = body;
       await sql`INSERT INTO notif_settings (user_id, email_enabled, push_enabled, push_subscription) VALUES (${user.id}, ${email ?? true}, ${push ?? true}, ${subscription ?? null}) ON CONFLICT (user_id) DO UPDATE SET email_enabled = ${email ?? true}, push_enabled = ${push ?? true}, push_subscription = COALESCE(${subscription ?? null}, notif_settings.push_subscription)`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'update_notif_settings', ${JSON.stringify({email_enabled: email, push_enabled: push})}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2580,7 +2449,6 @@ async function apiHandler(req) {
       const { title, icon, color, reminder_times } = body;
       const times = typeof reminder_times === 'string' ? reminder_times.split(',').map(t=>t.trim()).filter(t=>t) : (reminder_times || []);
       const [habit] = await sql`INSERT INTO habit_definitions (user_id, title, icon, color, reminder_times) VALUES (${user.id}, ${title}, ${icon||'✅'}, ${color||'#c59b3b'}, ${JSON.stringify(times)}) RETURNING *`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'create_habit', ${JSON.stringify({habit_id: habit.id, title})}, ${ip})`;
       return json(habit, 201);
     }
     if (path.match(/^\/habits\/definitions\/(.+)$/) && req.method === 'PUT') {
@@ -2589,13 +2457,11 @@ async function apiHandler(req) {
       const { title, icon, color, reminder_times } = body;
       const times = typeof reminder_times === 'string' ? reminder_times.split(',').map(t=>t.trim()).filter(t=>t) : (reminder_times || []);
       await sql`UPDATE habit_definitions SET title=${title}, icon=${icon}, color=${color}, reminder_times=${JSON.stringify(times)} WHERE id=${habitId} AND user_id=${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'update_habit', ${JSON.stringify({habitId})}, ${ip})`;
       return json({ success: true });
     }
     if (path.match(/^\/habits\/definitions\/(.+)$/) && req.method === 'DELETE') {
       const habitId = path.split('/')[3];
       await sql`DELETE FROM habit_definitions WHERE id=${habitId} AND user_id=${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'delete_habit', ${JSON.stringify({habitId})}, ${ip})`;
       return json({ success: true });
     }
     if (path === '/habits/logs' && req.method === 'GET') {
@@ -2622,7 +2488,6 @@ async function apiHandler(req) {
         const ct = {}; ct[time] = completed;
         await sql`INSERT INTO habit_logs (user_id, habit_id, date, completed_times) VALUES (${user.id}, ${habit_id}, ${date}, ${JSON.stringify(ct)})`;
       }
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'toggle_habit_time', ${JSON.stringify({habit_id, time, completed})}, ${ip})`;
       return json({ success: true });
     }
 
@@ -2688,8 +2553,6 @@ async function apiHandler(req) {
 
     if (path.match(/^\/training\/chapter\/(\d+)\/quiz$/) && req.method === 'POST') {
       const chapterId = parseInt(path.split('/')[3]);
-      
-      // Check chapter lock: must have passed previous chapter
       const [chapter] = await sql`SELECT order_index, course_id FROM chapters WHERE id = ${chapterId}`;
       if (chapter && chapter.order_index > 1) {
         const [prevChapter] = await sql`SELECT id FROM chapters WHERE course_id = ${chapter.course_id} AND order_index = ${chapter.order_index - 1}`;
@@ -2700,7 +2563,6 @@ async function apiHandler(req) {
           }
         }
       }
-      
       const body = await req.json();
       const { answers } = body;
       const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
@@ -2731,8 +2593,6 @@ async function apiHandler(req) {
       const energyCost = passed ? 5 : 10;
       await sql`UPDATE user_energy SET current_energy = GREATEST(0, current_energy - ${energyCost}) WHERE user_id = ${user.id}`;
       if (passed) await sql`UPDATE users SET xp = xp + 20 WHERE id = ${user.id}`;
-
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'chapter_quiz', ${JSON.stringify({chapterId, score, passed})}, ${ip})`;
 
       const explanations = questions.map(q => ({
         question_id: q.id,
@@ -2805,8 +2665,6 @@ async function apiHandler(req) {
       await sql`UPDATE exam_sessions SET status = 'completed' WHERE id = ${session_id}`;
       if (passed) await sql`UPDATE users SET xp = xp + 100 WHERE id = ${user.id}`;
 
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'final_exam', ${JSON.stringify({score, passed})}, ${ip})`;
-
       const explanations = questions.map(q => ({
         question_id: q.id,
         correct_index: q.correct_index,
@@ -2869,7 +2727,6 @@ async function apiHandler(req) {
   <text x="500" y="580" text-anchor="middle" fill="#aaa" font-size="14" font-family="Arial">Badges: ${badges || 'None'}</text>
   <text x="500" y="620" text-anchor="middle" fill="#888" font-size="12" font-family="Arial">Verification: ${verificationId} | Date: ${new Date().toLocaleDateString('en-US')}</text>
 </svg>`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'certificate_download', ${JSON.stringify({verification_code: verificationId})}, ${ip})`;
       return new Response(svg, {
         headers: { 'Content-Type': 'image/svg+xml', 'Content-Disposition': 'attachment; filename="certificate.svg"' }
       });
@@ -2908,7 +2765,6 @@ async function apiHandler(req) {
       const xpEarned = isCorrect ? 15 : 0;
       await sql`UPDATE trading_simulator SET user_decision = ${JSON.stringify({selected_index})}, result = ${JSON.stringify({is_correct: isCorrect})}, xp_earned = ${xpEarned} WHERE id = ${scenario_id}`;
       if (isCorrect) await sql`UPDATE users SET xp = xp + 15 WHERE id = ${user.id}`;
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'simulator_answer', ${JSON.stringify({scenario_id, isCorrect})}, ${ip})`;
       return json({ is_correct: isCorrect, explanation: sim.scenario.explanation, xp_earned: xpEarned });
     }
 
@@ -2924,7 +2780,6 @@ async function apiHandler(req) {
       if (yesCount >= 7) recommendation = "Your trading lacks discipline severely. Our program will transform you completely.";
       else if (yesCount >= 4) recommendation = "You need improvement in some areas. Training will boost your performance.";
       else recommendation = "You are doing well, but our training can still sharpen your edge.";
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'assessment', ${JSON.stringify({yesCount, total: answers.length})}, ${ip})`;
       return json({ yesCount, total: answers.length, recommendation });
     }
 
@@ -2952,13 +2807,11 @@ async function apiHandler(req) {
       const badges = await sql`SELECT badge_type FROM badges WHERE user_id = ${user.id}`;
       const habits = await sql`SELECT * FROM habit_definitions WHERE user_id = ${user.id}`;
       const profile = { email: user.email, display_name: user.display_name, xp: user.xp, level: calculateLevel(user.xp) };
-      await sql`INSERT INTO user_activity_log (user_id, action, details, ip_address) VALUES (${user.id}, 'export_data', ${JSON.stringify({})}, ${ip})`;
       return json({ profile, journals, badges: badges.map(b => b.badge_type), habits });
     }
 
     // ==================== CRON JOB (Reminders) ====================
     if (path === '/cron/check-reminders' && req.method === 'GET') {
-      // Security check for cron secret
       const secret = getQueryParam('secret');
       if (CRON_SECRET && secret !== CRON_SECRET) {
         return errorJson('Forbidden', 403);
@@ -2980,7 +2833,6 @@ async function apiHandler(req) {
         const userName = user.display_name || user.email.split('@')[0];
         const message = `🔥 ${userName}, time to write your trading journal! Stay disciplined.`;
 
-        // Email
         if (user.email_reminder && resend) {
           try {
             await resend.emails.send({
@@ -2995,7 +2847,6 @@ async function apiHandler(req) {
           }
         }
 
-        // Push
         if (user.push_reminder) {
           const [sub] = await sql`SELECT push_subscription FROM notif_settings WHERE user_id = ${user.id}`;
           if (sub?.push_subscription) {
@@ -3019,12 +2870,9 @@ async function apiHandler(req) {
           }
         }
 
-        // WhatsApp (placeholder)
         if (user.whatsapp_reminder && user.whatsapp_number) {
           results.push({ userId: user.id, type: 'whatsapp', status: 'not_implemented' });
         }
-
-        await sql`INSERT INTO user_activity_log (user_id, action, details) VALUES (${user.id}, 'reminder_sent', ${JSON.stringify({ time: currentTime })})`;
       }
 
       return json({ success: true, remindersSent: results.length, details: results });
