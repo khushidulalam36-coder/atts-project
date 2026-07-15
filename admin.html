@@ -653,7 +653,7 @@
             ttsSections.forEach((sub,sIdx)=>{
               const h2 = sub.querySelector('h2');
               const subTitle = h2 ? h2.textContent : 'Untitled';
-              html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="-1" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="-1" data-sub="${sIdx}"><option value="en" ${sub.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${sub.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${sub.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playDirectSubTTS(${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div></div>`;
+              html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="-1" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="-1" data-sub="${sIdx}"><option value="en" ${sub.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${sub.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${sub.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playDirectSubTTS(${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div><div><button class="btn btn-sm btn-outline" onclick="editDirectSubTitle(${sIdx})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteDirectSub(${sIdx})">🗑</button></div></div>`;
             });
             html += `</div></div>`;
           }
@@ -662,11 +662,11 @@
             const mainTitle = mainDiv.getAttribute('data-main-title') || 'Untitled';
             const lang = mainDiv.getAttribute('data-lang') || 'en';
             const subDivs = mainDiv.querySelectorAll('.tts-section');
-            html += `<div class="tree-main" data-main-index="${mIdx}"><div class="tree-main-header" onclick="toggleSubSections(this)"><span>▶ ${escapeHtml(mainTitle)} (${lang})</span><div><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();addSubSection(${mIdx})">➕</button></div></div><div class="tree-subs">`;
+            html += `<div class="tree-main" data-main-index="${mIdx}"><div class="tree-main-header" onclick="toggleSubSections(this)"><span>▶ ${escapeHtml(mainTitle)} (${lang})</span><div><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();addSubSection(${mIdx})">➕</button><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editMainTitle(${mIdx})" title="Edit">✏️</button><button class="btn btn-sm btn-outline tts-play-main" onclick="event.stopPropagation();playMainTTS(${mIdx},this)" title="TTS">🔊</button></div></div><div class="tree-subs">`;
             subDivs.forEach((sub,sIdx)=>{
               const h2 = sub.querySelector('h2');
               const subTitle = h2 ? h2.textContent : 'Untitled';
-              html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="${mIdx}" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="${mIdx}" data-sub="${sIdx}"><option value="en" ${sub.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${sub.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${sub.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSubTTS(${mIdx},${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div></div>`;
+              html += `<div class="tree-sub-item"><input type="checkbox" class="bulk-check" data-main="${mIdx}" data-sub="${sIdx}"><span style="flex:1;">${sIdx+1}. ${escapeHtml(subTitle)}</span><select class="lang-tag" onchange="updateLangTag(this)" data-main="${mIdx}" data-sub="${sIdx}"><option value="en" ${sub.getAttribute('data-lang')==='en'?'selected':''}>EN</option><option value="bn" ${sub.getAttribute('data-lang')==='bn'?'selected':''}>BN</option><option value="hi" ${sub.getAttribute('data-lang')==='hi'?'selected':''}>HI</option></select><div class="tts-mini-controls"><select class="tts-mini-speed"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button class="tts-mini-btn play-btn" onclick="playSubTTS(${mIdx},${sIdx},this)">▶</button><button class="tts-mini-btn stop-btn" onclick="stopAllTTS()">⏹️</button></div><div><button class="btn btn-sm btn-outline" onclick="editSubTitle(${mIdx},${sIdx})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteSub(${mIdx},${sIdx})">🗑</button></div></div>`;
             });
             html += `</div></div>`;
           });
@@ -691,6 +691,108 @@
       function updateLangTag(sel) { const mIdx = parseInt(sel.dataset.main); const sIdx = parseInt(sel.dataset.sub); const newLang = sel.value; let section; if(mIdx === -1) { const ttsSections = quillEditor.root.querySelectorAll('.tts-section'); if(sIdx < ttsSections.length) section = ttsSections[sIdx]; } else { const mainDivs = quillEditor.root.querySelectorAll('.main-subject'); if(mIdx < mainDivs.length) { const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section'); if(sIdx < subDivs.length) section = subDivs[sIdx]; } } if(section) { section.setAttribute('data-lang', newLang); quillEditor.update(); } }
       function deleteSub(mIdx, sIdx) { if(!confirm('Delete this sub-subject?')) return; if(!quillEditor) return; const mainDivs = quillEditor.root.querySelectorAll('.main-subject'); if(mIdx >= mainDivs.length) return; const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section'); if(sIdx < subDivs.length) { subDivs[sIdx].remove(); quillEditor.update(); refreshSectionTree(); } }
       function deleteDirectSub(sIdx) { if(!confirm('Delete this sub-subject?')) return; if(!quillEditor) return; const ttsSections = quillEditor.root.querySelectorAll('.tts-section'); if(sIdx < ttsSections.length) { ttsSections[sIdx].remove(); quillEditor.update(); refreshSectionTree(); } }
+      function editSubTitle(mIdx, sIdx) {
+        if (!quillEditor) return;
+        const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+        if (mIdx >= mainDivs.length) return;
+        const subDivs = mainDivs[mIdx].querySelectorAll('.tts-section');
+        if (sIdx >= subDivs.length) return;
+        const h2 = subDivs[sIdx].querySelector('h2');
+        const current = h2 ? h2.textContent : '';
+        const newTitle = prompt('New Sub-subject Title:', current);
+        if (newTitle === null) return;
+        if (h2) {
+          h2.textContent = newTitle;
+        } else {
+          const newH2 = document.createElement('h2');
+          newH2.textContent = newTitle;
+          subDivs[sIdx].prepend(newH2);
+        }
+        quillEditor.update();
+        refreshSectionTree();
+      }
+      function editDirectSubTitle(sIdx) {
+        if (!quillEditor) return;
+        const ttsSections = quillEditor.root.querySelectorAll('.tts-section');
+        if (sIdx >= ttsSections.length) return;
+        const h2 = ttsSections[sIdx].querySelector('h2');
+        const current = h2 ? h2.textContent : '';
+        const newTitle = prompt('New Sub-subject Title:', current);
+        if (newTitle === null) return;
+        if (h2) {
+          h2.textContent = newTitle;
+        } else {
+          const newH2 = document.createElement('h2');
+          newH2.textContent = newTitle;
+          ttsSections[sIdx].prepend(newH2);
+        }
+        quillEditor.update();
+        refreshSectionTree();
+      }
+      async function switchEditorLanguage() {
+        const lang = document.getElementById('ch-lang').value;
+        currentChapterLanguage = lang;
+        document.getElementById('ch-edit-lang').value = lang;
+        if (!currentChapterId) return;
+        if (lang === 'en') {
+          if (chapterMasterData) {
+            document.getElementById('ch-title').value = chapterMasterData.title;
+            if (quillEditor) {
+              quillEditor.root.innerHTML = chapterMasterData.content_text || '';
+              setTimeout(() => refreshSectionTree(), 200);
+            }
+            document.getElementById('chapter-editor-title').textContent = 'Edit Chapter (English)';
+          }
+        } else {
+          const trans = await adminApiCall('GET', `/admin/chapter/${currentChapterId}/translations?lang=${lang}`, null, false);
+          if (trans && trans.title) {
+            document.getElementById('ch-title').value = trans.title;
+            if (quillEditor) {
+              quillEditor.root.innerHTML = trans.content_text || '';
+              setTimeout(() => refreshSectionTree(), 200);
+            }
+          } else {
+            document.getElementById('ch-title').value = '';
+            if (quillEditor) quillEditor.root.innerHTML = '';
+            showToast('No translation yet for this language.');
+          }
+          document.getElementById('chapter-editor-title').textContent = `Edit Chapter (${lang})`;
+        }
+      }
+      function editMainTitle(index) {
+        if (!quillEditor) return;
+        const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+        if (index >= mainDivs.length) return;
+        const currentTitle = mainDivs[index].getAttribute('data-main-title');
+        const newTitle = prompt('New Main Subject Title:', currentTitle);
+        if (newTitle === null) return;
+        mainDivs[index].setAttribute('data-main-title', newTitle);
+        quillEditor.update();
+        refreshSectionTree();
+      }
+      function playMainTTS(mIdx, btn) {
+        if (!quillEditor) return;
+        const mainDivs = quillEditor.root.querySelectorAll('.main-subject');
+        if (mIdx >= mainDivs.length) return;
+        const text = mainDivs[mIdx].innerText;
+        if (!text) return;
+        if (activeSectionTTS) {
+          stopAllTTS();
+          if (btn.textContent === '⏸️') { btn.textContent = '🔊'; return; }
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1;
+        utterance.lang = 'en-US';
+        const voices = speechSynthesis.getVoices();
+        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
+        if (femaleVoice) utterance.voice = femaleVoice;
+        btn.textContent = '⏸️';
+        activeSectionTTS = { utterance, playBtn: btn, state: 'playing' };
+        activeSectionTTSBtn = btn;
+        utterance.onend = () => { btn.textContent = '🔊'; activeSectionTTS = null; activeSectionTTSBtn = null; };
+        utterance.onerror = () => { btn.textContent = '🔊'; activeSectionTTS = null; activeSectionTTSBtn = null; };
+        speechSynthesis.speak(utterance);
+      }
 
       async function openChapterEditor(id){
         document.getElementById('chapter-editor-modal').classList.remove('hidden');
@@ -1056,10 +1158,12 @@
       window.refreshSectionTree = refreshSectionTree; window.filterSections = filterSections;
       window.deleteSelectedSections = deleteSelectedSections; window.updateLangTag = updateLangTag;
       window.deleteSub = deleteSub; window.deleteDirectSub = deleteDirectSub;
+      window.editSubTitle = editSubTitle; window.editDirectSubTitle = editDirectSubTitle;
+      window.switchEditorLanguage = switchEditorLanguage; window.editMainTitle = editMainTitle;
+      window.playMainTTS = playMainTTS;
       window.triggerChapterImageUpload = triggerChapterImageUpload;
       window.triggerChapterVideoUpload = triggerChapterVideoUpload;
       window.addImageField = addImageField; window.addVideoField = addVideoField;
-      window.switchEditorLanguage = switchEditorLanguage;
 
       if(adminToken){ checkVersion(); document.getElementById('login-screen').classList.add('hidden'); document.getElementById('panel-screen').classList.remove('hidden'); switchTab('stats'); }
     })();
