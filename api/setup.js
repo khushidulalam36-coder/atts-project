@@ -56,7 +56,7 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// ---------- Rate limiter (Vercel KV + in‑memory fallback) ----------
+// ---------- Rate limiter ----------
 let kv;
 if (RATE_LIMIT_KV_URL) {
   try {
@@ -67,7 +67,6 @@ if (RATE_LIMIT_KV_URL) {
     Sentry.captureException(e);
   }
 }
-
 const rateLimitMap = new Map();
 async function rateLimiter(ip, limit = 100, windowMs = 60000) {
   if (kv) {
@@ -171,7 +170,7 @@ async function getUserLanguage(userId) {
   return settings?.language || 'en';
 }
 
-// ---------- Business logic helpers ----------
+// ---------- Business logic helpers (existing) ----------
 function calculateRadarScores(scores) {
   return {
     planning: (scores.q1 || 0) + (scores.q2 || 0),
@@ -375,7 +374,7 @@ async function verifyTokenFromNodeReq(req) {
 }
 
 // ===================================================
-// SECTION 2: Node.js to Fetch API wrapper (simplified + multipart)
+// SECTION 2: Node.js to Fetch API wrapper
 // ===================================================
 function toNodeHandler(handlerFn) {
   return async (req, res) => {
@@ -507,7 +506,7 @@ function toNodeHandler(handlerFn) {
       }
     }
 
-    // ---------- Normal Fetch API conversion for all other requests ----------
+    // ---------- Normal Fetch API conversion ----------
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
       if (value) {
@@ -631,6 +630,7 @@ async function apiHandler(req) {
       await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
       // ==================== TABLE CREATIONS ====================
+      // (All existing tables from original, plus new training tables)
       await sql`CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -834,6 +834,59 @@ async function apiHandler(req) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // ===== NEW TRAINING TABLES =====
+      await sql`CREATE TABLE IF NOT EXISTS training_subjects (
+        id SERIAL PRIMARY KEY,
+        icon VARCHAR(10) DEFAULT '📁',
+        names JSONB NOT NULL, -- {en, hi, bn}
+        order_index INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS training_lessons (
+        id SERIAL PRIMARY KEY,
+        subject_id INT REFERENCES training_subjects(id) ON DELETE CASCADE,
+        titles JSONB NOT NULL, -- {en, hi, bn}
+        contents JSONB,        -- {en, hi, bn} HTML content
+        duration INT DEFAULT 15,
+        level VARCHAR(20) DEFAULT 'Beginner',
+        quiz_pass_score INT DEFAULT 80,
+        order_index INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS training_quiz_questions (
+        id SERIAL PRIMARY KEY,
+        lesson_id INT REFERENCES training_lessons(id) ON DELETE CASCADE,
+        question JSONB NOT NULL,      -- {en, hi, bn}
+        options JSONB NOT NULL,       -- array of {id: 'a', text: {en, hi, bn}}
+        correct CHAR(1) NOT NULL,     -- 'a','b','c','d'
+        points INT DEFAULT 5,
+        explanation JSONB,            -- {en, hi, bn}
+        order_index INT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS training_user_progress (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        lesson_id INT REFERENCES training_lessons(id) ON DELETE CASCADE,
+        progress INT DEFAULT 0,       -- 0-100
+        quiz_score INT DEFAULT 0,
+        quiz_passed BOOLEAN DEFAULT false,
+        completed_at TIMESTAMPTZ,
+        PRIMARY KEY (user_id, lesson_id)
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS training_bookmarks (
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        lesson_id INT REFERENCES training_lessons(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (user_id, lesson_id)
+      )`;
+
+      // ===== Existing tables continued =====
       await sql`CREATE TABLE IF NOT EXISTS courses (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -843,6 +896,8 @@ async function apiHandler(req) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
+      // We keep chapters table but we no longer use it; we'll keep for backward compatibility but not use.
+      // However, we can keep them empty.
       await sql`CREATE TABLE IF NOT EXISTS chapters (
         id SERIAL PRIMARY KEY,
         course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -1022,31 +1077,18 @@ async function apiHandler(req) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
-      await sql`CREATE TABLE IF NOT EXISTS subjects (
-        id SERIAL PRIMARY KEY,
-        course_id INT REFERENCES courses(id) ON DELETE CASCADE,
-        parent_id INT REFERENCES subjects(id) ON DELETE CASCADE,
-        title VARCHAR(255) NOT NULL,
-        content_text TEXT DEFAULT '',
-        order_index INT DEFAULT 0,
-        is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      )`;
-
-      // ----- ADD INDEXES -----
+      // ===== INDEXES =====
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_journals_user_date ON daily_journals(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_badges_user ON badges(user_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_chapters_course ON chapters(course_id)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_user_chapter_progress_user ON user_chapter_progress(user_id)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_community_posts_user ON community_posts(user_id)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_habits_logs_user_date ON habit_logs(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_mood_logs_user_date ON mood_logs(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_portfolio_user_date ON portfolio_performance(user_id, date)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_daily_quests_user_date ON daily_quests(user_id, quest_date)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_chapter_quiz_questions_chapter ON chapter_quiz_questions(chapter_id)`;
       await sql`CREATE INDEX IF NOT EXISTS idx_user_activity_log_user ON user_activity_log(user_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_subjects_parent ON subjects(parent_id)`;
-      await sql`CREATE INDEX IF NOT EXISTS idx_subjects_course ON subjects(course_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_training_lessons_subject ON training_lessons(subject_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_training_quiz_questions_lesson ON training_quiz_questions(lesson_id)`;
 
       // ----- Seed default translations -----
       await seedDefaultTranslations();
@@ -1065,28 +1107,33 @@ async function apiHandler(req) {
         console.log('---------------------------------------------------');
       }
 
-      // ----- Seed course and chapters -----
-      const [courseExists] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation' AND is_active = true`;
-      if (!courseExists) {
-        await sql`INSERT INTO courses (title, description) VALUES ('Professional Trader Transformation', 'Complete 30-day transformation from amateur to professional trader')`;
-        const [course] = await sql`SELECT id FROM courses WHERE title = 'Professional Trader Transformation'`;
-        const courseId = course.id;
-        const chaptersSeed = [
-          { title: 'FOMO (Fear Of Missing Out) – Complete Guide', order_index: 1, content_text: `<h2>What is FOMO?</h2><p>FOMO stands for Fear Of Missing Out...</p>`, language: 'en' },
-          { title: 'Risk Management – Principles', order_index: 2, content_text: `<h2>Why Risk Management?</h2><p>...</p>`, language: 'en' }
-        ];
-        for (const ch of chaptersSeed) {
-          const [chapter] = await sql`INSERT INTO chapters (course_id, title, order_index, content_text, image_url, video_url, passing_score, language) VALUES (${courseId}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${null}, ${null}, ${90}, ${ch.language}) RETURNING id`;
-          if (ch.order_index === 1) {
-            const quizQuestions = [
-              { question: 'What is the full form of FOMO?', options: ['Fear Of Missing Out','Fast Order Management','Free Online Market','Future Options Market'], correct_index: 0, explanation: 'FOMO = Fear Of Missing Out', language: 'en' },
-              { question: 'How many minutes of analysis before a trade to avoid FOMO?', options: ['1 minute','2 minutes','3 minutes','5 minutes'], correct_index: 2, explanation: 'Minimum 3 minutes', language: 'en' }
-            ];
-            for (const q of quizQuestions) {
-              await sql`INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, language) VALUES (${chapter.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation}, ${q.language})`;
-            }
-          }
-        }
+      // ----- Seed demo training subjects and lessons -----
+      const [subjectExists] = await sql`SELECT id FROM training_subjects LIMIT 1`;
+      if (!subjectExists) {
+        // Insert sample subject
+        const [subj] = await sql`
+          INSERT INTO training_subjects (icon, names, order_index)
+          VALUES ('📊', '{"en":"Trading Basics","hi":"ट्रेडिंग बेसिक्स","bn":"ট্রেডিং বেসিকস"}', 1)
+          RETURNING id
+        `;
+        // Insert sample lesson
+        const [lesson] = await sql`
+          INSERT INTO training_lessons (subject_id, titles, contents, duration, level, quiz_pass_score, order_index)
+          VALUES (${subj.id}, '{"en":"Market Structure","hi":"मार्केट स्ट्रक्चर","bn":"মার্কেট স্ট্রাকচার"}',
+                  '{"en":"<p>Understanding <strong>market structure</strong> is the cornerstone of trading. Learn about trends, ranges, support & resistance levels, and market phases.</p>","hi":"<p>बाजार संरचना को समझना ट्रेडिंग की नींव है।</p>","bn":"<p>মার্কেট স্ট্রাকচার বোঝা ট্রেডিংয়ের ভিত্তি।</p>"}',
+                  15, 'Beginner', 10, 1)
+          RETURNING id
+        `;
+        // Insert quiz questions
+        await sql`
+          INSERT INTO training_quiz_questions (lesson_id, question, options, correct, points, explanation, order_index)
+          VALUES (${lesson.id},
+                  '{"en":"What does \\"market structure\\" primarily refer to?","hi":"\\"मार्केट स्ट्रक्चर\\" मुख्य रूप से किसे संदर्भित करता है?","bn":"\\"মার্কেট স্ট্রাকচার\\" মূলত কী বোঝায়?"}',
+                  '[{"id":"a","text":{"en":"The framework of trends, ranges, support & resistance","hi":"ट्रेंड, रेंज, सपोर्ट और रेसिस्टेंस का ढांचा","bn":"ট্রেন্ড, রেঞ্জ, সাপোর্ট ও রেসিস্ট্যান্সের কাঠামো"}},{"id":"b","text":{"en":"Only candlestick colors","hi":"केवल कैंडलस्टिक रंग","bn":"শুধুমাত্র ক্যান্ডেলস্টিকের রং"}},{"id":"c","text":{"en":"The company balance sheet","hi":"कंपनी की बैलेंस शीट","bn":"কোম্পানির ব্যালেন্স শীট"}},{"id":"d","text":{"en":"Daily economic news only","hi":"केवल दैनिक आर्थिक समाचार","bn":"শুধুমাত্র দৈনিক অর্থনৈতিক খবর"}}]',
+                  'a', 5,
+                  '{"en":"Market structure is the framework of price action.","hi":"मार्केट स्ट्रक्चर प्राइस एक्शन का ढांचा है।","bn":"মার্কেট স্ট্রাকচার হলো প্রাইস অ্যাকশনের কাঠামো।"}',
+                  1)
+        `;
       }
 
       const { count: aqCount } = (await sql`SELECT COUNT(*)::int FROM assessment_questions`)[0];
@@ -1334,12 +1381,10 @@ async function apiHandler(req) {
       });
     }
 
-    // ==================== VERSION CHECK (Public) ====================
     if (path === '/version' && req.method === 'GET') {
       return json({ version: '2.0.1' });
     }
 
-    // ==================== PUBLIC SLIDESHOW ====================
     if (path === '/slideshow' && req.method === 'GET') {
       try {
         const slides = await sql`SELECT * FROM slideshow_images WHERE is_active = true ORDER BY sort_order, id`;
@@ -1350,12 +1395,10 @@ async function apiHandler(req) {
       }
     }
 
-    // ==================== Push Subscription Update (from Service Worker) ====================
     if (path === '/update-subscription' && req.method === 'POST') {
       try {
         const body = await req.json();
         const { oldSubscription, newSubscription } = body;
-
         if (newSubscription && oldSubscription?.endpoint) {
           const [user] = await sql`
             SELECT user_id FROM notif_settings
@@ -1378,6 +1421,7 @@ async function apiHandler(req) {
     }
 
     // ==================== ADMIN ENDPOINTS ====================
+
     // --- Admin Dashboard ---
     if (path === '/admin/dashboard' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
@@ -1458,6 +1502,8 @@ async function apiHandler(req) {
         await sql`DELETE FROM mentor_assignments WHERE mentor_id = ${userId} OR student_id = ${userId}`;
         await sql`DELETE FROM user_assessments WHERE user_id = ${userId}`;
         await sql`DELETE FROM exam_sessions WHERE user_id = ${userId}`;
+        await sql`DELETE FROM training_user_progress WHERE user_id = ${userId}`;
+        await sql`DELETE FROM training_bookmarks WHERE user_id = ${userId}`;
         await sql`DELETE FROM users WHERE id = ${userId}`;
         await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_user', ${JSON.stringify({userId})})`;
         return json({ success: true });
@@ -1467,61 +1513,43 @@ async function apiHandler(req) {
       }
     }
 
-    // --- Subjects Management (NEW) ---
+    // ===== NEW TRAINING ADMIN ENDPOINTS =====
+
+    // --- Subjects CRUD ---
     if (path === '/admin/subjects' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const courseId = getQueryParam('course_id') || 1;
       const subjects = await sql`
-        SELECT s.*, 
-               (SELECT COUNT(*)::int FROM subjects sub WHERE sub.parent_id = s.id AND sub.is_active = true) as sub_count
-        FROM subjects s 
-        WHERE s.course_id = ${courseId} AND s.parent_id IS NULL AND s.is_active = true 
-        ORDER BY s.order_index, s.id
-      `;
-      const result = [];
-      for (const main of subjects) {
-        const subs = await sql`
-          SELECT * FROM subjects 
-          WHERE parent_id = ${main.id} AND is_active = true 
-          ORDER BY order_index, id
-        `;
-        result.push({ ...main, sub_subjects: subs });
-      }
-      return json(result);
-    }
-
-    if (path === '/admin/subjects/tree' && req.method === 'GET') {
-      // Public for users too (no admin check needed)
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const courseId = getQueryParam('course_id') || 1;
-      const allSubjects = await sql`
-        SELECT * FROM subjects 
-        WHERE course_id = ${courseId} AND is_active = true 
+        SELECT * FROM training_subjects
+        WHERE is_active = true
         ORDER BY order_index, id
       `;
-      const buildTree = (parentId = null) => {
-        return allSubjects
-          .filter(s => s.parent_id === parentId)
-          .map(s => ({ ...s, children: buildTree(s.id) }));
-      };
-      return json(buildTree(null));
+      // Also fetch lessons for each subject
+      const result = [];
+      for (const subj of subjects) {
+        const lessons = await sql`
+          SELECT * FROM training_lessons
+          WHERE subject_id = ${subj.id} AND is_active = true
+          ORDER BY order_index, id
+        `;
+        result.push({ ...subj, subSubjects: lessons });
+      }
+      return json(result);
     }
 
     if (path === '/admin/subject' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const body = await req.json();
-      const { course_id, parent_id, title, content_text, order_index } = body;
-      if (!title) return errorJson('Title required', 400);
-      const [subject] = await sql`
-        INSERT INTO subjects (course_id, parent_id, title, content_text, order_index)
-        VALUES (${course_id || 1}, ${parent_id || null}, ${title}, ${content_text || ''}, ${order_index || 0})
+      const { icon, names, order_index } = body;
+      if (!names || !names.en) return errorJson('English name required', 400);
+      const [subj] = await sql`
+        INSERT INTO training_subjects (icon, names, order_index)
+        VALUES (${icon || '📁'}, ${JSON.stringify(names)}, ${order_index || 0})
         RETURNING *
       `;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_subject', ${JSON.stringify({subject_id: subject.id, title})})`;
-      return json(subject, 201);
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_subject', ${JSON.stringify({subject_id: subj.id})})`;
+      return json(subj, 201);
     }
 
     if (path.match(/^\/admin\/subject\/(\d+)$/) && req.method === 'PUT') {
@@ -1529,11 +1557,11 @@ async function apiHandler(req) {
       if (!admin) return errorJson('Forbidden', 403);
       const subjectId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { title, content_text, order_index, is_active } = body;
+      const { icon, names, order_index, is_active } = body;
       await sql`
-        UPDATE subjects SET 
-          title = COALESCE(${title}, title),
-          content_text = COALESCE(${content_text}, content_text),
+        UPDATE training_subjects SET
+          icon = COALESCE(${icon}, icon),
+          names = COALESCE(${JSON.stringify(names)}, names),
           order_index = COALESCE(${order_index}, order_index),
           is_active = COALESCE(${is_active}, is_active)
         WHERE id = ${subjectId}
@@ -1546,180 +1574,301 @@ async function apiHandler(req) {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const subjectId = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM subjects WHERE id = ${subjectId} OR parent_id = ${subjectId}`;
+      await sql`DELETE FROM training_subjects WHERE id = ${subjectId}`;
       await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_subject', ${JSON.stringify({subjectId})})`;
       return json({ success: true });
     }
 
-    if (path.match(/^\/admin\/subjects\/(\d+)\/sub$/) && req.method === 'GET') {
-      // Public: no admin required
-      const mainId = parseInt(path.split('/')[3]);
-      const subs = await sql`
-        SELECT * FROM subjects 
-        WHERE parent_id = ${mainId} AND is_active = true 
+    // --- Lessons CRUD ---
+    if (path === '/admin/lessons' && req.method === 'GET') {
+      const admin = await authenticateAdmin(req);
+      if (!admin) return errorJson('Forbidden', 403);
+      const subjectId = getQueryParam('subjectId');
+      if (!subjectId) return errorJson('subjectId required', 400);
+      const lessons = await sql`
+        SELECT * FROM training_lessons
+        WHERE subject_id = ${subjectId} AND is_active = true
         ORDER BY order_index, id
       `;
-      return json(subs);
+      return json(lessons);
     }
 
-    // --- Chapters Management ---
-    if (path === '/admin/chapters' && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const courseId = getQueryParam('course_id') || 1;
-      const chapters = await sql`
-        SELECT c.*, 
-               (SELECT COUNT(*)::int FROM chapter_quiz_questions WHERE chapter_id = c.id) as question_count,
-               (SELECT COUNT(*)::int FROM user_chapter_progress WHERE chapter_id = c.id AND passed = true) as passed_count
-        FROM chapters c WHERE c.course_id = ${courseId} AND c.is_active = true ORDER BY c.order_index`;
-      return json(chapters);
-    }
-
-    if (path === '/admin/chapter' && req.method === 'POST') {
+    if (path === '/admin/lesson' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const body = await req.json();
-      const { course_id, title, order_index, content_text, images, videos, passing_score, language } = body;
-      const [chapter] = await sql`
-        INSERT INTO chapters (course_id, title, order_index, content_text, images, videos, passing_score, language)
-        VALUES (${course_id || 1}, ${title}, ${order_index}, ${content_text || ''}, ${JSON.stringify(images || [])}, ${JSON.stringify(videos || [])}, ${passing_score || 90}, ${language || 'en'})
-        RETURNING *`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_chapter', ${JSON.stringify({chapter_id: chapter.id})})`;
-      return json(chapter, 201);
+      const { subject_id, titles, contents, duration, level, quiz_pass_score, order_index } = body;
+      if (!subject_id || !titles || !titles.en) return errorJson('subject_id and English title required', 400);
+      const [lesson] = await sql`
+        INSERT INTO training_lessons (subject_id, titles, contents, duration, level, quiz_pass_score, order_index)
+        VALUES (${subject_id}, ${JSON.stringify(titles)}, ${JSON.stringify(contents || {})}, ${duration || 15}, ${level || 'Beginner'}, ${quiz_pass_score || 80}, ${order_index || 0})
+        RETURNING *
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_lesson', ${JSON.stringify({lesson_id: lesson.id})})`;
+      return json(lesson, 201);
     }
 
-    if (path.match(/^\/admin\/chapter\/(\d+)$/) && req.method === 'PUT') {
+    if (path.match(/^\/admin\/lesson\/(\d+)$/) && req.method === 'PUT') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const chapterId = parseInt(path.split('/')[3]);
+      const lessonId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { title, order_index, content_text, images, videos, passing_score, language } = body;
+      const { subject_id, titles, contents, duration, level, quiz_pass_score, order_index, is_active } = body;
       await sql`
-        UPDATE chapters SET 
-          title = COALESCE(${title}, title),
+        UPDATE training_lessons SET
+          subject_id = COALESCE(${subject_id}, subject_id),
+          titles = COALESCE(${JSON.stringify(titles)}, titles),
+          contents = COALESCE(${JSON.stringify(contents)}, contents),
+          duration = COALESCE(${duration}, duration),
+          level = COALESCE(${level}, level),
+          quiz_pass_score = COALESCE(${quiz_pass_score}, quiz_pass_score),
           order_index = COALESCE(${order_index}, order_index),
-          content_text = COALESCE(${content_text}, content_text),
-          images = COALESCE(${JSON.stringify(images)}, images),
-          videos = COALESCE(${JSON.stringify(videos)}, videos),
-          passing_score = COALESCE(${passing_score}, passing_score),
-          language = COALESCE(${language}, language)
-        WHERE id = ${chapterId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_chapter', ${JSON.stringify({chapterId})})`;
+          is_active = COALESCE(${is_active}, is_active)
+        WHERE id = ${lessonId}
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_lesson', ${JSON.stringify({lessonId})})`;
       return json({ success: true });
     }
 
-    if (path.match(/^\/admin\/chapter\/(\d+)$/) && req.method === 'DELETE') {
+    if (path.match(/^\/admin\/lesson\/(\d+)$/) && req.method === 'DELETE') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const chapterId = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM chapters WHERE id = ${chapterId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_chapter', ${JSON.stringify({chapterId})})`;
+      const lessonId = parseInt(path.split('/')[3]);
+      await sql`DELETE FROM training_lessons WHERE id = ${lessonId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_lesson', ${JSON.stringify({lessonId})})`;
       return json({ success: true });
     }
 
-    // --- Chapter Translation Fetch (for admin editor) ---
-    if (path.match(/^\/admin\/chapter\/(\d+)\/translations$/) && req.method === 'GET') {
+    // --- Quiz Questions CRUD ---
+    if (path === '/admin/quiz' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const chapterId = parseInt(path.split('/')[3]);
-      const lang = getQueryParam('lang') || 'en';
-      if (lang === 'en') {
-        const chapter = await sql`SELECT title, content_text FROM chapters WHERE id = ${chapterId}`;
-        if (!chapter[0]) return errorJson('Not found', 404);
-        return json({ title: chapter[0].title, content_text: chapter[0].content_text });
-      }
-      const translations = await sql`SELECT field_name, translated_text FROM content_translations WHERE table_name='chapters' AND record_id=${chapterId} AND language_code=${lang}`;
-      const result = {};
-      translations.forEach(t => result[t.field_name] = t.translated_text);
-      return json(result);
-    }
-
-    // --- Chapter Questions ---
-    if (path.match(/^\/admin\/chapter\/(\d+)\/questions$/) && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const chapterId = parseInt(path.split('/')[3]);
-      const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY order_index, id`;
+      const lessonId = getQueryParam('lessonId');
+      if (!lessonId) return errorJson('lessonId required', 400);
+      const questions = await sql`
+        SELECT * FROM training_quiz_questions
+        WHERE lesson_id = ${lessonId}
+        ORDER BY order_index, id
+      `;
       return json(questions);
     }
 
-    if (path.match(/^\/admin\/chapter\/(\d+)\/question$/) && req.method === 'POST') {
+    if (path === '/admin/quiz' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
-      const chapterId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { question, options, correct_index, explanation, language } = body;
+      const { lesson_id, question, options, correct, points, explanation, order_index } = body;
+      if (!lesson_id || !question || !question.en) return errorJson('lesson_id and English question required', 400);
+      if (!options || !Array.isArray(options) || options.length < 2) return errorJson('At least 2 options required', 400);
+      if (!correct || !['a','b','c','d'].includes(correct)) return errorJson('correct must be a,b,c,d', 400);
       const [q] = await sql`
-        INSERT INTO chapter_quiz_questions (chapter_id, question, options, correct_index, explanation, language)
-        VALUES (${chapterId}, ${question}, ${JSON.stringify(options)}, ${correct_index}, ${explanation || ''}, ${language || 'en'})
-        RETURNING *`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_question', ${JSON.stringify({question_id: q.id})})`;
+        INSERT INTO training_quiz_questions (lesson_id, question, options, correct, points, explanation, order_index)
+        VALUES (${lesson_id}, ${JSON.stringify(question)}, ${JSON.stringify(options)}, ${correct}, ${points || 5}, ${JSON.stringify(explanation || {})}, ${order_index || 0})
+        RETURNING *
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_quiz_question', ${JSON.stringify({question_id: q.id})})`;
       return json(q, 201);
     }
 
-    if (path.match(/^\/admin\/question\/(\d+)$/) && req.method === 'PUT') {
+    if (path.match(/^\/admin\/quiz\/(\d+)$/) && req.method === 'PUT') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const questionId = parseInt(path.split('/')[3]);
       const body = await req.json();
-      const { question, options, correct_index, explanation } = body;
+      const { question, options, correct, points, explanation, order_index } = body;
       await sql`
-        UPDATE chapter_quiz_questions SET 
-          question = COALESCE(${question}, question),
+        UPDATE training_quiz_questions SET
+          question = COALESCE(${JSON.stringify(question)}, question),
           options = COALESCE(${JSON.stringify(options)}, options),
-          correct_index = COALESCE(${correct_index}, correct_index),
-          explanation = COALESCE(${explanation}, explanation)
-        WHERE id = ${questionId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_question', ${JSON.stringify({questionId})})`;
+          correct = COALESCE(${correct}, correct),
+          points = COALESCE(${points}, points),
+          explanation = COALESCE(${JSON.stringify(explanation)}, explanation),
+          order_index = COALESCE(${order_index}, order_index)
+        WHERE id = ${questionId}
+      `;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_quiz_question', ${JSON.stringify({questionId})})`;
       return json({ success: true });
     }
 
-    if (path.match(/^\/admin\/question\/(\d+)$/) && req.method === 'DELETE') {
+    if (path.match(/^\/admin\/quiz\/(\d+)$/) && req.method === 'DELETE') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       const questionId = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM chapter_quiz_questions WHERE id = ${questionId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_question', ${JSON.stringify({questionId})})`;
+      await sql`DELETE FROM training_quiz_questions WHERE id = ${questionId}`;
+      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_quiz_question', ${JSON.stringify({questionId})})`;
       return json({ success: true });
     }
 
-    // --- Courses Management ---
-    if (path === '/admin/courses' && req.method === 'GET') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const courses = await sql`SELECT * FROM courses ORDER BY id`;
-      return json(courses);
+    // ===== USER TRAINING ENDPOINTS =====
+
+    // GET /training/subjects - for logged-in users
+    if (path === '/training/subjects' && req.method === 'GET') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const lang = getQueryParam('lang') || (await getUserLanguage(user.id)) || 'en';
+
+      const subjects = await sql`
+        SELECT * FROM training_subjects
+        WHERE is_active = true
+        ORDER BY order_index, id
+      `;
+
+      const result = [];
+      for (const subj of subjects) {
+        const lessons = await sql`
+          SELECT id, titles, contents, duration, level, quiz_pass_score, order_index
+          FROM training_lessons
+          WHERE subject_id = ${subj.id} AND is_active = true
+          ORDER BY order_index, id
+        `;
+        // Also get user progress for each lesson
+        const lessonsWithProgress = [];
+        for (const les of lessons) {
+          const [progress] = await sql`
+            SELECT progress, quiz_score, quiz_passed, completed_at
+            FROM training_user_progress
+            WHERE user_id = ${user.id} AND lesson_id = ${les.id}
+          `;
+          lessonsWithProgress.push({
+            ...les,
+            user_progress: progress || { progress: 0, quiz_score: 0, quiz_passed: false }
+          });
+        }
+        result.push({ ...subj, subSubjects: lessonsWithProgress });
+      }
+      return json(result);
     }
 
-    if (path === '/admin/course' && req.method === 'POST') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const { title, description } = await req.json();
-      const [course] = await sql`INSERT INTO courses (title, description) VALUES (${title}, ${description || ''}) RETURNING *`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'create_course', ${JSON.stringify({course_id: course.id})})`;
-      return json(course, 201);
+    // GET /training/lesson/:lessonId - detailed lesson with quiz
+    if (path.match(/^\/training\/lesson\/(\d+)$/) && req.method === 'GET') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const lessonId = parseInt(path.split('/')[3]);
+      const lang = getQueryParam('lang') || (await getUserLanguage(user.id)) || 'en';
+
+      const [lesson] = await sql`
+        SELECT id, subject_id, titles, contents, duration, level, quiz_pass_score
+        FROM training_lessons
+        WHERE id = ${lessonId} AND is_active = true
+      `;
+      if (!lesson) return errorJson('Lesson not found', 404);
+
+      const questions = await sql`
+        SELECT id, question, options, correct, points, explanation
+        FROM training_quiz_questions
+        WHERE lesson_id = ${lessonId}
+        ORDER BY order_index, id
+      `;
+
+      const [progress] = await sql`
+        SELECT progress, quiz_score, quiz_passed, completed_at
+        FROM training_user_progress
+        WHERE user_id = ${user.id} AND lesson_id = ${lessonId}
+      `;
+
+      return json({
+        lesson,
+        questions,
+        user_progress: progress || { progress: 0, quiz_score: 0, quiz_passed: false }
+      });
     }
 
-    if (path.match(/^\/admin\/course\/(\d+)$/) && req.method === 'PUT') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const courseId = parseInt(path.split('/')[3]);
-      const { title, description, is_active } = await req.json();
-      await sql`UPDATE courses SET title = COALESCE(${title}, title), description = COALESCE(${description}, description), is_active = COALESCE(${is_active}, is_active) WHERE id = ${courseId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'update_course', ${JSON.stringify({courseId})})`;
-      return json({ success: true });
+    // POST /training/quiz/:lessonId - submit quiz
+    if (path.match(/^\/training\/quiz\/(\d+)$/) && req.method === 'POST') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const lessonId = parseInt(path.split('/')[3]);
+      const body = await req.json();
+      const { answers } = body; // array of {question_id, selected_option: 'a'|'b'|'c'|'d'}
+
+      // Fetch all questions for this lesson
+      const questions = await sql`
+        SELECT id, correct, points
+        FROM training_quiz_questions
+        WHERE lesson_id = ${lessonId}
+        ORDER BY order_index, id
+      `;
+      if (!questions.length) return errorJson('No questions for this lesson', 400);
+
+      let earned = 0;
+      let correctCount = 0;
+      const details = [];
+      for (const q of questions) {
+        const userAns = answers.find(a => a.question_id === q.id);
+        const isCorrect = userAns && userAns.selected_option === q.correct;
+        if (isCorrect) {
+          earned += (q.points || 5);
+          correctCount++;
+        }
+        details.push({
+          question_id: q.id,
+          correct: q.correct,
+          user_answer: userAns?.selected_option || null,
+          is_correct: isCorrect
+        });
+      }
+
+      const totalPoints = questions.reduce((sum, q) => sum + (q.points || 5), 0);
+      const passed = earned >= (lesson.quiz_pass_score || 80);
+
+      // Update or insert progress
+      await sql`
+        INSERT INTO training_user_progress (user_id, lesson_id, progress, quiz_score, quiz_passed, completed_at)
+        VALUES (${user.id}, ${lessonId}, 100, ${earned}, ${passed}, ${passed ? new Date().toISOString() : null})
+        ON CONFLICT (user_id, lesson_id) DO UPDATE SET
+          progress = 100,
+          quiz_score = ${earned},
+          quiz_passed = ${passed},
+          completed_at = CASE WHEN ${passed} THEN NOW() ELSE training_user_progress.completed_at END
+      `;
+
+      // Award XP if passed
+      if (passed) {
+        await sql`UPDATE users SET xp = xp + 20 WHERE id = ${user.id}`;
+      }
+
+      return json({
+        score: earned,
+        total: totalPoints,
+        passed,
+        correct: correctCount,
+        total_questions: questions.length,
+        details
+      });
     }
 
-    if (path.match(/^\/admin\/course\/(\d+)$/) && req.method === 'DELETE') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      const courseId = parseInt(path.split('/')[3]);
-      await sql`DELETE FROM courses WHERE id = ${courseId}`;
-      await sql`INSERT INTO admin_activity_log (admin_id, action, details) VALUES (${admin.id}, 'delete_course', ${JSON.stringify({courseId})})`;
-      return json({ success: true });
+    // POST /training/bookmark/:lessonId - toggle bookmark
+    if (path.match(/^\/training\/bookmark\/(\d+)$/) && req.method === 'POST') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const lessonId = parseInt(path.split('/')[3]);
+      const [exists] = await sql`
+        SELECT 1 FROM training_bookmarks WHERE user_id = ${user.id} AND lesson_id = ${lessonId}
+      `;
+      if (exists) {
+        await sql`DELETE FROM training_bookmarks WHERE user_id = ${user.id} AND lesson_id = ${lessonId}`;
+        return json({ bookmarked: false });
+      } else {
+        await sql`INSERT INTO training_bookmarks (user_id, lesson_id) VALUES (${user.id}, ${lessonId})`;
+        return json({ bookmarked: true });
+      }
     }
 
-    // --- Content Manager (lessons, quizzes, videos) ---
+    // GET /training/bookmarks - list bookmarked lessons
+    if (path === '/training/bookmarks' && req.method === 'GET') {
+      const user = await authenticate(req);
+      if (!user) return errorJson('Authentication required', 401);
+      const bookmarks = await sql`
+        SELECT lesson_id FROM training_bookmarks WHERE user_id = ${user.id}
+      `;
+      return json(bookmarks.map(b => b.lesson_id));
+    }
+
+    // ============================================================
+    // CONTINUED: Existing admin endpoints (content, theme, media, etc.)
+    // ============================================================
+
+    // --- Content Manager (lessons, quizzes, videos) - legacy, keep ---
     if (path === '/admin/content/list' && req.method === 'GET') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1815,21 +1964,8 @@ async function apiHandler(req) {
 
     // --- Admin Image Upload (fallback via formData) ---
     if (path === '/admin/upload-image' && req.method === 'POST') {
-      const admin = await authenticateAdmin(req);
-      if (!admin) return errorJson('Forbidden', 403);
-      try {
-        const formData = await req.formData();
-        const file = formData.get('image');
-        if (!file) return errorJson('No file uploaded', 400);
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const blob = await put(file.name, buffer, { access: 'public', contentType: file.type });
-        await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${file.name})`;
-        return json({ url: blob.url });
-      } catch (err) {
-        Sentry.captureException(err);
-        return errorJson('Upload failed: ' + err.message, 500);
-      }
+      // handled by multipart wrapper above, but keep for fallback
+      return errorJson('Use multipart form-data', 400);
     }
 
     // --- Translations (UI) ---
@@ -1849,7 +1985,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Content Translations ---
+    // --- Content Translations (legacy) ---
     if (path === '/admin/translations/content' && req.method === 'POST') {
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
@@ -1958,21 +2094,22 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // ==================== Training Export/Import ====================
+    // ==================== Training Export/Import (legacy) ====================
     if (path === '/admin/export/training' && req.method === 'GET') {
+      // Now export the new training data
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       try {
-        const courses = await sql`SELECT * FROM courses WHERE is_active = true`;
+        const subjects = await sql`SELECT * FROM training_subjects WHERE is_active = true ORDER BY order_index, id`;
         const result = [];
-        for (const course of courses) {
-          const chapters = await sql`SELECT * FROM chapters WHERE course_id = ${course.id} AND is_active = true ORDER BY order_index`;
-          const chaptersWithQuestions = [];
-          for (const ch of chapters) {
-            const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${ch.id} ORDER BY order_index`;
-            chaptersWithQuestions.push({ ...ch, questions: questions });
+        for (const subj of subjects) {
+          const lessons = await sql`SELECT * FROM training_lessons WHERE subject_id = ${subj.id} AND is_active = true ORDER BY order_index, id`;
+          const lessonsWithQuestions = [];
+          for (const les of lessons) {
+            const questions = await sql`SELECT * FROM training_quiz_questions WHERE lesson_id = ${les.id} ORDER BY order_index, id`;
+            lessonsWithQuestions.push({ ...les, questions });
           }
-          result.push({ ...course, chapters: chaptersWithQuestions });
+          result.push({ ...subj, subSubjects: lessonsWithQuestions });
         }
         return json({ exported_at: new Date().toISOString(), version: '2.0', data: result });
       } catch (err) {
@@ -1988,23 +2125,24 @@ async function apiHandler(req) {
       try { body = await req.json(); } catch { return errorJson('Invalid JSON file', 400); }
       if (!body.data || !Array.isArray(body.data)) return errorJson('Invalid backup format: missing data array', 400);
       try {
-        for (const course of body.data) {
-          const [existingCourse] = await sql`SELECT id FROM courses WHERE id = ${course.id}`;
-          if (existingCourse) {
-            await sql`UPDATE courses SET title = ${course.title}, description = ${course.description} WHERE id = ${course.id}`;
+        for (const subj of body.data) {
+          const [existingSubj] = await sql`SELECT id FROM training_subjects WHERE id = ${subj.id}`;
+          if (existingSubj) {
+            await sql`UPDATE training_subjects SET icon=${subj.icon}, names=${JSON.stringify(subj.names)}, order_index=${subj.order_index}, is_active=${subj.is_active} WHERE id = ${subj.id}`;
           } else {
-            await sql`INSERT INTO courses (id, title, description) VALUES (${course.id}, ${course.title}, ${course.description})`;
+            await sql`INSERT INTO training_subjects (id, icon, names, order_index, is_active) VALUES (${subj.id}, ${subj.icon}, ${JSON.stringify(subj.names)}, ${subj.order_index}, ${subj.is_active})`;
           }
-          for (const ch of (course.chapters || [])) {
-            const [existingChapter] = await sql`SELECT id FROM chapters WHERE id = ${ch.id}`;
-            if (existingChapter) {
-              await sql`UPDATE chapters SET title = ${ch.title}, order_index = ${ch.order_index}, content_text = ${ch.content_text}, images = ${ch.images}, videos = ${ch.videos}, passing_score = ${ch.passing_score}, language = ${ch.language} WHERE id = ${ch.id}`;
+          for (const les of (subj.subSubjects || [])) {
+            const [existingLesson] = await sql`SELECT id FROM training_lessons WHERE id = ${les.id}`;
+            if (existingLesson) {
+              await sql`UPDATE training_lessons SET subject_id=${subj.id}, titles=${JSON.stringify(les.titles)}, contents=${JSON.stringify(les.contents)}, duration=${les.duration}, level=${les.level}, quiz_pass_score=${les.quiz_pass_score}, order_index=${les.order_index}, is_active=${les.is_active} WHERE id = ${les.id}`;
             } else {
-              await sql`INSERT INTO chapters (id, course_id, title, order_index, content_text, images, videos, passing_score, language) VALUES (${ch.id}, ${course.id}, ${ch.title}, ${ch.order_index}, ${ch.content_text}, ${ch.images}, ${ch.videos}, ${ch.passing_score}, ${ch.language})`;
+              await sql`INSERT INTO training_lessons (id, subject_id, titles, contents, duration, level, quiz_pass_score, order_index, is_active) VALUES (${les.id}, ${subj.id}, ${JSON.stringify(les.titles)}, ${JSON.stringify(les.contents)}, ${les.duration}, ${les.level}, ${les.quiz_pass_score}, ${les.order_index}, ${les.is_active})`;
             }
-            await sql`DELETE FROM chapter_quiz_questions WHERE chapter_id = ${ch.id}`;
-            for (const q of (ch.questions || [])) {
-              await sql`INSERT INTO chapter_quiz_questions (id, chapter_id, question, options, correct_index, explanation, order_index) VALUES (${q.id}, ${ch.id}, ${q.question}, ${JSON.stringify(q.options)}, ${q.correct_index}, ${q.explanation}, ${q.order_index})`;
+            // Delete existing questions for this lesson and insert
+            await sql`DELETE FROM training_quiz_questions WHERE lesson_id = ${les.id}`;
+            for (const q of (les.questions || [])) {
+              await sql`INSERT INTO training_quiz_questions (id, lesson_id, question, options, correct, points, explanation, order_index) VALUES (${q.id}, ${les.id}, ${JSON.stringify(q.question)}, ${JSON.stringify(q.options)}, ${q.correct}, ${q.points}, ${JSON.stringify(q.explanation)}, ${q.order_index})`;
             }
           }
         }
@@ -2036,7 +2174,7 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // --- Site Settings (Admin GET is public for theme sync; PUT protected) ---
+    // --- Site Settings ---
     if (path === '/admin/settings' && req.method === 'GET') {
       const rows = await sql`SELECT * FROM site_settings`;
       const map = {};
@@ -2061,19 +2199,8 @@ async function apiHandler(req) {
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      try {
-        const formData = await req.formData();
-        const file = formData.get('image');
-        if (!file) return errorJson('No file uploaded', 400);
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const blob = await put(file.name, buffer, { access: 'public', contentType: file.type });
-        await sql`INSERT INTO media_files (url, filename) VALUES (${blob.url}, ${file.name})`;
-        return json({ url: blob.url });
-      } catch (err) {
-        Sentry.captureException(err);
-        return errorJson('Upload failed', 500);
-      }
+      // handled by multipart wrapper above
+      return errorJson('Use multipart form-data', 400);
     }
 
     // --- User Settings (with reminders & language) ---
@@ -2340,7 +2467,7 @@ async function apiHandler(req) {
       return json({ totalJournals, currentStreak, topMistake: topMistake[1]>0?topMistake[0]:'No mistakes!', avgDiscipline });
     }
 
-    // --- Lessons ---
+    // --- Lessons (legacy) ---
     if (path === '/lessons' && req.method === 'GET') {
       const lessons = await sql`SELECT l.*, ul.completed_at FROM lessons l LEFT JOIN user_lessons ul ON l.id = ul.lesson_id AND ul.user_id = ${user.id} ORDER BY l.day`;
       return json(lessons);
@@ -2389,7 +2516,7 @@ async function apiHandler(req) {
       return json(lb.map(u => ({ ...u, user_id: u.user_id, email: maskEmail(u.email), display_name: u.display_name || u.email.split('@')[0] })));
     }
 
-    // --- Quiz ---
+    // --- Quiz (legacy) ---
     if (path === '/quiz' && req.method === 'GET') {
       const [quiz] = await sql`SELECT * FROM quizzes WHERE active = true ORDER BY RANDOM() LIMIT 1`;
       if (!quiz) return json({ question: null });
@@ -2491,194 +2618,21 @@ async function apiHandler(req) {
       return json({ success: true });
     }
 
-    // ==================== TRAINING & SIMULATOR ENDPOINTS ====================
+    // ==================== LEGACY TRAINING ENDPOINTS (kept for compatibility but not used) ====================
+    // (We keep them but they will return empty or error)
     if (path === '/training/chapters' && req.method === 'GET') {
-      const courseId = getQueryParam('course_id') || 1;
-      const lang = getQueryParam('lang') || (user ? await getUserLanguage(user.id) : 'en');
-      let chapters = await sql`
-        SELECT c.*, 
-               COALESCE(ct_title.translated_text, c.title) AS title,
-               COALESCE(ct_content.translated_text, c.content_text) AS content_text,
-               COALESCE(ucp.passed, false) as passed, 
-               COALESCE(ucp.best_score, 0) as best_score,
-               COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
-               ucp.completed_at
-        FROM chapters c
-        LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-        LEFT JOIN content_translations ct_title ON ct_title.table_name='chapters' AND ct_title.record_id=c.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
-        LEFT JOIN content_translations ct_content ON ct_content.table_name='chapters' AND ct_content.record_id=c.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
-        WHERE c.course_id = ${courseId} AND c.is_active = true
-        ORDER BY c.order_index
-      `;
-      if (chapters.length === 0) {
-        chapters = await sql`
-          SELECT c.*, 
-                 COALESCE(ucp.passed, false) as passed, 
-                 COALESCE(ucp.best_score, 0) as best_score,
-                 COALESCE(ucp.quiz_attempts, 0) as quiz_attempts,
-                 ucp.completed_at
-          FROM chapters c
-          LEFT JOIN user_chapter_progress ucp ON c.id = ucp.chapter_id AND ucp.user_id = ${user.id}
-          WHERE c.course_id = ${courseId} AND c.is_active = true
-          ORDER BY c.order_index
-        `;
-      }
-      return json(chapters);
+      return json([]);
     }
-
     if (path.match(/^\/training\/chapter\/(\d+)$/) && req.method === 'GET') {
-      const chapterId = parseInt(path.split('/')[3]);
-      const lang = getQueryParam('lang') || (user ? await getUserLanguage(user.id) : 'en');
-      let chapter = await sql`
-        SELECT c.*, 
-               COALESCE(ct_title.translated_text, c.title) AS title,
-               COALESCE(ct_content.translated_text, c.content_text) AS content_text
-        FROM chapters c
-        LEFT JOIN content_translations ct_title ON ct_title.table_name='chapters' AND ct_title.record_id=c.id AND ct_title.field_name='title' AND ct_title.language_code=${lang}
-        LEFT JOIN content_translations ct_content ON ct_content.table_name='chapters' AND ct_content.record_id=c.id AND ct_content.field_name='content_text' AND ct_content.language_code=${lang}
-        WHERE c.id = ${chapterId} AND c.is_active = true
-      `;
-      if (!chapter.length) return errorJson('Chapter not found', 404);
-      chapter = chapter[0];
-      let questions = await sql`
-        SELECT id, question, options, order_index, explanation
-        FROM chapter_quiz_questions
-        WHERE chapter_id = ${chapterId}
-        ORDER BY order_index, id
-      `;
-      const [progress] = await sql`SELECT * FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${chapterId}`;
-      const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
-      return json({ ...chapter, questions, user_progress: progress || null, energy: energy?.current_energy || 100 });
+      return errorJson('Chapter system deprecated, use new training endpoints', 410);
     }
-
     if (path.match(/^\/training\/chapter\/(\d+)\/quiz$/) && req.method === 'POST') {
-      const chapterId = parseInt(path.split('/')[3]);
-      const [chapter] = await sql`SELECT order_index, course_id FROM chapters WHERE id = ${chapterId}`;
-      if (chapter && chapter.order_index > 1) {
-        const [prevChapter] = await sql`SELECT id FROM chapters WHERE course_id = ${chapter.course_id} AND order_index = ${chapter.order_index - 1}`;
-        if (prevChapter) {
-          const [prevProgress] = await sql`SELECT passed FROM user_chapter_progress WHERE user_id = ${user.id} AND chapter_id = ${prevChapter.id}`;
-          if (!prevProgress || !prevProgress.passed) {
-            return errorJson('Complete the previous chapter first', 403);
-          }
-        }
-      }
-      const body = await req.json();
-      const { answers } = body;
-      const [energy] = await sql`SELECT current_energy FROM user_energy WHERE user_id = ${user.id}`;
-      if (!energy || energy.current_energy < 5) {
-        return errorJson('Not enough energy!', 400);
-      }
-      const questions = await sql`SELECT * FROM chapter_quiz_questions WHERE chapter_id = ${chapterId} ORDER BY id`;
-      let correct = 0;
-      const total = questions.length;
-      for (const q of questions) {
-        const userAns = answers.find(a => a.question_id === q.id);
-        if (userAns && userAns.selected_index === q.correct_index) correct++;
-      }
-      const score = total > 0 ? (correct / total) * 100 : 0;
-      const [chapterData] = await sql`SELECT passing_score FROM chapters WHERE id = ${chapterId}`;
-      const passed = score >= (chapterData.passing_score || 90);
-
-      await sql`
-        INSERT INTO user_chapter_progress (user_id, chapter_id, quiz_attempts, best_score, passed, completed_at, last_attempt_at)
-        VALUES (${user.id}, ${chapterId}, 1, ${score}, ${passed}, ${passed ? new Date().toISOString() : null}, NOW())
-        ON CONFLICT (user_id, chapter_id) DO UPDATE SET
-          quiz_attempts = user_chapter_progress.quiz_attempts + 1,
-          best_score = GREATEST(COALESCE(user_chapter_progress.best_score, 0), ${score}),
-          passed = ${passed},
-          completed_at = CASE WHEN ${passed} THEN NOW() ELSE user_chapter_progress.completed_at END,
-          last_attempt_at = NOW()
-      `;
-      const energyCost = passed ? 5 : 10;
-      await sql`UPDATE user_energy SET current_energy = GREATEST(0, current_energy - ${energyCost}) WHERE user_id = ${user.id}`;
-      if (passed) await sql`UPDATE users SET xp = xp + 20 WHERE id = ${user.id}`;
-
-      const explanations = questions.map(q => ({
-        question_id: q.id,
-        correct_index: q.correct_index,
-        explanation: q.explanation || ''
-      }));
-
-      return json({
-        score, passed, total, correct, passing_score: chapterData.passing_score,
-        xp_earned: passed ? 20 : 0, energy_cost: energyCost,
-        message: passed ? 'Congratulations! You passed.' : `Score: ${score.toFixed(0)}%. Passing: ${chapterData.passing_score}%. Please study again.`,
-        explanations: explanations
-      });
+      return errorJson('Chapter system deprecated', 410);
     }
-
-    if (path === '/training/final-exam' && req.method === 'GET') {
-      const [existing] = await sql`SELECT * FROM final_exam_results WHERE user_id = ${user.id} AND passed = true`;
-      if (existing) return json({ message: 'Already passed', score: existing.score, passed: true });
-
-      const chapters = await sql`SELECT id FROM chapters WHERE course_id = 1 AND is_active = true ORDER BY order_index`;
-      const passedChapters = await sql`SELECT chapter_id FROM user_chapter_progress WHERE user_id = ${user.id} AND passed = true`;
-      const passedSet = new Set(passedChapters.map(r => r.chapter_id));
-      if (chapters.some(ch => !passedSet.has(ch.id))) {
-        return errorJson('All chapters must be passed', 400);
-      }
-
-      const startTime = new Date();
-      const expiry = new Date(startTime.getTime() + 20 * 60 * 1000);
-      const [session] = await sql`INSERT INTO exam_sessions (user_id, start_time, expiry) VALUES (${user.id}, ${startTime}, ${expiry}) RETURNING id, start_time, expiry`;
-
-      const questions = await sql`
-        SELECT id, question, options FROM chapter_quiz_questions
-        WHERE chapter_id IN (SELECT id FROM chapters WHERE course_id = 1 AND is_active = true)
-        ORDER BY RANDOM() LIMIT 30
-      `;
-      return json({
-        session_id: session.id,
-        start_time: session.start_time,
-        expiry: session.expiry,
-        questions,
-        total: questions.length,
-        passing_score: 80
-      });
+    if (path === '/training/final-exam' && (req.method === 'GET' || req.method === 'POST')) {
+      return errorJson('Final exam deprecated', 410);
     }
-
-    if (path === '/training/final-exam' && req.method === 'POST') {
-      const body = await req.json();
-      const { session_id, answers } = body;
-      const [session] = await sql`SELECT * FROM exam_sessions WHERE id = ${session_id} AND user_id = ${user.id}`;
-      if (!session || session.status !== 'active' || new Date() > new Date(session.expiry)) {
-        return errorJson('Time expired or invalid session', 400);
-      }
-
-      const questionIds = answers.map(a => a.question_id);
-      const questions = await sql`SELECT id, correct_index, explanation FROM chapter_quiz_questions WHERE id = ANY(${questionIds})`;
-      let correct = 0;
-      for (const q of questions) {
-        const userAns = answers.find(a => a.question_id === q.id);
-        if (userAns && userAns.selected_index === q.correct_index) correct++;
-      }
-      const total = questions.length;
-      const score = total ? (correct / total) * 100 : 0;
-      const passed = score >= 80;
-
-      await sql`
-        INSERT INTO final_exam_results (user_id, score, passed, total_questions, correct_answers)
-        VALUES (${user.id}, ${score}, ${passed}, ${total}, ${correct})
-        ON CONFLICT (user_id) DO UPDATE SET score = ${score}, passed = ${passed}, total_questions = ${total}, correct_answers = ${correct}, attempted_at = NOW()
-      `;
-      await sql`UPDATE exam_sessions SET status = 'completed' WHERE id = ${session_id}`;
-      if (passed) await sql`UPDATE users SET xp = xp + 100 WHERE id = ${user.id}`;
-
-      const explanations = questions.map(q => ({
-        question_id: q.id,
-        correct_index: q.correct_index,
-        explanation: q.explanation || ''
-      }));
-
-      return json({
-        score, passed, total, correct, xp_earned: passed ? 100 : 0,
-        message: passed ? 'Congratulations! You passed the final exam.' : `Score: ${score.toFixed(0)}%, Passing: 80%`,
-        explanations: explanations,
-        questions: questions.map(q => ({ id: q.id, question: q.question }))
-      });
-    }
-
+    // Keep certificate generation
     if (path === '/certificate' && req.method === 'GET') {
       const { count: totalJournals } = (await sql`SELECT COUNT(*)::int FROM daily_journals WHERE user_id = ${user.id}`)[0];
       if (totalJournals < 1) return errorJson('No journals', 400);
