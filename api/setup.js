@@ -630,7 +630,6 @@ async function apiHandler(req) {
       await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
       // ==================== TABLE CREATIONS ====================
-      // (All existing tables from original, plus new training tables)
       await sql`CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -838,7 +837,7 @@ async function apiHandler(req) {
       await sql`CREATE TABLE IF NOT EXISTS training_subjects (
         id SERIAL PRIMARY KEY,
         icon VARCHAR(10) DEFAULT '📁',
-        names JSONB NOT NULL, -- {en, hi, bn}
+        names JSONB NOT NULL,
         order_index INT DEFAULT 0,
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMPTZ DEFAULT NOW()
@@ -847,8 +846,8 @@ async function apiHandler(req) {
       await sql`CREATE TABLE IF NOT EXISTS training_lessons (
         id SERIAL PRIMARY KEY,
         subject_id INT REFERENCES training_subjects(id) ON DELETE CASCADE,
-        titles JSONB NOT NULL, -- {en, hi, bn}
-        contents JSONB,        -- {en, hi, bn} HTML content
+        titles JSONB NOT NULL,
+        contents JSONB,
         duration INT DEFAULT 15,
         level VARCHAR(20) DEFAULT 'Beginner',
         quiz_pass_score INT DEFAULT 80,
@@ -860,11 +859,11 @@ async function apiHandler(req) {
       await sql`CREATE TABLE IF NOT EXISTS training_quiz_questions (
         id SERIAL PRIMARY KEY,
         lesson_id INT REFERENCES training_lessons(id) ON DELETE CASCADE,
-        question JSONB NOT NULL,      -- {en, hi, bn}
-        options JSONB NOT NULL,       -- array of {id: 'a', text: {en, hi, bn}}
-        correct CHAR(1) NOT NULL,     -- 'a','b','c','d'
+        question JSONB NOT NULL,
+        options JSONB NOT NULL,
+        correct CHAR(1) NOT NULL,
         points INT DEFAULT 5,
-        explanation JSONB,            -- {en, hi, bn}
+        explanation JSONB,
         order_index INT DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
@@ -872,7 +871,7 @@ async function apiHandler(req) {
       await sql`CREATE TABLE IF NOT EXISTS training_user_progress (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         lesson_id INT REFERENCES training_lessons(id) ON DELETE CASCADE,
-        progress INT DEFAULT 0,       -- 0-100
+        progress INT DEFAULT 0,
         quiz_score INT DEFAULT 0,
         quiz_passed BOOLEAN DEFAULT false,
         completed_at TIMESTAMPTZ,
@@ -896,8 +895,6 @@ async function apiHandler(req) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )`;
 
-      // We keep chapters table but we no longer use it; we'll keep for backward compatibility but not use.
-      // However, we can keep them empty.
       await sql`CREATE TABLE IF NOT EXISTS chapters (
         id SERIAL PRIMARY KEY,
         course_id INT REFERENCES courses(id) ON DELETE CASCADE,
@@ -1110,13 +1107,11 @@ async function apiHandler(req) {
       // ----- Seed demo training subjects and lessons -----
       const [subjectExists] = await sql`SELECT id FROM training_subjects LIMIT 1`;
       if (!subjectExists) {
-        // Insert sample subject
         const [subj] = await sql`
           INSERT INTO training_subjects (icon, names, order_index)
           VALUES ('📊', '{"en":"Trading Basics","hi":"ट्रेडिंग बेसिक्स","bn":"ট্রেডিং বেসিকস"}', 1)
           RETURNING id
         `;
-        // Insert sample lesson
         const [lesson] = await sql`
           INSERT INTO training_lessons (subject_id, titles, contents, duration, level, quiz_pass_score, order_index)
           VALUES (${subj.id}, '{"en":"Market Structure","hi":"मार्केट स्ट्रक्चर","bn":"মার্কেট স্ট্রাকচার"}',
@@ -1124,7 +1119,6 @@ async function apiHandler(req) {
                   15, 'Beginner', 10, 1)
           RETURNING id
         `;
-        // Insert quiz questions
         await sql`
           INSERT INTO training_quiz_questions (lesson_id, question, options, correct, points, explanation, order_index)
           VALUES (${lesson.id},
@@ -1524,7 +1518,6 @@ async function apiHandler(req) {
         WHERE is_active = true
         ORDER BY order_index, id
       `;
-      // Also fetch lessons for each subject
       const result = [];
       for (const subj of subjects) {
         const lessons = await sql`
@@ -1532,6 +1525,15 @@ async function apiHandler(req) {
           WHERE subject_id = ${subj.id} AND is_active = true
           ORDER BY order_index, id
         `;
+        // Also fetch quiz questions for each lesson
+        for (const les of lessons) {
+          const questions = await sql`
+            SELECT * FROM training_quiz_questions
+            WHERE lesson_id = ${les.id}
+            ORDER BY order_index, id
+          `;
+          les.questions = questions;
+        }
         result.push({ ...subj, subSubjects: lessons });
       }
       return json(result);
@@ -1721,7 +1723,6 @@ async function apiHandler(req) {
           WHERE subject_id = ${subj.id} AND is_active = true
           ORDER BY order_index, id
         `;
-        // Also get user progress for each lesson
         const lessonsWithProgress = [];
         for (const les of lessons) {
           const [progress] = await sql`
@@ -1729,8 +1730,16 @@ async function apiHandler(req) {
             FROM training_user_progress
             WHERE user_id = ${user.id} AND lesson_id = ${les.id}
           `;
+          // Also fetch quiz questions for each lesson (without correct answers for security)
+          const questions = await sql`
+            SELECT id, question, options, points
+            FROM training_quiz_questions
+            WHERE lesson_id = ${les.id}
+            ORDER BY order_index, id
+          `;
           lessonsWithProgress.push({
             ...les,
+            quizQuestions: questions,
             user_progress: progress || { progress: 0, quiz_score: 0, quiz_passed: false }
           });
         }
@@ -1739,7 +1748,7 @@ async function apiHandler(req) {
       return json(result);
     }
 
-    // GET /training/lesson/:lessonId - detailed lesson with quiz
+    // GET /training/lesson/:lessonId - detailed lesson with quiz (includes correct answers for quiz check)
     if (path.match(/^\/training\/lesson\/(\d+)$/) && req.method === 'GET') {
       const user = await authenticate(req);
       if (!user) return errorJson('Authentication required', 401);
@@ -1780,6 +1789,12 @@ async function apiHandler(req) {
       const lessonId = parseInt(path.split('/')[3]);
       const body = await req.json();
       const { answers } = body; // array of {question_id, selected_option: 'a'|'b'|'c'|'d'}
+
+      // Fetch the lesson to get pass score
+      const [lesson] = await sql`
+        SELECT quiz_pass_score FROM training_lessons WHERE id = ${lessonId}
+      `;
+      if (!lesson) return errorJson('Lesson not found', 404);
 
       // Fetch all questions for this lesson
       const questions = await sql`
@@ -1964,7 +1979,6 @@ async function apiHandler(req) {
 
     // --- Admin Image Upload (fallback via formData) ---
     if (path === '/admin/upload-image' && req.method === 'POST') {
-      // handled by multipart wrapper above, but keep for fallback
       return errorJson('Use multipart form-data', 400);
     }
 
@@ -2096,7 +2110,6 @@ async function apiHandler(req) {
 
     // ==================== Training Export/Import (legacy) ====================
     if (path === '/admin/export/training' && req.method === 'GET') {
-      // Now export the new training data
       const admin = await authenticateAdmin(req);
       if (!admin) return errorJson('Forbidden', 403);
       try {
@@ -2139,7 +2152,6 @@ async function apiHandler(req) {
             } else {
               await sql`INSERT INTO training_lessons (id, subject_id, titles, contents, duration, level, quiz_pass_score, order_index, is_active) VALUES (${les.id}, ${subj.id}, ${JSON.stringify(les.titles)}, ${JSON.stringify(les.contents)}, ${les.duration}, ${les.level}, ${les.quiz_pass_score}, ${les.order_index}, ${les.is_active})`;
             }
-            // Delete existing questions for this lesson and insert
             await sql`DELETE FROM training_quiz_questions WHERE lesson_id = ${les.id}`;
             for (const q of (les.questions || [])) {
               await sql`INSERT INTO training_quiz_questions (id, lesson_id, question, options, correct, points, explanation, order_index) VALUES (${q.id}, ${les.id}, ${JSON.stringify(q.question)}, ${JSON.stringify(q.options)}, ${q.correct}, ${q.points}, ${JSON.stringify(q.explanation)}, ${q.order_index})`;
@@ -2199,7 +2211,6 @@ async function apiHandler(req) {
 
     // --- User image upload (non-admin) ---
     if (path === '/upload-image' && req.method === 'POST') {
-      // handled by multipart wrapper above
       return errorJson('Use multipart form-data', 400);
     }
 
@@ -2619,7 +2630,6 @@ async function apiHandler(req) {
     }
 
     // ==================== LEGACY TRAINING ENDPOINTS (kept for compatibility but not used) ====================
-    // (We keep them but they will return empty or error)
     if (path === '/training/chapters' && req.method === 'GET') {
       return json([]);
     }
