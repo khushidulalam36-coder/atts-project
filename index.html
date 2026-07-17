@@ -313,7 +313,7 @@
             'use strict';
 
             // ─── কনফিগ ─────────────────────────────────────────────────────
-            const API_BASE = 'https://your-app.up.railway.app/api';
+            const API_BASE = 'https://alamquant-hub.up.railway.app/api';
             const THEME_KEY = 'theme_prod_v9';
             const LANG_KEY = 'lang_prod_v9';
             const TOKEN_KEY = 'auth_token_v9';
@@ -2079,8 +2079,8 @@ async function placeSimOrder(type) {
                 h.qty += qty;
                 h.avgPrice = newAvg;
                 h.entryPrice = newAvg;
-                if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
-                if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
+                if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
+                if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
                 portfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
                 showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
             }
@@ -2109,8 +2109,8 @@ async function placeSimOrder(type) {
                 h.qty -= qty;
                 h.avgPrice = newAvg;
                 h.entryPrice = newAvg;
-                if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
-                if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
+                if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
+                if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
             } else {
                 portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price, entryPrice: price };
                 if (!isNaN(slVal) && slVal > 0) portfolio.holdings[symbol].slPrice = slVal;
