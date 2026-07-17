@@ -2529,8 +2529,8 @@ function placeSimOrderMobile(side, qty, sl, tp) {
         } else {
             portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
         }
-        if (sl) portfolio.holdings[symbol]?.slPrice = sl;
-        if (tp) portfolio.holdings[symbol]?.tpPrice = tp;
+        if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
+        if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
         portfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
         playTradeSound('buy');
     } else {
