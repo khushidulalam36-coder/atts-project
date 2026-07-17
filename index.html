@@ -1159,7 +1159,7 @@
             // ═══════════════════════════════════════════════════════
             //  ► PART 2 STARTS HERE (provided in next message)
             // ═══════════════════════════════════════════════════════
-                        window.deleteQuizQ = async function(lessonId, idx) {
+                            window.deleteQuizQ = async function(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
                 try {
                     await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'DELETE' });
@@ -1605,11 +1605,7 @@
                 simResizeObserver.observe(chartDiv);
             }
 
-  // ======================== MISSING TRADING FUNCTIONS (full implementation) ========================
-// Replace all the placeholder stubs in the previous index.html with this complete block.
-// It includes indicator calculations, UI updates, order execution, SL/TP logic,
-// fullscreen handling, line management, mobile terminal, and all helpers.
-
+  // ======================== ALL TRADING FUNCTIONS (CORRECTED) ========================
 // ---------- Helper Functions ----------
 function debounce(fn, delay) {
     let timer;
@@ -2049,7 +2045,7 @@ function savePortfolio() {
     // Optionally API call: apiFetch('/portfolio', { method: 'PUT', body: JSON.stringify(portfolio) }).catch(e => console.warn);
 }
 
-// ---------- Order Execution ----------
+// ---------- Order Execution (FIXED) ----------
 async function placeSimOrder(type) {
     const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
     const qty = parseInt(document.getElementById('simQty')?.value) || 1;
@@ -2079,8 +2075,8 @@ async function placeSimOrder(type) {
                 h.qty += qty;
                 h.avgPrice = newAvg;
                 h.entryPrice = newAvg;
-                if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
-                if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
+                if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
+                if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
                 portfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
                 showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
             }
@@ -2109,8 +2105,8 @@ async function placeSimOrder(type) {
                 h.qty -= qty;
                 h.avgPrice = newAvg;
                 h.entryPrice = newAvg;
-                if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
-                if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
+                if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
+                if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
             } else {
                 portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price, entryPrice: price };
                 if (!isNaN(slVal) && slVal > 0) portfolio.holdings[symbol].slPrice = slVal;
@@ -2296,7 +2292,7 @@ function exitFullscreenTerminal() {
     }
 }
 
-// ---------- Mobile Trading Terminal (full implementation) ----------
+// ---------- Mobile Trading Terminal (FIXED) ----------
 let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","TSLA","MSFT","GOOGL","AMZN","EURUSD","GBPUSD"]');
 
 function saveWatchlist() { localStorage.setItem('watchlist', JSON.stringify(mobileWatchlist)); }
@@ -2550,8 +2546,8 @@ function placeSimOrderMobile(side, qty, sl, tp) {
             } else {
                 portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price, entryPrice: price };
             }
-            if (sl) portfolio.holdings[symbol]?.slPrice = sl;
-            if (tp) portfolio.holdings[symbol]?.tpPrice = tp;
+            if (sl && portfolio.holdings[symbol]) portfolio.holdings[symbol].slPrice = sl;
+            if (tp && portfolio.holdings[symbol]) portfolio.holdings[symbol].tpPrice = tp;
         }
         portfolio.transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date().toLocaleTimeString() });
         playTradeSound('sell');
