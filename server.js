@@ -1,56 +1,87 @@
-import { createServer } from 'http';
-import { readFile } from 'fs/promises';
-import { extname, join } from 'path';
-import { fileURLToPath } from 'url';
-import handler from './api/setup.js';
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const http = require('http');
+const path = require('path');
+const { WebSocketServer } = require('ws');
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+dotenv.config();
 
-const mimeTypes = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-};
+const app = express();
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
-async function serveStatic(req, res) {
-  let filePath = req.url === '/' ? '/index.html' : req.url;
-  filePath = filePath.split('?')[0];
-  const fullPath = join(__dirname, filePath);
-  try {
-    const data = await readFile(fullPath);
-    const ext = extname(fullPath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
-    res.end(data);
-  } catch {
-    res.writeHead(404);
-    res.end('Not found');
-  }
+// ── WebSocket ────────────────────────────────────────────────────────
+const wss = new WebSocketServer({ server });
+const wsClients = new Set();
+
+wss.on('connection', (ws) => {
+  wsClients.add(ws);
+  ws.on('close', () => wsClients.delete(ws));
+  ws.send(JSON.stringify({ type: 'connected', message: 'WebSocket connected' }));
+});
+
+function broadcast(data) {
+  const msg = JSON.stringify(data);
+  wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-const server = createServer(async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// Simulated price stream (every 2 seconds)
+setInterval(() => {
+  const syms = ['AAPL','TSLA','GOOGL','MSFT','AMZN','BTCUSD','ETHUSD','EURUSD','GBPUSD','XAUUSD'];
+  const prices = {};
+  syms.forEach(s => { prices[s] = +(100 + Math.random() * 300).toFixed(2); });
+  broadcast({ type: 'price_update', prices, timestamp: Date.now() });
+}, 2000);
 
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
+// ── Middleware ────────────────────────────────────────────────────────
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-  const url = new URL(req.url, 'http://localhost:3000');
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  message: { error: 'Too many requests, try again later.' }
+});
+app.use('/api', apiLimiter);
 
-  if (url.pathname.startsWith('/api/')) {
-    handler(req, res);
-  } else {
-    await serveStatic(req, res);
-  }
+// ── Routes ───────────────────────────────────────────────────────────
+app.use('/api/auth',       require('./routes/auth'));
+app.use('/api/subjects',   require('./routes/subjects'));
+app.use('/api/lessons',    require('./routes/lessons'));
+app.use('/api/quiz',       require('./routes/quiz'));
+app.use('/api/progress',   require('./routes/progress'));
+app.use('/api/bookmarks',  require('./routes/bookmarks'));
+app.use('/api/notes',      require('./routes/notes'));
+app.use('/api/portfolio',  require('./routes/portfolio'));
+app.use('/api/upload',     require('./routes/upload'));
+app.use('/api/export',     require('./routes/export'));
+app.use('/api/import',     require('./routes/import'));
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime(), wsClients: wsClients.size, timestamp: new Date().toISOString() });
 });
 
-const PORT = process.env.PORT || 3000;
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve index.html for root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ── Start ────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
-  console.log('Server running at http://localhost:' + PORT);
+  console.log(`╔══════════════════════════════════════════╗`);
+  console.log(`║  🚀 Alamquant Backend  v2.0.0          ║`);
+  console.log(`║  📡 API:  http://localhost:${PORT}/api     ║`);
+  console.log(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
+  console.log(`║  ❤️  Health: /api/health               ║`);
+  console.log(`╚══════════════════════════════════════════╝`);
 });
+
+module.exports = { app, server, wss, broadcast };
