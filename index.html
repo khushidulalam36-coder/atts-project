@@ -106,6 +106,8 @@
             --primary-glow: rgba(79, 70, 229, 0.28);
             --shadow-glow-primary: 0 0 28px rgba(79, 70, 229, 0.28);
             --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
+            --terminal-toolbar-bg: rgba(17, 24, 39, 0.85);
+            --terminal-select-bg: rgba(255,255,255,0.08);
         }
 
         /* ===== LIGHT THEME ===== */
@@ -156,6 +158,8 @@
             --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.20);
             --glow-gold: 0 0 30px rgba(200, 167, 91, 0.3), 0 0 60px rgba(200, 167, 91, 0.08);
             --glow-accent: 0 0 25px rgba(37, 99, 235, 0.3), 0 0 50px rgba(37, 99, 235, 0.08);
+            --terminal-toolbar-bg: rgba(255,255,255,0.75);
+            --terminal-select-bg: #ffffff;
         }
 
         /* ===== RESET & BASE ===== */
@@ -166,157 +170,73 @@
         }
 
         @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
+            100% { transform: rotate(360deg); }
         }
         @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.15);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); }
         }
         @keyframes float {
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         @keyframes bgSlide {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         @keyframes shine {
-            0% {
-                background-position: -200% 0;
-            }
-            100% {
-                background-position: 200% 0;
-            }
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
         @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, 0) scale(0.5);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -80px) scale(1.2);
-            }
+            0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); }
+            100% { opacity: 0; transform: translate(-50%, -80px) scale(1.2); }
         }
         @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+            to { transform: scale(4); opacity: 0; }
         }
         @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         @keyframes goldShine {
-            0% {
-                background-position: 0% center;
-            }
-            100% {
-                background-position: 200% center;
-            }
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
         @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         @keyframes slideFade {
-            0% {
-                opacity: 0.4;
-                transform: scale(0.98);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0.4; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
         }
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
         @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         @keyframes terminalPulse {
-            0%,
-            100% {
-                box-shadow: 0 2px 10px var(--primary-glow);
-            }
-            50% {
-                box-shadow: 0 6px 22px var(--primary-glow), 0 0 35px rgba(79, 70, 229, 0.15);
-            }
+            0%, 100% { box-shadow: 0 2px 10px var(--primary-glow); }
+            50% { box-shadow: 0 6px 22px var(--primary-glow), 0 0 35px rgba(79, 70, 229, 0.15); }
         }
         @keyframes certGlow {
-            0%,
-            100% {
-                box-shadow: 0 3px 16px rgba(16, 185, 129, 0.25);
-            }
-            50% {
-                box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
-            }
+            0%, 100% { box-shadow: 0 3px 16px rgba(16, 185, 129, 0.25); }
+            50% { box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45); }
         }
 
         body {
@@ -340,8 +260,8 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
-                radial-gradient(circle at 70% 20%, rgba(200, 167, 91, 0.04) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 50%);
+                        radial-gradient(circle at 70% 20%, rgba(200, 167, 91, 0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 50%);
             animation: rotate 30s linear infinite;
             z-index: 0;
             pointer-events: none;
@@ -561,10 +481,7 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10), var(--glow-gold);
         }
 
-        h1,
-        h2,
-        h3,
-        h4 {
+        h1, h2, h3, h4 {
             background: linear-gradient(135deg, var(--gold-bright), var(--gold-light), var(--gold));
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -576,12 +493,8 @@
             font-family: var(--font-display);
             letter-spacing: -0.02em;
         }
-        h2 {
-            font-size: 1.6rem;
-        }
-        h3 {
-            font-size: 1.25rem;
-        }
+        h2 { font-size: 1.6rem; }
+        h3 { font-size: 1.25rem; }
 
         .btn {
             background: var(--primary-gradient);
@@ -678,9 +591,7 @@
             border-radius: var(--radius-2xl);
         }
 
-        input,
-        textarea,
-        select {
+        input, textarea, select {
             background: var(--input-bg);
             border: 1.5px solid var(--border);
             color: var(--text);
@@ -693,9 +604,7 @@
             outline: none;
             font-size: 0.95rem;
         }
-        input:focus,
-        textarea:focus,
-        select:focus {
+        input:focus, textarea:focus, select:focus {
             border-color: var(--accent-bright);
             box-shadow: 0 0 0 3px var(--primary-glow);
             background: rgba(255, 255, 255, 0.08);
@@ -711,30 +620,11 @@
             min-height: 60px;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-        .flex {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .hidden {
-            display: none !important;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .flex { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .hidden { display: none !important; }
 
         .badge {
             background: linear-gradient(135deg, var(--gold), var(--gold-bright));
@@ -756,12 +646,10 @@
             color: #fff;
         }
         .badge-passed {
-            background: #d1fae5;
-            color: #065f46;
+            background: #d1fae5; color: #065f46;
         }
         .badge-failed {
-            background: #fee2e2;
-            color: #991b1b;
+            background: #fee2e2; color: #991b1b;
         }
 
         .progress-bar {
@@ -1220,7 +1108,7 @@
             cursor: pointer;
         }
 
-        /* ===== NEW TRAINING UI (overlay) ===== */
+        /* ===== TRAINING UI ===== */
         .training-app {
             display: flex;
             flex-direction: column;
@@ -1463,6 +1351,9 @@
             box-shadow: var(--shadow);
             transition: all var(--transition);
             position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         .terminal-wrapper.fullscreen-active {
             position: fixed;
@@ -1559,9 +1450,11 @@
             align-items: center;
             margin-bottom: 6px;
             padding: 6px 10px;
-            background: var(--surface);
+            background: var(--terminal-toolbar-bg);
             border-radius: var(--radius);
             border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         .terminal-toolbar .tool-group {
             display: flex;
@@ -1603,7 +1496,7 @@
             padding: 4px 6px;
             border-radius: var(--radius-sm);
             border: 1.5px solid var(--border);
-            background: var(--input-bg);
+            background: var(--terminal-select-bg);
             color: var(--text);
             font-family: var(--font-mono);
             font-size: 0.72rem;
@@ -1686,7 +1579,7 @@
             padding: 6px 10px;
             border-radius: var(--radius-sm);
             border: 2px solid var(--border);
-            background: var(--input-bg);
+            background: var(--terminal-select-bg);
             color: var(--text);
             font-family: var(--font-en);
             font-size: 0.78rem;
@@ -1789,9 +1682,9 @@
             top: 8px;
             right: 8px;
             z-index: 10;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.6);
             color: #fff;
-            border: none;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 6px;
             padding: 5px 9px;
             cursor: pointer;
@@ -1799,7 +1692,7 @@
             transition: all var(--transition);
         }
         .chart-fullscreen-btn:hover {
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
         }
         .positions-table {
             width: 100%;
@@ -1899,6 +1792,66 @@
             list-style: none;
         }
 
+        /* ===== TERMINAL OVERLAY (full page) ===== */
+        #terminal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: var(--bg);
+            display: none;
+            flex-direction: column;
+        }
+        #terminal-overlay.open {
+            display: flex;
+        }
+        #terminal-overlay .terminal-header-overlay {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border-gold);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        #terminal-overlay .terminal-header-overlay .title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-bright);
+            font-family: var(--font-display);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #terminal-overlay .terminal-header-overlay .close-terminal-btn {
+            background: var(--danger-gradient);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 12px rgba(239, 68, 68, 0.35);
+        }
+        #terminal-overlay .terminal-header-overlay .close-terminal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+        #terminal-overlay .terminal-body {
+            flex: 1;
+            padding: 8px;
+            overflow: hidden;
+            background: var(--bg);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .training-app .training-layout {
@@ -1927,12 +1880,8 @@
             .chart-container-wrap #simChartContainer {
                 height: 280px;
             }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
             .terminal-toolbar {
                 flex-wrap: wrap;
                 gap: 4px;
@@ -1940,6 +1889,13 @@
             .terminal-toolbar .tool-group {
                 padding-right: 4px;
                 margin-right: 2px;
+            }
+            #terminal-overlay .terminal-header-overlay .title {
+                font-size: 0.9rem;
+            }
+            #terminal-overlay .terminal-header-overlay .close-terminal-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
             }
         }
 
@@ -1972,14 +1928,12 @@
             .trade-panel input {
                 width: 50px;
             }
-            .btn-buy,
-            .btn-sell {
+            .btn-buy, .btn-sell {
                 font-size: 0.7rem;
                 padding: 5px 10px;
             }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -2036,12 +1990,8 @@
         .slide-arrow:hover {
             background: rgba(0, 0, 0, 0.8);
         }
-        .slide-arrow.prev {
-            left: 10px;
-        }
-        .slide-arrow.next {
-            right: 10px;
-        }
+        .slide-arrow.prev { left: 10px; }
+        .slide-arrow.next { right: 10px; }
         #slide-dots {
             position: absolute;
             bottom: 12px;
@@ -2075,11 +2025,11 @@
             }
         }
 
-        /* ===== MOBILE TERMINAL (fullscreen overlay) ===== */
+        /* ===== MOBILE TERMINAL (inside overlay) ===== */
         .mobile-terminal {
             display: flex;
             flex-direction: column;
-            height: 100dvh;
+            height: 100%;
             overflow: hidden;
             background: var(--bg);
             position: relative;
@@ -2290,8 +2240,11 @@
         <div class="top-bar">
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">☰</button>
             <div class="logo">AlamQuant ATTS</div>
-            <button class="icon-btn" id="notif-btn" title="Notifications" onclick="requestPushPermission()" style="margin-right:8px;">🔔</button>
-            <button class="icon-btn" id="profile-btn" title="Profile" onclick="showPage('profile')">👤</button>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <button class="icon-btn" id="terminal-open-btn" title="Trading Terminal" onclick="openTerminalFullscreen()" style="margin-right:4px;">📈</button>
+                <button class="icon-btn" id="notif-btn" title="Notifications" onclick="requestPushPermission()" style="margin-right:4px;">🔔</button>
+                <button class="icon-btn" id="profile-btn" title="Profile" onclick="showPage('profile')">👤</button>
+            </div>
         </div>
         <div class="mobile-tabs" id="mobileTabs">
             <button class="nav-tab active" data-page="journey">📅 Journey</button>
@@ -2368,7 +2321,12 @@
                     <div class="flex" style="gap:4px; justify-content:center;">
                         <label style="color:var(--text-secondary);">Avatar:</label>
                         <select id="reg-avatar" style="width:auto;">
-                            <option value="🙂">🙂 Learner</option><option value="🧠">🧠 Thinker</option><option value="🦅">🦅 Eagle</option><option value="🐺">🐺 Wolf</option><option value="💹">💹 Chartist</option><option value="🛡️">🛡️ Guardian</option>
+                            <option value="🙂">🙂 Learner</option>
+                            <option value="🧠">🧠 Thinker</option>
+                            <option value="🦅">🦅 Eagle</option>
+                            <option value="🐺">🐺 Wolf</option>
+                            <option value="💹">💹 Chartist</option>
+                            <option value="🛡️">🛡️ Guardian</option>
                         </select>
                     </div>
                     <button class="btn btn-lg" onclick="register()" style="width:100%; margin-top:8px;">Create Account</button>
@@ -2440,7 +2398,7 @@
                 </div>
             </div>
 
-            <!-- PAGE: TRAINING (NEW SYSTEM - complete replacement) -->
+            <!-- PAGE: TRAINING (NEW SYSTEM) -->
             <div id="page-training" class="page-content">
                 <div id="training-root"></div>
             </div>
@@ -2516,7 +2474,7 @@
             <!-- PAGE: LEADERBOARD -->
             <div id="page-leaderboard" class="page-content hidden"><div class="glass"><h3>🏆 Leaderboard</h3><div id="leaderboard-list"></div></div></div>
 
-            <!-- PAGE: LESSONS (legacy, kept) -->
+            <!-- PAGE: LESSONS (legacy) -->
             <div id="page-lessons" class="page-content hidden"><div class="glass"><h3>📚 Learning Path</h3><div id="lessons-list"></div></div></div>
 
             <!-- PAGE: VIDEOS -->
@@ -2536,6 +2494,20 @@
 
         </div>
     </main>
+
+    <!-- ===== TERMINAL FULL PAGE OVERLAY ===== -->
+    <div id="terminal-overlay">
+        <div class="terminal-header-overlay">
+            <div class="title">
+                <span>📈 Live Trading Terminal</span>
+                <span style="font-size:0.7rem; font-weight:400; color:var(--text-secondary);">Real-time simulator</span>
+            </div>
+            <button class="close-terminal-btn" onclick="closeTerminalFullscreen()">
+                <i class="fas fa-times"></i> Close Terminal
+            </button>
+        </div>
+        <div class="terminal-body" id="terminal-fullscreen-container"></div>
+    </div>
 
     <!-- MODALS -->
     <div id="level-up-modal" class="modal-overlay hidden">
@@ -2562,13 +2534,10 @@
         let previousLevel = null;
         let currentPage = 'journey';
         const pageHistory = [];
-        let chart = null,
-            radarChart = null;
+        let chart = null, radarChart = null;
         let selectedMood = null;
-        let currentChapterId = null,
-            currentChapterQuestions = [];
-        let currentQuizMode = 'learning',
-            practiceTimerInterval = null;
+        let currentChapterId = null, currentChapterQuestions = [];
+        let currentQuizMode = 'learning', practiceTimerInterval = null;
         window.GOOGLE_CLIENT_ID = document.querySelector('meta[name="google-client-id"]')?.content || '';
         const VAPID_PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.content || '';
         let habitDefinitions = [];
@@ -2585,7 +2554,7 @@
         let activeSectionTTS = null;
         let activeSectionTTSBtn = null;
 
-        // ===== TRAINING STATE (NEW) =====
+        // ===== TRAINING STATE =====
         let trainingData = [];
         let selectedSubjectId = null;
         let selectedLessonId = null;
@@ -2612,13 +2581,11 @@
         let simCurrentCandle = null;
         let simPriceIntervalId = null;
         let simCandleCloseIntervalId = null;
-        let simBasePrices = { AAPL: 175, TSLA: 250, GOOGL: 140, MSFT: 380, AMZN: 180, XAUUSD: 1950, BTCUSD: 45000, EURUSD: 1.0850,
-            GBPUSD: 1.2650, XAGUSD: 24.50 };
-        let simVolatility = { AAPL: 0.0012, TSLA: 0.0035, GOOGL: 0.0011, MSFT: 0.001, AMZN: 0.0016, XAUUSD: 0.0005, BTCUSD: 0.002,
-            EURUSD: 0.0003, GBPUSD: 0.0004, XAGUSD: 0.0012 };
+        let simBasePrices = { AAPL:175, TSLA:250, GOOGL:140, MSFT:380, AMZN:180, XAUUSD:1950, BTCUSD:45000, EURUSD:1.0850, GBPUSD:1.2650, XAGUSD:24.50 };
+        let simVolatility = { AAPL:0.0012, TSLA:0.0035, GOOGL:0.0011, MSFT:0.001, AMZN:0.0016, XAUUSD:0.0005, BTCUSD:0.002, EURUSD:0.0003, GBPUSD:0.0004, XAGUSD:0.0012 };
         let simIsLiveData = false;
         let currentTimeframe = 60;
-        const timeframeIntervals = { '1': 60, '5': 300, '15': 900, '30': 1800, '1H': 3600, '4H': 14400, 'D': 86400 };
+        const timeframeIntervals = { '1':60, '5':300, '15':900, '30':1800, '1H':3600, '4H':14400, 'D':86400 };
         let simResizeObserver = null;
         let allPriceLines = {};
         let manualDrawnLines = [];
@@ -2628,10 +2595,8 @@
         let showVolume = true;
         let fsShowBottom = false;
         let simPortfolioDrawnLines = {};
-        const indicatorColors = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
-            'ema200': '#ef4444', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4', 'vwap': '#f472b6' };
-        const indicatorNames = { 'ema9': 'EMA 9', 'ema20': 'EMA 20', 'ema50': 'EMA 50', 'ema100': 'EMA 100',
-            'ema200': 'EMA 200', 'bb': 'Bollinger Bands', 'rsi': 'RSI (14)', 'macd': 'MACD', 'stoch': 'Stochastic', 'vwap': 'VWAP' };
+        const indicatorColors = { 'ema9':'#f59e0b', 'ema20':'#3b82f6', 'ema50':'#10b981', 'ema100':'#8b5cf6', 'ema200':'#ef4444', 'bb':'#a78bfa', 'rsi':'#ec4899', 'macd':'#f97316', 'stoch':'#06b6d4', 'vwap':'#f472b6' };
+        const indicatorNames = { 'ema9':'EMA 9', 'ema20':'EMA 20', 'ema50':'EMA 50', 'ema100':'EMA 100', 'ema200':'EMA 200', 'bb':'Bollinger Bands', 'rsi':'RSI (14)', 'macd':'MACD', 'stoch':'Stochastic', 'vwap':'VWAP' };
         const INITIAL_DATA = [{
             id: 'trading-basics',
             names: { en: 'Trading Basics', hi: 'ट्रेडिंग बेसिक्स', bn: 'ট্রেডিং বেসিকস' },
@@ -2639,22 +2604,16 @@
             subSubjects: [
                 { id: 'tb-1', titles: { en: 'Market Structure', hi: 'मार्केट स्ट्रक्चर', bn: 'মার্কেট স্ট্রাকচার' },
                     contents: { en: '<p>Understanding <strong>market structure</strong> is the cornerstone of trading. Learn about trends, ranges, support & resistance levels, and market phases.</p>',
-                        hi: '<p>बाजार संरचना को समझना ट्रेडिंग की नींव है।</p>', bn: '<p>মার্কেট স্ট্রাকচার বোঝা ট্রেডিংয়ের ভিত্তি।</p>' },
+                               hi: '<p>बाजार संरचना को समझना ट्रेडिंग की नींव है।</p>',
+                               bn: '<p>মার্কেট স্ট্রাকচার বোঝা ট্রেডিংয়ের ভিত্তি।</p>' },
                     duration: 15, level: 'Beginner', quizPassScore: 10, quiz: [
                         { id: 'q1', question: { en: 'What does "market structure" primarily refer to?', hi: '"मार्केट स्ट्रक्चर" मुख्य रूप से किसे संदर्भित करता है?', bn: '"মার্কেট স্ট্রাকচার" মূলত কী বোঝায়?' },
                             options: [
-                                { id: 'a', text: { en: 'The framework of trends, ranges, support & resistance',
-                                        hi: 'ट्रेंड, रेंज, सपोर्ट और रेसिस्टेंस का ढांचा',
-                                        bn: 'ট্রেন্ড, রেঞ্জ, সাপোর্ট ও রেসিস্ট্যান্সের কাঠামো' } },
-                                { id: 'b', text: { en: 'Only candlestick colors', hi: 'केवल कैंडलस्टिक रंग',
-                                        bn: 'শুধুমাত্র ক্যান্ডেলস্টিকের রং' } },
-                                { id: 'c', text: { en: 'The company balance sheet', hi: 'कंपनी की बैलेंस शीट',
-                                        bn: 'কোম্পানির ব্যালেন্স শীট' } },
-                                { id: 'd', text: { en: 'Daily economic news only', hi: 'केवल दैनिक आर्थिक समाचार',
-                                        bn: 'শুধুমাত্র দৈনিক অর্থনৈতিক খবর' } }
-                            ], correct: 'a', points: 5, explanation: { en: 'Market structure is the framework of price action.',
-                                hi: 'मार्केट स्ट्रक्चर प्राइस एक्शन का ढांचा है।',
-                                bn: 'মার্কেট স্ট্রাকচার হলো প্রাইস অ্যাকশনের কাঠামো।' }
+                                { id: 'a', text: { en: 'The framework of trends, ranges, support & resistance', hi: 'ट्रेंड, रेंज, सपोर्ट और रेसिस्टेंस का ढांचा', bn: 'ট্রেন্ড, রেঞ্জ, সাপোর্ট ও রেসিস্ট্যান্সের কাঠামো' } },
+                                { id: 'b', text: { en: 'Only candlestick colors', hi: 'केवल कैंडलस्टिक रंग', bn: 'শুধুমাত্র ক্যান্ডেলস্টিকের রং' } },
+                                { id: 'c', text: { en: 'The company balance sheet', hi: 'कंपनी की बैलेंस शीट', bn: 'কোম্পানির ব্যালেন্স শীট' } },
+                                { id: 'd', text: { en: 'Daily economic news only', hi: 'केवल दैनिक आर्थिक समाचार', bn: 'শুধুমাত্র দৈনিক অর্থনৈতিক খবর' } }
+                            ], correct: 'a', points: 5, explanation: { en: 'Market structure is the framework of price action.', hi: 'मार्केट स्ट्रक्चर प्राइस एक्शन का ढांचा है।', bn: 'মার্কেট স্ট্রাকচার হলো প্রাইস অ্যাকশনের কাঠামো।' }
                         }
                     ]
                 }
@@ -2664,23 +2623,19 @@
         // ============================================================
         // UTILITY FUNCTIONS
         // ============================================================
-        function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
-                '"': '&quot;', "'": '&#39;' } [m])) : ''; }
+        function escapeHtml(t) { return t ? String(t).replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m])) : ''; }
 
-        function showToast(msg, d = 3000) {
+        function showToast(msg, d=3000) {
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.classList.add('show');
             t.style.display = 'block';
             clearTimeout(t._timer);
-            t._timer = setTimeout(() => { t.style.display = 'none';
-                t.classList.remove('show'); }, d);
+            t._timer = setTimeout(() => { t.style.display = 'none'; t.classList.remove('show'); }, d);
         }
 
         function celebrate(msg) {
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#C8A75B', '#F6E4B5', '#2563EB',
-                    '#7C3AED'
-                ] });
+            confetti({ particleCount:120, spread:80, origin:{ y:0.6 }, colors:['#C8A75B','#F6E4B5','#2563EB','#7C3AED'] });
             if (msg) showToast(msg);
         }
 
@@ -2693,24 +2648,21 @@
         }
 
         function validateForm(sel) {
-            const inputs = document.querySelectorAll(sel + ' input:not([type="checkbox"]), ' + sel + ' textarea, ' + sel +
-            ' select');
-            let v = true,
-                first = null;
+            const inputs = document.querySelectorAll(sel + ' input:not([type="checkbox"]), ' + sel + ' textarea, ' + sel + ' select');
+            let v=true, first=null;
             inputs.forEach(i => {
-                if (!i.value.trim()) { v = false;
-                    i.style.borderColor = 'var(--danger)'; if (!first) first = i; } else i.style.borderColor = '';
+                if (!i.value.trim()) { v=false; i.style.borderColor='var(--danger)'; if (!first) first=i; }
+                else i.style.borderColor='';
             });
-            if (!v && first) { first.focus();
-                showToast('Please fill all required fields.'); }
+            if (!v && first) { first.focus(); showToast('Please fill all required fields.'); }
             return v;
         }
 
-        async function apiCall(m, p, b, showErr = true) {
-            const h = { 'Content-Type': 'application/json' };
+        async function apiCall(m, p, b, showErr=true) {
+            const h = { 'Content-Type':'application/json' };
             if (token) h['Authorization'] = `Bearer ${token}`;
             try {
-                const r = await fetch(`${API}${p}`, { method: m, headers: h, body: b ? JSON.stringify(b) : null });
+                const r = await fetch(`${API}${p}`, { method:m, headers:h, body: b ? JSON.stringify(b) : null });
                 if (r.status === 401) { logout(); return null; }
                 let d = null;
                 const contentType = r.headers.get('content-type') || '';
@@ -2723,7 +2675,7 @@
                 if (d && d.error && showErr) showToast(d.error);
                 return d;
             } catch (e) {
-                console.error('API Call Failed [' + p + ']:', e.message || e);
+                console.error('API Call Failed ['+p+']:', e.message || e);
                 if (showErr) showToast('Network error – please try again');
                 return null;
             }
@@ -2741,15 +2693,13 @@
                 } catch (e) { this.translations = {}; }
                 this.lang = l;
                 localStorage.setItem('lang', l);
-                document.querySelectorAll('select[id$="-lang"], #lang-select, #settings-lang-select').forEach(s => s.value =
-                l);
+                document.querySelectorAll('select[id$="-lang"], #lang-select, #settings-lang-select').forEach(s => s.value = l);
                 this.apply();
                 if (currentPage) showPage(currentPage);
             },
-            t(k, f = '') { return this.translations[k] || f; },
+            t(k, f='') { return this.translations[k] || f; },
             apply() {
-                document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = this.t(el.dataset.i18n, el
-                    .textContent));
+                document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = this.t(el.dataset.i18n, el.textContent));
                 document.querySelectorAll('[data-i18n-title]').forEach(el => el.title = this.t(el.dataset.i18nTitle, ''));
             }
         };
@@ -2759,9 +2709,8 @@
         // ============================================================
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
-            if (input.type === 'password') { input.type = 'text';
-                btn.textContent = '🙈'; } else { input.type = 'password';
-                btn.textContent = '👁️'; }
+            if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+            else { input.type = 'password'; btn.textContent = '👁️'; }
         }
 
         async function requestPushPermission() {
@@ -2790,13 +2739,12 @@
             const base64 = (b64 + padding).replace(/\-/g, '+').replace(/_/g, '/');
             const raw = window.atob(base64);
             const arr = new Uint8Array(raw.length);
-            for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+            for (let i=0; i<raw.length; i++) arr[i] = raw.charCodeAt(i);
             return arr;
         }
 
         function toggleReminderFields() {
-            document.getElementById('reminder-fields').style.display = document.getElementById('reminder-enabled').checked ?
-                'block' : 'none';
+            document.getElementById('reminder-fields').style.display = document.getElementById('reminder-enabled').checked ? 'block' : 'none';
         }
 
         async function saveReminderSettings() {
@@ -2823,22 +2771,21 @@
             document.getElementById('habit-times-container').innerHTML = '';
             if (settings.reminder_times && settings.reminder_times.length) {
                 settings.reminder_times.forEach(t => {
-                    const [h, m] = t.split(':');
+                    const [h,m] = t.split(':');
                     const hour24 = parseInt(h);
                     const period = hour24 < 12 ? 'AM' : 'PM';
                     const displayHour = hour24 % 12 || 12;
                     addTimeBlock(displayHour, m, period);
                 });
-            } else { addTimeBlock(8, 0, 'AM'); }
+            } else { addTimeBlock(8,0,'AM'); }
         }
 
-        function addTimeBlock(hour = 8, minute = 0, period = 'AM') {
+        function addTimeBlock(hour=8, minute=0, period='AM') {
             const container = document.getElementById('habit-times-container');
             if (!container) return;
             const block = document.createElement('div');
             block.className = 'habit-time-block';
-            block.innerHTML =
-                `<input type="number" class="habit-hour" min="1" max="12" value="${hour}" onchange="updateTimes()"><span>:</span><input type="number" class="habit-minute" min="0" max="59" value="${String(minute).padStart(2,'0')}" onchange="updateTimes()"><span class="mini-ampm-btn ${period==='AM'?'active':''}" onclick="toggleAmpm(this, 'AM')">AM</span><span class="mini-ampm-btn ${period==='PM'?'active':''}" onclick="toggleAmpm(this, 'PM')">PM</span><button class="remove-time-btn" onclick="removeTimeBlock(this)">✕</button>`;
+            block.innerHTML = `<input type="number" class="habit-hour" min="1" max="12" value="${hour}" onchange="updateTimes()"><span>:</span><input type="number" class="habit-minute" min="0" max="59" value="${String(minute).padStart(2,'0')}" onchange="updateTimes()"><span class="mini-ampm-btn ${period==='AM'?'active':''}" onclick="toggleAmpm(this, 'AM')">AM</span><span class="mini-ampm-btn ${period==='PM'?'active':''}" onclick="toggleAmpm(this, 'PM')">PM</span><button class="remove-time-btn" onclick="removeTimeBlock(this)">✕</button>`;
             container.appendChild(block);
             updateTimes();
         }
@@ -2850,8 +2797,7 @@
             updateTimes();
         }
 
-        function removeTimeBlock(btn) { btn.parentElement.remove();
-            updateTimes(); }
+        function removeTimeBlock(btn) { btn.parentElement.remove(); updateTimes(); }
 
         function updateTimes() {
             const blocks = document.querySelectorAll('.habit-time-block');
@@ -2872,10 +2818,9 @@
             return data ? JSON.parse(data.value) : [];
         }
 
-        function showPage(pageName, fromBack = false) {
+        function showPage(pageName, fromBack=false) {
             if (pageName === 'theme-toggle') { toggleTheme(); return; }
-            if (!fromBack) { pageHistory.push(currentPage);
-                window.history.pushState({ page: pageName }, '', `#/${pageName}`); }
+            if (!fromBack) { pageHistory.push(currentPage); window.history.pushState({ page: pageName }, '', `#/${pageName}`); }
             currentPage = pageName;
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll(`.nav-tab[data-page="${pageName}"]`).forEach(t => t.classList.add('active'));
@@ -2886,43 +2831,17 @@
             if (pageEl) pageEl.classList.remove('hidden');
             if (speechSynth.speaking) speechSynth.cancel();
             switch (pageName) {
-                case 'journey':
-                    renderSliders();
-                    loadDailyQuest();
-                    loadProfile();
-                    updateDateDisplay();
-                    loadSlideshow();
-                    loadWeeklyChallenge();
-                    break;
-                case 'training':
-                    renderTrainingApp();
-                    break;
-                case 'habits':
-                    loadHabits();
-                    break;
-                case 'progress':
-                    loadProgress();
-                    break;
-                case 'community':
-                    loadCommunity();
-                    break;
-                case 'profile':
-                    loadProfilePage();
-                    break;
-                case 'leaderboard':
-                    loadLeaderboard();
-                    break;
-                case 'lessons':
-                    loadLessons();
-                    break;
-                case 'videos':
-                    loadVideos();
-                    break;
-                case 'insights':
-                    loadInsights();
-                    break;
-                case 'settings':
-                    break;
+                case 'journey': renderSliders(); loadDailyQuest(); loadProfile(); updateDateDisplay(); loadSlideshow(); loadWeeklyChallenge(); break;
+                case 'training': renderTrainingApp(); break;
+                case 'habits': loadHabits(); break;
+                case 'progress': loadProgress(); break;
+                case 'community': loadCommunity(); break;
+                case 'profile': loadProfilePage(); break;
+                case 'leaderboard': loadLeaderboard(); break;
+                case 'lessons': loadLessons(); break;
+                case 'videos': loadVideos(); break;
+                case 'insights': loadInsights(); break;
+                case 'settings': break;
             }
             i18n.apply();
             if (window.innerWidth < 768) closeDrawer();
@@ -2934,17 +2853,11 @@
         hamburgerBtn.addEventListener('click', openDrawer);
         drawerOverlay.addEventListener('click', closeDrawer);
 
-        function openDrawer() { drawer.classList.add('open');
-            drawerOverlay.classList.add('show'); }
-
-        function closeDrawer() { drawer.classList.remove('open');
-            drawerOverlay.classList.remove('show'); }
-        document.querySelectorAll('.nav-tab[data-page]').forEach(t => t.addEventListener('click', () => showPage(t.dataset
-        .page)));
+        function openDrawer() { drawer.classList.add('open'); drawerOverlay.classList.add('show'); }
+        function closeDrawer() { drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); }
+        document.querySelectorAll('.nav-tab[data-page]').forEach(t => t.addEventListener('click', () => showPage(t.dataset.page)));
         document.querySelectorAll('.drawer nav a[data-page]').forEach(link => {
-            link.addEventListener('click', e => { e.preventDefault();
-                showPage(link.dataset.page);
-                closeDrawer(); });
+            link.addEventListener('click', e => { e.preventDefault(); showPage(link.dataset.page); closeDrawer(); });
         });
 
         function toggleTheme() {
@@ -2960,21 +2873,16 @@
                 const label = themeBtn.childNodes[2];
                 if (label && label.nodeType === 3) label.textContent = ' ' + (next === 'dark' ? 'Dark' : 'Light');
             }
-            // re-render training if visible
             if (currentPage === 'training') renderTrainingApp();
         }
 
         (function() {
             const saved = localStorage.getItem('theme');
-            if (saved) { document.documentElement.setAttribute('data-theme', saved);
-                appTheme = saved; }
+            if (saved) { document.documentElement.setAttribute('data-theme', saved); appTheme = saved; }
         })();
 
-        function showRegister() { document.getElementById('register-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('hidden'); }
-
-        function showLogin() { document.getElementById('register-form').classList.add('hidden');
-            document.getElementById('login-form').classList.remove('hidden'); }
+        function showRegister() { document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); }
+        function showLogin() { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); }
 
         async function login() {
             const email = document.getElementById('login-email').value.trim();
@@ -2985,8 +2893,7 @@
                 document.getElementById('login-error').textContent = 'Email and password required.';
                 return;
             }
-            const d = await apiCall('POST', '/login', { email, password, display_name: name, language: document
-                    .getElementById('login-lang').value }, false);
+            const d = await apiCall('POST', '/login', { email, password, display_name: name, language: document.getElementById('login-lang').value }, false);
             if (d?.token) {
                 token = d.token;
                 localStorage.setItem('token', token);
@@ -3008,8 +2915,7 @@
                 document.getElementById('reg-error').textContent = 'Email and password required.';
                 return;
             }
-            const d = await apiCall('POST', '/register', { email, password, display_name: name, avatar_emoji: avatar,
-                language: document.getElementById('login-lang').value }, false);
+            const d = await apiCall('POST', '/register', { email, password, display_name: name, avatar_emoji: avatar, language: document.getElementById('login-lang').value }, false);
             if (d?.token) {
                 token = d.token;
                 localStorage.setItem('token', token);
@@ -3035,23 +2941,19 @@
                     client_id: window.GOOGLE_CLIENT_ID,
                     callback: handleGoogleSignIn
                 });
-                google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme: 'outline',
-                    size: 'large' });
+                google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme:'outline', size:'large' });
             } else setTimeout(loadGoogleSignIn, 200);
         }
         window.addEventListener('load', loadGoogleSignIn);
 
         async function handleGoogleSignIn(response) {
             const res = await fetch(`${API}/auth/google`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method:'POST',
+                headers:{ 'Content-Type':'application/json' },
                 body: JSON.stringify({ credential: response.credential })
             });
             const data = await res.json();
-            if (data.token) { token = data.token;
-                localStorage.setItem('token', token);
-                initDashboard(data.user);
-                applyAdminTheme(); }
+            if (data.token) { token = data.token; localStorage.setItem('token', token); initDashboard(data.user); applyAdminTheme(); }
         }
 
         const canvas = document.getElementById('bgCanvas');
@@ -3062,21 +2964,18 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             particles = [];
-            for (let i = 0; i < 80; i++) particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas
-                    .height, r: Math.random() * 2 + 0.5, s: Math.random() * 0.5 + 0.1,
-                c: `rgba(200,167,91,${Math.random()*0.5+0.2})` });
+            for (let i=0; i<80; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+0.5, s: Math.random()*0.5+0.1, c: `rgba(200,167,91,${Math.random()*0.5+0.2})` });
         }
 
         function drawParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
                 ctx.fillStyle = p.c;
                 ctx.fill();
                 p.y -= p.s;
-                if (p.y < -10) { p.y = canvas.height + 10;
-                    p.x = Math.random() * canvas.width; }
+                if (p.y < -10) { p.y = canvas.height+10; p.x = Math.random()*canvas.width; }
             });
             requestAnimationFrame(drawParticles);
         }
@@ -3086,12 +2985,7 @@
 
         function updateDateDisplay() {
             const now = new Date();
-            document.getElementById('current-date-display').textContent = now.toLocaleDateString(undefined, {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
+            document.getElementById('current-date-display').textContent = now.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         }
 
         async function applyAdminTheme() {
@@ -3117,14 +3011,11 @@
                 document.getElementById('hero-slideshow').classList.remove('hidden');
                 const isMobile = window.innerWidth <= 768;
                 container.innerHTML = slidesData.map((slide, i) => {
-                    const imgUrl = isMobile ? (slide.image_url_mobile || slide.image_url_desktop) : (slide
-                        .image_url_desktop || slide.image_url_mobile);
+                    const imgUrl = isMobile ? (slide.image_url_mobile || slide.image_url_desktop) : (slide.image_url_desktop || slide.image_url_mobile);
                     return `<div class="slide-item"><a href="${slide.link_url||'#'}" target="${slide.link_url?'_blank':'_self'}" style="display:block;"><img src="${imgUrl}" alt="${escapeHtml(slide.title||'Slide '+(i+1))}" loading="lazy"></a></div>`;
                 }).join('');
                 container.style.width = (slidesData.length * 100) + '%';
-                dotsDiv.innerHTML = slidesData.map((_, i) =>
-                    `<button class="dot ${i===0?'active':''}" onclick="goToSlide(${i})" aria-label="Slide ${i+1}">●</button>`
-                ).join('');
+                dotsDiv.innerHTML = slidesData.map((_, i) => `<button class="dot ${i===0?'active':''}" onclick="goToSlide(${i})" aria-label="Slide ${i+1}">●</button>`).join('');
                 currentSlideIndex = 0;
                 showSlide(0);
                 startAutoSlide();
@@ -3146,27 +3037,19 @@
             });
         }
 
-        function goToSlide(index) { showSlide(index);
-            resetAutoSlide(); }
-
-        function nextSlide() { showSlide(currentSlideIndex + 1);
-            resetAutoSlide(); }
-
-        function prevSlide() { showSlide(currentSlideIndex - 1);
-            resetAutoSlide(); }
+        function goToSlide(index) { showSlide(index); resetAutoSlide(); }
+        function nextSlide() { showSlide(currentSlideIndex + 1); resetAutoSlide(); }
+        function prevSlide() { showSlide(currentSlideIndex - 1); resetAutoSlide(); }
 
         function startAutoSlide() {
             if (slideInterval) clearInterval(slideInterval);
             if (slidesData && slidesData.length > 1) { slideInterval = setInterval(nextSlide, 5000); }
         }
 
-        function resetAutoSlide() { if (slideInterval) { clearInterval(slideInterval);
-                slideInterval = null; }
-            startAutoSlide(); }
+        function resetAutoSlide() { if (slideInterval) { clearInterval(slideInterval); slideInterval = null; } startAutoSlide(); }
 
         function handleSlideResize() {
-            if (document.getElementById('hero-slideshow') && !document.getElementById('hero-slideshow').classList.contains(
-                    'hidden')) { loadSlideshow(); }
+            if (document.getElementById('hero-slideshow') && !document.getElementById('hero-slideshow').classList.contains('hidden')) { loadSlideshow(); }
         }
 
         // ===== PROFILE & JOURNEY =====
@@ -3216,16 +3099,14 @@
                 if (challenge && challenge.id) {
                     const progress = challenge.progress || 0;
                     const percent = Math.min(100, (progress / challenge.target) * 100);
-                    container.innerHTML =
-                        `<h4>📅 Weekly Challenge</h4><p><strong>${escapeHtml(challenge.title)}</strong>: ${escapeHtml(challenge.description)}</p><div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div><small>${progress} / ${challenge.target} completed · Reward: ${challenge.reward_xp} XP</small>`;
+                    container.innerHTML = `<h4>📅 Weekly Challenge</h4><p><strong>${escapeHtml(challenge.title)}</strong>: ${escapeHtml(challenge.description)}</p><div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div><small>${progress} / ${challenge.target} completed · Reward: ${challenge.reward_xp} XP</small>`;
                     container.classList.remove('hidden');
-                } else { container.innerHTML = '';
-                    container.classList.add('hidden'); }
+                } else { container.innerHTML = ''; container.classList.add('hidden'); }
             } catch (e) { container.classList.add('hidden'); }
         }
 
         function updateXpBar(xp, lv) {
-            const p = Math.min(100, Math.max(0, ((xp - (lv - 1) * 75) / 75) * 100));
+            const p = Math.min(100, Math.max(0, ((xp - (lv-1)*75) / 75) * 100));
             document.getElementById('xp-bar-fill').style.width = p + '%';
         }
 
@@ -3254,8 +3135,7 @@
             if (!qs || !qs.length) { container.innerHTML = '<p>No questions found.</p>'; return; }
             let html = '<div class="assessment-container">';
             qs.forEach((q, i) => {
-                html +=
-                    `<div class="assessment-item"><div class="assessment-question">${i+1}. ${escapeHtml(q.question)}</div><div class="assessment-options"><label><input type="radio" name="assess_${q.id}" value="true"> Yes</label><label><input type="radio" name="assess_${q.id}" value="false"> No</label></div></div>`;
+                html += `<div class="assessment-item"><div class="assessment-question">${i+1}. ${escapeHtml(q.question)}</div><div class="assessment-options"><label><input type="radio" name="assess_${q.id}" value="true"> Yes</label><label><input type="radio" name="assess_${q.id}" value="false"> No</label></div></div>`;
             });
             html += '</div>';
             container.innerHTML = html;
@@ -3263,11 +3143,9 @@
 
         async function submitAssessment() {
             const ans = [];
-            document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r
-                    .name.split('_')[1]), answer: r.value === 'true' }));
+            document.querySelectorAll('#assessment-questions input:checked').forEach(r => ans.push({ question_id: parseInt(r.name.split('_')[1]), answer: r.value === 'true' }));
             const r = await apiCall('POST', '/assessment/submit', { answers: ans });
-            document.getElementById('assessment-result').innerHTML =
-                `<div class="glass"><p>Score: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`;
+            document.getElementById('assessment-result').innerHTML = `<div class="glass"><p>Score: ${r.yesCount}/${r.total}</p><p>${r.recommendation}</p></div>`;
             document.getElementById('assessment-screen').classList.add('hidden');
             document.getElementById('assessment-prompt').classList.remove('hidden');
         }
@@ -3275,8 +3153,7 @@
         function showFeedback(fb) {
             document.getElementById('feedback-text').textContent = fb.feedback;
             document.getElementById('tomorrow-mission').textContent = fb.mission || '';
-            document.getElementById('new-badges').innerHTML = (fb.badges || []).map(b => `<span class="badge">${b}</span>`)
-                .join('');
+            document.getElementById('new-badges').innerHTML = (fb.badges || []).map(b => `<span class="badge">${b}</span>`).join('');
             document.getElementById('feedback-area').classList.remove('hidden');
         }
 
@@ -3284,8 +3161,7 @@
             if (!document.getElementById('mindfulness-done').checked) return showToast('Complete mindfulness');
             const cm = document.getElementById('commitment').value.trim();
             if (!cm) return showToast('Write commitment');
-            await apiCall('POST', '/checkin', { mindfulness_done: true, commitment: cm, date: new Date()
-                    .toLocaleDateString('en-CA') });
+            await apiCall('POST', '/checkin', { mindfulness_done: true, commitment: cm, date: new Date().toLocaleDateString('en-CA') });
             document.getElementById('morning-section').classList.add('hidden');
             document.getElementById('checkin-done-msg').classList.remove('hidden');
             setTimeout(() => { document.getElementById('evaluation-section').classList.remove('hidden'); }, 1000);
@@ -3333,13 +3209,10 @@
         }
 
         function renderSliders() {
-            const qs = [{ id: 'q1', s: 'Planning' }, { id: 'q2', s: 'Setup' }, { id: 'q3', s: 'Risk' }, { id: 'q4',
-                    s: 'Execution' }, { id: 'q5', s: 'Exit' }, { id: 'q6', s: 'Discipline' }, { id: 'q7',
-                    s: 'Emotion' }, { id: 'q8', s: 'Patience' }, { id: 'q9', s: 'Review' }, { id: 'q10',
-                    s: 'Improvement' }];
+            const qs = [{ id:'q1', s:'Planning' }, { id:'q2', s:'Setup' }, { id:'q3', s:'Risk' }, { id:'q4', s:'Execution' }, { id:'q5', s:'Exit' }, { id:'q6', s:'Discipline' }, { id:'q7', s:'Emotion' }, { id:'q8', s:'Patience' }, { id:'q9', s:'Review' }, { id:'q10', s:'Improvement' }];
             document.getElementById('score-sliders').innerHTML = qs.map(q =>
                 `<div class="slider-item"><label>${q.s}</label><input type="range" min="0" max="10" value="5" data-q="${q.id}" oninput="updateSliderFill(this)"><span>5</span></div>`
-                ).join('');
+            ).join('');
             document.querySelectorAll('#score-sliders input').forEach(i => {
                 updateSliderFill(i);
                 i.addEventListener('input', e => {
@@ -3357,8 +3230,7 @@
         async function loadDailyQuest() {
             const q = await apiCall('GET', '/daily-quest');
             if (!q) return;
-            const m = { no_revenge: 'No Revenge Trade', no_fomo: 'No FOMO', q6_8plus: 'Q6 ≥ 8', mindfulness: 'Mindfulness Done',
-                habit_complete: 'Habit Completed' };
+            const m = { no_revenge:'No Revenge Trade', no_fomo:'No FOMO', q6_8plus:'Q6 ≥ 8', mindfulness:'Mindfulness Done', habit_complete:'Habit Completed' };
             document.getElementById('quest-desc').textContent = m[q.quest_type] || 'Daily Mission';
             document.getElementById('quest-fill').style.width = (q.completed ? 100 : (q.progress / q.target) * 100) + '%';
             const btn = document.getElementById('claim-quest-btn');
@@ -3367,10 +3239,7 @@
 
         async function claimQuestReward() {
             const r = await apiCall('POST', '/claim-quest-reward');
-            if (r?.success) { celebrate('+15 XP!');
-                showFloatingXp(15);
-                loadDailyQuest();
-                loadProfile(); }
+            if (r?.success) { celebrate('+15 XP!'); showFloatingXp(15); loadDailyQuest(); loadProfile(); }
         }
 
         // ===== COMMUNITY =====
@@ -3378,7 +3247,7 @@
             const ps = await apiCall('GET', '/community');
             document.getElementById('posts-container').innerHTML = ps.map(p =>
                 `<div class="post"><span class="badge">${p.post_type}</span> <small>${p.display_name||p.author}</small><div class="post-content" id="post-text-${p.id}">${DOMPurify.sanitize(p.content)}</div><button class="tts-btn" onclick="speakElementContent('post-text-${p.id}')">🔊</button><div class="flex"><button class="btn btn-sm" onclick="likePost('${p.id}')">❤️ ${p.likes||0}</button><button class="btn btn-sm" onclick="toggleReply('${p.id}')">💬</button></div><div id="replies-${p.id}" class="hidden"></div></div>`
-                ).join('');
+            ).join('');
         }
 
         async function submitPost() {
@@ -3394,13 +3263,10 @@
             }
             let finalContent = content;
             mediaUrls.forEach(m => {
-                if (m.type === 'image') finalContent +=
-                    ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
-                else finalContent +=
-                    ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
+                if (m.type === 'image') finalContent += ` <img src="${m.url}" style="max-width:100%; border-radius:8px; margin-top:8px;" />`;
+                else finalContent += ` <video src="${m.url}" controls style="max-width:100%; border-radius:8px; margin-top:8px;"></video>`;
             });
-            await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type')
-                    .value });
+            await apiCall('POST', '/community', { content: finalContent, post_type: document.getElementById('post-type').value });
             postImages = [];
             document.getElementById('post-image').value = '';
             document.getElementById('post-video').value = '';
@@ -3431,9 +3297,7 @@
             if (!container.classList.contains('hidden') && !container.dataset.loaded) {
                 container.dataset.loaded = 'true';
                 const replies = await apiCall('GET', `/replies?post_id=${postId}`);
-                container.innerHTML = replies.map(r =>
-                    `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`
-                    ).join('');
+                container.innerHTML = replies.map(r => `<div class="reply-item"><strong>${r.display_name||r.email}</strong>: ${escapeHtml(r.content)}</div>`).join('');
             }
         }
 
@@ -3468,15 +3332,14 @@
 
         async function loadLeaderboard() {
             const d = await apiCall('GET', '/leaderboard');
-            document.getElementById('leaderboard-list').innerHTML = d.map((u, i) =>
-                `${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}`).join('');
+            document.getElementById('leaderboard-list').innerHTML = d.map((u,i) => `${i+1}. ${u.display_name||u.email} - ${u.avg_discipline?.toFixed(1)}`).join('');
         }
 
         async function loadLessons() {
             const ls = await apiCall('GET', '/lessons');
             document.getElementById('lessons-list').innerHTML = ls.map(l =>
                 `<div class="flex" style="justify-content:space-between;"><span id="lesson-title-${l.id}">${escapeHtml(l.title)}</span><span><button class="tts-btn" onclick="speakElementContent('lesson-title-${l.id}')">🔊</button><button class="btn btn-sm" onclick="completeLesson(${l.id})">${l.completed_at?'✅':'Complete'}</button></span></div>`
-                ).join('');
+            ).join('');
         }
 
         async function completeLesson(id) {
@@ -3489,13 +3352,12 @@
             const vs = await apiCall('GET', '/videos');
             document.getElementById('video-grid').innerHTML = vs.map(v =>
                 `<div class="video-card">${v.youtube_id?`<iframe src="https://www.youtube.com/embed/${v.youtube_id}"></iframe>`:''}<div class="video-info">${escapeHtml(v.title)}</div></div>`
-                ).join('');
+            ).join('');
         }
 
         async function loadInsights() {
             const r = await apiCall('GET', '/insights');
-            document.getElementById('insights-content').innerHTML = r ?
-                `Total Journals: ${r.totalJournals}, Streak: ${r.currentStreak}, Top Mistake: ${r.topMistake}` : '';
+            document.getElementById('insights-content').innerHTML = r ? `Total Journals: ${r.totalJournals}, Streak: ${r.currentStreak}, Top Mistake: ${r.topMistake}` : '';
         }
 
         async function loadProgress() {
@@ -3509,10 +3371,10 @@
             heatmapDiv.innerHTML = '';
             const days = d.days || [];
             const last30Days = [];
-            for (let i = 29; i >= 0; i--) {
+            for (let i=29; i>=0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().slice(0, 10);
+                const dateStr = date.toISOString().slice(0,10);
                 const journal = days.find(j => j.date === dateStr);
                 last30Days.push({ date: dateStr, hasJournal: !!journal });
             }
@@ -3525,8 +3387,7 @@
                 box.title = day.date;
                 heatmapDiv.appendChild(box);
             });
-            document.getElementById('badges-list').innerHTML = (d.badges || []).map(b => `<span class="badge">${b}</span>`)
-                .join('');
+            document.getElementById('badges-list').innerHTML = (d.badges || []).map(b => `<span class="badge">${b}</span>`).join('');
             if (radarChart) radarChart.destroy();
             const ctx = document.getElementById('radarChart').getContext('2d');
             const radarToday = d.radar_today || {};
@@ -3536,16 +3397,11 @@
                 data: {
                     labels: ['Planning', 'Execution', 'Risk', 'Psychology', 'Improvement'],
                     datasets: [
-                        { label: 'Today', data: [radarToday.planning || 0, radarToday.execution || 0, radarToday
-                                .risk || 0, radarToday.psychology || 0, radarToday.improvement || 0
-                            ], borderColor: 'var(--accent)', backgroundColor: 'rgba(37,99,235,0.2)' },
-                        { label: 'Yesterday', data: [radarYesterday.planning || 0, radarYesterday.execution || 0,
-                                radarYesterday.risk || 0, radarYesterday.psychology || 0, radarYesterday
-                                .improvement || 0
-                            ], borderColor: 'var(--text-secondary)', backgroundColor: 'rgba(156,163,175,0.1)' }
+                        { label: 'Today', data: [radarToday.planning||0, radarToday.execution||0, radarToday.risk||0, radarToday.psychology||0, radarToday.improvement||0], borderColor: 'var(--accent)', backgroundColor: 'rgba(37,99,235,0.2)' },
+                        { label: 'Yesterday', data: [radarYesterday.planning||0, radarYesterday.execution||0, radarYesterday.risk||0, radarYesterday.psychology||0, radarYesterday.improvement||0], borderColor: 'var(--text-secondary)', backgroundColor: 'rgba(156,163,175,0.1)' }
                     ]
                 },
-                options: { scales: { r: { suggestedMin: 0, suggestedMax: 20 } } }
+                options: { scales: { r: { suggestedMin:0, suggestedMax:20 } } }
             });
         }
 
@@ -3557,8 +3413,7 @@
             document.getElementById('profile-avatar').textContent = d.user.avatar_emoji;
             document.getElementById('avatar-select').value = d.user.avatar_emoji;
             const prog = await apiCall('GET', '/progress');
-            document.getElementById('profile-badges').innerHTML = prog.badges.map(b => `<span class="badge">${b}</span>`)
-                .join('');
+            document.getElementById('profile-badges').innerHTML = prog.badges.map(b => `<span class="badge">${b}</span>`).join('');
             updateEvolutionTree(d.user.identity_level);
             initProfileDropZone();
             loadReminderSettings();
@@ -3566,15 +3421,13 @@
             const freezeCount = freezeData?.quantity || 0;
             const existingFreezeEl = document.getElementById('profile-streak-freeze');
             if (existingFreezeEl) {
-                existingFreezeEl.innerHTML =
-                    `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount<1?'disabled':''}>Use Streak Freeze</button>`;
+                existingFreezeEl.innerHTML = `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount<1?'disabled':''}>Use Streak Freeze</button>`;
             } else {
                 const container = document.getElementById('profile-badges');
                 if (container) {
                     const div = document.createElement('div');
                     div.id = 'profile-streak-freeze';
-                    div.innerHTML =
-                        `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount<1?'disabled':''}>Use Streak Freeze</button>`;
+                    div.innerHTML = `<p>❄️ Streak Freezes: <strong>${freezeCount}</strong></p><button class="btn btn-sm btn-outline" onclick="useStreakFreeze()" ${freezeCount<1?'disabled':''}>Use Streak Freeze</button>`;
                     container.parentNode.insertBefore(div, container.nextSibling);
                 }
             }
@@ -3597,8 +3450,7 @@
             const fileInput = document.getElementById('profile-image-upload');
             if (!dropZone || !fileInput) return;
             dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault();
-                dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
@@ -3606,8 +3458,7 @@
                 const files = e.dataTransfer.files;
                 if (files.length) handleProfileImageUpload(files[0]);
             });
-            fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleProfileImageUpload(e.target
-                    .files[0]); });
+            fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleProfileImageUpload(e.target.files[0]); });
         }
 
         async function handleProfileImageUpload(file) {
@@ -3625,10 +3476,8 @@
                 const data = await res.json();
                 if (data.url) {
                     await apiCall('POST', '/profile', { avatar_emoji: data.url });
-                    document.getElementById('profile-avatar').innerHTML =
-                        `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
-                    document.getElementById('user-avatar').innerHTML =
-                        `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
+                    document.getElementById('profile-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
+                    document.getElementById('user-avatar').innerHTML = `<img src="${data.url}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
                     document.getElementById('profile-upload-status').textContent = '✅ Upload successful!';
                 } else { document.getElementById('profile-upload-status').textContent = 'Upload failed'; }
             } catch (e) { document.getElementById('profile-upload-status').textContent = 'Error'; }
@@ -3637,8 +3486,8 @@
         async function useStreakFreeze() {
             if (!confirm('Use one streak freeze? This will protect your streak today.')) return;
             const res = await apiCall('POST', '/use-streak-freeze');
-            if (res?.success) { showToast(`Streak freeze used! Remaining: ${res.remaining}`);
-                loadProfilePage(); } else { showToast(res?.error || 'Failed'); }
+            if (res?.success) { showToast(`Streak freeze used! Remaining: ${res.remaining}`); loadProfilePage(); }
+            else { showToast(res?.error || 'Failed'); }
         }
 
         function startReminderScheduler() {
@@ -3656,16 +3505,13 @@
             }, 60000);
         }
 
-        function clearAllReminders() { if (reminderInterval) { clearInterval(reminderInterval);
-                reminderInterval = null; } }
+        function clearAllReminders() { if (reminderInterval) { clearInterval(reminderInterval); reminderInterval = null; } }
 
         // ===== HABITS =====
         async function loadHabits() {
             const date = new Date().toLocaleDateString('en-CA');
-            const defs = await fetch(`${API}/habits/definitions`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r =>
-                r.json());
-            const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } })
-                .then(r => r.json());
+            const defs = await fetch(`${API}/habits/definitions`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json());
+            const logs = await fetch(`${API}/habits/logs?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json());
             habitDefinitions = defs;
             todayLogs = logs;
             document.getElementById('habits-list').innerHTML = defs.map(h => {
@@ -3684,8 +3530,7 @@
                 title,
                 icon: document.getElementById('new-habit-icon').value,
                 color: document.getElementById('new-habit-color').value,
-                reminder_times: document.getElementById('new-habit-times').value.split(',').map(t => t.trim()).filter(t =>
-                    t)
+                reminder_times: document.getElementById('new-habit-times').value.split(',').map(t => t.trim()).filter(t => t)
             });
             document.getElementById('add-habit-modal').classList.add('hidden');
             loadHabits();
@@ -3709,10 +3554,8 @@
         function loadTrainingData() {
             const stored = localStorage.getItem('trainingData');
             if (stored) {
-                try { trainingData = JSON.parse(stored); if (!Array.isArray(trainingData)) throw new Error(); } catch (e) {
-                    trainingData = JSON.parse(JSON.stringify(INITIAL_DATA));
-                    localStorage.setItem('trainingData', JSON.stringify(trainingData));
-                }
+                try { trainingData = JSON.parse(stored); if (!Array.isArray(trainingData)) throw new Error(); }
+                catch (e) { trainingData = JSON.parse(JSON.stringify(INITIAL_DATA)); localStorage.setItem('trainingData', JSON.stringify(trainingData)); }
             } else {
                 trainingData = JSON.parse(JSON.stringify(INITIAL_DATA));
                 localStorage.setItem('trainingData', JSON.stringify(trainingData));
@@ -3724,8 +3567,7 @@
                     ss.quiz.forEach(q => {
                         if (!q.points) q.points = 5;
                         if (!q.options) q.options = [];
-                        while (q.options.length < 4) q.options.push({ id: String.fromCharCode(97 + q.options
-                                .length), text: { en: '', hi: '', bn: '' } });
+                        while (q.options.length < 4) q.options.push({ id: String.fromCharCode(97 + q.options.length), text: { en: '', hi: '', bn: '' } });
                     });
                 });
             });
@@ -3736,19 +3578,13 @@
         }
 
         function getSubject(id) { return trainingData.find(s => s.id === id); }
-
         function currentSubject() { return getSubject(selectedSubjectId) || trainingData[0]; }
 
         function t(obj, lang) { return (obj && obj[lang]) ? obj[lang] : (obj && obj['en']) ? obj['en'] : ''; }
-
         function mainName(s) { return t(s.names, currentLang); }
-
         function subTitle(ss) { return t(ss.titles, currentLang); }
-
         function subContent(ss) { return t(ss.contents, currentLang); }
-
-        function stripHtml(h) { const d = document.createElement('div');
-            d.innerHTML = h; return d.textContent || ''; }
+        function stripHtml(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || ''; }
 
         function getProgress(id) { return lessonProgress[id] || 0; }
 
@@ -3764,7 +3600,6 @@
             loadTrainingData();
             const root = document.getElementById('training-root');
             if (!root) return;
-            // Build the training UI inside root
             root.innerHTML = `
                 <div class="training-app">
                     <div class="training-layout">
@@ -3772,7 +3607,7 @@
                             <div style="padding:8px 16px; font-weight:700; font-size:1rem; color:var(--gold-light);">📚 Subjects</div>
                             <div id="subjectListContainer"></div>
                             <div style="padding:8px 16px; margin-top:12px;">
-                                <button class="btn btn-sm btn-outline" id="openTerminalBtn" style="width:100%;">📈 Open Terminal</button>
+                                <button class="btn btn-sm btn-outline" id="openTerminalBtn" style="width:100%;" onclick="openTerminalFullscreen()">📈 Open Terminal</button>
                             </div>
                         </div>
                         <div class="training-main" id="trainingMain">
@@ -3784,7 +3619,6 @@
                 </div>
             `;
 
-            // Attempt to load from API first
             (async () => {
                 try {
                     const subjects = await apiCall('GET', '/training/subjects', null, false);
@@ -3793,12 +3627,9 @@
                         localStorage.setItem('trainingData', JSON.stringify(trainingData));
                     }
                 } catch (e) {}
-                // Render
                 if (!trainingData.length) {
-                    document.getElementById('subjectListContainer').innerHTML =
-                        '<div style="padding:16px; color:var(--text-secondary);">No subjects available.</div>';
-                    document.getElementById('trainingContent').innerHTML =
-                        '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No training data loaded.</div>';
+                    document.getElementById('subjectListContainer').innerHTML = '<div style="padding:16px; color:var(--text-secondary);">No subjects available.</div>';
+                    document.getElementById('trainingContent').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No training data loaded.</div>';
                     return;
                 }
                 if (!selectedSubjectId || !getSubject(selectedSubjectId)) {
@@ -3806,11 +3637,6 @@
                 }
                 renderSubjectList();
                 renderLessonList();
-
-                document.getElementById('openTerminalBtn').addEventListener('click', function() {
-                    const main = document.getElementById('trainingMain');
-                    if (main) renderTradingTerminal(main);
-                });
             })();
         }
 
@@ -3841,14 +3667,12 @@
             const subject = currentSubject();
             const mainContent = document.getElementById('trainingContent');
             if (!subject) {
-                mainContent.innerHTML =
-                    '<div style="text-align:center;padding:40px;color:var(--text-secondary);">Subject not found.</div>';
+                mainContent.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">Subject not found.</div>';
                 return;
             }
             const lessons = subject.subSubjects || [];
             if (!lessons.length) {
-                mainContent.innerHTML =
-                    `<div style="text-align:center;padding:40px;color:var(--text-secondary);">No lessons in "${mainName(subject)}".</div>`;
+                mainContent.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-secondary);">No lessons in "${mainName(subject)}".</div>`;
                 return;
             }
             let html = `<h3 style="margin-bottom:16px;">${subject.icon} ${mainName(subject)}</h3><div>`;
@@ -3860,8 +3684,7 @@
                 const qs = quizScores[ss.id];
                 const hasQuiz = ss.quiz && ss.quiz.length > 0;
                 const quizPassed = qs && qs.passed;
-                const levelClass = ss.level === 'Beginner' ? 'badge-beginner' : ss.level === 'Intermediate' ?
-                    'badge-intermediate' : 'badge-advanced';
+                const levelClass = ss.level === 'Beginner' ? 'badge-beginner' : ss.level === 'Intermediate' ? 'badge-intermediate' : 'badge-advanced';
                 html += `<div class="lesson-card" data-id="${ss.id}">
                     <div>
                         <div class="lesson-title">📄 ${escapeHtml(title)}</div>
@@ -3923,7 +3746,6 @@
                     <button class="btn btn-sm btn-outline" id="ttsPlayBtn"><i class="fas fa-play"></i> Listen</button>
                     <button class="btn btn-sm btn-outline" id="ttsStopBtn"><i class="fas fa-stop"></i> Stop</button>
                     <button class="btn btn-sm btn-outline" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
-                    <!-- Image/Video upload -->
                     <button class="btn btn-sm btn-outline" id="mediaBtn"><i class="fas fa-image"></i> Add Media</button>
                 </div>
 
@@ -3939,13 +3761,11 @@
 
             mainContent.innerHTML = html;
 
-            // Back button
             document.getElementById('backToLessons').addEventListener('click', function() {
                 selectedLessonId = null;
                 renderLessonList();
             });
 
-            // Bookmark
             document.getElementById('bookmarkBtn').addEventListener('click', function() {
                 if (trainingBookmarks.has(lessonId)) trainingBookmarks.delete(lessonId);
                 else trainingBookmarks.add(lessonId);
@@ -3953,7 +3773,6 @@
                 renderLessonDetail(lessonId);
             });
 
-            // Mark complete
             document.getElementById('markCompleteBtn').addEventListener('click', function() {
                 lessonProgress[lessonId] = 100;
                 localStorage.setItem('lessonProgress', JSON.stringify(lessonProgress));
@@ -3962,17 +3781,14 @@
                 showToast('✅ Lesson completed!');
             });
 
-            // Note
             document.getElementById('noteBtn').addEventListener('click', function() {
                 openNoteModal(lessonId);
             });
 
-            // Media (image/video upload)
             document.getElementById('mediaBtn').addEventListener('click', function() {
                 openMediaUploadModal(lessonId);
             });
 
-            // TTS
             const ttsPlay = document.getElementById('ttsPlayBtn');
             const ttsStop = document.getElementById('ttsStopBtn');
             let utterance = null;
@@ -3983,8 +3799,7 @@
                 utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
                 const voices = speechSynth.getVoices();
-                const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v
-                    .name.includes('Zira'));
+                const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
                 if (femaleVoice) utterance.voice = femaleVoice;
                 utterance.rate = 1;
                 speechSynth.speak(utterance);
@@ -3993,7 +3808,6 @@
                 if (speechSynth.speaking) speechSynth.cancel();
             });
 
-            // Render quiz if exists
             if (lesson.quiz && lesson.quiz.length > 0) {
                 renderQuiz(lessonId, lesson);
             }
@@ -4003,8 +3817,7 @@
             const ex = userNotes[subId] || '';
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
-            modal.innerHTML =
-                `<div class="modal-content"><h3>📝 Lesson Note</h3><textarea id="noteText" style="width:100%;height:140px;padding:12px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--font-en);background:var(--input-bg);color:var(--text);resize:vertical;">${ex}</textarea><div class="modal-actions"><button class="btn btn-outline" id="closeNote">Cancel</button><button class="btn btn-primary" id="saveNote">💾 Save Note</button></div></div>`;
+            modal.innerHTML = `<div class="modal-content"><h3>📝 Lesson Note</h3><textarea id="noteText" style="width:100%;height:140px;padding:12px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--font-en);background:var(--input-bg);color:var(--text);resize:vertical;">${ex}</textarea><div class="modal-actions"><button class="btn btn-outline" id="closeNote">Cancel</button><button class="btn btn-primary" id="saveNote">💾 Save Note</button></div></div>`;
             document.body.appendChild(modal);
             document.getElementById('closeNote').onclick = () => modal.remove();
             modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
@@ -4044,8 +3857,7 @@
             const preview = document.getElementById('mediaPreview');
 
             dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault();
-                dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
             dropZone.addEventListener('drop', async (e) => {
                 e.preventDefault();
@@ -4071,8 +3883,6 @@
             document.getElementById('addYoutubeBtn').addEventListener('click', function() {
                 const url = document.getElementById('youtubeUrlInput').value.trim();
                 if (!url) return showToast('Please enter a YouTube URL');
-                // Add to content
-                const contentArea = document.getElementById('lessonContent');
                 const embed = url.includes('watch?v=') ? url.replace('watch?v=', 'embed/') : url;
                 const iframe = `<iframe width="100%" height="315" src="${embed}" frameborder="0" allowfullscreen></iframe>`;
                 const lesson = currentSubject().subSubjects.find(ss => ss.id === lessonId);
@@ -4127,8 +3937,7 @@
 
             if (qs) {
                 const totalPoints = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
-                resultDiv.innerHTML =
-                    `<div style="padding:12px;background:var(--surface);border-radius:var(--radius-sm);text-align:center;">
+                resultDiv.innerHTML = `<div style="padding:12px;background:var(--surface);border-radius:var(--radius-sm);text-align:center;">
                     <h4>${qs.passed ? '🎉 Passed!' : '📚 Result'}</h4>
                     <div style="font-size:2rem;font-weight:800;color:${qs.passed?'var(--success)':'var(--danger)'};">${qs.score}/${totalPoints}</div>
                     <button class="btn btn-sm btn-accent" id="retryQuizBtn">🔄 Retry</button>
@@ -4142,7 +3951,6 @@
                 return;
             }
 
-            // Start quiz
             currentQuizAnswers = new Array(lesson.quiz.length).fill(null);
             currentQuizIdx = 0;
             renderQuizQuestion(quizArea, resultDiv, lesson);
@@ -4182,14 +3990,12 @@
             });
 
             document.getElementById('prevQBtn').addEventListener('click', function() {
-                if (currentQuizIdx > 0) { currentQuizIdx--;
-                    renderQuizQuestion(quizArea, resultDiv, lesson); }
+                if (currentQuizIdx > 0) { currentQuizIdx--; renderQuizQuestion(quizArea, resultDiv, lesson); }
             });
             const nextBtn = document.getElementById('nextQBtn');
             if (nextBtn) {
                 nextBtn.addEventListener('click', function() {
-                    if (currentQuizIdx < total - 1) { currentQuizIdx++;
-                        renderQuizQuestion(quizArea, resultDiv, lesson); }
+                    if (currentQuizIdx < total - 1) { currentQuizIdx++; renderQuizQuestion(quizArea, resultDiv, lesson); }
                 });
             }
             const submitBtn = document.getElementById('submitQuizBtn');
@@ -4216,15 +4022,45 @@
         }
 
         // ============================================================
-        // TRADING TERMINAL (reused from earlier but with theme fixes)
+        // TERMINAL FULLSCREEN OVERLAY FUNCTIONS
+        // ============================================================
+        function openTerminalFullscreen() {
+            const overlay = document.getElementById('terminal-overlay');
+            if (!overlay) return;
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            const container = document.getElementById('terminal-fullscreen-container');
+            if (container) {
+                container.innerHTML = '';
+                // Ensure portfolio is loaded
+                if (!simPortfolio) loadSimPortfolio();
+                // Render terminal inside container (it will adapt to full width/height)
+                renderTradingTerminal(container);
+            }
+        }
+
+        function closeTerminalFullscreen() {
+            const overlay = document.getElementById('terminal-overlay');
+            if (!overlay) return;
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            cleanupSimIntervals();
+            const container = document.getElementById('terminal-fullscreen-container');
+            if (container) container.innerHTML = '';
+            // Re-render training if it was visible (so UI returns to normal)
+            if (currentPage === 'training') renderTrainingApp();
+        }
+
+        // ============================================================
+        // TRADING TERMINAL (shared render function)
         // ============================================================
         function loadSimPortfolio() {
             const saved = localStorage.getItem('simPortfolio');
             if (saved) {
-                try { simPortfolio = JSON.parse(saved); } catch { simPortfolio = { cash: 100000, holdings: {},
-                        transactions: [], drawnLines: {} }; }
+                try { simPortfolio = JSON.parse(saved); }
+                catch { simPortfolio = { cash:100000, holdings:{}, transactions:[], drawnLines:{} }; }
             } else {
-                simPortfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                simPortfolio = { cash:100000, holdings:{}, transactions:[], drawnLines:{} };
             }
             if (!simPortfolio.holdings) simPortfolio.holdings = {};
             if (!simPortfolio.transactions) simPortfolio.transactions = [];
@@ -4238,6 +4074,7 @@
         }
 
         function renderTradingTerminal(container) {
+            // Check if mobile
             if (window.innerWidth <= 768) {
                 renderMobileTerminal(container);
                 return;
@@ -4283,7 +4120,7 @@
                     <div class="terminal-toolbar">
                         <div class="tool-group">
                             <span style="font-size:0.7rem;color:var(--text-muted);font-weight:600;">Symbol:</span>
-                            <select id="simSymbolSelect" style="padding:4px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;">
+                            <select id="simSymbolSelect" style="padding:4px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--terminal-select-bg);color:var(--text);font-family:var(--font-mono);font-size:0.72rem;">
                                 ${simMarketSymbols.map(s => `<option value="${s}" ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}
                             </select>
                         </div>
@@ -4434,11 +4271,9 @@
                         updateAllIndicators();
                         if (simChart) {
                             if (showVolume) {
-                                simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88,
-                                    bottom: 0 } });
+                                simChart.priceScale('').applyOptions({ scaleMargins: { top:0.88, bottom:0 } });
                             } else {
-                                simChart.priceScale('').applyOptions({ scaleMargins: { top: 0,
-                                    bottom: 0 } });
+                                simChart.priceScale('').applyOptions({ scaleMargins: { top:0, bottom:0 } });
                             }
                         }
                     });
@@ -4488,8 +4323,7 @@
                         if (simChart && simCandleSeries) {
                             const chartDiv = document.getElementById('simChartContainer');
                             if (chartDiv && chartDiv.clientWidth > 0) {
-                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                        .clientHeight });
+                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
                                 simChart.timeScale().fitContent();
                             }
                         }
@@ -4540,14 +4374,13 @@
                 const res = await fetch(url);
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
-                if (data && data.c && data.c > 0) { simIsLiveData = true;
-                    simLastPrices[symbol] = data.c; return data.c; }
+                if (data && data.c && data.c > 0) { simIsLiveData = true; simLastPrices[symbol] = data.c; return data.c; }
                 throw new Error('No valid price');
             } catch (e) {
                 simIsLiveData = false;
                 if (simLastPrices[symbol]) return simLastPrices[symbol];
                 const base = simBasePrices[symbol] || 150;
-                const varied = base * (1 + (Math.random() - 0.5) * 0.04);
+                const varied = base * (1 + (Math.random()-0.5)*0.04);
                 simLastPrices[symbol] = varied;
                 return varied;
             }
@@ -4558,16 +4391,15 @@
             const now = Math.floor(Date.now() / 1000);
             let price = basePrice;
             const vol = simVolatility[symbol] || 0.0015;
-            for (let i = count - 1; i >= 0; i--) {
-                const time = now - (i + 1) * intervalSec;
+            for (let i=count-1; i>=0; i--) {
+                const time = now - (i+1)*intervalSec;
                 const open = price;
-                const change = price * vol * (Math.random() - 0.48) * 2.5;
+                const change = price * vol * (Math.random()-0.48) * 2.5;
                 const close = open + change;
-                const high = Math.max(open, close) + Math.abs(change) * (0.1 + Math.random() * 0.5);
-                const low = Math.min(open, close) - Math.abs(change) * (0.1 + Math.random() * 0.5);
-                const volume = Math.floor(50000 + Math.random() * 200000);
-                candles.push({ time, open: +open.toFixed(2), high: +high.toFixed(2), low: +low.toFixed(2),
-                    close: +close.toFixed(2), volume });
+                const high = Math.max(open, close) + Math.abs(change)*(0.1+Math.random()*0.5);
+                const low = Math.min(open, close) - Math.abs(change)*(0.1+Math.random()*0.5);
+                const volume = Math.floor(50000 + Math.random()*200000);
+                candles.push({ time, open:+open.toFixed(2), high:+high.toFixed(2), low:+low.toFixed(2), close:+close.toFixed(2), volume });
                 price = close;
             }
             simLastPrices[symbol] = price;
@@ -4576,20 +4408,20 @@
 
         function simulateNextTick(currentPrice, symbol) {
             const vol = simVolatility[symbol] || 0.0015;
-            const change = currentPrice * vol * (Math.random() - 0.48) * 0.8;
+            const change = currentPrice * vol * (Math.random()-0.48) * 0.8;
             return +(currentPrice + change).toFixed(2);
         }
 
         function calculateEMA(data, period) {
             if (data.length < period) return [];
             const ema = [];
-            const k = 2 / (period + 1);
-            let sum = 0;
-            for (let i = 0; i < period; i++) sum += data[i].close;
-            let prevEma = sum / period;
-            ema.push({ time: data[period - 1].time, value: +prevEma.toFixed(2) });
-            for (let i = period; i < data.length; i++) {
-                prevEma = data[i].close * k + prevEma * (1 - k);
+            const k = 2/(period+1);
+            let sum=0;
+            for (let i=0; i<period; i++) sum += data[i].close;
+            let prevEma = sum/period;
+            ema.push({ time: data[period-1].time, value: +prevEma.toFixed(2) });
+            for (let i=period; i<data.length; i++) {
+                prevEma = data[i].close * k + prevEma * (1-k);
                 ema.push({ time: data[i].time, value: +prevEma.toFixed(2) });
             }
             return ema;
@@ -4598,78 +4430,75 @@
         function calculateSMA(data, period) {
             if (data.length < period) return [];
             const sma = [];
-            for (let i = period - 1; i < data.length; i++) {
-                let sum = 0;
-                for (let j = 0; j < period; j++) sum += data[i - j].close;
-                sma.push({ time: data[i].time, value: +(sum / period).toFixed(2) });
+            for (let i=period-1; i<data.length; i++) {
+                let sum=0;
+                for (let j=0; j<period; j++) sum += data[i-j].close;
+                sma.push({ time: data[i].time, value: +(sum/period).toFixed(2) });
             }
             return sma;
         }
 
-        function calculateBB(data, period = 20, stdDev = 2) {
+        function calculateBB(data, period=20, stdDev=2) {
             const sma = calculateSMA(data, period);
-            const upper = [];
-            const lower = [];
-            for (let i = period - 1; i < data.length; i++) {
-                let sum = 0;
-                for (let j = 0; j < period; j++) sum += data[i - j].close;
-                const mean = sum / period;
-                let variance = 0;
-                for (let j = 0; j < period; j++) variance += Math.pow(data[i - j].close - mean, 2);
-                const std = Math.sqrt(variance / period);
-                upper.push({ time: data[i].time, value: +(mean + stdDev * std).toFixed(2) });
-                lower.push({ time: data[i].time, value: +(mean - stdDev * std).toFixed(2) });
+            const upper=[], lower=[];
+            for (let i=period-1; i<data.length; i++) {
+                let sum=0;
+                for (let j=0; j<period; j++) sum += data[i-j].close;
+                const mean = sum/period;
+                let variance=0;
+                for (let j=0; j<period; j++) variance += Math.pow(data[i-j].close - mean, 2);
+                const std = Math.sqrt(variance/period);
+                upper.push({ time: data[i].time, value: +(mean + stdDev*std).toFixed(2) });
+                lower.push({ time: data[i].time, value: +(mean - stdDev*std).toFixed(2) });
             }
             return { sma, upper, lower };
         }
 
-        function calculateRSI(data, period = 14) {
-            if (data.length < period + 1) return [];
+        function calculateRSI(data, period=14) {
+            if (data.length < period+1) return [];
             const rsi = [];
-            let avgGain = 0,
-                avgLoss = 0;
-            for (let i = 1; i <= period; i++) {
-                const diff = data[i].close - data[i - 1].close;
-                if (diff > 0) avgGain += diff;
+            let avgGain=0, avgLoss=0;
+            for (let i=1; i<=period; i++) {
+                const diff = data[i].close - data[i-1].close;
+                if (diff>0) avgGain += diff;
                 else avgLoss -= diff;
             }
             avgGain /= period;
             avgLoss /= period;
-            for (let i = period; i < data.length; i++) {
-                if (avgLoss === 0) rsi.push({ time: data[i].time, value: 100 });
+            for (let i=period; i<data.length; i++) {
+                if (avgLoss === 0) rsi.push({ time: data[i].time, value:100 });
                 else {
-                    const rs = avgGain / avgLoss;
-                    rsi.push({ time: data[i].time, value: +(100 - 100 / (1 + rs)).toFixed(2) });
+                    const rs = avgGain/avgLoss;
+                    rsi.push({ time: data[i].time, value: +(100 - 100/(1+rs)).toFixed(2) });
                 }
-                const diff = data[i].close - data[i - 1].close;
-                const gain = diff > 0 ? diff : 0;
-                const loss = diff < 0 ? -diff : 0;
-                avgGain = (avgGain * (period - 1) + gain) / period;
-                avgLoss = (avgLoss * (period - 1) + loss) / period;
+                const diff = data[i].close - data[i-1].close;
+                const gain = diff>0 ? diff : 0;
+                const loss = diff<0 ? -diff : 0;
+                avgGain = (avgGain*(period-1) + gain)/period;
+                avgLoss = (avgLoss*(period-1) + loss)/period;
             }
             return rsi;
         }
 
-        function calculateMACD(data, fast = 12, slow = 26, signal = 9) {
+        function calculateMACD(data, fast=12, slow=26, signal=9) {
             const emaFast = calculateEMA(data, fast);
             const emaSlow = calculateEMA(data, slow);
             const macdLine = [];
             const startIdx = Math.max(emaFast.length, emaSlow.length) - 1;
-            if (startIdx < 0) return { macd: [], signal: [], histogram: [] };
-            for (let i = startIdx; i < data.length; i++) {
+            if (startIdx < 0) return { macd:[], signal:[], histogram:[] };
+            for (let i=startIdx; i<data.length; i++) {
                 const fastVal = emaFast.find(e => e.time === data[i].time)?.value;
                 const slowVal = emaSlow.find(e => e.time === data[i].time)?.value;
                 if (fastVal != null && slowVal != null) {
                     macdLine.push({ time: data[i].time, value: +(fastVal - slowVal).toFixed(4) });
                 }
             }
-            if (macdLine.length === 0) return { macd: [], signal: [], histogram: [] };
+            if (macdLine.length === 0) return { macd:[], signal:[], histogram:[] };
             const signalLine = calculateEMAFromValues(macdLine, signal);
             const histogram = [];
-            for (let i = 0; i < macdLine.length; i++) {
+            for (let i=0; i<macdLine.length; i++) {
                 const sig = signalLine.find(s => s.time === macdLine[i].time);
-                if (sig) histogram.push({ time: macdLine[i].time, value: +(macdLine[i].value - sig.value).toFixed(
-                    4) });
+                if (sig) histogram.push({ time: macdLine[i].time, value: +(macdLine[i].value - sig.value).toFixed(4) });
             }
             return { macd: macdLine, signal: signalLine, histogram };
         }
@@ -4677,26 +4506,25 @@
         function calculateEMAFromValues(data, period) {
             if (data.length === 0) return [];
             const ema = [];
-            const k = 2 / (period + 1);
+            const k = 2/(period+1);
             const startIdx = Math.min(period, data.length);
-            let sum = 0;
-            for (let i = 0; i < startIdx; i++) sum += data[i].value;
-            let prevEma = sum / startIdx;
-            ema.push({ time: data[startIdx - 1].time, value: +prevEma.toFixed(4) });
-            for (let i = startIdx; i < data.length; i++) {
-                prevEma = data[i].value * k + prevEma * (1 - k);
+            let sum=0;
+            for (let i=0; i<startIdx; i++) sum += data[i].value;
+            let prevEma = sum/startIdx;
+            ema.push({ time: data[startIdx-1].time, value: +prevEma.toFixed(4) });
+            for (let i=startIdx; i<data.length; i++) {
+                prevEma = data[i].value * k + prevEma * (1-k);
                 ema.push({ time: data[i].time, value: +prevEma.toFixed(4) });
             }
             return ema;
         }
 
-        function calculateStochastic(data, period = 14, kPeriod = 3, dPeriod = 3) {
-            if (data.length < period) return { k: [], d: [] };
+        function calculateStochastic(data, period=14, kPeriod=3, dPeriod=3) {
+            if (data.length < period) return { k:[], d:[] };
             const kValues = [];
-            for (let i = period - 1; i < data.length; i++) {
-                let high = -Infinity,
-                    low = Infinity;
-                for (let j = i - period + 1; j <= i; j++) {
+            for (let i=period-1; i<data.length; i++) {
+                let high=-Infinity, low=Infinity;
+                for (let j=i-period+1; j<=i; j++) {
                     if (data[j].high > high) high = data[j].high;
                     if (data[j].low < low) low = data[j].low;
                 }
@@ -4712,20 +4540,19 @@
         function calculateSMAFromValues(data, period) {
             if (data.length < period) return [];
             const sma = [];
-            for (let i = period - 1; i < data.length; i++) {
-                let sum = 0;
-                for (let j = 0; j < period; j++) sum += data[i - j].value;
-                sma.push({ time: data[i].time, value: +(sum / period).toFixed(2) });
+            for (let i=period-1; i<data.length; i++) {
+                let sum=0;
+                for (let j=0; j<period; j++) sum += data[i-j].value;
+                sma.push({ time: data[i].time, value: +(sum/period).toFixed(2) });
             }
             return sma;
         }
 
         function calculateVWAP(data) {
             if (data.length === 0) return [];
-            let cumVolume = 0;
-            let cumPriceVolume = 0;
+            let cumVolume=0, cumPriceVolume=0;
             const vwap = [];
-            for (let i = 0; i < data.length; i++) {
+            for (let i=0; i<data.length; i++) {
                 const typical = (data[i].high + data[i].low + data[i].close) / 3;
                 cumVolume += data[i].volume;
                 cumPriceVolume += typical * data[i].volume;
@@ -4743,13 +4570,11 @@
             for (const key in activeIndicators) {
                 if (!activeIndicators[key]) continue;
                 if (key.startsWith('ema')) {
-                    const period = parseInt(key.replace('ema', ''));
+                    const period = parseInt(key.replace('ema',''));
                     const emaData = calculateEMA(allData, period);
                     if (simIndicatorSeries[key]) simIndicatorSeries[key].setData(emaData);
                     else {
-                        const ls = simChart.addLineSeries({ color: indicatorColors[key], lineWidth: 2,
-                            priceScaleId: 'right', lastValueVisible: true, priceFormat: { type: 'price',
-                                precision: 2, minMove: 0.01 } });
+                        const ls = simChart.addLineSeries({ color: indicatorColors[key], lineWidth:2, priceScaleId:'right', lastValueVisible:true, priceFormat:{ type:'price', precision:2, minMove:0.01 } });
                         ls.setData(emaData);
                         simIndicatorSeries[key] = ls;
                     }
@@ -4757,50 +4582,43 @@
             }
 
             if (activeIndicators['bb']) {
-                const { sma, upper, lower } = calculateBB(allData, 20, 2);
-                const keys = ['bb_sma', 'bb_upper', 'bb_lower'];
+                const { sma, upper, lower } = calculateBB(allData,20,2);
+                const keys = ['bb_sma','bb_upper','bb_lower'];
                 const data = [sma, upper, lower];
-                const colors = ['#a78bfa', '#f59e0b', '#f59e0b'];
-                for (let i = 0; i < 3; i++) {
+                const colors = ['#a78bfa','#f59e0b','#f59e0b'];
+                for (let i=0; i<3; i++) {
                     const k = keys[i];
                     if (simIndicatorSeries[k]) simIndicatorSeries[k].setData(data[i]);
                     else {
-                        const ls = simChart.addLineSeries({ color: colors[i], lineWidth: 1, priceScaleId: 'right',
-                            lastValueVisible: false, priceFormat: { type: 'price', precision: 2,
-                            minMove: 0.01 } });
-                        if (i > 0) ls.applyOptions({ lineStyle: 2 });
+                        const ls = simChart.addLineSeries({ color: colors[i], lineWidth:1, priceScaleId:'right', lastValueVisible:false, priceFormat:{ type:'price', precision:2, minMove:0.01 } });
+                        if (i>0) ls.applyOptions({ lineStyle:2 });
                         ls.setData(data[i]);
                         simIndicatorSeries[k] = ls;
                     }
                 }
             } else {
-                ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => {
-                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch (
-                        e) {}
-                        delete simIndicatorSeries[k]; }
+                ['bb_sma','bb_upper','bb_lower'].forEach(k => {
+                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e) {} delete simIndicatorSeries[k]; }
                 });
             }
 
             if (activeIndicators['rsi']) {
-                const rsiData = calculateRSI(allData, 14);
+                const rsiData = calculateRSI(allData,14);
                 if (simIndicatorSeries['rsi']) simIndicatorSeries['rsi'].setData(rsiData);
                 else {
                     const rsiPane = simChart.addLineSeries({
                         color: indicatorColors['rsi'],
-                        lineWidth: 2,
-                        priceScaleId: 'rsi',
-                        lastValueVisible: true,
-                        priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
+                        lineWidth:2,
+                        priceScaleId:'rsi',
+                        lastValueVisible:true,
+                        priceFormat:{ type:'price', precision:2, minMove:0.01 }
                     });
-                    simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 },
-                        autoScale: true, entireTextOnly: true, borderVisible: true });
+                    simChart.priceScale('rsi').applyOptions({ scaleMargins:{ top:0.85, bottom:0 }, autoScale:true, entireTextOnly:true, borderVisible:true });
                     rsiPane.setData(rsiData);
                     simIndicatorSeries['rsi'] = rsiPane;
                 }
             } else {
-                if (simIndicatorSeries['rsi']) { try { simChart.removeSeries(simIndicatorSeries['rsi']); } catch (
-                    e) {}
-                    delete simIndicatorSeries['rsi']; }
+                if (simIndicatorSeries['rsi']) { try { simChart.removeSeries(simIndicatorSeries['rsi']); } catch(e) {} delete simIndicatorSeries['rsi']; }
             }
 
             if (activeIndicators['macd']) {
@@ -4810,25 +4628,18 @@
                     else {
                         const macdPane = simChart.addLineSeries({
                             color: indicatorColors['macd'],
-                            lineWidth: 2,
-                            priceScaleId: 'macd',
-                            lastValueVisible: false,
-                            priceFormat: { type: 'price', precision: 4, minMove: 0.0001 }
+                            lineWidth:2,
+                            priceScaleId:'macd',
+                            lastValueVisible:false,
+                            priceFormat:{ type:'price', precision:4, minMove:0.0001 }
                         });
-                        simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9, bottom: 0.2 },
-                            autoScale: true, entireTextOnly: true, borderVisible: true });
+                        simChart.priceScale('macd').applyOptions({ scaleMargins:{ top:0.9, bottom:0.2 }, autoScale:true, entireTextOnly:true, borderVisible:true });
                         macdPane.setData(macd);
                         simIndicatorSeries['macd'] = macdPane;
                     }
                     if (simIndicatorSeries['macd_signal']) simIndicatorSeries['macd_signal'].setData(signal);
                     else {
-                        const sigPane = simChart.addLineSeries({
-                            color: '#34d399',
-                            lineWidth: 1,
-                            priceScaleId: 'macd',
-                            lastValueVisible: false,
-                            priceFormat: { type: 'price', precision: 4, minMove: 0.0001 }
-                        });
+                        const sigPane = simChart.addLineSeries({ color:'#34d399', lineWidth:1, priceScaleId:'macd', lastValueVisible:false, priceFormat:{ type:'price', precision:4, minMove:0.0001 } });
                         sigPane.setData(signal);
                         simIndicatorSeries['macd_signal'] = sigPane;
                     }
@@ -4839,19 +4650,14 @@
                     }));
                     if (simIndicatorSeries['macd_hist']) simIndicatorSeries['macd_hist'].setData(histData);
                     else {
-                        const histSeries = simChart.addHistogramSeries({
-                            priceScaleId: 'macd',
-                            priceFormat: { type: 'price', precision: 4 }
-                        });
+                        const histSeries = simChart.addHistogramSeries({ priceScaleId:'macd', priceFormat:{ type:'price', precision:4 } });
                         histSeries.setData(histData);
                         simIndicatorSeries['macd_hist'] = histSeries;
                     }
                 }
             } else {
-                ['macd', 'macd_signal', 'macd_hist'].forEach(k => {
-                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch (
-                        e) {}
-                        delete simIndicatorSeries[k]; }
+                ['macd','macd_signal','macd_hist'].forEach(k => {
+                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e) {} delete simIndicatorSeries[k]; }
                 });
             }
 
@@ -4861,35 +4667,26 @@
                     if (simIndicatorSeries['stoch_k']) simIndicatorSeries['stoch_k'].setData(k);
                     else {
                         const kPane = simChart.addLineSeries({
-                            color: '#06b6d4',
-                            lineWidth: 2,
-                            priceScaleId: 'stoch',
-                            lastValueVisible: true,
-                            priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
+                            color:'#06b6d4',
+                            lineWidth:2,
+                            priceScaleId:'stoch',
+                            lastValueVisible:true,
+                            priceFormat:{ type:'price', precision:2, minMove:0.01 }
                         });
-                        simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85, bottom: 0.15 },
-                            autoScale: true, entireTextOnly: true, borderVisible: true });
+                        simChart.priceScale('stoch').applyOptions({ scaleMargins:{ top:0.85, bottom:0.15 }, autoScale:true, entireTextOnly:true, borderVisible:true });
                         kPane.setData(k);
                         simIndicatorSeries['stoch_k'] = kPane;
                     }
                     if (simIndicatorSeries['stoch_d']) simIndicatorSeries['stoch_d'].setData(d);
                     else {
-                        const dPane = simChart.addLineSeries({
-                            color: '#f472b6',
-                            lineWidth: 1,
-                            priceScaleId: 'stoch',
-                            lastValueVisible: true,
-                            priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
-                        });
+                        const dPane = simChart.addLineSeries({ color:'#f472b6', lineWidth:1, priceScaleId:'stoch', lastValueVisible:true, priceFormat:{ type:'price', precision:2, minMove:0.01 } });
                         dPane.setData(d);
                         simIndicatorSeries['stoch_d'] = dPane;
                     }
                 }
             } else {
-                ['stoch_k', 'stoch_d'].forEach(k => {
-                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch (
-                        e) {}
-                        delete simIndicatorSeries[k]; }
+                ['stoch_k','stoch_d'].forEach(k => {
+                    if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e) {} delete simIndicatorSeries[k]; }
                 });
             }
 
@@ -4897,20 +4694,12 @@
                 const vwapData = calculateVWAP(allData);
                 if (simIndicatorSeries['vwap']) simIndicatorSeries['vwap'].setData(vwapData);
                 else {
-                    const vwapPane = simChart.addLineSeries({
-                        color: indicatorColors['vwap'],
-                        lineWidth: 2,
-                        priceScaleId: 'right',
-                        lastValueVisible: true,
-                        priceFormat: { type: 'price', precision: 4, minMove: 0.0001 }
-                    });
+                    const vwapPane = simChart.addLineSeries({ color:indicatorColors['vwap'], lineWidth:2, priceScaleId:'right', lastValueVisible:true, priceFormat:{ type:'price', precision:4, minMove:0.0001 } });
                     vwapPane.setData(vwapData);
                     simIndicatorSeries['vwap'] = vwapPane;
                 }
             } else {
-                if (simIndicatorSeries['vwap']) { try { simChart.removeSeries(simIndicatorSeries['vwap']); } catch (
-                    e) {}
-                    delete simIndicatorSeries['vwap']; }
+                if (simIndicatorSeries['vwap']) { try { simChart.removeSeries(simIndicatorSeries['vwap']); } catch(e) {} delete simIndicatorSeries['vwap']; }
             }
 
             if (simVolumeSeries) {
@@ -4921,25 +4710,22 @@
                         color: c.close >= c.open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)'
                     }));
                     simVolumeSeries.setData(volData);
-                    simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+                    simChart.priceScale('').applyOptions({ scaleMargins:{ top:0.88, bottom:0 } });
                 } else {
                     simVolumeSeries.setData([]);
-                    simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+                    simChart.priceScale('').applyOptions({ scaleMargins:{ top:0, bottom:0 } });
                 }
             }
         }
 
         function cleanupSimIntervals() {
-            if (simPriceIntervalId) { clearInterval(simPriceIntervalId);
-                simPriceIntervalId = null; }
-            if (simCandleCloseIntervalId) { clearInterval(simCandleCloseIntervalId);
-                simCandleCloseIntervalId = null; }
-            if (simResizeObserver) { simResizeObserver.disconnect();
-                simResizeObserver = null; }
+            if (simPriceIntervalId) { clearInterval(simPriceIntervalId); simPriceIntervalId = null; }
+            if (simCandleCloseIntervalId) { clearInterval(simCandleCloseIntervalId); simCandleCloseIntervalId = null; }
+            if (simResizeObserver) { simResizeObserver.disconnect(); simResizeObserver = null; }
             simCurrentCandle = null;
             simAllCandles = [];
             for (const key in simIndicatorSeries) {
-                try { simChart?.removeSeries(simIndicatorSeries[key]); } catch (e) {}
+                try { simChart?.removeSeries(simIndicatorSeries[key]); } catch(e) {}
             }
             simIndicatorSeries = {};
             activeIndicators = {};
@@ -4947,8 +4733,7 @@
 
         function clearAllPriceLines() {
             if (simCandleSeries) {
-                Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (
-                    e) {} });
+                Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch(e) {} });
             }
             allPriceLines = {};
             manualDrawnLines = [];
@@ -4958,32 +4743,26 @@
             if (!simCandleSeries) return;
             clearAllPriceLines();
             manualDrawnLines = [];
-            const symbolLines = (simPortfolio.drawnLines && simPortfolio.drawnLines[simCurrentSymbol]) ? simPortfolio
-                .drawnLines[simCurrentSymbol] : [];
+            const symbolLines = (simPortfolio.drawnLines && simPortfolio.drawnLines[simCurrentSymbol]) ? simPortfolio.drawnLines[simCurrentSymbol] : [];
             symbolLines.forEach((l, idx) => {
-                const line = simCandleSeries.createPriceLine({ price: l.price, color: l.color || '#3b82f6',
-                    lineWidth: 2, lineStyle: l.style || 0, axisLabelVisible: true, title: l.label || '' });
+                const line = simCandleSeries.createPriceLine({ price: l.price, color: l.color || '#3b82f6', lineWidth:2, lineStyle: l.style || 0, axisLabelVisible:true, title: l.label || '' });
                 const key = 'manual_' + idx;
                 allPriceLines[key] = line;
-                manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style,
-                    lineObj: line, index: idx });
+                manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style, lineObj: line, index: idx });
             });
             for (let sym in simPortfolio.holdings) {
                 const h = simPortfolio.holdings[sym];
                 if (h.entryPrice && h.entryPrice > 0) {
-                    const line = simCandleSeries.createPriceLine({ price: h.entryPrice, color: '#3b82f6',
-                        lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: 'Entry ' + sym });
-                    allPriceLines['entry_' + sym] = line;
+                    const line = simCandleSeries.createPriceLine({ price: h.entryPrice, color:'#3b82f6', lineWidth:1, lineStyle:0, axisLabelVisible:true, title:'Entry '+sym });
+                    allPriceLines['entry_'+sym] = line;
                 }
                 if (h.slPrice && h.slPrice > 0) {
-                    const line = simCandleSeries.createPriceLine({ price: h.slPrice, color: '#f59e0b',
-                        lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SL ' + sym });
-                    allPriceLines['sl_' + sym] = line;
+                    const line = simCandleSeries.createPriceLine({ price: h.slPrice, color:'#f59e0b', lineWidth:1, lineStyle:2, axisLabelVisible:true, title:'SL '+sym });
+                    allPriceLines['sl_'+sym] = line;
                 }
                 if (h.tpPrice && h.tpPrice > 0) {
-                    const line = simCandleSeries.createPriceLine({ price: h.tpPrice, color: '#8b5cf6',
-                        lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'TP ' + sym });
-                    allPriceLines['tp_' + sym] = line;
+                    const line = simCandleSeries.createPriceLine({ price: h.tpPrice, color:'#8b5cf6', lineWidth:1, lineStyle:2, axisLabelVisible:true, title:'TP '+sym });
+                    allPriceLines['tp_'+sym] = line;
                 }
             }
             updateLineManagerUI();
@@ -4991,7 +4770,7 @@
 
         function deleteSingleLine(index) {
             if (!simPortfolio.drawnLines[simCurrentSymbol]) return;
-            simPortfolio.drawnLines[simCurrentSymbol].splice(index, 1);
+            simPortfolio.drawnLines[simCurrentSymbol].splice(index,1);
             saveSimPortfolio();
             redrawAllLines();
             showToast('🗑 Line deleted');
@@ -5005,9 +4784,9 @@
                 el.innerHTML = '<span style="color:var(--text-muted);font-size:0.68rem;">No drawn lines</span>';
                 return;
             }
-            el.innerHTML = lines.map((l, i) =>
+            el.innerHTML = lines.map((l,i) =>
                 `<div class="line-manager-row"><span class="line-dot" style="background:${l.color||'#3b82f6'};"></span><span style="flex:1;">${l.label||'Line'} — $${l.price.toFixed(2)}</span><button class="line-delete-btn" onclick="deleteSingleLine(${i})" title="Delete">×</button></div>`
-                ).join('');
+            ).join('');
         }
 
         function checkAndExecuteSLTP() {
@@ -5021,10 +4800,9 @@
                     if ((!isShort && price <= h.slPrice) || (isShort && price >= h.slPrice)) {
                         const closeQty = Math.abs(h.qty);
                         if (h.qty > 0) simPortfolio.cash += closeQty * price;
-                        simPortfolio.transactions.unshift({ type: 'sell', symbol: sym, qty: closeQty, price, time: new Date()
-                                .toLocaleTimeString(), reason: 'Stop Loss' });
+                        simPortfolio.transactions.unshift({ type:'sell', symbol:sym, qty:closeQty, price, time: new Date().toLocaleTimeString(), reason:'Stop Loss' });
                         delete simPortfolio.holdings[sym];
-                        showToast('🛑 SL triggered ' + sym + ' @ $' + price.toFixed(2));
+                        showToast('🛑 SL triggered '+sym+' @ $'+price.toFixed(2));
                         playTradeSound('sell');
                         changed = true;
                         continue;
@@ -5034,36 +4812,32 @@
                     if ((!isShort && price >= h.tpPrice) || (isShort && price <= h.tpPrice)) {
                         const closeQty = Math.abs(h.qty);
                         if (h.qty > 0) simPortfolio.cash += closeQty * price;
-                        simPortfolio.transactions.unshift({ type: 'sell', symbol: sym, qty: closeQty, price, time: new Date()
-                                .toLocaleTimeString(), reason: 'Take Profit' });
+                        simPortfolio.transactions.unshift({ type:'sell', symbol:sym, qty:closeQty, price, time: new Date().toLocaleTimeString(), reason:'Take Profit' });
                         delete simPortfolio.holdings[sym];
-                        showToast('🎯 TP triggered ' + sym + ' @ $' + price.toFixed(2));
+                        showToast('🎯 TP triggered '+sym+' @ $'+price.toFixed(2));
                         playTradeSound('sell');
                         changed = true;
                     }
                 }
             }
-            if (changed) { saveSimPortfolio();
-                updateSimUI();
-                redrawAllLines(); }
+            if (changed) { saveSimPortfolio(); updateSimUI(); redrawAllLines(); }
         }
 
         function playTradeSound(type) {
             try {
-                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
-                if (type === 'buy') { oscillator.frequency.value = 800;
-                    oscillator.type = 'sine'; } else if (type === 'sell') { oscillator.frequency.value = 600;
-                    oscillator.type = 'triangle'; } else { oscillator.frequency.value = 1000;
-                    oscillator.type = 'sawtooth'; }
+                if (type === 'buy') { oscillator.frequency.value = 800; oscillator.type = 'sine'; }
+                else if (type === 'sell') { oscillator.frequency.value = 600; oscillator.type = 'triangle'; }
+                else { oscillator.frequency.value = 1000; oscillator.type = 'sawtooth'; }
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
                 oscillator.start(audioCtx.currentTime);
                 oscillator.stop(audioCtx.currentTime + 0.3);
-            } catch (e) {}
+            } catch(e) {}
         }
 
         async function initTerminalChart() {
@@ -5075,8 +4849,7 @@
                 return;
             }
             if (typeof LightweightCharts === 'undefined') {
-                if (loadingEl) loadingEl.innerHTML =
-                '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
+                if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
                 return;
             }
             if (simChart) {
@@ -5093,7 +4866,7 @@
                 const realPrice = await getRealTimePrice(simCurrentSymbol);
                 const basePrice = realPrice || simBasePrices[simCurrentSymbol] || 150;
                 simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
-                const lastCandle = simAllCandles[simAllCandles.length - 1];
+                const lastCandle = simAllCandles[simAllCandles.length-1];
                 simCurrentCandle = {
                     time: lastCandle.time + currentTimeframe,
                     open: lastCandle.close,
@@ -5103,10 +4876,10 @@
                     volume: 0
                 };
                 simLastPrices[simCurrentSymbol] = lastCandle.close;
-            } catch (e) {
+            } catch(e) {
                 const basePrice = simBasePrices[simCurrentSymbol] || 150;
                 simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
-                const lastCandle = simAllCandles[simAllCandles.length - 1];
+                const lastCandle = simAllCandles[simAllCandles.length-1];
                 simCurrentCandle = {
                     time: lastCandle.time + currentTimeframe,
                     open: lastCandle.close,
@@ -5133,8 +4906,7 @@
                 },
                 layout: {
                     background: { type: 'solid', color: 'transparent' },
-                    textColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-text').trim() ||
-                        '#94a3b8'
+                    textColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-text').trim() || '#94a3b8'
                 },
                 grid: {
                     vertLines: { visible: false },
@@ -5144,7 +4916,7 @@
                 rightPriceScale: {
                     borderVisible: true,
                     autoScale: true,
-                    scaleMargins: { top: 0.05, bottom: 0.05 }
+                    scaleMargins: { top:0.05, bottom:0.05 }
                 },
                 handleScroll: {
                     vertTouchDrag: false,
@@ -5166,13 +4938,13 @@
             });
 
             simVolumeSeries = simChart.addHistogramSeries({
-                priceFormat: { type: 'volume' },
+                priceFormat: { type:'volume' },
                 priceScaleId: ''
             });
             if (showVolume) {
-                simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+                simChart.priceScale('').applyOptions({ scaleMargins:{ top:0.88, bottom:0 } });
             } else {
-                simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+                simChart.priceScale('').applyOptions({ scaleMargins:{ top:0, bottom:0 } });
             }
 
             simCandleSeries.setData([...simAllCandles, simCurrentCandle]);
@@ -5194,12 +4966,10 @@
                     const price = simCandleSeries.coordinateToPrice(param.point.y);
                     if (price !== null && price > 0) {
                         let color, label;
-                        if (currentDrawingTool === 'support') { color = '#10b981';
-                            label = 'Support'; } else if (currentDrawingTool === 'resistance') { color = '#ef4444';
-                            label = 'Resistance'; } else { color = '#3b82f6';
-                            label = 'H-Line'; }
-                        if (!simPortfolio.drawnLines[simCurrentSymbol]) simPortfolio.drawnLines[simCurrentSymbol] =
-                        [];
+                        if (currentDrawingTool === 'support') { color = '#10b981'; label = 'Support'; }
+                        else if (currentDrawingTool === 'resistance') { color = '#ef4444'; label = 'Resistance'; }
+                        else { color = '#3b82f6'; label = 'H-Line'; }
+                        if (!simPortfolio.drawnLines[simCurrentSymbol]) simPortfolio.drawnLines[simCurrentSymbol] = [];
                         simPortfolio.drawnLines[simCurrentSymbol].push({
                             price: +price.toFixed(2),
                             color,
@@ -5208,7 +4978,7 @@
                         });
                         saveSimPortfolio();
                         redrawAllLines();
-                        showToast('📐 ' + label + ' at $' + price.toFixed(2));
+                        showToast('📐 '+label+' at $'+price.toFixed(2));
                         currentDrawingTool = null;
                         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                     }
@@ -5234,7 +5004,7 @@
                         dragState.currentPrice = +newPrice.toFixed(2);
                         const ml = manualDrawnLines.find(m => m.key === dragState.lineKey);
                         if (ml && ml.lineObj) {
-                            try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
+                            try { simCandleSeries.removePriceLine(ml.lineObj); } catch(e) {}
                             const newLine = simCandleSeries.createPriceLine({
                                 price: dragState.currentPrice,
                                 color: ml.color,
@@ -5255,15 +5025,13 @@
                 const rect = chartDiv.getBoundingClientRect();
                 const y = e.clientY - rect.top;
                 const threshold = 14;
-                let closest = null;
-                let closestDist = Infinity;
+                let closest=null, closestDist=Infinity;
                 for (const ml of manualDrawnLines) {
                     if (!ml.lineObj) continue;
                     const lineY = simCandleSeries.priceToCoordinate(ml.price);
                     if (lineY !== null) {
                         const dist = Math.abs(y - lineY);
-                        if (dist < threshold && dist < closestDist) { closest = ml;
-                            closestDist = dist; }
+                        if (dist < threshold && dist < closestDist) { closest = ml; closestDist = dist; }
                     }
                 }
                 if (closest) {
@@ -5287,7 +5055,7 @@
                             simPortfolio.drawnLines[simCurrentSymbol][idx].price = dragState.currentPrice;
                             saveSimPortfolio();
                             redrawAllLines();
-                            showToast('📐 Line moved to $' + dragState.currentPrice.toFixed(2));
+                            showToast('📐 Line moved to $'+dragState.currentPrice.toFixed(2));
                         }
                     }
                     dragState = null;
@@ -5306,7 +5074,7 @@
                 simCurrentCandle.high = Math.max(simCurrentCandle.high, newPrice);
                 simCurrentCandle.low = Math.min(simCurrentCandle.low, newPrice);
                 simCurrentCandle.close = newPrice;
-                simCurrentCandle.volume += Math.floor(500 + Math.random() * 3000);
+                simCurrentCandle.volume += Math.floor(500 + Math.random()*3000);
                 simLastPrices[simCurrentSymbol] = newPrice;
                 simCandleSeries.update(simCurrentCandle);
                 updateAllIndicators();
@@ -5344,8 +5112,7 @@
 
         function debounce(fn, delay) {
             let timer;
-            return function(...args) { clearTimeout(timer);
-                timer = setTimeout(() => fn.apply(this, args), delay); };
+            return function(...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
         }
 
         function updateSimUI() {
@@ -5385,36 +5152,28 @@
                 const val = Math.abs(h.qty) * cp;
                 const isShort = h.qty < 0;
                 return '<tr>' +
-                    '<td><strong>' + sym + '</strong> ' + (isShort ?
-                        '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' :
-                        '<span style="color:var(--success);font-size:0.65rem;">LONG</span>') + '</td>' +
-                    '<td>' + Math.abs(h.qty) + '</td>' +
-                    '<td><span class="entry-badge">$' + h.avgPrice.toFixed(2) + '</span></td>' +
-                    '<td>$' + cp.toFixed(2) + '</td>' +
-                    '<td>' + (h.slPrice ? '<span class="sl-badge">$' + h.slPrice.toFixed(2) + '</span>' : '—') +
-                    '</td>' +
-                    '<td>' + (h.tpPrice ? '<span class="tp-badge">$' + h.tpPrice.toFixed(2) + '</span>' : '—') +
-                    '</td>' +
-                    '<td>$' + val.toFixed(2) + '</td>' +
+                    '<td><strong>'+sym+'</strong> ' + (isShort ? '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.65rem;">LONG</span>') + '</td>' +
+                    '<td>'+Math.abs(h.qty)+'</td>' +
+                    '<td><span class="entry-badge">$'+h.avgPrice.toFixed(2)+'</span></td>' +
+                    '<td>$'+cp.toFixed(2)+'</td>' +
+                    '<td>'+(h.slPrice ? '<span class="sl-badge">$'+h.slPrice.toFixed(2)+'</span>' : '—')+'</td>' +
+                    '<td>'+(h.tpPrice ? '<span class="tp-badge">$'+h.tpPrice.toFixed(2)+'</span>' : '—')+'</td>' +
+                    '<td>$'+val.toFixed(2)+'</td>' +
                     '<td style="display:flex;gap:4px;">' +
-                    '<button class="btn-exit" onclick="exitPosition(\'' + sym + '\')" title="Exit / Trade Close"><i class="fas fa-times"></i> Exit</button>' +
-                    '<button class="btn btn-sm btn-outline" onclick="editSLTP(\'' + sym +
-                    '\')" title="Edit SL/TP"><i class="fas fa-sliders-h"></i></button>' +
+                    '<button class="btn-exit" onclick="exitPosition(\''+sym+'\')" title="Exit / Trade Close"><i class="fas fa-times"></i> Exit</button>' +
+                    '<button class="btn btn-sm btn-outline" onclick="editSLTP(\''+sym+'\')" title="Edit SL/TP"><i class="fas fa-sliders-h"></i></button>' +
                     '</td></tr>';
             }).join('');
 
-            tbody.innerHTML = rowsHTML ||
-                '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
-            if (fsTbody) fsTbody.innerHTML = rowsHTML ||
-                '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No positions</td></tr>';
+            tbody.innerHTML = rowsHTML || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
+            if (fsTbody) fsTbody.innerHTML = rowsHTML || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No positions</td></tr>';
 
             const histEl = document.getElementById('simHistoryList');
             if (histEl) {
                 histEl.innerHTML = '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' +
-                    simPortfolio.transactions.slice(0, 25).map(t =>
+                    simPortfolio.transactions.slice(0,25).map(t =>
                         '<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">' +
-                        t.time + ' - <span style="color:' + (t.type === 'buy' ? 'var(--success)' : 'var(--danger)') +
-                        '">' +
+                        t.time + ' - <span style="color:' + (t.type==='buy' ? 'var(--success)' : 'var(--danger)') + '">' +
                         t.type.toUpperCase() + '</span> ' + t.qty + ' × ' + t.symbol + ' @ $' + t.price.toFixed(2) +
                         (t.reason ? ' (' + t.reason + ')' : '') + '</li>'
                     ).join('') + '</ul>';
@@ -5434,16 +5193,12 @@
             const fsTotal = document.getElementById('fsTotal');
             const fsPL = document.getElementById('fsPL');
             if (!fsCash || !fsTotal || !fsPL) return;
-            let totalPL = 0;
-            let totalValue = simPortfolio.cash;
+            let totalPL=0, totalValue=simPortfolio.cash;
             for (let sym in simPortfolio.holdings) {
                 const h = simPortfolio.holdings[sym];
                 const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                if (h.qty > 0) {
-                    totalPL += (cp - h.avgPrice) * h.qty;
-                } else {
-                    totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
-                }
+                if (h.qty > 0) totalPL += (cp - h.avgPrice) * h.qty;
+                else totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
                 totalValue += Math.abs(h.qty) * cp;
             }
             fsCash.textContent = '💰 $' + simPortfolio.cash.toFixed(2);
@@ -5457,23 +5212,21 @@
             const h = simPortfolio.holdings[symbol];
             const price = simLastPrices[symbol] || h.currentPrice || h.avgPrice;
             const closeQty = Math.abs(h.qty);
-            if (h.qty > 0) {
-                simPortfolio.cash += closeQty * price;
-            }
+            if (h.qty > 0) simPortfolio.cash += closeQty * price;
             simPortfolio.transactions.unshift({
-                type: 'sell',
+                type:'sell',
                 symbol,
                 qty: closeQty,
                 price,
                 time: new Date().toLocaleTimeString(),
-                reason: 'Manual Exit'
+                reason:'Manual Exit'
             });
             delete simPortfolio.holdings[symbol];
             saveSimPortfolio();
             updateSimUI();
             redrawAllLines();
             playTradeSound('sell');
-            showToast('🚪 Exited ' + symbol + ' @ $' + price.toFixed(2));
+            showToast('🚪 Exited '+symbol+' @ $'+price.toFixed(2));
         }
 
         function editSLTP(symbol) {
@@ -5481,8 +5234,7 @@
             if (!h) return;
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
-            modal.innerHTML =
-                `<div class="modal-content"><h3>Edit SL/TP — ${symbol}</h3><label>Stop Loss ($)<input type="number" id="editSL" value="${h.slPrice||''}" step="0.01"></label><label>Take Profit ($)<input type="number" id="editTP" value="${h.tpPrice||''}" step="0.01"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
+            modal.innerHTML = `<div class="modal-content"><h3>Edit SL/TP — ${symbol}</h3><label>Stop Loss ($)<input type="number" id="editSL" value="${h.slPrice||''}" step="0.01"></label><label>Take Profit ($)<input type="number" id="editTP" value="${h.tpPrice||''}" step="0.01"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
             document.body.appendChild(modal);
             modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
             document.getElementById('saveSLTP').onclick = () => {
@@ -5500,7 +5252,7 @@
 
         function resetSimPortfolio() {
             if (confirm('Reset portfolio? All trades cleared.')) {
-                simPortfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                simPortfolio = { cash:100000, holdings:{}, transactions:[], drawnLines:{} };
                 simLastPrices = {};
                 activeIndicators = {};
                 simIndicatorSeries = {};
@@ -5541,9 +5293,8 @@
                         const closeQty = Math.min(Math.abs(h.qty), qty);
                         h.qty += closeQty;
                         if (h.qty === 0) delete simPortfolio.holdings[symbol];
-                        simPortfolio.transactions.unshift({ type: 'buy', symbol, qty: closeQty, price, time: new Date()
-                                .toLocaleTimeString(), reason: 'Close Short' });
-                        showToast('🔄 Closed ' + closeQty + ' short ' + symbol + ' @ $' + price.toFixed(2));
+                        simPortfolio.transactions.unshift({ type:'buy', symbol, qty:closeQty, price, time: new Date().toLocaleTimeString(), reason:'Close Short' });
+                        showToast('🔄 Closed '+closeQty+' short '+symbol+' @ $'+price.toFixed(2));
                     } else {
                         const totalCost = qty * price;
                         const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
@@ -5552,17 +5303,15 @@
                         h.entryPrice = newAvg;
                         if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
                         if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
-                        simPortfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date()
-                                .toLocaleTimeString() });
-                        showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                        simPortfolio.transactions.unshift({ type:'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
+                        showToast('✅ Bought '+qty+' × '+symbol+' @ $'+price.toFixed(2));
                     }
                 } else {
-                    simPortfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
+                    simPortfolio.holdings[symbol] = { qty, avgPrice:price, currentPrice:price, entryPrice:price };
                     if (!isNaN(slVal) && slVal > 0) simPortfolio.holdings[symbol].slPrice = slVal;
                     if (!isNaN(tpVal) && tpVal > 0) simPortfolio.holdings[symbol].tpPrice = tpVal;
-                    simPortfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date()
-                            .toLocaleTimeString() });
-                    showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                    simPortfolio.transactions.unshift({ type:'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
+                    showToast('✅ Bought '+qty+' × '+symbol+' @ $'+price.toFixed(2));
                 }
                 playTradeSound('buy');
             } else {
@@ -5572,9 +5321,8 @@
                     simPortfolio.cash += closeQty * price;
                     h.qty -= closeQty;
                     if (h.qty === 0) delete simPortfolio.holdings[symbol];
-                    simPortfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price, time: new Date()
-                            .toLocaleTimeString(), reason: 'Close Long' });
-                    showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                    simPortfolio.transactions.unshift({ type:'sell', symbol, qty:closeQty, price, time: new Date().toLocaleTimeString(), reason:'Close Long' });
+                    showToast('✅ Sold '+closeQty+' × '+symbol+' @ $'+price.toFixed(2));
                 } else {
                     if (simPortfolio.holdings[symbol] && simPortfolio.holdings[symbol].qty < 0) {
                         const h = simPortfolio.holdings[symbol];
@@ -5585,14 +5333,12 @@
                         if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
                         if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
                     } else {
-                        simPortfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
-                            entryPrice: price };
+                        simPortfolio.holdings[symbol] = { qty: -qty, avgPrice:price, currentPrice:price, entryPrice:price };
                         if (!isNaN(slVal) && slVal > 0) simPortfolio.holdings[symbol].slPrice = slVal;
                         if (!isNaN(tpVal) && tpVal > 0) simPortfolio.holdings[symbol].tpPrice = tpVal;
                     }
-                    simPortfolio.transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date()
-                            .toLocaleTimeString(), reason: 'Short' });
-                    showToast('🔻 Shorted ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                    simPortfolio.transactions.unshift({ type:'sell', symbol, qty, price, time: new Date().toLocaleTimeString(), reason:'Short' });
+                    showToast('🔻 Shorted '+qty+' × '+symbol+' @ $'+price.toFixed(2));
                 }
                 playTradeSound('sell');
             }
@@ -5655,8 +5401,7 @@
                     const tf = parseInt(this.dataset.tf);
                     if (tf !== currentTimeframe) {
                         currentTimeframe = tf;
-                        document.querySelectorAll('#timeframePills button').forEach(b => b.classList.remove(
-                        'active'));
+                        document.querySelectorAll('#timeframePills button').forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
                         cleanupSimIntervals();
                         simAllCandles = [];
@@ -5688,8 +5433,7 @@
                         if (simChart) {
                             const chartDiv = document.getElementById('simChartContainer');
                             if (chartDiv && chartDiv.clientWidth > 0) {
-                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                        .clientHeight });
+                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
                                 simChart.timeScale().fitContent();
                             }
                         }
@@ -5722,17 +5466,15 @@
             }).join('');
             panel.innerHTML = html;
             window.watchlistSearch = function(query) {
-                const filtered = query ? watchlist.filter(s => s.toLowerCase().includes(query.toLowerCase())) :
-                watchlist;
-                panel.innerHTML =
-                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="watchlistSearch(this.value)"></div>` +
-                    filtered.map(sym => {
-                        const price = simLastPrices[sym] || '-';
-                        return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
-                            <span class="sym">${sym}</span>
-                            <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
-                        </div>`;
-                    }).join('');
+                const filtered = query ? watchlist.filter(s => s.toLowerCase().includes(query.toLowerCase())) : watchlist;
+                panel.innerHTML = `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="watchlistSearch(this.value)"></div>` +
+                filtered.map(sym => {
+                    const price = simLastPrices[sym] || '-';
+                    return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
+                        <span class="sym">${sym}</span>
+                        <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
+                    </div>`;
+                }).join('');
             };
         }
 
@@ -5753,8 +5495,7 @@
             const panel = document.getElementById('positionsPanel');
             if (!panel) return;
             if (Object.keys(simPortfolio.holdings).length === 0) {
-                panel.innerHTML =
-                    '<div style="text-align:center;padding:30px;color:var(--text-muted);">No open positions</div>';
+                panel.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">No open positions</div>';
                 return;
             }
             let html = '';
@@ -5801,10 +5542,9 @@
             window.currentOrderSide = 'buy';
             window.setOrderSide = function(side) {
                 window.currentOrderSide = side;
-                document.getElementById('buyToggle').classList.toggle('active', side === 'buy');
-                document.getElementById('sellToggle').classList.toggle('active', side === 'sell');
-                document.getElementById('placeOrderBtn').style.background = side === 'buy' ? 'var(--success)' :
-                    'var(--danger)';
+                document.getElementById('buyToggle').classList.toggle('active', side==='buy');
+                document.getElementById('sellToggle').classList.toggle('active', side==='sell');
+                document.getElementById('placeOrderBtn').style.background = side==='buy' ? 'var(--success)' : 'var(--danger)';
                 document.getElementById('placeOrderBtn').textContent = 'Place ' + side.toUpperCase() + ' Order';
             };
             document.getElementById('placeOrderBtn').onclick = function() {
@@ -5818,8 +5558,7 @@
                 if (type === 'market') {
                     placeSimOrderMobile(window.currentOrderSide, qty, sl, tp);
                 } else {
-                    showToast('Limit order placed (simulated) – will execute if price reaches $' + limitPrice.toFixed(
-                    4));
+                    showToast('Limit order placed (simulated) – will execute if price reaches $'+limitPrice.toFixed(4));
                 }
                 document.querySelector('.mobile-bottom-tabs .tab-btn[data-panel="positions"]').click();
             };
@@ -5850,8 +5589,7 @@
                 }
                 if (sl) simPortfolio.holdings[symbol].slPrice = sl;
                 if (tp) simPortfolio.holdings[symbol].tpPrice = tp;
-                simPortfolio.transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date()
-                        .toLocaleTimeString() });
+                simPortfolio.transactions.unshift({ type:'buy', symbol, qty, price, time: new Date().toLocaleTimeString() });
                 playTradeSound('buy');
             } else {
                 if (simPortfolio.holdings[symbol] && simPortfolio.holdings[symbol].qty > 0) {
@@ -5868,14 +5606,12 @@
                         h.avgPrice = newAvg;
                         h.entryPrice = newAvg;
                     } else {
-                        simPortfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
-                            entryPrice: price };
+                        simPortfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price, entryPrice: price };
                     }
                     if (sl) simPortfolio.holdings[symbol].slPrice = sl;
                     if (tp) simPortfolio.holdings[symbol].tpPrice = tp;
                 }
-                simPortfolio.transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date()
-                        .toLocaleTimeString() });
+                simPortfolio.transactions.unshift({ type:'sell', symbol, qty, price, time: new Date().toLocaleTimeString() });
                 playTradeSound('sell');
             }
             saveSimPortfolio();
@@ -5912,7 +5648,7 @@
             currentUser = user;
             previousLevel = user.level;
             if (!window.history.state || !window.history.state.page) {
-                window.history.replaceState({ page: 'journey' }, '', '#/journey');
+                window.history.replaceState({ page:'journey' }, '', '#/journey');
             }
             showPage('journey');
             renderSliders();
@@ -5927,12 +5663,10 @@
 
         async function checkVersion() {
             try {
-                const res = await fetch('/api/setup/version', { cache: 'no-store' });
+                const res = await fetch('/api/setup/version', { cache:'no-store' });
                 const data = await res.json();
-                if (data.version !== APP_VERSION) { localStorage.clear();
-                    sessionStorage.clear();
-                    window.location.reload(true); }
-            } catch (e) {}
+                if (data.version !== APP_VERSION) { localStorage.clear(); sessionStorage.clear(); window.location.reload(true); }
+            } catch(e) {}
         }
 
         // ============================================================
@@ -5946,8 +5680,7 @@
             if (!text.trim()) return;
             const utterance = new SpeechSynthesisUtterance(text);
             const voices = speechSynth.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name
-                .includes('Zira'));
+            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
             if (femaleVoice) utterance.voice = femaleVoice;
             utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
             speechSynth.speak(utterance);
@@ -5961,8 +5694,7 @@
             if (!text.trim()) return;
             const utterance = new SpeechSynthesisUtterance(text);
             const voices = speechSynth.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name
-                .includes('Zira'));
+            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('Samantha') || v.name.includes('Zira'));
             if (femaleVoice) utterance.voice = femaleVoice;
             utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
             speechSynth.speak(utterance);
@@ -6094,6 +5826,8 @@
         window.deleteSingleLine = deleteSingleLine;
         window.updateSimUI = updateSimUI;
         window.initTerminalChart = initTerminalChart;
+        window.openTerminalFullscreen = openTerminalFullscreen;
+        window.closeTerminalFullscreen = closeTerminalFullscreen;
         // Reminders
         window.placeSimOrderFs = placeSimOrder;
         window.placeSimOrderMobile = placeSimOrderMobile;
