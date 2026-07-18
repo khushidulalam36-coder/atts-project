@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js">
     </script>
     <style>
-        /* ─── ROOT VARIABLES ─── */
         :root {
             --bg: #f4f6fa;
             --bg-secondary: #eef1f7;
@@ -126,7 +125,6 @@
             position: relative;
             z-index: 1;
         }
-        /* ─── SIDEBAR ─── */
         .sidebar {
             width: 275px;
             background: var(--surface);
@@ -217,7 +215,6 @@
             transform: scale(1.06);
             box-shadow: 0 3px 14px var(--primary-glow);
         }
-        /* ─── MAIN AREA ─── */
         .main-area {
             flex: 1;
             display: flex;
@@ -381,7 +378,6 @@
             background: var(--danger);
             color: #fff;
         }
-        /* ─── CONTENT ─── */
         .lesson-list {
             padding: 24px;
             max-width: 900px;
@@ -691,7 +687,6 @@
             padding: 18px;
             margin-top: 15px;
         }
-        /* ─── MODAL ─── */
         .modal {
             position: fixed;
             top: 0;
@@ -832,7 +827,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
-        /* ─── TOAST ─── */
         .toast {
             position: fixed;
             bottom: 28px;
@@ -861,8 +855,6 @@
                 transform: translateY(0) scale(1);
             }
         }
-
-        /* ─── AUTH ─── */
         .auth-container {
             display: flex;
             align-items: center;
@@ -944,8 +936,6 @@
         .auth-box .auth-switch a:hover {
             text-decoration: underline;
         }
-
-        /* ─── DESKTOP TERMINAL ─── */
         .terminal-wrapper {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -1010,7 +1000,6 @@
             border-radius: 10px;
             background: var(--bg-secondary);
         }
-        /* ─── REMOVED .terminal-header-bar ─── */
         .terminal-toolbar {
             display: flex;
             gap: 6px;
@@ -1367,8 +1356,6 @@
         .terminal-wrapper.fullscreen-active .fs-bottom-panel.show {
             display: block;
         }
-
-        /* ─── MT5 MOBILE TERMINAL ─── */
         .mobile-terminal {
             display: flex;
             flex-direction: column;
@@ -2051,7 +2038,6 @@
         .history-item .right.red {
             color: var(--mt5-red);
         }
-
         .chart-loading {
             display: flex;
             align-items: center;
@@ -2064,8 +2050,6 @@
         .hidden {
             display: none !important;
         }
-
-        /* Mobile: hide P/L bar, show MT5 toolbar */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -2178,7 +2162,6 @@
                 display: none !important;
             }
         }
-
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
                 gap: 2px;
@@ -2250,6 +2233,7 @@
             const LANG_KEY = 'lang_prod_v9';
             const TOKEN_KEY = 'auth_token_v9';
             const USER_KEY = 'auth_user_v9';
+            const PORTFOLIO_KEY = 'sim_portfolio_v9';
 
             // ─── STATE ────────────────────────────────────────────────────────
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
@@ -2424,10 +2408,60 @@
                     binanceReconnectTimer = null; }
             }
 
+            // ─── PRICE FETCH (REST fallback) ─────────────────────────────────
+            async function fetchBinancePrice(symbol) {
+                try {
+                    const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('Binance API error');
+                    const data = await res.json();
+                    const price = parseFloat(data.price);
+                    if (price && price > 0) {
+                        simLastPrices[symbol] = price;
+                        simBasePrices[symbol] = price;
+                        lastBinancePrice[symbol] = price;
+                        return price;
+                    }
+                } catch (e) { console.warn('Binance REST fetch failed:', e); }
+                return null;
+            }
+
+            // ─── PORTFOLIO PERSISTENCE ──────────────────────────────────────
+            function loadPortfolioFromStorage() {
+                try {
+                    const saved = localStorage.getItem(PORTFOLIO_KEY);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        // merge with defaults
+                        portfolio.cash = parsed.cash || 100000;
+                        portfolio.holdings = parsed.holdings || {};
+                        portfolio.transactions = parsed.transactions || [];
+                        portfolio.drawnLines = parsed.drawnLines || {};
+                        if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                        return true;
+                    }
+                } catch (e) { console.warn('Portfolio load error:', e); }
+                return false;
+            }
+
+            function savePortfolioToStorage() {
+                try {
+                    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify({
+                        cash: portfolio.cash,
+                        holdings: portfolio.holdings,
+                        transactions: portfolio.transactions.slice(0, 500), // keep last 500
+                        drawnLines: portfolio.drawnLines
+                    }));
+                } catch (e) { console.warn('Portfolio save error:', e); }
+            }
+
             // ─── LOAD DATA ─────────────────────────────────────────────────────
             async function loadAllData() {
                 if (!token || !currentUser) { renderAuthPage(); return; }
                 try {
+                    // Load from localStorage first
+                    loadPortfolioFromStorage();
+
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
                         apiFetch('/subjects'), apiFetch('/progress').catch(() => ({})),
                         apiFetch('/bookmarks').catch(() => ({})),
@@ -2440,11 +2474,21 @@
                     bookmarks = new Set(bmRes || []);
                     quizScores = quizRes || {};
                     userNotes = notesRes || {};
-                    if (portRes && portRes.cash !== undefined) portfolio = portRes;
-                    else portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
-                    portfolio.cash = parseFloat(portfolio.cash) || 100000;
+
+                    // Merge server portfolio with local (server takes precedence for cash/holdings)
+                    if (portRes && portRes.cash !== undefined) {
+                        portfolio.cash = parseFloat(portRes.cash) || 100000;
+                        portfolio.holdings = portRes.holdings || {};
+                        // Keep local transactions and drawnLines
+                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
+                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
+                    }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+
+                    // Save merged portfolio
+                    savePortfolioToStorage();
+
                     if (currentUser.username === 'admin') isAdmin = true;
                     applyTheme();
                     renderApp();
@@ -3269,7 +3313,6 @@
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
                     </div>`;
                 const container = document.getElementById('terminalContainer');
-                // Hide P/L bar on mobile
                 if (isMobile) {
                     const plBar = document.getElementById('terminalTopBarPL');
                     if (plBar) plBar.style.display = 'none';
@@ -3307,7 +3350,6 @@
                             </div>
                         </div>
                         <div class="terminal-inner">
-                            <!-- ─── REMOVED terminal-header-bar ─── -->
                             <div class="terminal-toolbar">
                                 <div class="tool-group">
                                     <span style="font-size:0.7rem;color:var(--text-muted);font-weight:600;">Symbol:</span>
@@ -3389,7 +3431,7 @@
                 document.getElementById('drawHLineBtn').onclick = () => setDrawingTool('hline', 'drawHLineBtn');
                 document.getElementById('clearLinesBtn').onclick = () => { if (confirm('Clear all drawn lines for ' +
                         simCurrentSymbol + '?')) { portfolio.drawnLines[simCurrentSymbol] = [];
-                        savePortfolio();
+                        savePortfolioToStorage();
                         redrawAllLines();
                         showToast('🗑 Lines cleared'); } };
                 document.getElementById('chartFullscreenBtn').onclick = () => {
@@ -3403,62 +3445,123 @@
                                 simChart.timeScale().fitContent(); } }
                         updateSimUIFullscreen(); }, 300);
                 };
-                requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
+                // Ensure chart initializes after render
+                setTimeout(() => {
+                    requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
+                }, 100);
                 updateSimUI();
             }
 
-            // ─── DESKTOP TRADE PANEL ──────────────────────────────────────────
+            // ─── DESKTOP TRADE PANEL (LIVE P/L) ──────────────────────────────
             function openDesktopTradePanel() {
                 const modal = document.createElement('div');
                 modal.className = 'modal';
-                let html = `
-                    <div class="modal-content">
+                let panelId = 'tradePanelModal_' + Date.now();
+                modal.innerHTML = `
+                    <div class="modal-content" id="${panelId}">
                         <h3><i class="fas fa-wallet"></i> TRADE — Summary</h3>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">Balance</div>
-                                <div style="font-weight:700;font-size:1.1rem;color:var(--success);">$${portfolio.cash.toFixed(2)}</div>
+                                <div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${portfolio.cash.toFixed(2)}</div>
                             </div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">Equity</div>
-                                <div style="font-weight:700;font-size:1.1rem;">$${calcEquity().toFixed(2)}</div>
+                                <div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div>
                             </div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div>
-                                <div style="font-weight:700;font-size:1.1rem;">${Object.keys(portfolio.holdings).length}</div>
+                                <div style="font-weight:700;font-size:1.1rem;" id="tp_count">${Object.keys(portfolio.holdings).length}</div>
                             </div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">P&L</div>
-                                <div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div>
+                                <div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div>
                             </div>
                         </div>
                         <h4 style="margin-top:10px;">Open Positions</h4>
-                        ${Object.keys(portfolio.holdings).length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
-                        Object.keys(portfolio.holdings).map(sym => {
-                            const h = portfolio.holdings[sym];
-                            const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                            const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
-                            return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
-                                <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
-                                <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
-                                <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
-                            </div>`;
-                        }).join('')}
+                        <div id="tp_positions">
+                            ${Object.keys(portfolio.holdings).length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
+                            Object.keys(portfolio.holdings).map(sym => {
+                                const h = portfolio.holdings[sym];
+                                const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                                const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
+                                return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
+                                    <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                                    <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                                    <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
+                                </div>`;
+                            }).join('')}
+                        </div>
                         <div class="modal-actions">
                             <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Close</button>
                         </div>
                     </div>`;
-                modal.innerHTML = html;
                 document.body.appendChild(modal);
-                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-                modal.querySelectorAll('.btn-exit').forEach(b => {
-                    const origClick = b.onclick;
-                    b.onclick = function(e) {
-                        const sym = this.closest('div').querySelector('strong').textContent;
-                        exitPosition(sym);
-                        this.closest('.modal').remove();
-                        openDesktopTradePanel();
-                    };
+                modal.addEventListener('click', e => { if (e.target === modal) { modal.remove(); } });
+
+                // ─── LIVE UPDATE INTERVAL ─────────────────────────────────────
+                let updateInterval = setInterval(() => {
+                    if (!document.body.contains(modal)) {
+                        clearInterval(updateInterval);
+                        return;
+                    }
+                    const panel = document.getElementById(panelId);
+                    if (!panel) { clearInterval(updateInterval); return; }
+                    const equity = calcEquity();
+                    const totalPL = calcTotalPL();
+                    const count = Object.keys(portfolio.holdings).length;
+                    const balance = portfolio.cash;
+                    const balEl = document.getElementById('tp_balance');
+                    const eqEl = document.getElementById('tp_equity');
+                    const cntEl = document.getElementById('tp_count');
+                    const plEl = document.getElementById('tp_pl');
+                    if (balEl) balEl.textContent = '$${balance.toFixed(2)}';
+                    if (eqEl) eqEl.textContent = '$${equity.toFixed(2)}';
+                    if (cntEl) cntEl.textContent = count;
+                    if (plEl) {
+                        plEl.textContent = (totalPL >= 0 ? '+' : '') + '$${totalPL.toFixed(2)}';
+                        plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
+                    }
+                    // Update positions
+                    const posContainer = document.getElementById('tp_positions');
+                    if (posContainer) {
+                        const keys = Object.keys(portfolio.holdings);
+                        if (keys.length === 0) {
+                            posContainer.innerHTML = '<p style="color:var(--text-muted);">No open positions</p>';
+                        } else {
+                            let html = '';
+                            keys.forEach(sym => {
+                                const h = portfolio.holdings[sym];
+                                const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                                const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) *
+                                    Math.abs(h.qty);
+                                html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
+                                    <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                                    <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                                    <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
+                                </div>`;
+                            });
+                            posContainer.innerHTML = html;
+                        }
+                    }
+                }, 1000);
+
+                // Cleanup interval when modal is closed
+                modal._cleanup = function() { clearInterval(updateInterval); };
+                const origRemove = modal.remove;
+                modal.remove = function() {
+                    if (modal._cleanup) modal._cleanup();
+                    origRemove.call(modal);
+                };
+                // Also clean up on any click that removes the modal
+                modal.querySelectorAll('.btn-exit, .btn-outline').forEach(b => {
+                    b.addEventListener('click', () => {
+                        setTimeout(() => {
+                            if (!document.body.contains(modal)) {
+                                if (modal._cleanup) modal._cleanup();
+                            }
+                        }, 100);
+                    });
                 });
             }
 
@@ -3483,7 +3586,7 @@
                 return pl;
             }
 
-            // ─── MOBILE TERMINAL (MT5 STYLE) ──────────────────────────────────
+            // ─── MOBILE TERMINAL ──────────────────────────────────────────────
             let currentMobileLot = 0.01;
 
             function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot);
@@ -3503,7 +3606,6 @@
                 if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                 container.innerHTML = `
                     <div class="mobile-terminal" id="mobileTerminalRoot">
-                        <!-- Top Toolbar -->
                         <div class="mt5-top-toolbar">
                             <div class="mt5-toolbar-left">
                                 <button class="mt5-hamburger" id="mt5Hamburger"><i class="fas fa-bars"></i></button>
@@ -3516,13 +3618,11 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- Instrument Info -->
                         <div class="mt5-instrument-info">
                             <span class="mt5-pair">${simCurrentSymbol}</span>
                             <span class="mt5-name">${simCurrentSymbol} / USD</span>
                             <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
                         </div>
-                        <!-- Quick Trade Panel -->
                         <div class="mt5-quick-trade">
                             <div class="mt5-quick-trade-row">
                                 <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
@@ -3541,24 +3641,20 @@
                                 <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
                             </div>
                         </div>
-                        <!-- Chart Container -->
                         <div class="mobile-chart-container" id="mobileChartContainer">
                             <div id="simChartContainer" style="width:100%;height:100%;touch-action:none;"></div>
                         </div>
-                        <!-- Bottom Navigation -->
                         <div class="mt5-bottom-nav" id="mt5BottomNav">
                             <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
                             <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
                             <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
                             <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
                         </div>
-                        <!-- Panels -->
                         <div class="mobile-panels" id="mobilePanels">
                             <div class="panel-content" id="quotesPanel"></div>
                             <div class="panel-content" id="tradePanel"></div>
                             <div class="panel-content" id="historyPanel"></div>
                         </div>
-                        <!-- Hamburger Sidebar Overlay -->
                         <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
                             <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
                                 <div class="close-area">
@@ -3592,7 +3688,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Indicator Overlay -->
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
                             <div class="mt5-indicator-sheet" id="mt5IndicatorSheet">
                                 <h3>📊 Indicators</h3>
@@ -3717,7 +3812,10 @@
                         }, 150);
                     };
                 });
-                requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
+                // Init chart after render
+                setTimeout(() => {
+                    requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
+                }, 200);
                 updateMobileTopBar();
                 document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
@@ -3870,7 +3968,7 @@
                 portfolio.cash += amt;
                 portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
-                savePortfolio();
+                savePortfolioToStorage();
                 updateSimUI();
                 renderMobileTradeSummary();
                 showToast('💰 Deposited $' + amt.toFixed(2));
@@ -3883,7 +3981,7 @@
                 portfolio.cash -= amt;
                 portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
-                savePortfolio();
+                savePortfolioToStorage();
                 updateSimUI();
                 renderMobileTradeSummary();
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
@@ -3992,7 +4090,7 @@
                     }
                     playTradeSound('sell');
                 }
-                savePortfolio();
+                savePortfolioToStorage();
                 updateSimUI();
                 updateMobileTopBar();
                 renderMobileTradeSummary();
@@ -4256,8 +4354,13 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ─── FIX: Use real-time price from Binance ──────────────────
+                // ─── FIX: Get real price from Binance (WebSocket or REST) ──
                 let basePrice = lastBinancePrice[simCurrentSymbol];
+                if (!basePrice) {
+                    // Try REST API
+                    const price = await fetchBinancePrice(simCurrentSymbol);
+                    if (price) basePrice = price;
+                }
                 if (!basePrice) {
                     basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
                 }
@@ -4343,7 +4446,7 @@
                                 [];
                             portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color,
                                 label, style: 0 });
-                            savePortfolio();
+                            savePortfolioToStorage();
                             redrawAllLines();
                             showToast('📐 ' + label + ' at $' + price.toFixed(4));
                             currentDrawingTool = null;
@@ -4432,7 +4535,7 @@
                             const idx = dragState.origIndex;
                             if (idx >= 0 && idx < (portfolio.drawnLines[simCurrentSymbol] || []).length) {
                                 portfolio.drawnLines[simCurrentSymbol][idx].price = dragState.currentPrice;
-                                savePortfolio();
+                                savePortfolioToStorage();
                                 redrawAllLines();
                                 showToast('📐 Line moved to $' + dragState.currentPrice.toFixed(4));
                             }
@@ -4695,7 +4798,7 @@
                         `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : 'var(--mt5-blue)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}</li>`
                     ).join('') + '</ul>';
                 updateSimUIFullscreen();
-                savePortfolio();
+                savePortfolioToStorage();
                 if (window.innerWidth <= 768) { renderMobileTradeSummary();
                     updateMobileTopBar(); }
             }
@@ -4719,9 +4822,6 @@
                 fsPL.textContent = '📈 ' + (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
                 fsPL.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
             }
-
-            function savePortfolio() { try { localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio)); } catch (
-                e) {} }
 
             // ─── TRADING ACTIONS ─────────────────────────────────────────────
             async function placeSimOrder(type) {
@@ -4802,7 +4902,7 @@
                     }
                     playTradeSound('sell');
                 }
-                savePortfolio();
+                savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
                 document.getElementById('simSL').value = '';
@@ -4821,7 +4921,7 @@
                 portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                     time: new Date().toLocaleTimeString(), reason: 'Manual Exit' });
                 delete portfolio.holdings[symbol];
-                savePortfolio();
+                savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
                 playTradeSound('sell');
@@ -4843,7 +4943,7 @@
                     const tp = parseFloat(document.getElementById('editTP').value);
                     h.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
                     h.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
-                    savePortfolio();
+                    savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
                     modal.remove();
@@ -4884,7 +4984,7 @@
                         }
                     }
                 }
-                if (changed) { savePortfolio();
+                if (changed) { savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines(); }
             }
@@ -4895,7 +4995,7 @@
                     simLastPrices = {};
                     activeIndicators = {};
                     simIndicatorSeries = {};
-                    savePortfolio();
+                    savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
                     showToast('🔄 Portfolio reset ($100,000)');
@@ -4942,7 +5042,7 @@
             function deleteSingleLine(idx) {
                 if (!portfolio.drawnLines[simCurrentSymbol]) return;
                 portfolio.drawnLines[simCurrentSymbol].splice(idx, 1);
-                savePortfolio();
+                savePortfolioToStorage();
                 redrawAllLines();
                 showToast('🗑 Line deleted');
             }
