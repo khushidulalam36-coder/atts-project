@@ -1010,39 +1010,7 @@
             border-radius: 10px;
             background: var(--bg-secondary);
         }
-        .terminal-header-bar {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 10px 16px;
-            margin-bottom: 8px;
-            border: 2px solid var(--border);
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .terminal-wrapper.fullscreen-active .terminal-header-bar {
-            display: none;
-        }
-        .terminal-header-bar .summary-cards {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .terminal-header-bar .summary-card {
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            padding: 8px 14px;
-            min-width: 100px;
-            box-shadow: var(--shadow);
-        }
-        .terminal-header-bar .summary-card .val {
-            font-size: 1.1rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-        }
+        /* ─── REMOVED .terminal-header-bar ─── */
         .terminal-toolbar {
             display: flex;
             gap: 6px;
@@ -2122,13 +2090,6 @@
             .search-box {
                 max-width: 100px;
             }
-            .terminal-header-bar {
-                flex-direction: column;
-            }
-            .terminal-header-bar .summary-cards {
-                flex-direction: column;
-                width: 100%;
-            }
             .trade-panel {
                 flex-direction: column;
                 align-items: stretch;
@@ -2213,7 +2174,6 @@
                 width: 80%;
                 max-width: 280px;
             }
-            /* Hide the top P/L bar in mobile trading mode */
             .mobile-terminal .top-bar-pl {
                 display: none !important;
             }
@@ -3347,14 +3307,7 @@
                             </div>
                         </div>
                         <div class="terminal-inner">
-                            <div class="terminal-header-bar">
-                                <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:Outfit,sans-serif;font-size:1.1rem;">📈 Live Trading Terminal</h2></div>
-                                <div class="summary-cards">
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">💰 Virtual Cash</span><div class="val" id="simCashBar" style="color:var(--success);">$0</div></div>
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">📊 Portfolio</span><div class="val" id="simTotalBar">$0.00</div></div>
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">📈 P&L</span><div class="val" id="simPLBar" style="color:var(--success);">$0.00</div></div>
-                                </div>
-                            </div>
+                            <!-- ─── REMOVED terminal-header-bar ─── -->
                             <div class="terminal-toolbar">
                                 <div class="tool-group">
                                     <span style="font-size:0.7rem;color:var(--text-muted);font-weight:600;">Symbol:</span>
@@ -3781,7 +3734,6 @@
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) ro.observe(chartDiv);
                 window._mobileResizeObs = ro;
-                // Gesture support: double tap reset
                 let lastTap = 0;
                 chartDiv.addEventListener('touchend', (e) => {
                     const now = Date.now();
@@ -3791,7 +3743,6 @@
                     }
                     lastTap = now;
                 }, { passive: true });
-                // Long press for price
                 let longPressTimer = null;
                 chartDiv.addEventListener('touchstart', (e) => {
                     longPressTimer = setTimeout(() => {
@@ -4305,12 +4256,15 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                let basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
-                if (lastBinancePrice[simCurrentSymbol]) {
-                    basePrice = lastBinancePrice[simCurrentSymbol];
-                    simLastPrices[simCurrentSymbol] = basePrice;
-                    simBasePrices[simCurrentSymbol] = basePrice;
+                // ─── FIX: Use real-time price from Binance ──────────────────
+                let basePrice = lastBinancePrice[simCurrentSymbol];
+                if (!basePrice) {
+                    basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
                 }
+                // Ensure we use the current price as starting price
+                simLastPrices[simCurrentSymbol] = basePrice;
+                simBasePrices[simCurrentSymbol] = basePrice;
+
                 simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
                 const lastCandle = simAllCandles[simAllCandles.length - 1];
                 const now = Math.floor(Date.now() / 1000);
