@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js">
     </script>
     <style>
+        /* ─── ROOT VARIABLES ─── */
         :root {
             --bg: #f4f6fa;
             --bg-secondary: #eef1f7;
@@ -2234,6 +2235,7 @@
             const TOKEN_KEY = 'auth_token_v9';
             const USER_KEY = 'auth_user_v9';
             const PORTFOLIO_KEY = 'sim_portfolio_v9';
+            const CANDLE_PREFIX = 'sim_candles_';
 
             // ─── STATE ────────────────────────────────────────────────────────
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
@@ -2432,7 +2434,6 @@
                     const saved = localStorage.getItem(PORTFOLIO_KEY);
                     if (saved) {
                         const parsed = JSON.parse(saved);
-                        // merge with defaults
                         portfolio.cash = parsed.cash || 100000;
                         portfolio.holdings = parsed.holdings || {};
                         portfolio.transactions = parsed.transactions || [];
@@ -2449,17 +2450,46 @@
                     localStorage.setItem(PORTFOLIO_KEY, JSON.stringify({
                         cash: portfolio.cash,
                         holdings: portfolio.holdings,
-                        transactions: portfolio.transactions.slice(0, 500), // keep last 500
+                        transactions: portfolio.transactions.slice(0, 500),
                         drawnLines: portfolio.drawnLines
                     }));
                 } catch (e) { console.warn('Portfolio save error:', e); }
+            }
+
+            // ─── CANDLE PERSISTENCE ─────────────────────────────────────────
+            function getCandleStorageKey(symbol) {
+                return CANDLE_PREFIX + symbol;
+            }
+
+            function loadCandlesFromStorage(symbol) {
+                try {
+                    const stored = localStorage.getItem(getCandleStorageKey(symbol));
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        if (Array.isArray(data) && data.length > 0) {
+                            // check if last candle is not too old (within 2 hours)
+                            const last = data[data.length - 1];
+                            const now = Math.floor(Date.now() / 1000);
+                            if (now - last.time < 7200) {
+                                return data;
+                            }
+                        }
+                    }
+                } catch (e) { console.warn('Candle load error:', e); }
+                return null;
+            }
+
+            function saveCandlesToStorage(symbol, candles) {
+                try {
+                    const toSave = candles.slice(-300); // keep last 300
+                    localStorage.setItem(getCandleStorageKey(symbol), JSON.stringify(toSave));
+                } catch (e) { console.warn('Candle save error:', e); }
             }
 
             // ─── LOAD DATA ─────────────────────────────────────────────────────
             async function loadAllData() {
                 if (!token || !currentUser) { renderAuthPage(); return; }
                 try {
-                    // Load from localStorage first
                     loadPortfolioFromStorage();
 
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
@@ -2475,18 +2505,15 @@
                     quizScores = quizRes || {};
                     userNotes = notesRes || {};
 
-                    // Merge server portfolio with local (server takes precedence for cash/holdings)
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
                         portfolio.holdings = portRes.holdings || {};
-                        // Keep local transactions and drawnLines
                         if (portRes.transactions) portfolio.transactions = portRes.transactions;
                         if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
 
-                    // Save merged portfolio
                     savePortfolioToStorage();
 
                     if (currentUser.username === 'admin') isAdmin = true;
@@ -3553,7 +3580,6 @@
                     if (modal._cleanup) modal._cleanup();
                     origRemove.call(modal);
                 };
-                // Also clean up on any click that removes the modal
                 modal.querySelectorAll('.btn-exit, .btn-outline').forEach(b => {
                     b.addEventListener('click', () => {
                         setTimeout(() => {
@@ -4354,21 +4380,37 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ─── FIX: Get real price from Binance (WebSocket or REST) ──
-                let basePrice = lastBinancePrice[simCurrentSymbol];
-                if (!basePrice) {
-                    // Try REST API
-                    const price = await fetchBinancePrice(simCurrentSymbol);
-                    if (price) basePrice = price;
+                // ─── TRY TO LOAD FROM STORAGE FIRST ────────────────────────
+                let storedCandles = loadCandlesFromStorage(simCurrentSymbol);
+                let useStored = false;
+                if (storedCandles && storedCandles.length > 0) {
+                    // Check if the last candle is not too old (within 2 hours)
+                    const last = storedCandles[storedCandles.length - 1];
+                    const now = Math.floor(Date.now() / 1000);
+                    if (now - last.time < 7200) {
+                        simAllCandles = storedCandles;
+                        const lastCandle = simAllCandles[simAllCandles.length - 1];
+                        simLastPrices[simCurrentSymbol] = lastCandle.close;
+                        simBasePrices[simCurrentSymbol] = lastCandle.close;
+                        useStored = true;
+                    }
                 }
-                if (!basePrice) {
-                    basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
-                }
-                // Ensure we use the current price as starting price
-                simLastPrices[simCurrentSymbol] = basePrice;
-                simBasePrices[simCurrentSymbol] = basePrice;
 
-                simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
+                if (!useStored) {
+                    // ─── Get real price from Binance ──────────────────────────
+                    let basePrice = lastBinancePrice[simCurrentSymbol];
+                    if (!basePrice) {
+                        const price = await fetchBinancePrice(simCurrentSymbol);
+                        if (price) basePrice = price;
+                    }
+                    if (!basePrice) {
+                        basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
+                    }
+                    simLastPrices[simCurrentSymbol] = basePrice;
+                    simBasePrices[simCurrentSymbol] = basePrice;
+                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
+                }
+
                 const lastCandle = simAllCandles[simAllCandles.length - 1];
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
@@ -4581,6 +4623,8 @@
                     const currentMinute = now - (now % 60);
                     if (simCurrentCandle.time < currentMinute) {
                         simAllCandles.push({ ...simCurrentCandle });
+                        // Save to storage
+                        saveCandlesToStorage(simCurrentSymbol, simAllCandles);
                         const newOpen = simCurrentCandle.close;
                         simCurrentCandle = {
                             time: currentMinute,
