@@ -128,7 +128,6 @@
             position: relative;
             z-index: 1;
         }
-
         /* ─── SIDEBAR ─── */
         .sidebar {
             width: 275px;
@@ -220,7 +219,6 @@
             transform: scale(1.06);
             box-shadow: 0 3px 14px var(--primary-glow);
         }
-
         /* ─── MAIN AREA ─── */
         .main-area {
             flex: 1;
@@ -385,7 +383,6 @@
             background: var(--danger);
             color: #fff;
         }
-
         /* ─── CONTENT ─── */
         .lesson-list {
             padding: 24px;
@@ -479,120 +476,223 @@
             transform: translateX(4px);
             color: var(--primary);
         }
-
-        /* ─── TOAST ─── */
-        .toast {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: white;
-            padding: 14px 22px;
-            border-radius: var(--radius-full);
-            z-index: 700;
-            animation: toastIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .detail-view {
+            padding: 26px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .back-btn {
+            margin-bottom: 20px;
             font-weight: 600;
-            font-size: 0.88rem;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        [data-theme="dark"] .toast {
-            background: linear-gradient(135deg, #374151, #1f2937);
-        }
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(25px) scale(0.85);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* ─── AUTH ─── */
-        .auth-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(155deg, #f0f4ff, #f4f6fa 30%, #fefce8 65%, #f8f9fd);
-            transition: background var(--transition);
-            padding: 20px;
-        }
-        [data-theme="dark"] .auth-container {
-            background: linear-gradient(155deg, #0c1018, #131a25 30%, #19202d 65%, #0c1018);
-        }
-        .auth-box {
-            background: rgba(255, 255, 255, 0.84);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            padding: 44px 38px;
-            border-radius: 24px;
-            box-shadow: var(--shadow-lg);
-            width: 400px;
-            max-width: 100%;
-            text-align: center;
-            z-index: 1;
-            border: 1px solid rgba(255, 255, 255, 0.65);
-            transition: all var(--transition);
-        }
-        [data-theme="dark"] .auth-box {
-            background: rgba(25, 32, 45, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .auth-box h2 {
-            font-weight: 700;
-            margin-bottom: 5px;
-            letter-spacing: -0.03em;
-            font-size: 1.4rem;
-            font-family: 'Outfit', sans-serif;
-        }
-        .auth-box .subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 22px;
-            font-size: 0.9rem;
-        }
-        .auth-box input {
-            width: 100%;
-            padding: 12px 17px;
-            margin: 8px 0;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 0.88rem;
-            font-family: var(--font);
-            transition: all var(--transition);
-            background: var(--bg-secondary);
-            font-weight: 500;
-            color: var(--text);
-        }
-        .auth-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-glow);
-            outline: none;
-        }
-        .auth-box .btn {
-            width: 100%;
-            margin-top: 12px;
-            padding: 12px;
-            font-size: 0.93rem;
-            justify-content: center;
-        }
-        .auth-box .auth-switch {
-            margin-top: 16px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        .auth-box .auth-switch a {
             color: var(--primary);
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border-radius: var(--radius-full);
+            font-size: 0.88rem;
+            background: var(--primary-light);
+            border: 2px solid transparent;
+            transition: all var(--transition);
+        }
+        .back-btn:hover {
+            background: #e0e7ff;
+            border-color: var(--primary);
+            transform: translateX(-4px);
+            box-shadow: 0 4px 18px var(--primary-glow);
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: var(--radius-full);
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: var(--radius-full);
+            box-shadow: 0 2px 10px var(--primary-glow);
+        }
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin: 22px 0;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
             font-weight: 600;
-            text-decoration: none;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all var(--transition);
+            border-radius: 10px 10px 0 0;
+            margin-bottom: -2px;
+            font-size: 0.88rem;
+            white-space: nowrap;
         }
-        .auth-box .auth-switch a:hover {
-            text-decoration: underline;
+        .tab.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            border-bottom-color: var(--primary);
         }
-
+        .tab:hover:not(.active) {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+        .tab-content {
+            padding: 20px 0;
+            line-height: 1.75;
+        }
+        .tts-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+        .tts-btn {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.83rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 16px var(--primary-glow);
+            font-family: var(--font);
+        }
+        .tts-btn:hover {
+            box-shadow: 0 0 28px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            padding: 9px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.83rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: var(--primary);
+            box-shadow: 0 4px 18px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .btn-outline.bookmarked {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #fffbf0;
+        }
+        .speed-slider {
+            width: 80px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .speed-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 32px;
+            text-align: center;
+        }
+        .certificate-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 16px var(--shadow-glow-success);
+            font-family: var(--font);
+            animation: certGlow 2.2s ease-in-out infinite;
+        }
+        @keyframes certGlow {
+            0%,
+            100% {
+                box-shadow: 0 3px 16px rgba(16, 185, 129, 0.25);
+            }
+            50% {
+                box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+            }
+        }
+        .certificate-btn:hover {
+            transform: translateY(-3px);
+        }
+        .quiz-container {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .quiz-question {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 13px 17px;
+            margin-bottom: 7px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            text-align: left;
+            font-family: var(--font);
+            font-size: 0.88rem;
+            transition: all var(--transition);
+            color: var(--text);
+            font-weight: 500;
+        }
+        .quiz-option:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            transform: translateX(3px);
+        }
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .ai-feedback-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            margin-top: 15px;
+        }
         /* ─── MODAL ─── */
         .modal {
             position: fixed;
@@ -734,148 +834,117 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--text-secondary);
-            padding: 9px 16px;
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 14px 22px;
             border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.83rem;
-            transition: all var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font);
-            white-space: nowrap;
+            z-index: 700;
+            animation: toastIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 600;
+            font-size: 0.88rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: #fff;
-            background: var(--primary);
-            box-shadow: 0 4px 18px var(--primary-glow);
-            transform: translateY(-2px);
+        [data-theme="dark"] .toast {
+            background: linear-gradient(135deg, #374151, #1f2937);
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        /* ─── ADMIN ─── */
-        .admin-container {
+        /* ─── AUTH ─── */
+        .auth-container {
             display: flex;
-            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(155deg, #f0f4ff, #f4f6fa 30%, #fefce8 65%, #f8f9fd);
+            transition: background var(--transition);
+            padding: 20px;
         }
-        .admin-left {
-            width: 300px;
-            background: #0a0e18;
-            color: #b0b8cc;
-            display: flex;
-            flex-direction: column;
+        [data-theme="dark"] .auth-container {
+            background: linear-gradient(155deg, #0c1018, #131a25 30%, #19202d 65%, #0c1018);
+        }
+        .auth-box {
+            background: rgba(255, 255, 255, 0.84);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            padding: 44px 38px;
+            border-radius: 24px;
             box-shadow: var(--shadow-lg);
-            z-index: 10;
-            flex-shrink: 0;
-            transition: background var(--transition);
+            width: 400px;
+            max-width: 100%;
+            text-align: center;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            transition: all var(--transition);
         }
-        .admin-left .admin-header {
-            padding: 18px 16px;
+        [data-theme="dark"] .auth-box {
+            background: rgba(25, 32, 45, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .auth-box h2 {
             font-weight: 700;
-            font-size: 1.05rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-            letter-spacing: -0.02em;
+            margin-bottom: 5px;
+            letter-spacing: -0.03em;
+            font-size: 1.4rem;
             font-family: 'Outfit', sans-serif;
-            gap: 8px;
-            flex-wrap: wrap;
         }
-        .admin-left .admin-actions {
-            padding: 14px 14px;
-            display: flex;
-            gap: 7px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .admin-right {
-            flex: 1;
-            background: var(--bg);
-            padding: 24px;
-            overflow-y: auto;
-            transition: background var(--transition);
-            min-width: 0;
-        }
-        .admin-subject-item {
-            padding: 11px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all var(--transition);
-            border-left: 3px solid transparent;
-            margin: 2px 8px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.86rem;
-            gap: 8px;
-        }
-        .admin-subject-item:hover {
-            background: #171c2a;
-            border-left-color: var(--primary);
-            transform: translateX(2px);
-        }
-        .admin-lesson-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px 18px;
-            margin-bottom: 8px;
-            transition: all var(--transition);
-            box-shadow: var(--shadow);
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .admin-lesson-row:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-        }
-        .admin-theme-toggle {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fbbf24;
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 6px 11px;
-            border-radius: var(--radius-full);
-            transition: all var(--transition);
-            font-weight: 600;
-            font-family: var(--font);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-        }
-        .admin-theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-1px);
-        }
-        .btn-icon {
-            background: transparent;
-            border: none;
+        .auth-box .subtitle {
             color: var(--text-secondary);
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 6px;
-            transition: all var(--transition);
-            font-size: 0.8rem;
+            margin-bottom: 22px;
+            font-size: 0.9rem;
         }
-        .btn-icon:hover {
-            background: var(--surface-hover);
+        .auth-box input {
+            width: 100%;
+            padding: 12px 17px;
+            margin: 8px 0;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.88rem;
+            font-family: var(--font);
+            transition: all var(--transition);
+            background: var(--bg-secondary);
+            font-weight: 500;
             color: var(--text);
         }
-        .btn-icon.danger:hover {
-            color: var(--danger);
-            background: var(--danger-light);
+        .auth-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            outline: none;
+        }
+        .auth-box .btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            font-size: 0.93rem;
+            justify-content: center;
+        }
+        .auth-box .auth-switch {
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .auth-box .auth-switch a {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .auth-box .auth-switch a:hover {
+            text-decoration: underline;
         }
 
         /* ─── DESKTOP TERMINAL ─── */
@@ -1345,24 +1414,23 @@
             user-select: none;
             -webkit-user-select: none;
             position: relative;
-            width: 100%;
         }
-        /* Top Toolbar */
+        /* Top Toolbar - MT5 style */
         .mt5-top-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
-            min-height: 40px;
+            min-height: 44px;
         }
         .mt5-toolbar-left {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .mt5-hamburger {
             font-size: 1.2rem;
@@ -1376,23 +1444,20 @@
         }
         .mt5-symbol {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--mt5-text-bright);
         }
         .mt5-toolbar-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         .mt5-indicator-btn {
             font-size: 1.1rem;
             color: var(--mt5-text-bright);
             cursor: pointer;
-            padding: 4px 6px;
+            padding: 4px;
             transition: 0.2s;
-            background: transparent;
-            border: none;
-            font-family: var(--font);
         }
         .mt5-indicator-btn:active {
             opacity: 0.6;
@@ -1401,251 +1466,14 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: var(--font-mono);
-        }
-        /* Instrument Info - compact */
-        .mt5-instrument-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 3px 10px;
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
-            flex-shrink: 0;
-            min-height: 28px;
-        }
-        .mt5-pair {
-            font-weight: 700;
-            font-size: 0.8rem;
-            color: var(--mt5-text-bright);
-        }
-        .mt5-name {
-            color: var(--mt5-text);
-            font-size: 0.65rem;
-        }
-        .mt5-tf-display {
-            background: var(--mt5-input);
-            padding: 1px 8px;
-            border-radius: 4px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            font-family: var(--font-mono);
-            color: var(--mt5-text-bright);
-        }
-        /* Quick Trade Panel */
-        .mt5-quick-trade {
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
-            padding: 6px 8px;
-            flex-shrink: 0;
-        }
-        .mt5-quick-trade-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 4px;
-        }
-        .mt5-sell-btn,
-        .mt5-buy-btn {
-            flex: 1;
-            text-align: center;
-            padding: 6px 4px;
-            border-radius: 8px;
-            font-weight: 700;
             font-size: 0.7rem;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            line-height: 1.3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-width: 44px;
-            touch-action: manipulation;
-        }
-        .mt5-sell-btn {
-            background: var(--mt5-red);
-        }
-        .mt5-buy-btn {
-            background: var(--mt5-green);
-        }
-        .mt5-sell-btn:hover,
-        .mt5-buy-btn:hover {
-            filter: brightness(1.1);
-        }
-        .mt5-sell-btn:active,
-        .mt5-buy-btn:active {
-            transform: scale(0.96);
-        }
-        .mt5-price-display {
-            font-size: 0.6rem;
-            font-weight: 400;
-            margin-top: 1px;
-            opacity: 0.9;
-        }
-        .mt5-lot-selector {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1px;
-            background: var(--mt5-input);
-            padding: 3px 8px;
-            border-radius: 8px;
-            min-width: 56px;
-            border: 1px solid var(--mt5-border);
-            flex-shrink: 0;
-        }
-        .mt5-lot-selector .lot-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            width: 100%;
-            justify-content: center;
-        }
-        .mt5-lot-selector button {
-            background: transparent;
-            border: none;
-            color: var(--mt5-text-bright);
-            font-size: 0.8rem;
-            cursor: pointer;
-            padding: 2px 4px;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .mt5-lot-selector button:active {
-            opacity: 0.6;
-        }
-        .mt5-lot-value {
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--mt5-text-bright);
-            min-width: 28px;
-            text-align: center;
-        }
-        .mt5-lot-presets {
-            display: flex;
-            gap: 2px;
-            margin-top: 1px;
-        }
-        .mt5-lot-presets button {
-            background: var(--mt5-input);
-            border: 1px solid var(--mt5-border);
-            color: var(--mt5-text);
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: 0.5rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
             font-family: var(--font-mono);
-            touch-action: manipulation;
         }
-        .mt5-lot-presets button:active {
-            background: var(--mt5-green);
-            color: #fff;
-        }
-        /* Chart Container */
-        .mobile-chart-container {
-            flex: 1;
-            background: var(--mt5-chart-bg);
-            position: relative;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            width: 100%;
-        }
-        .mobile-chart-container #simChartContainer {
-            width: 100%;
-            height: 100%;
-            background: var(--mt5-chart-bg);
-            touch-action: none;
-        }
-        /* Bottom Navigation */
-        .mt5-bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 44px;
-            background: var(--mt5-nav-bg);
-            border-top: 1px solid var(--mt5-border);
-            flex-shrink: 0;
-            z-index: 25;
-            width: 100%;
-        }
-        .mt5-nav-item {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.55rem;
-            color: var(--mt5-text);
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: 500;
-            position: relative;
-            background: transparent;
-            border: none;
-            font-family: var(--font);
-            padding: 0 2px;
-            gap: 1px;
-            touch-action: manipulation;
-        }
-        .mt5-nav-item.active {
-            color: var(--mt5-green);
-        }
-        .mt5-nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 25%;
-            right: 25%;
-            height: 2px;
-            background: var(--mt5-green);
-            border-radius: 0 0 3px 3px;
-        }
-        .mt5-nav-item i {
-            font-size: 1rem;
-            margin-bottom: 1px;
-        }
-        .mt5-nav-item:active {
-            opacity: 0.6;
-        }
-        /* Mobile Panels - overlay style */
-        .mobile-panels {
-            position: absolute;
-            bottom: 44px;
-            left: 0;
-            right: 0;
-            top: 0;
-            background: var(--mt5-bg);
-            overflow-y: auto;
-            display: none;
-            flex-direction: column;
-            z-index: 10;
-            padding-bottom: 8px;
-        }
-        .mobile-panels.show {
-            display: flex;
-        }
-        .panel-content {
-            padding: 10px 12px;
-            flex: 1;
-            display: none;
-            overflow-y: auto;
-        }
-        .panel-content:first-child {
-            display: block;
-        }
+
         /* Hamburger Sidebar - Half Screen */
         .mt5-sidebar-overlay {
             position: fixed;
@@ -1683,7 +1511,7 @@
         .mt5-sidebar-sheet .close-area {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         .mt5-sidebar-sheet .close-area button {
             background: transparent;
@@ -1695,23 +1523,23 @@
         }
         .mt5-sidebar-sheet h4 {
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
-            margin: 14px 0 6px 0;
+            font-size: 0.85rem;
+            margin: 16px 0 8px 0;
             font-family: 'Outfit', sans-serif;
             border-bottom: 1px solid var(--mt5-border);
-            padding-bottom: 4px;
+            padding-bottom: 6px;
         }
         .mt5-sidebar-sheet .user-info {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid var(--mt5-border);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .mt5-sidebar-sheet .user-info .avatar {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--mt5-green);
             color: #fff;
@@ -1719,25 +1547,24 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.9rem;
-            flex-shrink: 0;
+            font-size: 1rem;
         }
         .mt5-sidebar-sheet .user-info .details .name {
             color: var(--mt5-text-bright);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
         .mt5-sidebar-sheet .user-info .details .balance {
             color: var(--mt5-text);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
         }
         .mt5-sidebar-sheet .sidebar-indicators label {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 4px 0;
+            padding: 6px 0;
             color: var(--mt5-text);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
         .mt5-sidebar-sheet .sidebar-indicators label input {
@@ -1755,12 +1582,11 @@
             color: var(--mt5-text);
             padding: 4px 10px;
             border-radius: 4px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
             transition: 0.2s;
-            touch-action: manipulation;
         }
         .mt5-sidebar-sheet .timeframe-grid button:active {
             background: var(--mt5-green);
@@ -1768,26 +1594,26 @@
         }
         .mt5-sidebar-sheet .theme-row {
             display: flex;
-            gap: 6px;
-            padding: 4px 0;
+            gap: 8px;
+            padding: 6px 0;
         }
         .mt5-sidebar-sheet .theme-row button {
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             font-family: var(--font);
             transition: 0.2s;
-            touch-action: manipulation;
         }
         .mt5-sidebar-sheet .theme-row button:active {
             background: var(--mt5-green);
             color: #fff;
         }
-        /* Indicator Overlay */
+
+        /* Indicator Overlay - click outside to close */
         .mt5-indicator-overlay {
             position: fixed;
             top: 0;
@@ -1808,30 +1634,26 @@
             width: 100%;
             max-width: 400px;
             border-radius: 16px 16px 0 0;
-            padding: 20px 18px 28px;
+            padding: 20px;
             animation: slideUp 0.25s ease;
         }
         .mt5-indicator-sheet h3 {
             color: var(--mt5-text-bright);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
         .mt5-indicator-sheet label {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 5px 0;
+            padding: 6px 0;
             color: var(--mt5-text);
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
         .mt5-indicator-sheet label input {
             accent-color: var(--mt5-green);
-        }
-        .mt5-indicator-sheet hr {
-            border-color: var(--mt5-border);
-            margin: 6px 0;
         }
         @keyframes slideUp {
             from {
@@ -1841,11 +1663,244 @@
                 transform: translateY(0);
             }
         }
+
+        /* Instrument Info */
+        .mt5-instrument-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
+            flex-shrink: 0;
+        }
+        .mt5-pair {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--mt5-text-bright);
+        }
+        .mt5-name {
+            color: var(--mt5-text);
+            font-size: 0.75rem;
+        }
+        .mt5-tf-display {
+            background: var(--mt5-input);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+            color: var(--mt5-text-bright);
+        }
+
+        /* Quick Trade Panel - MT5 style */
+        .mt5-quick-trade {
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
+            padding: 8px 10px;
+            flex-shrink: 0;
+        }
+        .mt5-quick-trade-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .mt5-sell-btn,
+        .mt5-buy-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+        .mt5-sell-btn {
+            background: var(--mt5-red);
+        }
+        .mt5-buy-btn {
+            background: var(--mt5-green);
+        }
+        .mt5-sell-btn:hover,
+        .mt5-buy-btn:hover {
+            filter: brightness(1.1);
+        }
+        .mt5-sell-btn:active,
+        .mt5-buy-btn:active {
+            transform: scale(0.96);
+        }
+        .mt5-price-display {
+            font-size: 0.7rem;
+            font-weight: 400;
+            margin-top: 1px;
+            opacity: 0.9;
+        }
+        .mt5-lot-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            background: var(--mt5-input);
+            padding: 4px 10px;
+            border-radius: 8px;
+            min-width: 60px;
+            border: 1px solid var(--mt5-border);
+        }
+        .mt5-lot-selector .lot-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+        .mt5-lot-selector button {
+            background: transparent;
+            border: none;
+            color: var(--mt5-text-bright);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            transition: 0.2s;
+        }
+        .mt5-lot-selector button:active {
+            opacity: 0.6;
+        }
+        .mt5-lot-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--mt5-text-bright);
+            min-width: 30px;
+            text-align: center;
+        }
+        .mt5-lot-presets {
+            display: flex;
+            gap: 3px;
+            margin-top: 2px;
+        }
+        .mt5-lot-presets button {
+            background: var(--mt5-input);
+            border: 1px solid var(--mt5-border);
+            color: var(--mt5-text);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: var(--font-mono);
+        }
+        .mt5-lot-presets button:active {
+            background: var(--mt5-green);
+            color: #fff;
+        }
+
+        /* Chart Container */
+        .mobile-chart-container {
+            flex: 1;
+            background: var(--mt5-chart-bg);
+            position: relative;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .mobile-chart-container #simChartContainer {
+            width: 100%;
+            height: 100%;
+            background: var(--mt5-chart-bg);
+        }
+
+        /* Bottom Navigation - MT5 style */
+        .mt5-bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 48px;
+            background: var(--mt5-nav-bg);
+            border-top: 1px solid var(--mt5-border);
+            flex-shrink: 0;
+            z-index: 20;
+        }
+        .mt5-nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: var(--mt5-text);
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            position: relative;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
+            padding: 0 2px;
+            gap: 1px;
+        }
+        .mt5-nav-item.active {
+            color: var(--mt5-green);
+        }
+        .mt5-nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: var(--mt5-green);
+            border-radius: 0 0 3px 3px;
+        }
+        .mt5-nav-item i {
+            font-size: 1.1rem;
+            margin-bottom: 1px;
+        }
+        .mt5-nav-item:active {
+            opacity: 0.6;
+        }
+
+        /* Mobile Panels */
+        .mobile-panels {
+            position: absolute;
+            bottom: 48px;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: var(--mt5-bg);
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            z-index: 5;
+        }
+        .mobile-panels.show {
+            display: flex;
+        }
+        .panel-content {
+            padding: 10px 12px;
+            flex: 1;
+            display: none;
+            overflow-y: auto;
+        }
+        .panel-content:first-child {
+            display: block;
+        }
+
         /* Watchlist */
         .watchlist-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -1853,7 +1908,6 @@
             justify-content: space-between;
             cursor: pointer;
             transition: 0.2s;
-            touch-action: manipulation;
         }
         .watchlist-item:active {
             background: var(--mt5-nav-active);
@@ -1861,14 +1915,14 @@
         .watchlist-item .sym {
             font-weight: 600;
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
         .watchlist-item .price {
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
         .watchlist-item .change {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
         .watchlist-item .change.up {
@@ -1882,12 +1936,12 @@
         }
         .mobile-search input {
             width: 100%;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: 1px solid var(--mt5-border);
             border-radius: 8px;
             background: var(--mt5-input);
             color: var(--mt5-text-bright);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-family: var(--font);
             outline: none;
         }
@@ -1897,11 +1951,12 @@
         .mobile-search input:focus {
             border-color: var(--mt5-green);
         }
+
         /* Position Card */
         .position-card {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
         }
@@ -1909,7 +1964,7 @@
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
-            font-size: 0.74rem;
+            font-size: 0.78rem;
         }
         .position-card .row .label {
             color: var(--mt5-text);
@@ -1929,19 +1984,19 @@
             background: var(--mt5-red);
             color: #fff;
             border: none;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: 0.2s;
             width: 100%;
             font-family: var(--font);
-            touch-action: manipulation;
         }
         .position-card .exit-btn:active {
             transform: scale(0.96);
         }
+
         /* Trade Panel in mobile */
         .mt5-deposit-withdraw {
             display: flex;
@@ -1954,9 +2009,9 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text-bright);
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-family: var(--font);
             min-width: 60px;
         }
@@ -1964,14 +2019,13 @@
             background: var(--mt5-blue);
             color: #fff;
             border: none;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: var(--font);
-            touch-action: manipulation;
         }
         .mt5-deposit-withdraw button:active {
             transform: scale(0.96);
@@ -1979,11 +2033,12 @@
         .mt5-deposit-withdraw button.withdraw-btn {
             background: var(--mt5-red);
         }
+
         /* History item */
         .history-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -1997,7 +2052,7 @@
         }
         .history-item .left .type {
             font-weight: 600;
-            font-size: 0.74rem;
+            font-size: 0.78rem;
         }
         .history-item .left .type.buy {
             color: var(--mt5-green);
@@ -2012,12 +2067,12 @@
             color: var(--mt5-red);
         }
         .history-item .left .detail {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--mt5-text);
         }
         .history-item .right {
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-family: var(--font-mono);
         }
         .history-item .right.green {
@@ -2025,6 +2080,108 @@
         }
         .history-item .right.red {
             color: var(--mt5-red);
+        }
+
+        /* ─── ADMIN ─── */
+        .admin-container {
+            display: flex;
+            height: 100vh;
+        }
+        .admin-left {
+            width: 300px;
+            background: #0a0e18;
+            color: #b0b8cc;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            flex-shrink: 0;
+            transition: background var(--transition);
+        }
+        .admin-left .admin-header {
+            padding: 18px 16px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            letter-spacing: -0.02em;
+            font-family: 'Outfit', sans-serif;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-left .admin-actions {
+            padding: 14px 14px;
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .admin-right {
+            flex: 1;
+            background: var(--bg);
+            padding: 24px;
+            overflow-y: auto;
+            transition: background var(--transition);
+            min-width: 0;
+        }
+        .admin-subject-item {
+            padding: 11px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all var(--transition);
+            border-left: 3px solid transparent;
+            margin: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.86rem;
+            gap: 8px;
+        }
+        .admin-subject-item:hover {
+            background: #171c2a;
+            border-left-color: var(--primary);
+            transform: translateX(2px);
+        }
+        .admin-lesson-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-lesson-row:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        .admin-theme-toggle {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fbbf24;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 6px 11px;
+            border-radius: var(--radius-full);
+            transition: all var(--transition);
+            font-weight: 600;
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .admin-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
         }
 
         /* ─── RESPONSIVE ─── */
@@ -2086,58 +2243,58 @@
                 padding: 30px 20px;
             }
             .mt5-quick-trade-row {
-                gap: 3px;
+                gap: 4px;
             }
             .mt5-sell-btn,
             .mt5-buy-btn {
-                font-size: 0.65rem;
-                padding: 5px 3px;
-                min-width: 40px;
+                font-size: 0.7rem;
+                padding: 6px 3px;
+                min-width: 44px;
             }
             .mt5-lot-selector {
-                min-width: 48px;
-                padding: 2px 6px;
+                min-width: 50px;
+                padding: 3px 6px;
             }
             .mt5-lot-value {
-                font-size: 0.75rem;
-                min-width: 22px;
+                font-size: 0.8rem;
+                min-width: 24px;
             }
             .mt5-lot-presets button {
-                font-size: 0.45rem;
-                padding: 1px 3px;
+                font-size: 0.5rem;
+                padding: 1px 4px;
             }
             .mt5-top-toolbar {
-                padding: 5px 8px;
-                min-height: 36px;
+                padding: 6px 8px;
+                min-height: 38px;
             }
             .mt5-symbol {
                 font-size: 0.85rem;
             }
             .mt5-tf-select {
                 font-size: 0.6rem;
-                padding: 2px 6px;
+                padding: 3px 6px;
             }
             .mt5-instrument-info {
-                padding: 2px 8px;
-                min-height: 24px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
             }
             .mt5-pair {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             .mt5-name {
-                font-size: 0.6rem;
+                font-size: 0.65rem;
             }
             .mt5-tf-display {
-                font-size: 0.55rem;
+                font-size: 0.6rem;
             }
             .mt5-bottom-nav {
-                height: 40px;
+                height: 42px;
             }
             .mt5-nav-item {
-                font-size: 0.5rem;
+                font-size: 0.55rem;
             }
             .mt5-nav-item i {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
             .mt5-sidebar-sheet {
                 width: 80%;
@@ -2146,29 +2303,29 @@
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
-                gap: 2px;
+                gap: 3px;
             }
             .mt5-sell-btn,
             .mt5-buy-btn {
-                font-size: 0.55rem;
-                padding: 4px 2px;
-                min-width: 34px;
+                font-size: 0.6rem;
+                padding: 5px 2px;
+                min-width: 38px;
             }
             .mt5-lot-selector {
-                min-width: 40px;
+                min-width: 42px;
                 padding: 2px 4px;
             }
             .mt5-lot-value {
-                font-size: 0.65rem;
-                min-width: 18px;
+                font-size: 0.7rem;
+                min-width: 20px;
             }
             .mt5-lot-presets button {
-                font-size: 0.4rem;
-                padding: 1px 2px;
+                font-size: 0.45rem;
+                padding: 1px 3px;
             }
             .mt5-top-toolbar {
                 padding: 4px 6px;
-                min-height: 32px;
+                min-height: 34px;
             }
             .mt5-symbol {
                 font-size: 0.75rem;
@@ -2178,97 +2335,35 @@
                 padding: 2px 5px;
             }
             .mt5-bottom-nav {
-                height: 36px;
+                height: 38px;
             }
             .mt5-nav-item {
-                font-size: 0.45rem;
+                font-size: 0.5rem;
             }
             .mt5-nav-item i {
-                font-size: 0.8rem;
-            }
-            .mt5-instrument-info {
-                padding: 2px 6px;
-                min-height: 20px;
-            }
-            .mt5-pair {
-                font-size: 0.65rem;
-            }
-            .mt5-name {
-                font-size: 0.5rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.5rem;
-                padding: 1px 5px;
+                font-size: 0.9rem;
             }
         }
 
-        /* ─── CHART LOADING ─── */
-        .chart-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 500;
+        /* Gesture hint for mobile */
+        .gesture-hint {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            opacity: 0;
+            transition: opacity 0.6s;
+            pointer-events: none;
+            z-index: 15;
+            white-space: nowrap;
         }
-
-        /* ─── UTILITY ─── */
-        .hidden {
-            display: none !important;
-        }
-        .flex-center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .gap-1 {
-            gap: 4px;
-        }
-        .gap-2 {
-            gap: 8px;
-        }
-        .w-full {
-            width: 100%;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .text-muted {
-            color: var(--text-muted);
-        }
-        .text-success {
-            color: var(--success);
-        }
-        .text-danger {
-            color: var(--danger);
-        }
-        .text-primary {
-            color: var(--primary);
-        }
-        .font-mono {
-            font-family: var(--font-mono);
-        }
-        .font-bold {
-            font-weight: 700;
-        }
-        .mt-1 {
-            margin-top: 4px;
-        }
-        .mt-2 {
-            margin-top: 8px;
-        }
-        .mb-1 {
-            margin-bottom: 4px;
-        }
-        .mb-2 {
-            margin-bottom: 8px;
-        }
-        .p-1 {
-            padding: 4px;
-        }
-        .p-2 {
-            padding: 8px;
+        .gesture-hint.show {
+            opacity: 1;
         }
     </style>
 </head>
@@ -2302,7 +2397,6 @@
             let userNotes = {};
             let isAdmin = false;
             let portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
-            let lastPortfolioSave = 0;
 
             // ─── SIMULATION STATE ─────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSD';
@@ -2426,7 +2520,6 @@
                     portfolio.cash = parseFloat(portfolio.cash) || 100000;
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                    if (!portfolio.transactions) portfolio.transactions = [];
                     if (currentUser.username === 'admin') isAdmin = true;
                     applyTheme();
                     renderApp();
@@ -2534,6 +2627,7 @@
                                 <button class="theme-toggle-btn" id="themeToggle">
                                     <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
                                 </button>
+                                ${isAdmin ? `<button class="btn btn-outline btn-sm" id="adminModeBtn">⚙️ Admin</button>` : ''}
                                 <div class="user-menu">
                                     <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
                                     <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -2553,6 +2647,8 @@
                     applyTheme();
                     document.getElementById('themeToggle').innerHTML =
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
+                if (document.getElementById('adminModeBtn')) document.getElementById('adminModeBtn').onclick = () => {
+                    window.location.href = '?mode=admin'; };
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                 'open');
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
@@ -2860,11 +2956,10 @@
             }
 
             async function generateCertificate(subj) {
-                try {
-                    const div = document.createElement('div');
-                    div.style.cssText =
-                    'position:fixed;left:-9999px;top:0;width:780px;background:#fffdf7;border:10px double #c9a84c;padding:60px 50px;text-align:center;font-family:"Playfair Display",serif;border-radius:12px;';
-                    div.innerHTML = `
+                const div = document.createElement('div');
+                div.style.cssText = 'position:fixed;left:-9999px;top:0;width:780px;';
+                div.innerHTML = `
+                    <div id="certCap" style="background:#fffdf7;border:10px double #c9a84c;padding:60px 50px;text-align:center;font-family:'Playfair Display',serif;border-radius:12px;">
                         <div style="font-size:3rem;">🏅</div>
                         <h2>Certificate of Completion</h2>
                         <p>This certifies that</p>
@@ -2872,31 +2967,30 @@
                         <p>has completed</p>
                         <p style="font-size:1.5rem;font-weight:700;">${t(subj.names)}</p>
                         <p style="color:#777;margin-top:20px;">Date: ${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>
-                    `;
-                    document.body.appendChild(div);
-                    await new Promise(r => setTimeout(r, 300));
-                    try {
-                        const canvas = await html2canvas(div, { scale: 2, backgroundColor: '#fffdf7' });
-                        const { jsPDF } = window.jspdf;
-                        const pdf = new jsPDF('landscape', 'pt', [canvas.width, canvas.height]);
-                        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
-                        const pdfBlob = pdf.output('blob');
-                        const formData = new FormData();
-                        formData.append('file', pdfBlob, 'Certificate_' + t(subj.names).replace(/\s+/g, '_') +
-                        '.pdf');
-                        const uploadRes = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' +
-                                    token }, body: formData });
-                        if (!uploadRes.ok) throw new Error('Upload failed');
-                        const uploadData = await uploadRes.json();
-                        const a = document.createElement('a');
-                        a.href = uploadData.url;
-                        a.download = 'Certificate_' + t(subj.names).replace(/\s+/g, '_') + '.pdf';
-                        a.click();
-                        showToast('🎓 Certificate uploaded & downloaded!');
-                        showToast('🔗 Share: ' + uploadData.url);
-                    } catch (e) { showToast('⚠️ Certificate error: ' + e.message); }
-                    document.body.removeChild(div);
-                } catch (e) { showToast('⚠️ ' + e.message); }
+                    </div>`;
+                document.body.appendChild(div);
+                await new Promise(r => setTimeout(r, 300));
+                try {
+                    const canvas = await html2canvas(document.getElementById('certCap'), { scale: 2,
+                        backgroundColor: '#fffdf7' });
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('landscape', 'pt', [canvas.width, canvas.height]);
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+                    const pdfBlob = pdf.output('blob');
+                    const formData = new FormData();
+                    formData.append('file', pdfBlob, 'Certificate_' + t(subj.names).replace(/\s+/g, '_') + '.pdf');
+                    const uploadRes = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' +
+                                token }, body: formData });
+                    if (!uploadRes.ok) throw new Error('Upload failed');
+                    const uploadData = await uploadRes.json();
+                    const a = document.createElement('a');
+                    a.href = uploadData.url;
+                    a.download = 'Certificate_' + t(subj.names).replace(/\s+/g, '_') + '.pdf';
+                    a.click();
+                    showToast('🎓 Certificate uploaded & downloaded!');
+                    showToast('🔗 Share: ' + uploadData.url);
+                } catch (e) { showToast('⚠️ Certificate error: ' + e.message); }
+                document.body.removeChild(div);
             }
 
             // ─── ADMIN ──────────────────────────────────────────────────────────
@@ -3238,15 +3332,15 @@
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:36px;">
-                            <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
                                 <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
-                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.9rem;">📈 Trading Terminal</span>
+                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.75rem;">💰 $${portfolio.cash.toFixed(2)}</span>
-                                <span id="simTotalValue" style="font-weight:600;font-size:0.75rem;">📊 $0</span>
-                                <span id="simPL" style="font-weight:600;font-size:0.75rem;">📈 $0</span>
+                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${portfolio.cash.toFixed(2)}</span>
+                                <span id="simTotalValue" style="font-weight:600;font-size:0.8rem;">📊 $0</span>
+                                <span id="simPL" style="font-weight:600;font-size:0.8rem;">📈 $0</span>
                             </div>
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
@@ -3256,7 +3350,7 @@
                     renderMobileTerminal(container);
                 } else {
                     container.style.overflowY = 'auto';
-                    container.style.padding = '8px';
+                    container.style.padding = '10px';
                     renderDesktopTerminal(container);
                 }
             }
@@ -3279,7 +3373,7 @@
                         </div>
                         <div class="terminal-inner">
                             <div class="terminal-header-bar">
-                                <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:Outfit,sans-serif;font-size:1rem;">📈 Live Trading Terminal</h2></div>
+                                <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:Outfit,sans-serif;font-size:1.1rem;">📈 Live Trading Terminal</h2></div>
                                 <div class="summary-cards">
                                     <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">💰 Virtual Cash</span><div class="val" id="simCashBar" style="color:var(--success);">$0</div></div>
                                     <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">📊 Portfolio</span><div class="val" id="simTotalBar">$0.00</div></div>
@@ -3317,17 +3411,17 @@
                                 </div>
                             </div>
                             <div class="trade-panel">
-                                <select id="simSymbolSelect2">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <input type="number" id="simQty" placeholder="Qty" value="1" min="0.01" step="0.01">
+                                <select id="simSymbolSelect2" style="padding:6px 10px;">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                <input type="number" id="simQty" placeholder="Qty" value="1" min="1" step="0.01">
                                 <input type="number" id="simSL" placeholder="SL $" step="0.0001">
                                 <input type="number" id="simTP" placeholder="TP $" step="0.0001">
                                 <button class="btn-buy" onclick="placeSimOrder('buy')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell')"><i class="fas fa-money-bill-wave"></i> Sell</button>
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
-                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> TRADE</button>
+                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
                             <div class="chart-container-wrap">
-                                <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
+                                <div id="simChartContainer"><div class="chart-loading" id="chartLoading" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">Loading chart...</div></div>
                                 <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen"><i class="fas fa-expand"></i></button>
                             </div>
                             <div class="positions-table-wrap">
@@ -3391,7 +3485,7 @@
                 modal.className = 'modal';
                 let html = `
                     <div class="modal-content">
-                        <h3><i class="fas fa-wallet"></i> TRADE — Summary</h3>
+                        <h3><i class="fas fa-wallet"></i> Trade Summary</h3>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">Balance</div>
@@ -3465,7 +3559,8 @@
             let currentMobileLot = 0.01;
 
             function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot);
-                document.getElementById('mobileLotSize').textContent = currentMobileLot.toFixed(2); }
+                const el = document.getElementById('mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(
+                2); }
 
             function changeMobileLot(delta) { const newLot = Math.max(0.01, currentMobileLot + delta * 0.01);
                 setMobileLot(+(newLot.toFixed(2))); }
@@ -3487,55 +3582,13 @@
                                 <span class="mt5-symbol">${simCurrentSymbol}</span>
                             </div>
                             <div class="mt5-toolbar-right">
-                                <button class="mt5-indicator-btn" id="mt5IndicatorBtn">📊</button>
+                                <i class="fas fa-chart-line mt5-indicator-btn" id="mt5IndicatorBtn"></i>
                                 <select id="mt5TfSelect" class="mt5-tf-select">
                                     ${Object.keys(timeframeIntervals).map(k => `<option value="${timeframeIntervals[k]}" ${timeframeIntervals[k]===currentTimeframe?'selected':''}>${k}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
-                        <!-- Instrument Info -->
-                        <div class="mt5-instrument-info">
-                            <span class="mt5-pair">${simCurrentSymbol}</span>
-                            <span class="mt5-name">${simCurrentSymbol} / USD</span>
-                            <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
-                        </div>
-                        <!-- Quick Trade Panel -->
-                        <div class="mt5-quick-trade">
-                            <div class="mt5-quick-trade-row">
-                                <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
-                                <div class="mt5-lot-selector">
-                                    <div class="lot-row">
-                                        <button id="lotDownBtn" aria-label="Decrease lot">▼</button>
-                                        <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
-                                        <button id="lotUpBtn" aria-label="Increase lot">▲</button>
-                                    </div>
-                                    <div class="mt5-lot-presets">
-                                        <button data-lot="0.01">0.01</button>
-                                        <button data-lot="0.10">0.10</button>
-                                        <button data-lot="1.00">1.00</button>
-                                    </div>
-                                </div>
-                                <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
-                            </div>
-                        </div>
-                        <!-- Chart Container -->
-                        <div class="mobile-chart-container" id="mobileChartContainer">
-                            <div id="simChartContainer" style="width:100%;height:100%;touch-action:none;"></div>
-                        </div>
-                        <!-- Bottom Navigation -->
-                        <div class="mt5-bottom-nav" id="mt5BottomNav">
-                            <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
-                            <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
-                            <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
-                            <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
-                        </div>
-                        <!-- Panels -->
-                        <div class="mobile-panels" id="mobilePanels">
-                            <div class="panel-content" id="quotesPanel"></div>
-                            <div class="panel-content" id="tradePanel"></div>
-                            <div class="panel-content" id="historyPanel"></div>
-                        </div>
-                        <!-- Hamburger Sidebar Overlay -->
+                        <!-- Hamburger Sidebar -->
                         <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
                             <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
                                 <div class="close-area">
@@ -3565,35 +3618,78 @@
                                     <button id="sidebarDarkTheme">🌙 Dark</button>
                                 </div>
                                 <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);">
-                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button>
+                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" onclick="document.getElementById('mt5SidebarOverlay').classList.remove('show');">Close</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Indicator Overlay -->
+                        <!-- Indicator Overlay - click outside to close -->
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
                             <div class="mt5-indicator-sheet" id="mt5IndicatorSheet">
                                 <h3>📊 Indicators</h3>
                                 ${Object.entries(indicatorNames).map(([k,name]) => `
                                     <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>
                                 `).join('')}
-                                <hr>
+                                <hr style="border-color:var(--mt5-border);margin:8px 0;">
                                 <label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
-                                <div style="margin-top:16px;display:flex;gap:8px;">
+                                <div style="margin-top:12px;display:flex;gap:8px;">
                                     <button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button>
                                 </div>
                             </div>
                         </div>
+                        <!-- Instrument Info -->
+                        <div class="mt5-instrument-info">
+                            <span class="mt5-pair">${simCurrentSymbol}</span>
+                            <span class="mt5-name">${simCurrentSymbol} / USD</span>
+                            <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
+                        </div>
+                        <!-- Quick Trade Panel -->
+                        <div class="mt5-quick-trade">
+                            <div class="mt5-quick-trade-row">
+                                <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
+                                <div class="mt5-lot-selector">
+                                    <div class="lot-row">
+                                        <button id="lotDownBtn">▼</button>
+                                        <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
+                                        <button id="lotUpBtn">▲</button>
+                                    </div>
+                                    <div class="mt5-lot-presets">
+                                        <button data-lot="0.01">0.01</button>
+                                        <button data-lot="0.10">0.10</button>
+                                        <button data-lot="1.00">1.00</button>
+                                    </div>
+                                </div>
+                                <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
+                            </div>
+                        </div>
+                        <!-- Chart -->
+                        <div class="mobile-chart-container" id="mobileChartContainer">
+                            <div id="simChartContainer" style="width:100%;height:100%;"></div>
+                            <div class="gesture-hint" id="gestureHint">👆 Pinch · Drag · Double-tap</div>
+                        </div>
+                        <!-- Bottom Navigation -->
+                        <div class="mt5-bottom-nav" id="mt5BottomNav">
+                            <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
+                            <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
+                            <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
+                            <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
+                        </div>
+                        <!-- Panels -->
+                        <div class="mobile-panels" id="mobilePanels">
+                            <div class="panel-content" id="quotesPanel"></div>
+                            <div class="panel-content" id="tradePanel"></div>
+                            <div class="panel-content" id="historyPanel"></div>
+                        </div>
                     </div>`;
                 // ─── Bind mobile events ──────────────────────────────────────
                 // Hamburger
-                const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
-                const sidebarSheet = document.getElementById('mt5SidebarSheet');
-                document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
-                    sidebarOverlay.classList.toggle('show'); };
-                document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
-                document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
-                // Close sidebar on outside click
-                sidebarOverlay.addEventListener('click', function(e) {
+                document.getElementById('mt5Hamburger').onclick = () => {
+                    document.getElementById('mt5SidebarOverlay').classList.toggle('show');
+                };
+                document.getElementById('mt5SidebarClose').onclick = () => {
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show');
+                };
+                // Click outside sidebar to close
+                document.getElementById('mt5SidebarOverlay').addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
                 });
                 // Sidebar indicators
@@ -3601,9 +3697,9 @@
                     cb.onchange = function() {
                         activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
-                        // Sync with indicator overlay
-                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(ocb => {
-                            if (ocb.dataset.ind === this.dataset.ind) ocb.checked = this.checked;
+                        // sync with indicator overlay
+                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(c => {
+                            if (c.dataset.ind === this.dataset.ind) c.checked = this.checked;
                         });
                     };
                 });
@@ -3614,10 +3710,10 @@
                 };
                 document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
-                    sidebarOverlay.classList.remove('show'); };
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
                 document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
-                    sidebarOverlay.classList.remove('show'); };
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
                 document.querySelectorAll('.timeframe-grid button').forEach(b => {
                     b.onclick = function() {
                         const tf = parseInt(this.dataset.tf);
@@ -3626,26 +3722,27 @@
                         document.getElementById('mobileTfDisplay').textContent = Object.keys(
                             timeframeIntervals).find(k => timeframeIntervals[k] === tf);
                         resetChart();
-                        sidebarOverlay.classList.remove('show');
+                        document.getElementById('mt5SidebarOverlay').classList.remove('show');
                     };
                 });
-                // Indicator overlay
+                // Indicator overlay - click outside to close
                 const indicatorOverlay = document.getElementById('mt5IndicatorOverlay');
-                const indicatorSheet = document.getElementById('mt5IndicatorSheet');
-                document.getElementById('mt5IndicatorBtn').onclick = (e) => { e.stopPropagation();
-                    indicatorOverlay.classList.toggle('show'); };
-                document.getElementById('closeIndicatorSheet').onclick = () => indicatorOverlay.classList.remove('show');
-                // Close indicator overlay on outside click
                 indicatorOverlay.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
                 });
+                document.getElementById('mt5IndicatorBtn').onclick = () => {
+                    document.getElementById('mt5IndicatorOverlay').classList.toggle('show');
+                };
+                document.getElementById('closeIndicatorSheet').onclick = () => {
+                    document.getElementById('mt5IndicatorOverlay').classList.remove('show');
+                };
                 document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => {
                     cb.onchange = function() {
                         activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
-                        // Sync with sidebar
-                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(scb => {
-                            if (scb.dataset.ind === this.dataset.ind) scb.checked = this.checked;
+                        // sync with sidebar
+                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(c => {
+                            if (c.dataset.ind === this.dataset.ind) c.checked = this.checked;
                         });
                     };
                 });
@@ -3694,25 +3791,22 @@
                             if (activePanel) activePanel.style.display = 'block';
                             updateMobilePanel(panel);
                         }
-                        // Resize chart after panel change
                         setTimeout(() => {
                             if (simChart) {
                                 const chartDiv = document.getElementById('simChartContainer');
-                                if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight >
-                                    0) {
+                                if (chartDiv && chartDiv.clientWidth > 0) {
                                     simChart.applyOptions({ width: chartDiv.clientWidth,
                                         height: chartDiv.clientHeight });
                                     simChart.timeScale().fitContent();
                                 }
                             }
-                        }, 150);
+                        }, 100);
                     };
                 });
                 // Init chart
                 requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
                 updateMobileTopBar();
-                // Show quotes panel by default
-                document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
+                updateMobilePanel('quotes');
                 updateSimUI();
                 // Resize observer for mobile chart
                 const ro = new ResizeObserver(() => {
@@ -3728,37 +3822,38 @@
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) ro.observe(chartDiv);
                 window._mobileResizeObs = ro;
-                // Gesture support: double tap to reset chart view
-                let lastTap = 0;
-                chartDiv.addEventListener('touchend', (e) => {
-                    const now = Date.now();
-                    if (now - lastTap < 300) {
-                        // Double tap - reset chart view
-                        if (simChart) {
-                            simChart.timeScale().fitContent();
-                            showToast('📊 Chart reset');
-                        }
+                // Show gesture hint
+                setTimeout(() => {
+                    const hint = document.getElementById('gestureHint');
+                    if (hint) { hint.classList.add('show');
+                        setTimeout(() => hint.classList.remove('show'), 4000); }
+                }, 1500);
+                // Handle back button for mobile
+                window._mobileBackHandler = function(e) {
+                    if (panelsDiv.classList.contains('show')) {
+                        panelsDiv.classList.remove('show');
+                        navItems.forEach(n => n.classList.remove('active'));
+                        document.querySelector('.mt5-nav-item[data-panel="chart"]')?.classList.add('active');
+                        e.preventDefault();
+                        return;
                     }
-                    lastTap = now;
-                }, { passive: true });
-                // Long press on chart - show crosshair info
-                let longPressTimer = null;
-                chartDiv.addEventListener('touchstart', (e) => {
-                    longPressTimer = setTimeout(() => {
-                        if (simChart) {
-                            // Show crosshair info via toast
-                            const price = simLastPrices[simCurrentSymbol] || 0;
-                            showToast('📊 ' + simCurrentSymbol + ' $' + price.toFixed(4));
-                        }
-                    }, 600);
-                }, { passive: true });
-                chartDiv.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, { passive: true });
-                chartDiv.addEventListener('touchmove', () => { clearTimeout(longPressTimer); }, { passive: true });
-                // Cleanup
-                window._mobileCleanup = function() {
-                    if (window._mobileResizeObs) { window._mobileResizeObs.disconnect();
-                        window._mobileResizeObs = null; }
+                    if (document.getElementById('mt5SidebarOverlay').classList.contains('show')) {
+                        document.getElementById('mt5SidebarOverlay').classList.remove('show');
+                        e.preventDefault();
+                        return;
+                    }
+                    if (document.getElementById('mt5IndicatorOverlay').classList.contains('show')) {
+                        document.getElementById('mt5IndicatorOverlay').classList.remove('show');
+                        e.preventDefault();
+                        return;
+                    }
                 };
+                window.addEventListener('popstate', window._mobileBackHandler);
+                // Push state for back handling
+                if (!window._mobilePushStateDone) {
+                    window.history.pushState({ mobile: true }, '');
+                    window._mobilePushStateDone = true;
+                }
             }
 
             function updateMobilePanel(panel) {
@@ -3814,18 +3909,14 @@
                 document.querySelector('.mt5-symbol').textContent = sym;
                 document.querySelector('.mt5-pair').textContent = sym;
                 updateMobileTopBar();
-                // Update instrument info
-                document.querySelector('.mt5-name').textContent = sym + ' / USD';
                 initChart();
-                document.querySelector('.mt5-nav-item[data-panel="chart"]').click();
-                // Update watchlist highlight
+                document.querySelector('.mt5-nav-item[data-panel="chart"]')?.click();
                 document.querySelectorAll('.watchlist-item').forEach(el => {
                     el.style.borderColor = 'var(--mt5-border)';
                     if (el.querySelector('.sym')?.textContent === sym) {
                         el.style.borderColor = 'var(--mt5-green)';
                     }
                 });
-                showToast('📊 Switched to ' + sym);
             }
 
             function renderMobileTradeSummary() {
@@ -4025,12 +4116,6 @@
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
-                // Clean up any lingering chart event listeners
-                const chartDiv = document.getElementById('simChartContainer');
-                if (chartDiv) {
-                    const newDiv = chartDiv.cloneNode(true);
-                    chartDiv.parentNode?.replaceChild(newDiv, chartDiv);
-                }
             }
 
             function debounce(fn, delay) { let timer; return function(...args) { clearTimeout(timer);
@@ -4382,10 +4467,10 @@
                     }
                 });
                 // Mouse down for line drag
-                const mousedownHandler = (e) => {
+                chartDiv.addEventListener('mousedown', e => {
                     if (!simCandleSeries || manualDrawnLines.length === 0) return;
                     const rect = chartDiv.getBoundingClientRect();
-                    const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
+                    const y = e.clientY - rect.top;
                     const threshold = 14;
                     let closest = null,
                         closestDist = Infinity;
@@ -4402,9 +4487,7 @@
                                 .price, currentPrice: closest.price, origIndex: closest.index };
                         chartDiv.classList.add('dragging-line');
                         e.preventDefault(); }
-                };
-                chartDiv.addEventListener('mousedown', mousedownHandler);
-                chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
+                });
                 const moveHandler = (e) => {
                     if (!dragState || !dragState.active || !simCandleSeries) return;
                     const rect = chartDiv.getBoundingClientRect();
@@ -4482,15 +4565,6 @@
                 }, 100);
                 simResizeObserver = new ResizeObserver(debouncedResize);
                 simResizeObserver.observe(chartDiv);
-                // Store cleanup
-                window._chartCleanup = function() {
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchend', upHandler);
-                    chartDiv.removeEventListener('mousedown', mousedownHandler);
-                    chartDiv.removeEventListener('touchstart', mousedownHandler);
-                };
             }
 
             // ─── UPDATE INDICATORS ────────────────────────────────────────────
@@ -4706,12 +4780,7 @@
             }
 
             function savePortfolio() {
-                const now = Date.now();
-                if (now - lastPortfolioSave < 500) return;
-                lastPortfolioSave = now;
-                try {
-                    localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio));
-                } catch (e) {}
+                localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio));
             }
 
             // ─── TRADING ACTIONS ─────────────────────────────────────────────
@@ -4800,10 +4869,6 @@
                 redrawAllLines();
                 document.getElementById('simSL').value = '';
                 document.getElementById('simTP').value = '';
-                // Close desktop trade panel if open
-                document.querySelectorAll('.modal').forEach(m => {
-                    if (m.querySelector('h3')?.textContent?.includes('TRADE')) m.remove();
-                });
             }
 
             async function exitPosition(symbol) {
@@ -5028,19 +5093,7 @@
             window.openDesktopTradePanel = openDesktopTradePanel;
             window.calcEquity = calcEquity;
             window.calcTotalPL = calcTotalPL;
-            window.showToast = showToast;
-
-            // ─── AUTO CLEANUP ──────────────────────────────────────────────────
-            // Clean up intervals and observers on page unload
-            window.addEventListener('beforeunload', function() {
-                cleanupSimIntervals();
-                if (window._chartCleanup) window._chartCleanup();
-                if (window._mobileCleanup) window._mobileCleanup();
-                // Remove all toast elements
-                document.querySelectorAll('.toast').forEach(el => el.remove());
-                // Remove all modals
-                document.querySelectorAll('.modal').forEach(el => el.remove());
-            });
+            window.watchlistSearch = window.watchlistSearch;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
 
@@ -5048,7 +5101,6 @@
             if (token && currentUser) loadAllData();
             else renderAuthPage();
 
-            // Handle mobile orientation change
             window.addEventListener('orientationchange', () => {
                 setTimeout(() => {
                     if (simChart) {
@@ -5062,7 +5114,6 @@
                 }, 300);
             });
 
-            // Handle window resize
             let resizeTimer;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
@@ -5078,13 +5129,11 @@
                 }, 300);
             });
 
-            // Handle back button for modal overlays
-            window.addEventListener('popstate', () => {
-                document.querySelectorAll('.modal').forEach(el => el.remove());
-                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
-                'show'));
-                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
-                    'show'));
+            // Clean up back handler on page unload
+            window.addEventListener('beforeunload', () => {
+                if (window._mobileBackHandler) {
+                    window.removeEventListener('popstate', window._mobileBackHandler);
+                }
             });
 
         })();
