@@ -976,8 +976,8 @@
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove(); showAdminLessonManager(); } });
             };
-                        // ═══════════════════════════════════════════════════════
-            //  ► FINAL PART 2 (MT5 MOBILE STYLE, ALL FIXES)
+              // ═══════════════════════════════════════════════════════
+            //  ► FINAL PART 2 (MT5 MOBILE AUTO-DETECT + ALL FIXES)
             // ═══════════════════════════════════════════════════════
             window.deleteQuizQ = async function(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
@@ -1067,6 +1067,13 @@
 
             function initTerminal() {
                 const container = document.getElementById('terminalContainer');
+                // 🔥 AUTO-DETECT MOBILE => MT5 REAL BROKER STYLE
+                if (window.innerWidth <= 768) {
+                    renderMobileTerminal(container);
+                    return;
+                }
+
+                // DESKTOP TERMINAL (unchanged)
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
                         <div class="terminal-fs-topbar" id="terminalFsTopbar">
@@ -1589,7 +1596,6 @@ function renderMobileTerminal(container) {
             </div>
         </div>
     `;
-    // Hamburger opens simple sidebar (indicators + timeframes + dark/light)
     document.getElementById('mt5Hamburger').onclick = () => openMobileSidebar();
     document.getElementById('mt5IndicatorBtn').onclick = () => {
         const overlay = document.getElementById('mt5IndicatorOverlay');
@@ -1614,7 +1620,6 @@ function renderMobileTerminal(container) {
 }
 
 function openMobileSidebar() {
-    // Simple sidebar overlay
     const existing = document.getElementById('mobileSidebarOverlay');
     if (existing) { existing.remove(); return; }
     const overlay = document.createElement('div');
