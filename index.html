@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js">
     </script>
     <style>
-        /* ─── ROOT VARIABLES ─── */
+        /* ─── ROOT ─── */
         :root {
             --bg: #f4f6fa;
             --bg-secondary: #eef1f7;
@@ -120,7 +120,6 @@
             background: var(--text-secondary);
         }
 
-        /* ─── APP WRAPPER ─── */
         .app {
             display: flex;
             height: 100vh;
@@ -1414,23 +1413,23 @@
             user-select: none;
             -webkit-user-select: none;
             position: relative;
+            width: 100%;
         }
-        /* Top Toolbar - MT5 style */
         .mt5-top-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
-            min-height: 44px;
+            min-height: 40px;
         }
         .mt5-toolbar-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .mt5-hamburger {
             font-size: 1.2rem;
@@ -1444,20 +1443,23 @@
         }
         .mt5-symbol {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--mt5-text-bright);
         }
         .mt5-toolbar-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .mt5-indicator-btn {
             font-size: 1.1rem;
             color: var(--mt5-text-bright);
             cursor: pointer;
-            padding: 4px;
+            padding: 4px 6px;
             transition: 0.2s;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
         }
         .mt5-indicator-btn:active {
             opacity: 0.6;
@@ -1466,15 +1468,246 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 4px 8px;
+            padding: 3px 8px;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
         }
-
-        /* Hamburger Sidebar - Half Screen */
+        .mt5-instrument-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3px 10px;
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
+            flex-shrink: 0;
+            min-height: 28px;
+        }
+        .mt5-pair {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--mt5-text-bright);
+        }
+        .mt5-name {
+            color: var(--mt5-text);
+            font-size: 0.65rem;
+        }
+        .mt5-tf-display {
+            background: var(--mt5-input);
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+            color: var(--mt5-text-bright);
+        }
+        .mt5-quick-trade {
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
+            padding: 6px 8px;
+            flex-shrink: 0;
+        }
+        .mt5-quick-trade-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        .mt5-sell-btn,
+        .mt5-buy-btn {
+            flex: 1;
+            text-align: center;
+            padding: 6px 4px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+        .mt5-sell-btn {
+            background: var(--mt5-red);
+        }
+        .mt5-buy-btn {
+            background: var(--mt5-green);
+        }
+        .mt5-sell-btn:hover,
+        .mt5-buy-btn:hover {
+            filter: brightness(1.1);
+        }
+        .mt5-sell-btn:active,
+        .mt5-buy-btn:active {
+            transform: scale(0.96);
+        }
+        .mt5-price-display {
+            font-size: 0.6rem;
+            font-weight: 400;
+            margin-top: 1px;
+            opacity: 0.9;
+        }
+        .mt5-lot-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            background: var(--mt5-input);
+            padding: 3px 8px;
+            border-radius: 8px;
+            min-width: 56px;
+            border: 1px solid var(--mt5-border);
+            flex-shrink: 0;
+        }
+        .mt5-lot-selector .lot-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            justify-content: center;
+        }
+        .mt5-lot-selector button {
+            background: transparent;
+            border: none;
+            color: var(--mt5-text-bright);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 2px 4px;
+            transition: 0.2s;
+            touch-action: manipulation;
+        }
+        .mt5-lot-selector button:active {
+            opacity: 0.6;
+        }
+        .mt5-lot-value {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--mt5-text-bright);
+            min-width: 28px;
+            text-align: center;
+        }
+        .mt5-lot-presets {
+            display: flex;
+            gap: 2px;
+            margin-top: 1px;
+        }
+        .mt5-lot-presets button {
+            background: var(--mt5-input);
+            border: 1px solid var(--mt5-border);
+            color: var(--mt5-text);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: var(--font-mono);
+            touch-action: manipulation;
+        }
+        .mt5-lot-presets button:active {
+            background: var(--mt5-green);
+            color: #fff;
+        }
+        .mobile-chart-container {
+            flex: 1;
+            background: var(--mt5-chart-bg);
+            position: relative;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100%;
+        }
+        .mobile-chart-container #simChartContainer {
+            width: 100%;
+            height: 100%;
+            background: var(--mt5-chart-bg);
+            touch-action: none;
+        }
+        .mt5-bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 44px;
+            background: var(--mt5-nav-bg);
+            border-top: 1px solid var(--mt5-border);
+            flex-shrink: 0;
+            z-index: 25;
+            width: 100%;
+        }
+        .mt5-nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+            color: var(--mt5-text);
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            position: relative;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
+            padding: 0 2px;
+            gap: 1px;
+            touch-action: manipulation;
+        }
+        .mt5-nav-item.active {
+            color: var(--mt5-green);
+        }
+        .mt5-nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: var(--mt5-green);
+            border-radius: 0 0 3px 3px;
+        }
+        .mt5-nav-item i {
+            font-size: 1rem;
+            margin-bottom: 1px;
+        }
+        .mt5-nav-item:active {
+            opacity: 0.6;
+        }
+        .mobile-panels {
+            position: absolute;
+            bottom: 44px;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: var(--mt5-bg);
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+            padding-bottom: 8px;
+        }
+        .mobile-panels.show {
+            display: flex;
+        }
+        .panel-content {
+            padding: 10px 12px;
+            flex: 1;
+            display: none;
+            overflow-y: auto;
+        }
+        .panel-content:first-child {
+            display: block;
+        }
         .mt5-sidebar-overlay {
             position: fixed;
             top: 0;
@@ -1511,7 +1744,7 @@
         .mt5-sidebar-sheet .close-area {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .mt5-sidebar-sheet .close-area button {
             background: transparent;
@@ -1523,23 +1756,23 @@
         }
         .mt5-sidebar-sheet h4 {
             color: var(--mt5-text-bright);
-            font-size: 0.85rem;
-            margin: 16px 0 8px 0;
+            font-size: 0.8rem;
+            margin: 14px 0 6px 0;
             font-family: 'Outfit', sans-serif;
             border-bottom: 1px solid var(--mt5-border);
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
         .mt5-sidebar-sheet .user-info {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid var(--mt5-border);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .mt5-sidebar-sheet .user-info .avatar {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: var(--mt5-green);
             color: #fff;
@@ -1547,24 +1780,25 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            flex-shrink: 0;
         }
         .mt5-sidebar-sheet .user-info .details .name {
             color: var(--mt5-text-bright);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .mt5-sidebar-sheet .user-info .details .balance {
             color: var(--mt5-text);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .mt5-sidebar-sheet .sidebar-indicators label {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 0;
+            padding: 4px 0;
             color: var(--mt5-text);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
         }
         .mt5-sidebar-sheet .sidebar-indicators label input {
@@ -1582,11 +1816,12 @@
             color: var(--mt5-text);
             padding: 4px 10px;
             border-radius: 4px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
             transition: 0.2s;
+            touch-action: manipulation;
         }
         .mt5-sidebar-sheet .timeframe-grid button:active {
             background: var(--mt5-green);
@@ -1594,26 +1829,25 @@
         }
         .mt5-sidebar-sheet .theme-row {
             display: flex;
-            gap: 8px;
-            padding: 6px 0;
+            gap: 6px;
+            padding: 4px 0;
         }
         .mt5-sidebar-sheet .theme-row button {
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
             font-family: var(--font);
             transition: 0.2s;
+            touch-action: manipulation;
         }
         .mt5-sidebar-sheet .theme-row button:active {
             background: var(--mt5-green);
             color: #fff;
         }
-
-        /* Indicator Overlay - click outside to close */
         .mt5-indicator-overlay {
             position: fixed;
             top: 0;
@@ -1634,26 +1868,30 @@
             width: 100%;
             max-width: 400px;
             border-radius: 16px 16px 0 0;
-            padding: 20px;
+            padding: 20px 18px 28px;
             animation: slideUp 0.25s ease;
         }
         .mt5-indicator-sheet h3 {
             color: var(--mt5-text-bright);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-family: 'Outfit', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         .mt5-indicator-sheet label {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 0;
+            padding: 5px 0;
             color: var(--mt5-text);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
         }
         .mt5-indicator-sheet label input {
             accent-color: var(--mt5-green);
+        }
+        .mt5-indicator-sheet hr {
+            border-color: var(--mt5-border);
+            margin: 6px 0;
         }
         @keyframes slideUp {
             from {
@@ -1663,244 +1901,10 @@
                 transform: translateY(0);
             }
         }
-
-        /* Instrument Info */
-        .mt5-instrument-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 12px;
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
-            flex-shrink: 0;
-        }
-        .mt5-pair {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--mt5-text-bright);
-        }
-        .mt5-name {
-            color: var(--mt5-text);
-            font-size: 0.75rem;
-        }
-        .mt5-tf-display {
-            background: var(--mt5-input);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            font-family: var(--font-mono);
-            color: var(--mt5-text-bright);
-        }
-
-        /* Quick Trade Panel - MT5 style */
-        .mt5-quick-trade {
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
-            padding: 8px 10px;
-            flex-shrink: 0;
-        }
-        .mt5-quick-trade-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6px;
-        }
-        .mt5-sell-btn,
-        .mt5-buy-btn {
-            flex: 1;
-            text-align: center;
-            padding: 8px 4px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.75rem;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            line-height: 1.3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-width: 50px;
-        }
-        .mt5-sell-btn {
-            background: var(--mt5-red);
-        }
-        .mt5-buy-btn {
-            background: var(--mt5-green);
-        }
-        .mt5-sell-btn:hover,
-        .mt5-buy-btn:hover {
-            filter: brightness(1.1);
-        }
-        .mt5-sell-btn:active,
-        .mt5-buy-btn:active {
-            transform: scale(0.96);
-        }
-        .mt5-price-display {
-            font-size: 0.7rem;
-            font-weight: 400;
-            margin-top: 1px;
-            opacity: 0.9;
-        }
-        .mt5-lot-selector {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1px;
-            background: var(--mt5-input);
-            padding: 4px 10px;
-            border-radius: 8px;
-            min-width: 60px;
-            border: 1px solid var(--mt5-border);
-        }
-        .mt5-lot-selector .lot-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-        }
-        .mt5-lot-selector button {
-            background: transparent;
-            border: none;
-            color: var(--mt5-text-bright);
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 2px 6px;
-            transition: 0.2s;
-        }
-        .mt5-lot-selector button:active {
-            opacity: 0.6;
-        }
-        .mt5-lot-value {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--mt5-text-bright);
-            min-width: 30px;
-            text-align: center;
-        }
-        .mt5-lot-presets {
-            display: flex;
-            gap: 3px;
-            margin-top: 2px;
-        }
-        .mt5-lot-presets button {
-            background: var(--mt5-input);
-            border: 1px solid var(--mt5-border);
-            color: var(--mt5-text);
-            padding: 1px 5px;
-            border-radius: 3px;
-            font-size: 0.55rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: var(--font-mono);
-        }
-        .mt5-lot-presets button:active {
-            background: var(--mt5-green);
-            color: #fff;
-        }
-
-        /* Chart Container */
-        .mobile-chart-container {
-            flex: 1;
-            background: var(--mt5-chart-bg);
-            position: relative;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .mobile-chart-container #simChartContainer {
-            width: 100%;
-            height: 100%;
-            background: var(--mt5-chart-bg);
-        }
-
-        /* Bottom Navigation - MT5 style */
-        .mt5-bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 48px;
-            background: var(--mt5-nav-bg);
-            border-top: 1px solid var(--mt5-border);
-            flex-shrink: 0;
-            z-index: 20;
-        }
-        .mt5-nav-item {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            color: var(--mt5-text);
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: 500;
-            position: relative;
-            background: transparent;
-            border: none;
-            font-family: var(--font);
-            padding: 0 2px;
-            gap: 1px;
-        }
-        .mt5-nav-item.active {
-            color: var(--mt5-green);
-        }
-        .mt5-nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 25%;
-            right: 25%;
-            height: 2px;
-            background: var(--mt5-green);
-            border-radius: 0 0 3px 3px;
-        }
-        .mt5-nav-item i {
-            font-size: 1.1rem;
-            margin-bottom: 1px;
-        }
-        .mt5-nav-item:active {
-            opacity: 0.6;
-        }
-
-        /* Mobile Panels */
-        .mobile-panels {
-            position: absolute;
-            bottom: 48px;
-            left: 0;
-            right: 0;
-            top: 0;
-            background: var(--mt5-bg);
-            overflow-y: auto;
-            display: none;
-            flex-direction: column;
-            z-index: 5;
-        }
-        .mobile-panels.show {
-            display: flex;
-        }
-        .panel-content {
-            padding: 10px 12px;
-            flex: 1;
-            display: none;
-            overflow-y: auto;
-        }
-        .panel-content:first-child {
-            display: block;
-        }
-
-        /* Watchlist */
         .watchlist-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -1908,6 +1912,7 @@
             justify-content: space-between;
             cursor: pointer;
             transition: 0.2s;
+            touch-action: manipulation;
         }
         .watchlist-item:active {
             background: var(--mt5-nav-active);
@@ -1915,14 +1920,14 @@
         .watchlist-item .sym {
             font-weight: 600;
             color: var(--mt5-text-bright);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .watchlist-item .price {
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .watchlist-item .change {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
         }
         .watchlist-item .change.up {
@@ -1936,12 +1941,12 @@
         }
         .mobile-search input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border: 1px solid var(--mt5-border);
             border-radius: 8px;
             background: var(--mt5-input);
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-family: var(--font);
             outline: none;
         }
@@ -1951,12 +1956,10 @@
         .mobile-search input:focus {
             border-color: var(--mt5-green);
         }
-
-        /* Position Card */
         .position-card {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
         }
@@ -1964,7 +1967,7 @@
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
-            font-size: 0.78rem;
+            font-size: 0.74rem;
         }
         .position-card .row .label {
             color: var(--mt5-text);
@@ -1984,20 +1987,19 @@
             background: var(--mt5-red);
             color: #fff;
             border: none;
-            padding: 5px 14px;
+            padding: 4px 12px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             cursor: pointer;
             transition: 0.2s;
             width: 100%;
             font-family: var(--font);
+            touch-action: manipulation;
         }
         .position-card .exit-btn:active {
             transform: scale(0.96);
         }
-
-        /* Trade Panel in mobile */
         .mt5-deposit-withdraw {
             display: flex;
             gap: 6px;
@@ -2009,9 +2011,9 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text-bright);
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-family: var(--font);
             min-width: 60px;
         }
@@ -2019,13 +2021,14 @@
             background: var(--mt5-blue);
             color: #fff;
             border: none;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: var(--font);
+            touch-action: manipulation;
         }
         .mt5-deposit-withdraw button:active {
             transform: scale(0.96);
@@ -2033,12 +2036,10 @@
         .mt5-deposit-withdraw button.withdraw-btn {
             background: var(--mt5-red);
         }
-
-        /* History item */
         .history-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -2052,7 +2053,7 @@
         }
         .history-item .left .type {
             font-weight: 600;
-            font-size: 0.78rem;
+            font-size: 0.74rem;
         }
         .history-item .left .type.buy {
             color: var(--mt5-green);
@@ -2067,12 +2068,12 @@
             color: var(--mt5-red);
         }
         .history-item .left .detail {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--mt5-text);
         }
         .history-item .right {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-family: var(--font-mono);
         }
         .history-item .right.green {
@@ -2082,109 +2083,19 @@
             color: var(--mt5-red);
         }
 
-        /* ─── ADMIN ─── */
-        .admin-container {
-            display: flex;
-            height: 100vh;
-        }
-        .admin-left {
-            width: 300px;
-            background: #0a0e18;
-            color: #b0b8cc;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow-lg);
-            z-index: 10;
-            flex-shrink: 0;
-            transition: background var(--transition);
-        }
-        .admin-left .admin-header {
-            padding: 18px 16px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-            letter-spacing: -0.02em;
-            font-family: 'Outfit', sans-serif;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .admin-left .admin-actions {
-            padding: 14px 14px;
-            display: flex;
-            gap: 7px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .admin-right {
-            flex: 1;
-            background: var(--bg);
-            padding: 24px;
-            overflow-y: auto;
-            transition: background var(--transition);
-            min-width: 0;
-        }
-        .admin-subject-item {
-            padding: 11px 15px;
-            cursor: pointer;
+        .chart-loading {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            transition: all var(--transition);
-            border-left: 3px solid transparent;
-            margin: 2px 8px;
-            border-radius: 10px;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 0.9rem;
             font-weight: 500;
-            font-size: 0.86rem;
-            gap: 8px;
         }
-        .admin-subject-item:hover {
-            background: #171c2a;
-            border-left-color: var(--primary);
-            transform: translateX(2px);
-        }
-        .admin-lesson-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px 18px;
-            margin-bottom: 8px;
-            transition: all var(--transition);
-            box-shadow: var(--shadow);
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .admin-lesson-row:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-        }
-        .admin-theme-toggle {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fbbf24;
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 6px 11px;
-            border-radius: var(--radius-full);
-            transition: all var(--transition);
-            font-weight: 600;
-            font-family: var(--font);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-        }
-        .admin-theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-1px);
+        .hidden {
+            display: none !important;
         }
 
-        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -2243,89 +2154,90 @@
                 padding: 30px 20px;
             }
             .mt5-quick-trade-row {
-                gap: 4px;
-            }
-            .mt5-sell-btn,
-            .mt5-buy-btn {
-                font-size: 0.7rem;
-                padding: 6px 3px;
-                min-width: 44px;
-            }
-            .mt5-lot-selector {
-                min-width: 50px;
-                padding: 3px 6px;
-            }
-            .mt5-lot-value {
-                font-size: 0.8rem;
-                min-width: 24px;
-            }
-            .mt5-lot-presets button {
-                font-size: 0.5rem;
-                padding: 1px 4px;
-            }
-            .mt5-top-toolbar {
-                padding: 6px 8px;
-                min-height: 38px;
-            }
-            .mt5-symbol {
-                font-size: 0.85rem;
-            }
-            .mt5-tf-select {
-                font-size: 0.6rem;
-                padding: 3px 6px;
-            }
-            .mt5-instrument-info {
-                padding: 4px 8px;
-                font-size: 0.7rem;
-            }
-            .mt5-pair {
-                font-size: 0.8rem;
-            }
-            .mt5-name {
-                font-size: 0.65rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.6rem;
-            }
-            .mt5-bottom-nav {
-                height: 42px;
-            }
-            .mt5-nav-item {
-                font-size: 0.55rem;
-            }
-            .mt5-nav-item i {
-                font-size: 1rem;
-            }
-            .mt5-sidebar-sheet {
-                width: 80%;
-                max-width: 280px;
-            }
-        }
-        @media (max-width: 400px) {
-            .mt5-quick-trade-row {
                 gap: 3px;
             }
             .mt5-sell-btn,
             .mt5-buy-btn {
-                font-size: 0.6rem;
-                padding: 5px 2px;
-                min-width: 38px;
+                font-size: 0.65rem;
+                padding: 5px 3px;
+                min-width: 40px;
             }
             .mt5-lot-selector {
-                min-width: 42px;
-                padding: 2px 4px;
+                min-width: 48px;
+                padding: 2px 6px;
             }
             .mt5-lot-value {
-                font-size: 0.7rem;
-                min-width: 20px;
+                font-size: 0.75rem;
+                min-width: 22px;
             }
             .mt5-lot-presets button {
                 font-size: 0.45rem;
                 padding: 1px 3px;
             }
             .mt5-top-toolbar {
+                padding: 5px 8px;
+                min-height: 36px;
+            }
+            .mt5-symbol {
+                font-size: 0.85rem;
+            }
+            .mt5-tf-select {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
+            .mt5-instrument-info {
+                padding: 2px 8px;
+                min-height: 24px;
+            }
+            .mt5-pair {
+                font-size: 0.75rem;
+            }
+            .mt5-name {
+                font-size: 0.6rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.55rem;
+            }
+            .mt5-bottom-nav {
+                height: 40px;
+            }
+            .mt5-nav-item {
+                font-size: 0.5rem;
+            }
+            .mt5-nav-item i {
+                font-size: 0.9rem;
+            }
+            .mt5-sidebar-sheet {
+                width: 80%;
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .mt5-quick-trade-row {
+                gap: 2px;
+            }
+            .mt5-sell-btn,
+            .mt5-buy-btn {
+                font-size: 0.55rem;
+                padding: 4px 2px;
+                min-width: 34px;
+            }
+            .mt5-lot-selector {
+                min-width: 40px;
+                padding: 2px 4px;
+            }
+            .mt5-lot-value {
+                font-size: 0.65rem;
+                min-width: 18px;
+            }
+            .mt5-lot-presets button {
+                font-size: 0.4rem;
+                padding: 1px 2px;
+            }
+            .mt5-top-toolbar {
                 padding: 4px 6px;
-                min-height: 34px;
+                min-height: 32px;
             }
             .mt5-symbol {
                 font-size: 0.75rem;
@@ -2335,35 +2247,28 @@
                 padding: 2px 5px;
             }
             .mt5-bottom-nav {
-                height: 38px;
+                height: 36px;
             }
             .mt5-nav-item {
-                font-size: 0.5rem;
+                font-size: 0.45rem;
             }
             .mt5-nav-item i {
-                font-size: 0.9rem;
+                font-size: 0.8rem;
             }
-        }
-
-        /* Gesture hint for mobile */
-        .gesture-hint {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            opacity: 0;
-            transition: opacity 0.6s;
-            pointer-events: none;
-            z-index: 15;
-            white-space: nowrap;
-        }
-        .gesture-hint.show {
-            opacity: 1;
+            .mt5-instrument-info {
+                padding: 2px 6px;
+                min-height: 20px;
+            }
+            .mt5-pair {
+                font-size: 0.65rem;
+            }
+            .mt5-name {
+                font-size: 0.5rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.5rem;
+                padding: 1px 5px;
+            }
         }
     </style>
 </head>
@@ -2399,7 +2304,7 @@
             let portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
 
             // ─── SIMULATION STATE ─────────────────────────────────────────────
-            let simCurrentSymbol = 'BTCUSD';
+            let simCurrentSymbol = 'BTCUSDT';
             let simChart = null;
             let simCandleSeries = null;
             let simVolumeSeries = null;
@@ -2409,29 +2314,33 @@
             let simCurrentCandle = null;
             let simAllCandles = [];
             let simIsLiveData = false;
+            // ✅ শুধু টপ ১০ ক্রিপ্টো
+            const simMarketSymbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
+                'AVAXUSDT', 'DOTUSDT'
+            ];
             let simBasePrices = {
-                AAPL: 175,
-                TSLA: 250,
-                GOOGL: 140,
-                MSFT: 380,
-                AMZN: 180,
-                XAUUSD: 1950,
-                BTCUSD: 45000,
-                EURUSD: 1.0850,
-                GBPUSD: 1.2650,
-                XAGUSD: 24.50
+                BTCUSDT: 45000,
+                ETHUSDT: 3000,
+                SOLUSDT: 150,
+                XRPUSDT: 0.5,
+                BNBUSDT: 600,
+                DOGEUSDT: 0.15,
+                ADAUSDT: 0.35,
+                LINKUSDT: 15,
+                AVAXUSDT: 30,
+                DOTUSDT: 7
             };
             let simVolatility = {
-                AAPL: 0.0012,
-                TSLA: 0.0035,
-                GOOGL: 0.0011,
-                MSFT: 0.001,
-                AMZN: 0.0016,
-                XAUUSD: 0.0005,
-                BTCUSD: 0.002,
-                EURUSD: 0.0003,
-                GBPUSD: 0.0004,
-                XAGUSD: 0.0012
+                BTCUSDT: 0.002,
+                ETHUSDT: 0.003,
+                SOLUSDT: 0.005,
+                XRPUSDT: 0.004,
+                BNBUSDT: 0.003,
+                DOGEUSDT: 0.008,
+                ADAUSDT: 0.005,
+                LINKUSDT: 0.004,
+                AVAXUSDT: 0.006,
+                DOTUSDT: 0.005
             };
             let simLastPrices = {};
             let allPriceLines = {};
@@ -2444,9 +2353,13 @@
             let simResizeObserver = null;
             let showVolume = true;
             let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') ||
-                '["BTCUSD","XAUUSD","EURUSD","AAPL","TSLA","MSFT","GOOGL","AMZN","GBPUSD","XAGUSD"]');
+                JSON.stringify(['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
+                    'AVAXUSDT', 'DOTUSDT'
+                ]));
 
-            function saveWatchlist() { localStorage.setItem('watchlist', JSON.stringify(mobileWatchlist)); }
+            // ─── BINANCE WEBSOCKET ────────────────────────────────────────────
+            let binanceWS = null;
+            let binanceReconnectTimer = null;
 
             const timeframeIntervals = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
             const indicatorColors = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
@@ -2455,9 +2368,6 @@
             const indicatorNames = { 'ema9': 'EMA 9', 'ema20': 'EMA 20', 'ema50': 'EMA 50', 'ema100': 'EMA 100',
                 'ema200': 'EMA 200', 'bb': 'Bollinger Bands', 'rsi': 'RSI (14)', 'macd': 'MACD', 'stoch': 'Stochastic',
                 'vwap': 'VWAP' };
-            const simMarketSymbols = ['BTCUSD', 'XAUUSD', 'EURUSD', 'AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN', 'GBPUSD',
-                'XAGUSD'
-            ];
 
             // ─── HELPERS ──────────────────────────────────────────────────────
             function t(obj) { return (obj && obj[currentLang]) ? obj[currentLang] : (obj && obj['en']) ? obj['en'] :
@@ -2499,6 +2409,63 @@
                 renderApp();
                 showToast('👋 Logged out'); }
 
+            // ─── BINANCE WS ──────────────────────────────────────────────────
+            function connectBinanceWS() {
+                if (binanceWS && binanceWS.readyState === WebSocket.OPEN) return;
+                const streams = simMarketSymbols.map(s => s.toLowerCase() + '@trade').join('/');
+                const url = 'wss://stream.binance.com:9443/ws/' + streams;
+                try {
+                    binanceWS = new WebSocket(url);
+                    binanceWS.onopen = () => {
+                        console.log('✅ Binance WebSocket connected');
+                        showToast('📡 Real-time data connected');
+                    };
+                    binanceWS.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            if (data.e === 'trade') {
+                                const symbol = data.s.toUpperCase();
+                                const price = parseFloat(data.p);
+                                const timestamp = Math.floor(data.T / 1000);
+                                simLastPrices[symbol] = price;
+                                // Update UI
+                                updateMobileTopBar();
+                                updatePriceDisplay(symbol, price);
+                                // Update current candle if this is the active symbol
+                                if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
+                                    const currentMinute = timestamp - (timestamp % 60);
+                                    if (simCurrentCandle.time === currentMinute) {
+                                        simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
+                                        simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
+                                        simCurrentCandle.close = price;
+                                        simCurrentCandle.volume += Math.floor(data.q);
+                                        simCandleSeries.update(simCurrentCandle);
+                                        updateAllIndicators();
+                                        checkAndExecuteSLTP();
+                                        updateSimUI();
+                                    }
+                                }
+                            }
+                        } catch (e) { /* silent */ }
+                    };
+                    binanceWS.onclose = () => {
+                        console.log('⚠️ Binance WebSocket closed, reconnecting...');
+                        if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
+                        binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
+                    };
+                    binanceWS.onerror = (e) => {
+                        console.error('Binance WS error:', e);
+                        binanceWS.close();
+                    };
+                } catch (e) { console.error('Binance WS init error:', e); }
+            }
+
+            function disconnectBinanceWS() {
+                if (binanceWS) { try { binanceWS.close(); } catch (e) {} }
+                if (binanceReconnectTimer) { clearTimeout(binanceReconnectTimer);
+                    binanceReconnectTimer = null; }
+            }
+
             // ─── LOAD DATA ─────────────────────────────────────────────────────
             async function loadAllData() {
                 if (!token || !currentUser) { renderAuthPage(); return; }
@@ -2523,6 +2490,7 @@
                     if (currentUser.username === 'admin') isAdmin = true;
                     applyTheme();
                     renderApp();
+                    connectBinanceWS();
                 } catch (e) { console.error('Load error:', e); if (e.message.includes('Session expired')) logout();
                     else renderApp(); }
             }
@@ -2627,7 +2595,6 @@
                                 <button class="theme-toggle-btn" id="themeToggle">
                                     <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
                                 </button>
-                                ${isAdmin ? `<button class="btn btn-outline btn-sm" id="adminModeBtn">⚙️ Admin</button>` : ''}
                                 <div class="user-menu">
                                     <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
                                     <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -2647,8 +2614,6 @@
                     applyTheme();
                     document.getElementById('themeToggle').innerHTML =
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
-                if (document.getElementById('adminModeBtn')) document.getElementById('adminModeBtn').onclick = () => {
-                    window.location.href = '?mode=admin'; };
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                 'open');
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
@@ -3412,13 +3377,13 @@
                             </div>
                             <div class="trade-panel">
                                 <select id="simSymbolSelect2" style="padding:6px 10px;">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <input type="number" id="simQty" placeholder="Qty" value="1" min="1" step="0.01">
+                                <input type="number" id="simQty" placeholder="Qty" value="1" min="0.01" step="0.01">
                                 <input type="number" id="simSL" placeholder="SL $" step="0.0001">
                                 <input type="number" id="simTP" placeholder="TP $" step="0.0001">
                                 <button class="btn-buy" onclick="placeSimOrder('buy')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell')"><i class="fas fa-money-bill-wave"></i> Sell</button>
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
-                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> Trade</button>
+                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> TRADE</button>
                             </div>
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">Loading chart...</div></div>
@@ -3485,7 +3450,7 @@
                 modal.className = 'modal';
                 let html = `
                     <div class="modal-content">
-                        <h3><i class="fas fa-wallet"></i> Trade Summary</h3>
+                        <h3><i class="fas fa-wallet"></i> TRADE — Summary</h3>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
                                 <div style="font-size:0.7rem;color:var(--text-muted);">Balance</div>
@@ -3559,8 +3524,7 @@
             let currentMobileLot = 0.01;
 
             function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot);
-                const el = document.getElementById('mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(
-                2); }
+                document.getElementById('mobileLotSize').textContent = currentMobileLot.toFixed(2); }
 
             function changeMobileLot(delta) { const newLot = Math.max(0.01, currentMobileLot + delta * 0.01);
                 setMobileLot(+(newLot.toFixed(2))); }
@@ -3582,13 +3546,55 @@
                                 <span class="mt5-symbol">${simCurrentSymbol}</span>
                             </div>
                             <div class="mt5-toolbar-right">
-                                <i class="fas fa-chart-line mt5-indicator-btn" id="mt5IndicatorBtn"></i>
+                                <button class="mt5-indicator-btn" id="mt5IndicatorBtn"><i class="fas fa-chart-line"></i></button>
                                 <select id="mt5TfSelect" class="mt5-tf-select">
                                     ${Object.keys(timeframeIntervals).map(k => `<option value="${timeframeIntervals[k]}" ${timeframeIntervals[k]===currentTimeframe?'selected':''}>${k}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
-                        <!-- Hamburger Sidebar -->
+                        <!-- Instrument Info -->
+                        <div class="mt5-instrument-info">
+                            <span class="mt5-pair">${simCurrentSymbol}</span>
+                            <span class="mt5-name">${simCurrentSymbol} / USD</span>
+                            <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
+                        </div>
+                        <!-- Quick Trade Panel -->
+                        <div class="mt5-quick-trade">
+                            <div class="mt5-quick-trade-row">
+                                <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
+                                <div class="mt5-lot-selector">
+                                    <div class="lot-row">
+                                        <button id="lotDownBtn">▼</button>
+                                        <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
+                                        <button id="lotUpBtn">▲</button>
+                                    </div>
+                                    <div class="mt5-lot-presets">
+                                        <button data-lot="0.01">0.01</button>
+                                        <button data-lot="0.10">0.10</button>
+                                        <button data-lot="1.00">1.00</button>
+                                    </div>
+                                </div>
+                                <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
+                            </div>
+                        </div>
+                        <!-- Chart Container -->
+                        <div class="mobile-chart-container" id="mobileChartContainer">
+                            <div id="simChartContainer" style="width:100%;height:100%;touch-action:none;"></div>
+                        </div>
+                        <!-- Bottom Navigation -->
+                        <div class="mt5-bottom-nav" id="mt5BottomNav">
+                            <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
+                            <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
+                            <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
+                            <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
+                        </div>
+                        <!-- Panels -->
+                        <div class="mobile-panels" id="mobilePanels">
+                            <div class="panel-content" id="quotesPanel"></div>
+                            <div class="panel-content" id="tradePanel"></div>
+                            <div class="panel-content" id="historyPanel"></div>
+                        </div>
+                        <!-- Hamburger Sidebar Overlay -->
                         <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
                             <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
                                 <div class="close-area">
@@ -3618,88 +3624,40 @@
                                     <button id="sidebarDarkTheme">🌙 Dark</button>
                                 </div>
                                 <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);">
-                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" onclick="document.getElementById('mt5SidebarOverlay').classList.remove('show');">Close</button>
+                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Indicator Overlay - click outside to close -->
+                        <!-- Indicator Overlay -->
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
                             <div class="mt5-indicator-sheet" id="mt5IndicatorSheet">
                                 <h3>📊 Indicators</h3>
                                 ${Object.entries(indicatorNames).map(([k,name]) => `
                                     <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>
                                 `).join('')}
-                                <hr style="border-color:var(--mt5-border);margin:8px 0;">
+                                <hr>
                                 <label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
-                                <div style="margin-top:12px;display:flex;gap:8px;">
+                                <div style="margin-top:16px;display:flex;gap:8px;">
                                     <button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Instrument Info -->
-                        <div class="mt5-instrument-info">
-                            <span class="mt5-pair">${simCurrentSymbol}</span>
-                            <span class="mt5-name">${simCurrentSymbol} / USD</span>
-                            <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
-                        </div>
-                        <!-- Quick Trade Panel -->
-                        <div class="mt5-quick-trade">
-                            <div class="mt5-quick-trade-row">
-                                <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
-                                <div class="mt5-lot-selector">
-                                    <div class="lot-row">
-                                        <button id="lotDownBtn">▼</button>
-                                        <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
-                                        <button id="lotUpBtn">▲</button>
-                                    </div>
-                                    <div class="mt5-lot-presets">
-                                        <button data-lot="0.01">0.01</button>
-                                        <button data-lot="0.10">0.10</button>
-                                        <button data-lot="1.00">1.00</button>
-                                    </div>
-                                </div>
-                                <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
-                            </div>
-                        </div>
-                        <!-- Chart -->
-                        <div class="mobile-chart-container" id="mobileChartContainer">
-                            <div id="simChartContainer" style="width:100%;height:100%;"></div>
-                            <div class="gesture-hint" id="gestureHint">👆 Pinch · Drag · Double-tap</div>
-                        </div>
-                        <!-- Bottom Navigation -->
-                        <div class="mt5-bottom-nav" id="mt5BottomNav">
-                            <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
-                            <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
-                            <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
-                            <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
-                        </div>
-                        <!-- Panels -->
-                        <div class="mobile-panels" id="mobilePanels">
-                            <div class="panel-content" id="quotesPanel"></div>
-                            <div class="panel-content" id="tradePanel"></div>
-                            <div class="panel-content" id="historyPanel"></div>
-                        </div>
                     </div>`;
                 // ─── Bind mobile events ──────────────────────────────────────
-                // Hamburger
-                document.getElementById('mt5Hamburger').onclick = () => {
-                    document.getElementById('mt5SidebarOverlay').classList.toggle('show');
-                };
-                document.getElementById('mt5SidebarClose').onclick = () => {
-                    document.getElementById('mt5SidebarOverlay').classList.remove('show');
-                };
-                // Click outside sidebar to close
-                document.getElementById('mt5SidebarOverlay').addEventListener('click', function(e) {
+                const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
+                document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
+                    sidebarOverlay.classList.toggle('show'); };
+                document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
+                document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
+                sidebarOverlay.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
                 });
-                // Sidebar indicators
                 document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => {
                     cb.onchange = function() {
                         activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
-                        // sync with indicator overlay
-                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(c => {
-                            if (c.dataset.ind === this.dataset.ind) c.checked = this.checked;
+                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(ocb => {
+                            if (ocb.dataset.ind === this.dataset.ind) ocb.checked = this.checked;
                         });
                     };
                 });
@@ -3710,10 +3668,10 @@
                 };
                 document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
-                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
+                    sidebarOverlay.classList.remove('show'); };
                 document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
-                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
+                    sidebarOverlay.classList.remove('show'); };
                 document.querySelectorAll('.timeframe-grid button').forEach(b => {
                     b.onclick = function() {
                         const tf = parseInt(this.dataset.tf);
@@ -3722,27 +3680,22 @@
                         document.getElementById('mobileTfDisplay').textContent = Object.keys(
                             timeframeIntervals).find(k => timeframeIntervals[k] === tf);
                         resetChart();
-                        document.getElementById('mt5SidebarOverlay').classList.remove('show');
+                        sidebarOverlay.classList.remove('show');
                     };
                 });
-                // Indicator overlay - click outside to close
                 const indicatorOverlay = document.getElementById('mt5IndicatorOverlay');
+                document.getElementById('mt5IndicatorBtn').onclick = (e) => { e.stopPropagation();
+                    indicatorOverlay.classList.toggle('show'); };
+                document.getElementById('closeIndicatorSheet').onclick = () => indicatorOverlay.classList.remove('show');
                 indicatorOverlay.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
                 });
-                document.getElementById('mt5IndicatorBtn').onclick = () => {
-                    document.getElementById('mt5IndicatorOverlay').classList.toggle('show');
-                };
-                document.getElementById('closeIndicatorSheet').onclick = () => {
-                    document.getElementById('mt5IndicatorOverlay').classList.remove('show');
-                };
                 document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => {
                     cb.onchange = function() {
                         activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
-                        // sync with sidebar
-                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(c => {
-                            if (c.dataset.ind === this.dataset.ind) c.checked = this.checked;
+                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(scb => {
+                            if (scb.dataset.ind === this.dataset.ind) scb.checked = this.checked;
                         });
                     };
                 });
@@ -3751,20 +3704,17 @@
                     document.getElementById('sidebarVolumeToggle').checked = showVolume;
                     updateAllIndicators();
                 };
-                // Timeframe
                 document.getElementById('mt5TfSelect').onchange = function() {
                     currentTimeframe = parseInt(this.value);
                     document.getElementById('mobileTfDisplay').textContent = Object.keys(timeframeIntervals).find(k =>
                         timeframeIntervals[k] === currentTimeframe);
                     resetChart();
                 };
-                // Lot controls
                 document.getElementById('lotDownBtn').onclick = () => changeMobileLot(-1);
                 document.getElementById('lotUpBtn').onclick = () => changeMobileLot(1);
                 document.querySelectorAll('.mt5-lot-presets button').forEach(b => {
                     b.onclick = () => setMobileLot(parseFloat(b.dataset.lot));
                 });
-                // Buy/Sell
                 document.getElementById('mobileSellBtn').onclick = () => {
                     const qty = currentMobileLot;
                     placeSimOrderMobile('sell', qty);
@@ -3773,7 +3723,6 @@
                     const qty = currentMobileLot;
                     placeSimOrderMobile('buy', qty);
                 };
-                // Bottom nav
                 const navItems = document.querySelectorAll('.mt5-nav-item');
                 const panelsDiv = document.getElementById('mobilePanels');
                 navItems.forEach(item => {
@@ -3794,21 +3743,20 @@
                         setTimeout(() => {
                             if (simChart) {
                                 const chartDiv = document.getElementById('simChartContainer');
-                                if (chartDiv && chartDiv.clientWidth > 0) {
+                                if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight >
+                                    0) {
                                     simChart.applyOptions({ width: chartDiv.clientWidth,
                                         height: chartDiv.clientHeight });
                                     simChart.timeScale().fitContent();
                                 }
                             }
-                        }, 100);
+                        }, 150);
                     };
                 });
-                // Init chart
                 requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
                 updateMobileTopBar();
-                updateMobilePanel('quotes');
+                document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
-                // Resize observer for mobile chart
                 const ro = new ResizeObserver(() => {
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
@@ -3822,38 +3770,30 @@
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) ro.observe(chartDiv);
                 window._mobileResizeObs = ro;
-                // Show gesture hint
-                setTimeout(() => {
-                    const hint = document.getElementById('gestureHint');
-                    if (hint) { hint.classList.add('show');
-                        setTimeout(() => hint.classList.remove('show'), 4000); }
-                }, 1500);
-                // Handle back button for mobile
-                window._mobileBackHandler = function(e) {
-                    if (panelsDiv.classList.contains('show')) {
-                        panelsDiv.classList.remove('show');
-                        navItems.forEach(n => n.classList.remove('active'));
-                        document.querySelector('.mt5-nav-item[data-panel="chart"]')?.classList.add('active');
-                        e.preventDefault();
-                        return;
+                let lastTap = 0;
+                chartDiv.addEventListener('touchend', (e) => {
+                    const now = Date.now();
+                    if (now - lastTap < 300) {
+                        if (simChart) { simChart.timeScale().fitContent();
+                            showToast('📊 Chart reset'); }
                     }
-                    if (document.getElementById('mt5SidebarOverlay').classList.contains('show')) {
-                        document.getElementById('mt5SidebarOverlay').classList.remove('show');
-                        e.preventDefault();
-                        return;
-                    }
-                    if (document.getElementById('mt5IndicatorOverlay').classList.contains('show')) {
-                        document.getElementById('mt5IndicatorOverlay').classList.remove('show');
-                        e.preventDefault();
-                        return;
-                    }
+                    lastTap = now;
+                }, { passive: true });
+                let longPressTimer = null;
+                chartDiv.addEventListener('touchstart', (e) => {
+                    longPressTimer = setTimeout(() => {
+                        if (simChart) {
+                            const price = simLastPrices[simCurrentSymbol] || 0;
+                            showToast('📊 ' + simCurrentSymbol + ' $' + price.toFixed(4));
+                        }
+                    }, 600);
+                }, { passive: true });
+                chartDiv.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, { passive: true });
+                chartDiv.addEventListener('touchmove', () => { clearTimeout(longPressTimer); }, { passive: true });
+                window._mobileCleanup = function() {
+                    if (window._mobileResizeObs) { window._mobileResizeObs.disconnect();
+                        window._mobileResizeObs = null; }
                 };
-                window.addEventListener('popstate', window._mobileBackHandler);
-                // Push state for back handling
-                if (!window._mobilePushStateDone) {
-                    window.history.pushState({ mobile: true }, '');
-                    window._mobilePushStateDone = true;
-                }
             }
 
             function updateMobilePanel(panel) {
@@ -3908,15 +3848,17 @@
                 simIndicatorSeries = {};
                 document.querySelector('.mt5-symbol').textContent = sym;
                 document.querySelector('.mt5-pair').textContent = sym;
+                document.querySelector('.mt5-name').textContent = sym + ' / USD';
                 updateMobileTopBar();
                 initChart();
-                document.querySelector('.mt5-nav-item[data-panel="chart"]')?.click();
+                document.querySelector('.mt5-nav-item[data-panel="chart"]').click();
                 document.querySelectorAll('.watchlist-item').forEach(el => {
                     el.style.borderColor = 'var(--mt5-border)';
                     if (el.querySelector('.sym')?.textContent === sym) {
                         el.style.borderColor = 'var(--mt5-green)';
                     }
                 });
+                showToast('📊 Switched to ' + sym);
             }
 
             function renderMobileTradeSummary() {
@@ -4020,6 +3962,12 @@
                 if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(4);
             }
 
+            function updatePriceDisplay(symbol, price) {
+                // Update UI elements for this symbol
+                const allPriceEls = document.querySelectorAll('.price-display-' + symbol);
+                allPriceEls.forEach(el => el.textContent = '$' + price.toFixed(4));
+            }
+
             function placeSimOrderMobile(side, qty) {
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
@@ -4116,6 +4064,11 @@
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
+                const chartDiv = document.getElementById('simChartContainer');
+                if (chartDiv) {
+                    const newDiv = chartDiv.cloneNode(true);
+                    chartDiv.parentNode?.replaceChild(newDiv, chartDiv);
+                }
             }
 
             function debounce(fn, delay) { let timer; return function(...args) { clearTimeout(timer);
@@ -4160,34 +4113,7 @@
                 return candles;
             }
 
-            function simulateNextTick(price, sym) {
-                const vol = simVolatility[sym] || 0.0015;
-                const change = price * vol * (Math.random() - 0.48) * 0.8;
-                return +(price + change).toFixed(4);
-            }
-
-            async function getRealTimePrice(symbol) {
-                try {
-                    const url =
-                    `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`;
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error('API error');
-                    const data = await res.json();
-                    if (data && data.c && data.c > 0) { simIsLiveData = true;
-                        simLastPrices[symbol] = data.c; return data.c; }
-                    throw new Error('No valid price');
-                } catch (e) {
-                    simIsLiveData = false;
-                    if (simLastPrices[symbol]) return simLastPrices[symbol];
-                    const base = simBasePrices[symbol] || 150;
-                    const varied = base * (1 + (Math.random() - 0.5) * 0.04);
-                    simLastPrices[symbol] = varied;
-                    return varied;
-                }
-            }
-
             // ─── INDICATOR CALCULATIONS ──────────────────────────────────────
-
             function calculateEMA(data, period) {
                 if (data.length < period) return [];
                 const ema = [];
@@ -4338,7 +4264,6 @@
             }
 
             // ─── CHART INIT ────────────────────────────────────────────────────
-
             async function initChart() {
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
@@ -4359,22 +4284,12 @@
                     simIndicatorSeries = {}; }
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
-                try {
-                    const realPrice = await getRealTimePrice(simCurrentSymbol);
-                    const basePrice = realPrice || simBasePrices[simCurrentSymbol] || 150;
-                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
-                    const lastCandle = simAllCandles[simAllCandles.length - 1];
-                    simCurrentCandle = { time: lastCandle.time + currentTimeframe, open: lastCandle.close,
-                        high: lastCandle.close, low: lastCandle.close, close: lastCandle.close, volume: 0 };
-                    simLastPrices[simCurrentSymbol] = lastCandle.close;
-                } catch (e) {
-                    const basePrice = simBasePrices[simCurrentSymbol] || 150;
-                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
-                    const lastCandle = simAllCandles[simAllCandles.length - 1];
-                    simCurrentCandle = { time: lastCandle.time + currentTimeframe, open: lastCandle.close,
-                        high: lastCandle.close, low: lastCandle.close, close: lastCandle.close, volume: 0 };
-                    simLastPrices[simCurrentSymbol] = lastCandle.close;
-                }
+                const basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
+                simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
+                const lastCandle = simAllCandles[simAllCandles.length - 1];
+                simCurrentCandle = { time: lastCandle.time + currentTimeframe, open: lastCandle.close,
+                    high: lastCandle.close, low: lastCandle.close, close: lastCandle.close, volume: 0 };
+                simLastPrices[simCurrentSymbol] = lastCandle.close;
                 const wrapper = document.getElementById('terminalWrapper');
                 const isFullscreen = wrapper && wrapper.classList.contains('fullscreen-active');
                 const isMobile = window.innerWidth <= 768;
@@ -4437,7 +4352,6 @@
                         }
                     }
                 });
-                // Crosshair for dragging lines
                 simChart.subscribeCrosshairMove(param => {
                     if (!param.point || !simCandleSeries || manualDrawnLines.length === 0) { chartDiv
                             .classList.remove('dragging-line'); return; }
@@ -4466,11 +4380,10 @@
                         }
                     }
                 });
-                // Mouse down for line drag
-                chartDiv.addEventListener('mousedown', e => {
+                const mousedownHandler = (e) => {
                     if (!simCandleSeries || manualDrawnLines.length === 0) return;
                     const rect = chartDiv.getBoundingClientRect();
-                    const y = e.clientY - rect.top;
+                    const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
                     const threshold = 14;
                     let closest = null,
                         closestDist = Infinity;
@@ -4487,7 +4400,9 @@
                                 .price, currentPrice: closest.price, origIndex: closest.index };
                         chartDiv.classList.add('dragging-line');
                         e.preventDefault(); }
-                });
+                };
+                chartDiv.addEventListener('mousedown', mousedownHandler);
+                chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
                 const moveHandler = (e) => {
                     if (!dragState || !dragState.active || !simCandleSeries) return;
                     const rect = chartDiv.getBoundingClientRect();
@@ -4527,23 +4442,22 @@
                 document.addEventListener('touchend', upHandler);
                 if (loadingEl) loadingEl.style.display = 'none';
                 redrawAllLines();
-                // Price update interval
                 if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                 simPriceIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
-                    const newPrice = simulateNextTick(simCurrentCandle.close, simCurrentSymbol);
-                    simCurrentCandle.high = Math.max(simCurrentCandle.high, newPrice);
-                    simCurrentCandle.low = Math.min(simCurrentCandle.low, newPrice);
-                    simCurrentCandle.close = newPrice;
-                    simCurrentCandle.volume += Math.floor(500 + Math.random() * 3000);
-                    simLastPrices[simCurrentSymbol] = newPrice;
-                    simCandleSeries.update(simCurrentCandle);
-                    updateAllIndicators();
-                    checkAndExecuteSLTP();
-                    updateSimUI();
-                    updateMobileTopBar();
-                }, 1500);
-                // Candle close interval
+                    const price = simLastPrices[simCurrentSymbol];
+                    if (price && price > 0) {
+                        simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
+                        simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
+                        simCurrentCandle.close = price;
+                        simCurrentCandle.volume += Math.floor(10 + Math.random() * 50);
+                        simCandleSeries.update(simCurrentCandle);
+                        updateAllIndicators();
+                        checkAndExecuteSLTP();
+                        updateSimUI();
+                        updateMobileTopBar();
+                    }
+                }, 1000);
                 if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                 simCandleCloseIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
@@ -4555,7 +4469,6 @@
                     updateAllIndicators();
                     if (simAllCandles.length > 300) simAllCandles.shift();
                 }, currentTimeframe * 1000);
-                // Resize observer
                 const debouncedResize = debounce(() => {
                     if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                         simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
@@ -4565,10 +4478,17 @@
                 }, 100);
                 simResizeObserver = new ResizeObserver(debouncedResize);
                 simResizeObserver.observe(chartDiv);
+                window._chartCleanup = function() {
+                    document.removeEventListener('mousemove', moveHandler);
+                    document.removeEventListener('touchmove', moveHandler);
+                    document.removeEventListener('mouseup', upHandler);
+                    document.removeEventListener('touchend', upHandler);
+                    chartDiv.removeEventListener('mousedown', mousedownHandler);
+                    chartDiv.removeEventListener('touchstart', mousedownHandler);
+                };
             }
 
             // ─── UPDATE INDICATORS ────────────────────────────────────────────
-
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
@@ -4579,7 +4499,6 @@
                         delete simIndicatorSeries[key];
                     }
                 };
-                // EMAs
                 for (const [key, color] of Object.entries(indicatorColors)) {
                     if (!key.startsWith('ema')) continue;
                     const period = parseInt(key.replace('ema', ''));
@@ -4595,7 +4514,6 @@
                         }
                     } else { removeSeries(key); }
                 }
-                // BB
                 if (activeIndicators['bb']) {
                     const { sma, upper, lower } = calculateBB(allData);
                     ['bb_sma', 'bb_upper', 'bb_lower'].forEach((k, i) => {
@@ -4611,7 +4529,6 @@
                         }
                     });
                 } else { ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k)); }
-                // RSI
                 if (activeIndicators['rsi']) {
                     const rsiData = calculateRSI(allData);
                     if (simIndicatorSeries['rsi']) simIndicatorSeries['rsi'].setData(rsiData);
@@ -4624,7 +4541,6 @@
                         simIndicatorSeries['rsi'] = pane;
                     }
                 } else { removeSeries('rsi'); }
-                // MACD
                 if (activeIndicators['macd']) {
                     const { macd, signal, histogram } = calculateMACD(allData);
                     if (macd.length > 0) {
@@ -4658,7 +4574,6 @@
                         }
                     }
                 } else { ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k)); }
-                // Stochastic
                 if (activeIndicators['stoch']) {
                     const { k, d } = calculateStochastic(allData);
                     if (k.length > 0) {
@@ -4682,7 +4597,6 @@
                         }
                     }
                 } else { ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k)); }
-                // VWAP
                 if (activeIndicators['vwap']) {
                     const vwapData = calculateVWAP(allData);
                     if (simIndicatorSeries['vwap']) simIndicatorSeries['vwap'].setData(vwapData);
@@ -4694,7 +4608,6 @@
                         simIndicatorSeries['vwap'] = pane;
                     }
                 } else { removeSeries('vwap'); }
-                // Volume
                 if (simVolumeSeries) {
                     if (showVolume) {
                         const volData = allData.map(c => ({ time: c.time, value: c.volume, color: c.close >= c
@@ -4714,7 +4627,6 @@
             }
 
             // ─── UI UPDATE ─────────────────────────────────────────────────────
-
             function updateSimUI() {
                 if (!portfolio) return;
                 let totalPL = 0,
@@ -4779,12 +4691,10 @@
                 fsPL.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
             }
 
-            function savePortfolio() {
-                localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio));
-            }
+            function savePortfolio() { try { localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio)); } catch (
+                e) {} }
 
             // ─── TRADING ACTIONS ─────────────────────────────────────────────
-
             async function placeSimOrder(type) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 1;
@@ -4792,8 +4702,7 @@
                 const tpVal = parseFloat(document.getElementById('simTP')?.value);
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
                 let price = simLastPrices[symbol];
-                if (!price || price <= 0) price = await getRealTimePrice(symbol);
-                if (!price || price <= 0) return showToast('❌ Price unavailable');
+                if (!price || price <= 0) price = simBasePrices[symbol] || 150;
                 if (type === 'buy') {
                     const cost = qty * price;
                     if (portfolio.cash < cost) return showToast('❌ Insufficient cash');
@@ -4869,6 +4778,9 @@
                 redrawAllLines();
                 document.getElementById('simSL').value = '';
                 document.getElementById('simTP').value = '';
+                document.querySelectorAll('.modal').forEach(m => {
+                    if (m.querySelector('h3')?.textContent?.includes('TRADE')) m.remove();
+                });
             }
 
             async function exitPosition(symbol) {
@@ -4962,7 +4874,6 @@
             }
 
             // ─── DRAWING LINES ─────────────────────────────────────────────────
-
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (
@@ -5063,7 +4974,6 @@
             }
 
             // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
-
             window.updateSimUI = updateSimUI;
             window.placeSimOrder = placeSimOrder;
             window.exitPosition = exitPosition;
@@ -5093,10 +5003,21 @@
             window.openDesktopTradePanel = openDesktopTradePanel;
             window.calcEquity = calcEquity;
             window.calcTotalPL = calcTotalPL;
-            window.watchlistSearch = window.watchlistSearch;
+            window.showToast = showToast;
+            window.connectBinanceWS = connectBinanceWS;
+            window.disconnectBinanceWS = disconnectBinanceWS;
+
+            // ─── AUTO CLEANUP ──────────────────────────────────────────────────
+            window.addEventListener('beforeunload', function() {
+                cleanupSimIntervals();
+                disconnectBinanceWS();
+                if (window._chartCleanup) window._chartCleanup();
+                if (window._mobileCleanup) window._mobileCleanup();
+                document.querySelectorAll('.toast').forEach(el => el.remove());
+                document.querySelectorAll('.modal').forEach(el => el.remove());
+            });
 
             // ─── BOOT ──────────────────────────────────────────────────────────
-
             applyTheme();
             if (token && currentUser) loadAllData();
             else renderAuthPage();
@@ -5129,11 +5050,12 @@
                 }, 300);
             });
 
-            // Clean up back handler on page unload
-            window.addEventListener('beforeunload', () => {
-                if (window._mobileBackHandler) {
-                    window.removeEventListener('popstate', window._mobileBackHandler);
-                }
+            window.addEventListener('popstate', () => {
+                document.querySelectorAll('.modal').forEach(el => el.remove());
+                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
+                'show'));
+                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
+                    'show'));
             });
 
         })();
