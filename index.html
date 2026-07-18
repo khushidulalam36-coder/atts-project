@@ -313,7 +313,7 @@
             'use strict';
 
             // ─── কনফিগ ─────────────────────────────────────────────────────
-            const API_BASE = 'https://atts-project.onrender.com/api';
+            const API_BASE = 'http://localhost:5000/api';
             const THEME_KEY = 'theme_prod_v9';
             const LANG_KEY = 'lang_prod_v9';
             const TOKEN_KEY = 'auth_token_v9';
@@ -426,6 +426,7 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) portfolio = portRes;
                     else portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                    portfolio.cash = parseFloat(portfolio.cash) || 100000;
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                     if (subjects.length) selectedSubjectId = subjects[0].id;
