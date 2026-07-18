@@ -2314,7 +2314,6 @@
             let simCurrentCandle = null;
             let simAllCandles = [];
             let simIsLiveData = false;
-            // ✅ শুধু টপ ১০ ক্রিপ্টো
             const simMarketSymbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
                 'AVAXUSDT', 'DOTUSDT'
             ];
@@ -2428,10 +2427,8 @@
                                 const price = parseFloat(data.p);
                                 const timestamp = Math.floor(data.T / 1000);
                                 simLastPrices[symbol] = price;
-                                // Update UI
                                 updateMobileTopBar();
                                 updatePriceDisplay(symbol, price);
-                                // Update current candle if this is the active symbol
                                 if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
                                     const currentMinute = timestamp - (timestamp % 60);
                                     if (simCurrentCandle.time === currentMinute) {
@@ -3376,7 +3373,7 @@
                                 </div>
                             </div>
                             <div class="trade-panel">
-                                <select id="simSymbolSelect2" style="padding:6px 10px;">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                <select id="simSymbolSelect2">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
                                 <input type="number" id="simQty" placeholder="Qty" value="1" min="0.01" step="0.01">
                                 <input type="number" id="simSL" placeholder="SL $" step="0.0001">
                                 <input type="number" id="simTP" placeholder="TP $" step="0.0001">
@@ -3763,7 +3760,8 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
+                            // Remove fitContent to prevent auto-scroll
+                            // simChart.timeScale().fitContent();
                         }
                     }
                 });
@@ -4046,12 +4044,28 @@
 
             function resetChart() {
                 cleanupSimIntervals();
+                // Clear old chart completely
+                if (simChart) {
+                    simChart.remove();
+                    simChart = null;
+                    simCandleSeries = null;
+                    simVolumeSeries = null;
+                    simIndicatorSeries = {};
+                }
                 simAllCandles = [];
                 simCurrentCandle = null;
                 activeIndicators = {};
                 simIndicatorSeries = {};
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                // Remove existing chart container and recreate to avoid event listener accumulation
+                const chartDiv = document.getElementById('simChartContainer');
+                if (chartDiv) {
+                    const newDiv = document.createElement('div');
+                    newDiv.id = 'simChartContainer';
+                    newDiv.style.cssText = 'width:100%;height:100%;touch-action:none;';
+                    chartDiv.parentNode?.replaceChild(newDiv, chartDiv);
+                }
                 initChart();
             }
 
@@ -4064,11 +4078,8 @@
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
-                const chartDiv = document.getElementById('simChartContainer');
-                if (chartDiv) {
-                    const newDiv = chartDiv.cloneNode(true);
-                    chartDiv.parentNode?.replaceChild(newDiv, chartDiv);
-                }
+                // Remove document-level listeners if any
+                if (window._chartCleanup) window._chartCleanup();
             }
 
             function debounce(fn, delay) { let timer; return function(...args) { clearTimeout(timer);
@@ -4277,32 +4288,56 @@
                         '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
                     return;
                 }
-                if (simChart) { simChart.remove();
+                if (simChart) {
+                    simChart.remove();
                     simChart = null;
                     simCandleSeries = null;
                     simVolumeSeries = null;
-                    simIndicatorSeries = {}; }
+                    simIndicatorSeries = {};
+                }
+                // Remove old canvas and loading
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
-                const basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
+
+                // Use last known price or base
+                let basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
+                // If we have a recent trade price, use it as base for initial candle
+                if (simLastPrices[simCurrentSymbol]) {
+                    basePrice = simLastPrices[simCurrentSymbol];
+                }
                 simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
                 const lastCandle = simAllCandles[simAllCandles.length - 1];
-                simCurrentCandle = { time: lastCandle.time + currentTimeframe, open: lastCandle.close,
-                    high: lastCandle.close, low: lastCandle.close, close: lastCandle.close, volume: 0 };
+                // Set current candle open to last close, but high/low to same to avoid massive initial candle
+                simCurrentCandle = {
+                    time: lastCandle.time + currentTimeframe,
+                    open: lastCandle.close,
+                    high: lastCandle.close,
+                    low: lastCandle.close,
+                    close: lastCandle.close,
+                    volume: 0
+                };
                 simLastPrices[simCurrentSymbol] = lastCandle.close;
+
                 const wrapper = document.getElementById('terminalWrapper');
                 const isFullscreen = wrapper && wrapper.classList.contains('fullscreen-active');
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? chartDiv.clientHeight : (isFullscreen ? Math.max(chartDiv.clientHeight,
                     300) : 420);
                 const isDark = appTheme === 'dark';
+
                 simChart = LightweightCharts.createChart(chartDiv, {
                     width: chartDiv.clientWidth,
                     height: chartHeight,
-                    timeScale: { timeVisible: true, secondsVisible: currentTimeframe < 300, rightOffset: 8,
-                        barSpacing: isMobile ? 4 : 8 },
-                    layout: { background: { type: 'solid', color: 'transparent' },
-                        textColor: isDark ? '#94a3b8' : '#6b7280' },
+                    timeScale: {
+                        timeVisible: true,
+                        secondsVisible: currentTimeframe < 300,
+                        rightOffset: 8,
+                        barSpacing: isMobile ? 4 : 8
+                    },
+                    layout: {
+                        background: { type: 'solid', color: 'transparent' },
+                        textColor: isDark ? '#94a3b8' : '#6b7280'
+                    },
                     grid: { vertLines: { visible: false }, horzLines: { visible: false } },
                     crosshair: { mode: 1 },
                     rightPriceScale: { borderVisible: true, autoScale: true, scaleMargins: { top: 0.05,
@@ -4310,6 +4345,7 @@
                     handleScroll: { vertTouchDrag: false, horzTouchDrag: true },
                     handleScale: { axisPressedMouseMove: true, pinch: true },
                 });
+
                 simCandleSeries = simChart.addCandlestickSeries({
                     upColor: '#10b981',
                     downColor: '#ef4444',
@@ -4321,12 +4357,16 @@
                 simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
                 if (showVolume) simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
                 else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+
                 simCandleSeries.setData([...simAllCandles, simCurrentCandle]);
                 updateAllIndicators();
                 const volData = simAllCandles.map(c => ({ time: c.time, value: c.volume, color: c.close >= c.open ?
                         'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                 simVolumeSeries.setData(volData);
+
+                // Fit content once on init
                 simChart.timeScale().fitContent();
+
                 // Click to draw lines
                 simChart.subscribeClick(param => {
                     if (dragState && dragState.active) return;
@@ -4352,6 +4392,7 @@
                         }
                     }
                 });
+
                 simChart.subscribeCrosshairMove(param => {
                     if (!param.point || !simCandleSeries || manualDrawnLines.length === 0) { chartDiv
                             .classList.remove('dragging-line'); return; }
@@ -4380,6 +4421,7 @@
                         }
                     }
                 });
+
                 const mousedownHandler = (e) => {
                     if (!simCandleSeries || manualDrawnLines.length === 0) return;
                     const rect = chartDiv.getBoundingClientRect();
@@ -4403,6 +4445,7 @@
                 };
                 chartDiv.addEventListener('mousedown', mousedownHandler);
                 chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
+
                 const moveHandler = (e) => {
                     if (!dragState || !dragState.active || !simCandleSeries) return;
                     const rect = chartDiv.getBoundingClientRect();
@@ -4423,6 +4466,7 @@
                 };
                 document.addEventListener('mousemove', moveHandler);
                 document.addEventListener('touchmove', moveHandler, { passive: false });
+
                 const upHandler = () => {
                     if (dragState && dragState.active) {
                         if (dragState.currentPrice !== dragState.startPrice) {
@@ -4440,44 +4484,65 @@
                 };
                 document.addEventListener('mouseup', upHandler);
                 document.addEventListener('touchend', upHandler);
+
                 if (loadingEl) loadingEl.style.display = 'none';
                 redrawAllLines();
+
+                // Price update interval
                 if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                 simPriceIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
-                    const price = simLastPrices[simCurrentSymbol];
-                    if (price && price > 0) {
-                        simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
-                        simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
-                        simCurrentCandle.close = price;
-                        simCurrentCandle.volume += Math.floor(10 + Math.random() * 50);
-                        simCandleSeries.update(simCurrentCandle);
-                        updateAllIndicators();
-                        checkAndExecuteSLTP();
-                        updateSimUI();
-                        updateMobileTopBar();
+                    // Use last price from Binance if available, else simulate
+                    let price = simLastPrices[simCurrentSymbol];
+                    if (!price) {
+                        // Simulate tick
+                        const vol = simVolatility[simCurrentSymbol] || 0.0015;
+                        const change = simCurrentCandle.close * vol * (Math.random() - 0.48) * 0.8;
+                        price = simCurrentCandle.close + change;
+                        price = +price.toFixed(4);
+                        simLastPrices[simCurrentSymbol] = price;
                     }
+                    simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
+                    simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
+                    simCurrentCandle.close = price;
+                    simCurrentCandle.volume += Math.floor(500 + Math.random() * 3000);
+                    simCandleSeries.update(simCurrentCandle);
+                    updateAllIndicators();
+                    checkAndExecuteSLTP();
+                    updateSimUI();
+                    updateMobileTopBar();
                 }, 1000);
+
+                // Candle close interval
                 if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                 simCandleCloseIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
                     simAllCandles.push({ ...simCurrentCandle });
                     const newOpen = simCurrentCandle.close;
-                    simCurrentCandle = { time: simCurrentCandle.time + currentTimeframe, open: newOpen,
-                        high: newOpen, low: newOpen, close: newOpen, volume: 0 };
+                    simCurrentCandle = {
+                        time: simCurrentCandle.time + currentTimeframe,
+                        open: newOpen,
+                        high: newOpen,
+                        low: newOpen,
+                        close: newOpen,
+                        volume: 0
+                    };
                     simCandleSeries.update(simCurrentCandle);
                     updateAllIndicators();
                     if (simAllCandles.length > 300) simAllCandles.shift();
                 }, currentTimeframe * 1000);
+
+                // Resize observer - only update size, no fitContent to prevent auto-scroll
                 const debouncedResize = debounce(() => {
                     if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                         simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                 .clientHeight });
-                        simChart.timeScale().fitContent();
+                        // Do not call fitContent here to avoid auto-scroll
                     }
                 }, 100);
                 simResizeObserver = new ResizeObserver(debouncedResize);
                 simResizeObserver.observe(chartDiv);
+
                 window._chartCleanup = function() {
                     document.removeEventListener('mousemove', moveHandler);
                     document.removeEventListener('touchmove', moveHandler);
@@ -4485,6 +4550,9 @@
                     document.removeEventListener('touchend', upHandler);
                     chartDiv.removeEventListener('mousedown', mousedownHandler);
                     chartDiv.removeEventListener('touchstart', mousedownHandler);
+                    if (simPriceIntervalId) clearInterval(simPriceIntervalId);
+                    if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
+                    if (simResizeObserver) simResizeObserver.disconnect();
                 };
             }
 
@@ -4948,7 +5016,7 @@
                         if (chartDiv) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
+                            // No fitContent
                         }
                     }
                 }, 200);
@@ -4966,7 +5034,7 @@
                             const chartDiv = document.getElementById('simChartContainer');
                             if (chartDiv) {
                                 simChart.applyOptions({ width: chartDiv.clientWidth, height: 420 });
-                                simChart.timeScale().fitContent();
+                                // No fitContent
                             }
                         }
                     }, 300);
@@ -5006,6 +5074,7 @@
             window.showToast = showToast;
             window.connectBinanceWS = connectBinanceWS;
             window.disconnectBinanceWS = disconnectBinanceWS;
+            window.resetChart = resetChart;
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
             window.addEventListener('beforeunload', function() {
@@ -5029,7 +5098,7 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
+                            // No fitContent
                         }
                     }
                 }, 300);
@@ -5044,7 +5113,7 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
+                            // No fitContent
                         }
                     }
                 }, 300);
