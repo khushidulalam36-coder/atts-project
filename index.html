@@ -1156,8 +1156,8 @@
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove();
                         showAdminLessonManager(); } });
             };
-            // ═══════════════════════════════════════════════════════
-            //  ► PART 2 STARTS HERE
+              // ═══════════════════════════════════════════════════════
+            //  ► FINAL PART 2 (MT5 MOBILE STYLE, ALL FIXES)
             // ═══════════════════════════════════════════════════════
             window.deleteQuizQ = async function(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
@@ -1472,7 +1472,6 @@
                 simCandleSeries.setData([...simAllCandles, simCurrentCandle]);
                 updateAllIndicators();
 
-                // Volume data
                 const volData = simAllCandles.map(c => ({ time: c.time, value: c.volume, color: c.close >= c.open ?
                         'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                 simVolumeSeries.setData(volData);
@@ -1851,7 +1850,6 @@ function updateAllIndicators() {
     const allData = [...simAllCandles];
     if (simCurrentCandle) allData.push(simCurrentCandle);
 
-    // Helper to remove a series safely
     const removeSeries = (key) => {
         if (simIndicatorSeries[key]) {
             try { simChart.removeSeries(simIndicatorSeries[key]); } catch(e) {}
@@ -1859,7 +1857,7 @@ function updateAllIndicators() {
         }
     };
 
-    // EMAs – add active, remove inactive
+    // EMAs
     for (const [key, color] of Object.entries(indicatorColors)) {
         if (!key.startsWith('ema')) continue;
         const period = parseInt(key.replace('ema', ''));
@@ -1872,9 +1870,7 @@ function updateAllIndicators() {
                 ls.setData(emaData);
                 simIndicatorSeries[key] = ls;
             }
-        } else {
-            removeSeries(key);
-        }
+        } else { removeSeries(key); }
     }
 
     // Bollinger Bands
@@ -1891,9 +1887,7 @@ function updateAllIndicators() {
                 simIndicatorSeries[k] = ls;
             }
         });
-    } else {
-        ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k));
-    }
+    } else { ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k)); }
 
     // RSI
     if (activeIndicators['rsi']) {
@@ -1906,9 +1900,7 @@ function updateAllIndicators() {
             pane.setData(rsiData);
             simIndicatorSeries['rsi'] = pane;
         }
-    } else {
-        removeSeries('rsi');
-    }
+    } else { removeSeries('rsi'); }
 
     // MACD
     if (activeIndicators['macd']) {
@@ -1938,9 +1930,7 @@ function updateAllIndicators() {
                 simIndicatorSeries['macd_hist'] = histSeries;
             }
         }
-    } else {
-        ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k));
-    }
+    } else { ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k)); }
 
     // Stochastic
     if (activeIndicators['stoch']) {
@@ -1962,9 +1952,7 @@ function updateAllIndicators() {
                 simIndicatorSeries['stoch_d'] = dPane;
             }
         }
-    } else {
-        ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k));
-    }
+    } else { ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k)); }
 
     // VWAP
     if (activeIndicators['vwap']) {
@@ -1976,11 +1964,9 @@ function updateAllIndicators() {
             pane.setData(vwapData);
             simIndicatorSeries['vwap'] = pane;
         }
-    } else {
-        removeSeries('vwap');
-    }
+    } else { removeSeries('vwap'); }
 
-    // Volume visibility (FIXED: hide completely when unchecked)
+    // Volume visibility (FIXED: hide completely)
     if (simVolumeSeries) {
         if (showVolume) {
             const volData = allData.map(c => ({ time: c.time, value: c.volume,
@@ -2007,7 +1993,6 @@ function updateSimUI() {
         totalValue += Math.abs(h.qty) * cp;
     }
 
-    // Update top bar values
     const cashEl = document.getElementById('simCash') || document.getElementById('simCashBar');
     const totalEl = document.getElementById('simTotalValue') || document.getElementById('simTotalBar');
     const plEl = document.getElementById('simPL') || document.getElementById('simPLBar');
@@ -2018,7 +2003,6 @@ function updateSimUI() {
         plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
     }
 
-    // Holdings table
     const tbody = document.querySelector('#simHoldingsTable tbody');
     const fsTbody = document.querySelector('#simHoldingsTableFs tbody');
     const rowsHTML = Object.keys(portfolio.holdings).map(sym => {
@@ -2043,7 +2027,6 @@ function updateSimUI() {
     if (tbody) tbody.innerHTML = rowsHTML;
     if (fsTbody) fsTbody.innerHTML = rowsHTML;
 
-    // Transaction history
     const histEl = document.getElementById('simHistoryList');
     if (histEl) {
         histEl.innerHTML = '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' +
@@ -2337,7 +2320,6 @@ function exitFullscreenTerminal() {
         const voices = speechSynthesis.getVoices();
         bengaliVoice = voices.find(v => v.lang === 'bn-BD' || v.lang === 'bn-IN' || v.lang.startsWith('bn'));
         if (!bengaliVoice) {
-            // fallback: try any female voice, but we keep null to use default
             bengaliVoice = voices.find(v => v.name.toLowerCase().includes('female')) || null;
         }
     };
@@ -2377,9 +2359,15 @@ function setupTTS(lessonId) {
     document.getElementById('stopTTS').onclick = () => { if (window.speechSynthesis) window.speechSynthesis.cancel(); };
 }
 
-// ---------- Mobile Trading Terminal (REAL BROKER REDESIGN) ----------
+// ---------- Mobile Trading Terminal (MT5 REAL BROKER STYLE) ----------
 let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","TSLA","MSFT","GOOGL","AMZN","EURUSD","GBPUSD"]');
+let currentMobileLot = 0.01;
 function saveWatchlist() { localStorage.setItem('watchlist', JSON.stringify(mobileWatchlist)); }
+window.setMobileLot = function(lot) { currentMobileLot = lot; document.getElementById('mobileLotSize').textContent = lot.toFixed(2); };
+window.changeMobileLot = function(delta) {
+    const newLot = Math.max(0.01, currentMobileLot + delta * 0.01);
+    window.setMobileLot(+(newLot.toFixed(2)));
+};
 
 function renderMobileTerminal(container) {
     if (!portfolio) portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
@@ -2389,60 +2377,78 @@ function renderMobileTerminal(container) {
 
     container.innerHTML = `
         <div class="mobile-terminal">
-            <div class="mobile-top-nav">
-                <div style="display:flex;align-items:center;gap:6px;">
-                    <i class="fas fa-bars" style="font-size:1.2rem;cursor:pointer;" onclick="document.getElementById('sidebar').classList.toggle('open')"></i>
-                    <span class="symbol">${simCurrentSymbol}</span>
+            <div class="mt5-top-toolbar">
+                <div class="mt5-toolbar-left">
+                    <i class="fas fa-bars" id="mt5Hamburger"></i>
+                    <span class="mt5-symbol">${simCurrentSymbol}</span>
                 </div>
-                <div>
-                    <span class="ltp" id="mobileLTP">-</span>
-                    <span class="pnl" id="mobilePNL" style="margin-left:12px;">-</span>
+                <div class="mt5-toolbar-right">
+                    <i class="fas fa-chart-line" id="mt5IndicatorBtn"></i>
+                    <select id="mt5TfSelect" class="mt5-tf-select">
+                        ${Object.keys(timeframeIntervals).map(k => `<option value="${timeframeIntervals[k]}" ${timeframeIntervals[k]===currentTimeframe?'selected':''}>${k}</option>`).join('')}
+                    </select>
                 </div>
             </div>
-            <div class="timeframe-pills" id="timeframePills">
-                ${Object.entries(timeframeIntervals).map(([k,v]) => `<button data-tf="${v}" class="${v===currentTimeframe?'active':''}">${k}</button>`).join('')}
+            <div class="mt5-instrument-info">
+                <span class="mt5-pair">${simCurrentSymbol}</span>
+                <span class="mt5-name">${simCurrentSymbol} / USD</span>
+                <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
+            </div>
+            <div class="mt5-quick-trade">
+                <div class="mt5-quick-trade-row">
+                    <button class="mt5-sell-btn" onclick="placeSimOrderMobile('sell', currentMobileLot, 0, 0)">SELL<br><span id="mobileSellPrice">-</span></button>
+                    <div class="mt5-lot-selector">
+                        <button onclick="changeMobileLot(-1)">▼</button>
+                        <span id="mobileLotSize">0.01</span>
+                        <button onclick="changeMobileLot(1)">▲</button>
+                        <div class="mt5-lot-presets">
+                            <button onclick="setMobileLot(0.01)">0.01</button>
+                            <button onclick="setMobileLot(0.1)">0.10</button>
+                            <button onclick="setMobileLot(1)">1.00</button>
+                        </div>
+                    </div>
+                    <button class="mt5-buy-btn" onclick="placeSimOrderMobile('buy', currentMobileLot, 0, 0)">BUY<br><span id="mobileBuyPrice">-</span></button>
+                </div>
             </div>
             <div class="mobile-chart-container" id="mobileChartContainer">
                 <div id="simChartContainer" style="width:100%;height:100%;"></div>
             </div>
-            <div class="mobile-bottom-tabs">
-                <div class="tab-btn active" data-panel="watchlist">★ Watchlist</div>
-                <div class="tab-btn" data-panel="chart">📈 Chart</div>
-                <div class="tab-btn" data-panel="positions">📋 Positions</div>
-                <div class="tab-btn" data-panel="orders">💰 Orders</div>
-                <div class="tab-btn" data-panel="tools">⚙️ Tools</div>
+            <div class="mt5-bottom-nav">
+                <div class="mt5-nav-item active" data-panel="quotes">📋 Quotes</div>
+                <div class="mt5-nav-item" data-panel="chart">📈 Chart</div>
+                <div class="mt5-nav-item" data-panel="trade">💰 Trade</div>
+                <div class="mt5-nav-item" data-panel="history">📜 History</div>
             </div>
             <div class="mobile-panels" id="mobilePanels">
-                <div class="panel-content" id="watchlistPanel" style="display:none;"></div>
-                <div class="panel-content" id="positionsPanel" style="display:none;"></div>
-                <div class="panel-content" id="ordersPanel" style="display:none;"></div>
-                <div class="panel-content" id="toolsPanel" style="display:none;"></div>
+                <div class="panel-content" id="quotesPanel" style="display:none;"></div>
+                <div class="panel-content" id="tradePanel" style="display:none;"></div>
+                <div class="panel-content" id="historyPanel" style="display:none;"></div>
             </div>
         </div>
     `;
 
-    document.querySelectorAll('#timeframePills button').forEach(btn => {
-        btn.onclick = function() {
-            const tf = parseInt(this.dataset.tf);
-            if (tf !== currentTimeframe) {
-                currentTimeframe = tf;
-                document.querySelectorAll('#timeframePills button').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                cleanupSimIntervals();
-                simAllCandles = []; simCurrentCandle = null;
-                initChart();
-            }
-        };
-    });
+    // MT5 Hamburger sidebar (temporary simple version)
+    document.getElementById('mt5Hamburger').onclick = () => {
+        alert('Menu: Timeframe, Indicators, Settings, Dark/Light – coming soon!');
+    };
 
-    const tabBtns = container.querySelectorAll('.mobile-bottom-tabs .tab-btn');
+    document.getElementById('mt5IndicatorBtn').onclick = () => {
+        document.getElementById('indDropdownMenu').classList.toggle('show');
+    };
+
+    document.getElementById('mt5TfSelect').onchange = function() {
+        currentTimeframe = parseInt(this.value);
+        document.getElementById('mobileTfDisplay').textContent = Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe);
+        resetChart();
+    };
+
+    const navItems = document.querySelectorAll('.mt5-nav-item');
     const panelsDiv = document.getElementById('mobilePanels');
-
-    tabBtns.forEach(btn => {
-        btn.onclick = function() {
-            const panel = this.dataset.panel;
-            tabBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    navItems.forEach(item => {
+        item.onclick = () => {
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+            const panel = item.dataset.panel;
             if (panel === 'chart') {
                 panelsDiv.classList.remove('show');
             } else {
@@ -2465,20 +2471,18 @@ function renderMobileTerminal(container) {
     });
 
     requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
-    updateMobilePanel('watchlist');
-    updateMobilePanel('positions');
+    updateMobilePanel('quotes');
     updateMobileTopBar();
 }
 
 function updateMobilePanel(panel) {
-    if (panel === 'watchlist') renderMobileWatchlist();
-    else if (panel === 'positions') renderMobilePositions();
-    else if (panel === 'orders') renderMobileOrders();
-    else if (panel === 'tools') renderMobileTools();
+    if (panel === 'quotes') renderMobileWatchlist();
+    else if (panel === 'trade') renderMobileTradeSummary();
+    else if (panel === 'history') renderMobileHistory();
 }
 
 function renderMobileWatchlist() {
-    const panel = document.getElementById('watchlistPanel');
+    const panel = document.getElementById('quotesPanel');
     if (!panel) return;
     let html = `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." oninput="window.watchlistSearch(this.value)"></div>`;
     html += mobileWatchlist.map(sym => {
@@ -2492,7 +2496,7 @@ function renderMobileWatchlist() {
 }
 
 window.watchlistSearch = function(query) {
-    const panel = document.getElementById('watchlistPanel');
+    const panel = document.getElementById('quotesPanel');
     if (!panel) return;
     const filtered = query ? mobileWatchlist.filter(s => s.toLowerCase().includes(query.toLowerCase())) : mobileWatchlist;
     panel.innerHTML = `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
@@ -2509,96 +2513,52 @@ function selectMobileSymbol(sym) {
     simCurrentSymbol = sym;
     cleanupSimIntervals();
     simAllCandles = []; simCurrentCandle = null; activeIndicators = {}; simIndicatorSeries = {};
-    document.querySelector('.mobile-top-nav .symbol').textContent = sym;
+    document.querySelector('.mt5-symbol').textContent = sym;
     updateMobileTopBar();
     initChart();
-    document.querySelector('.mobile-bottom-tabs .tab-btn[data-panel="chart"]').click();
+    document.querySelector('.mt5-nav-item[data-panel="chart"]').click();
 }
 
-function renderMobilePositions() {
-    const panel = document.getElementById('positionsPanel');
+function renderMobileTradeSummary() {
+    const panel = document.getElementById('tradePanel');
     if (!panel) return;
+    let html = '<div style="padding:10px;"><h4>Open Positions</h4>';
     if (Object.keys(portfolio.holdings).length === 0) {
-        panel.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">No open positions</div>';
-        return;
+        html += '<div style="color:var(--text-muted);">No open positions</div>';
+    } else {
+        for (let sym in portfolio.holdings) {
+            const h = portfolio.holdings[sym];
+            const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+            const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
+            html += `<div class="position-card">
+                <div class="row"><strong>${sym}</strong> <span>${Math.abs(h.qty)} Qty</span></div>
+                <div class="row"><span>P&L</span> <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
+                <button class="exit-btn" onclick="exitPosition('${sym}')">Exit</button>
+            </div>`;
+        }
     }
-    let html = '';
-    for (let sym in portfolio.holdings) {
-        const h = portfolio.holdings[sym];
-        const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-        const val = Math.abs(h.qty) * cp;
-        const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
-        html += `<div class="position-card">
-            <div class="row"><strong>${sym}</strong> <span>${Math.abs(h.qty)} Qty</span></div>
-            <div class="row"><span>Entry</span> <span>$${h.avgPrice.toFixed(4)}</span></div>
-            <div class="row"><span>LTP</span> <span>$${cp.toFixed(4)}</span></div>
-            <div class="row"><span>P&L</span> <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
-            <div style="text-align:right;"><button class="exit-btn" onclick="exitPosition('${sym}')">Exit</button></div>
-        </div>`;
-    }
+    html += `<p>Balance: $${portfolio.cash.toFixed(2)}</p>`;
+    html += '</div>';
     panel.innerHTML = html;
 }
 
-function renderMobileOrders() {
-    const panel = document.getElementById('ordersPanel');
+function renderMobileHistory() {
+    const panel = document.getElementById('historyPanel');
     if (!panel) return;
-    panel.innerHTML = `
-        <div style="padding:14px;">
-            <h3 style="margin-bottom:8px;">Place Order - ${simCurrentSymbol}</h3>
-            <div class="buy-sell-toggle">
-                <button class="active" id="buyToggle" onclick="window.setOrderSide('buy')">BUY</button>
-                <button id="sellToggle" onclick="window.setOrderSide('sell')">SELL</button>
-            </div>
-            <select id="orderType" style="margin-bottom:8px;">
-                <option value="market">Market</option>
-                <option value="limit">Limit</option>
-            </select>
-            <input type="number" id="tradeQty" placeholder="Quantity" value="1" min="1">
-            <input type="number" id="limitPrice" placeholder="Limit Price (for limit order)" step="0.01" style="display:none;">
-            <input type="number" id="tradeSL" placeholder="Stop Loss (optional)" step="0.01">
-            <input type="number" id="tradeTP" placeholder="Take Profit (optional)" step="0.01">
-            <button class="place-order-btn" id="placeOrderBtn" style="background:var(--success);">Place BUY Order</button>
-        </div>
-    `;
-    document.getElementById('orderType').onchange = function() {
-        document.getElementById('limitPrice').style.display = this.value === 'limit' ? 'block' : 'none';
-    };
-    window.currentOrderSide = 'buy';
-    window.setOrderSide = function(side) {
-        window.currentOrderSide = side;
-        document.getElementById('buyToggle').classList.toggle('active', side==='buy');
-        document.getElementById('sellToggle').classList.toggle('active', side==='sell');
-        const btn = document.getElementById('placeOrderBtn');
-        btn.style.background = side==='buy' ? 'var(--success)' : 'var(--danger)';
-        btn.textContent = 'Place ' + side.toUpperCase() + ' Order';
-    };
-    document.getElementById('placeOrderBtn').onclick = function() {
-        const qty = parseInt(document.getElementById('tradeQty').value);
-        const sl = parseFloat(document.getElementById('tradeSL').value) || 0;
-        const tp = parseFloat(document.getElementById('tradeTP').value) || 0;
-        const type = document.getElementById('orderType').value;
-        const limitPrice = type === 'limit' ? parseFloat(document.getElementById('limitPrice').value) : null;
-        if (!qty || qty <= 0) return showToast('Invalid quantity');
-        if (type === 'limit' && (!limitPrice || limitPrice <= 0)) return showToast('Enter limit price');
-        if (type === 'market') {
-            placeSimOrderMobile(window.currentOrderSide, qty, sl, tp);
-        } else {
-            showToast('Limit order placed (simulated) – will execute if price reaches $'+limitPrice.toFixed(4));
-        }
-        document.querySelector('.mobile-bottom-tabs .tab-btn[data-panel="positions"]').click();
-    };
-}
-
-function renderMobileTools() {
-    const panel = document.getElementById('toolsPanel');
-    if (!panel) return;
-    panel.innerHTML = `
-        <div style="padding:14px;">
-            <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="resetSimPortfolio()">🔄 Reset Portfolio</button>
-            <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="window.location.href='?'">← Back to Training</button>
-            <button class="btn btn-outline" style="width:100%;" onclick="logout()">🔓 Logout</button>
-        </div>
-    `;
+    const transactions = portfolio.transactions || [];
+    let html = '<div style="padding:10px;"><h4>Transaction History</h4>';
+    if (transactions.length === 0) {
+        html += '<div style="color:var(--text-muted);">No transactions</div>';
+    } else {
+        html += '<ul style="list-style:none;padding:0;">';
+        transactions.slice(0, 30).forEach(t => {
+            html += `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">
+                ${t.time} - <span style="color:${t.type==='buy'?'var(--success)':'var(--danger)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol} @ $${t.price.toFixed(2)}</li>`;
+        });
+        html += '</ul>';
+    }
+    html += '</div>';
+    panel.innerHTML = html;
 }
 
 function placeSimOrderMobile(side, qty, sl, tp) {
@@ -2654,25 +2614,32 @@ function placeSimOrderMobile(side, qty, sl, tp) {
     savePortfolio();
     updateSimUI();
     updateMobileTopBar();
-    renderMobilePositions();
+    renderMobileTradeSummary();
     showToast('Order executed: ' + side.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
 }
 
 function updateMobileTopBar() {
     const ltpEl = document.getElementById('mobileLTP');
+    const sellPriceEl = document.getElementById('mobileSellPrice');
+    const buyPriceEl = document.getElementById('mobileBuyPrice');
     const pnlEl = document.getElementById('mobilePNL');
-    if (!ltpEl || !pnlEl) return;
     const price = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 0;
-    ltpEl.textContent = '$' + price.toFixed(4);
+    if (ltpEl) ltpEl.textContent = '$' + price.toFixed(4);
+    if (sellPriceEl) sellPriceEl.textContent = '$' + (price * 0.9999).toFixed(2);
+    if (buyPriceEl) buyPriceEl.textContent = '$' + (price * 1.0001).toFixed(2);
     let totalPL = 0;
     for (let sym in portfolio.holdings) {
         let h = portfolio.holdings[sym];
         let cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
         totalPL += h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
     }
-    pnlEl.textContent = (totalPL >= 0 ? '▲ $' : '▼ $') + Math.abs(totalPL).toFixed(2);
-    pnlEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
+    if (pnlEl) {
+        pnlEl.textContent = (totalPL >= 0 ? '▲ $' : '▼ $') + Math.abs(totalPL).toFixed(2);
+        pnlEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
 }
+
+function renderMobilePositions() { renderMobileTradeSummary(); }
 
 function resetSimPortfolio() {
     if (confirm('Reset portfolio? All trades cleared.')) {
