@@ -250,7 +250,7 @@
         .auth-box .auth-switch { margin-top:16px; font-size:0.85rem; color:var(--text-secondary); }
         .auth-box .auth-switch a { color:var(--primary); cursor:pointer; font-weight:600; text-decoration:none; }
         .auth-box .auth-switch a:hover { text-decoration:underline; }
-        /* ── মোবাইল ট্রেডিং টার্মিনাল ── */
+        /* ── মোবাইল ট্রেডিং টার্মিনাল (Real Broker Style) ── */
         .mobile-terminal { display:flex; flex-direction:column; height:100dvh; overflow:hidden; background:var(--bg); position:relative; }
         .mobile-top-nav { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--surface); border-bottom:1px solid var(--border); gap:8px; min-height:48px; z-index:10; flex-shrink:0; }
         .mobile-top-nav .symbol { font-weight:700; font-size:1rem; font-family:var(--font-mono); }
@@ -1156,11 +1156,10 @@
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove();
                         showAdminLessonManager(); } });
             };
-
             // ═══════════════════════════════════════════════════════
-            //  ► PART 2 STARTS HERE (provided in next message)
+            //  ► PART 2 STARTS HERE
             // ═══════════════════════════════════════════════════════
-                            window.deleteQuizQ = async function(lessonId, idx) {
+            window.deleteQuizQ = async function(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
                 try {
                     await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'DELETE' });
@@ -1373,8 +1372,7 @@
                         updateAllIndicators();
                         updateIndDropdownBtnState(); }; });
                 document.getElementById('volumeToggle').onchange = function() { showVolume = this.checked;
-                    updateAllIndicators(); if (simChart) { simChart.priceScale('').applyOptions({ scaleMargins: showVolume ? { top: 0.88,
-                                bottom: 0 } : { top: 0, bottom: 0 } }); } };
+                    updateAllIndicators(); };
                 document.getElementById('drawSupportBtn').onclick = () => setDrawingTool('support', 'drawSupportBtn');
                 document.getElementById('drawResistanceBtn').onclick = () => setDrawingTool('resistance',
                     'drawResistanceBtn');
@@ -1552,7 +1550,28 @@
                     }
                 });
 
-                document.addEventListener('mouseup', () => {
+                const moveHandler = (e) => {
+                    if (!dragState || !dragState.active || !simCandleSeries) return;
+                    const rect = chartDiv.getBoundingClientRect();
+                    const y = e.clientY - rect.top;
+                    const newPrice = simCandleSeries.coordinateToPrice(y);
+                    if (newPrice !== null && newPrice > 0) {
+                        dragState.currentPrice = +newPrice.toFixed(2);
+                        const ml = manualDrawnLines.find(m => m.key === dragState.lineKey);
+                        if (ml && ml.lineObj) {
+                            try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
+                            const newLine = simCandleSeries.createPriceLine({ price: dragState.currentPrice, color: ml
+                                    .color, lineWidth: 2, lineStyle: ml.style || 0, axisLabelVisible: true,
+                                title: ml.label });
+                            ml.lineObj = newLine;
+                            allPriceLines[ml.key] = newLine;
+                        }
+                    }
+                };
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('touchmove', moveHandler, { passive: false });
+
+                const upHandler = () => {
                     if (dragState && dragState.active) {
                         if (dragState.currentPrice !== dragState.startPrice) {
                             const idx = dragState.origIndex;
@@ -1565,7 +1584,9 @@
                         dragState = null;
                         chartDiv.classList.remove('dragging-line');
                     }
-                });
+                };
+                document.addEventListener('mouseup', upHandler);
+                document.addEventListener('touchend', upHandler);
 
                 if (loadingEl) loadingEl.style.display = 'none';
                 redrawAllLines();
@@ -1824,24 +1845,35 @@ function calculateVWAP(data) {
     return vwap;
 }
 
-// ---------- Update All Indicators on Chart ----------
+// ---------- Update All Indicators on Chart (FIXED removal) ----------
 function updateAllIndicators() {
     if (!simCandleSeries || !simChart) return;
     const allData = [...simAllCandles];
     if (simCurrentCandle) allData.push(simCurrentCandle);
 
-    // EMAs
-    for (const key in activeIndicators) {
-        if (!activeIndicators[key]) continue;
-        if (key.startsWith('ema')) {
-            const period = parseInt(key.replace('ema', ''));
+    // Helper to remove a series safely
+    const removeSeries = (key) => {
+        if (simIndicatorSeries[key]) {
+            try { simChart.removeSeries(simIndicatorSeries[key]); } catch(e) {}
+            delete simIndicatorSeries[key];
+        }
+    };
+
+    // EMAs – add active, remove inactive
+    for (const [key, color] of Object.entries(indicatorColors)) {
+        if (!key.startsWith('ema')) continue;
+        const period = parseInt(key.replace('ema', ''));
+        if (activeIndicators[key]) {
             const emaData = calculateEMA(allData, period);
             if (simIndicatorSeries[key]) simIndicatorSeries[key].setData(emaData);
             else {
-                const ls = simChart.addLineSeries({ color: indicatorColors[key], lineWidth: 2, priceScaleId: 'right', lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right', lastValueVisible: true,
+                    priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
                 ls.setData(emaData);
                 simIndicatorSeries[key] = ls;
             }
+        } else {
+            removeSeries(key);
         }
     }
 
@@ -1852,16 +1884,15 @@ function updateAllIndicators() {
             const data = [sma, upper, lower][i];
             if (simIndicatorSeries[k]) simIndicatorSeries[k].setData(data);
             else {
-                const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' : '#f59e0b', lineWidth: 1, priceScaleId: 'right', lastValueVisible: false, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' : '#f59e0b', lineWidth: 1, priceScaleId: 'right',
+                    lastValueVisible: false, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
                 if (i > 0) ls.applyOptions({ lineStyle: 2 });
                 ls.setData(data);
                 simIndicatorSeries[k] = ls;
             }
         });
     } else {
-        ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => {
-            if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e){} delete simIndicatorSeries[k]; }
-        });
+        ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k));
     }
 
     // RSI
@@ -1869,13 +1900,14 @@ function updateAllIndicators() {
         const rsiData = calculateRSI(allData);
         if (simIndicatorSeries['rsi']) simIndicatorSeries['rsi'].setData(rsiData);
         else {
-            const pane = simChart.addLineSeries({ color: indicatorColors['rsi'], lineWidth: 2, priceScaleId: 'rsi', lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+            const pane = simChart.addLineSeries({ color: indicatorColors['rsi'], lineWidth: 2, priceScaleId: 'rsi',
+                lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
             simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
             pane.setData(rsiData);
             simIndicatorSeries['rsi'] = pane;
         }
     } else {
-        if (simIndicatorSeries['rsi']) { try { simChart.removeSeries(simIndicatorSeries['rsi']); } catch(e){} delete simIndicatorSeries['rsi']; }
+        removeSeries('rsi');
     }
 
     // MACD
@@ -1884,18 +1916,21 @@ function updateAllIndicators() {
         if (macd.length > 0) {
             if (simIndicatorSeries['macd']) simIndicatorSeries['macd'].setData(macd);
             else {
-                const pane = simChart.addLineSeries({ color: indicatorColors['macd'], lineWidth: 2, priceScaleId: 'macd', lastValueVisible: false, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+                const pane = simChart.addLineSeries({ color: indicatorColors['macd'], lineWidth: 2, priceScaleId: 'macd',
+                    lastValueVisible: false, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                 simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9, bottom: 0.2 } });
                 pane.setData(macd);
                 simIndicatorSeries['macd'] = pane;
             }
             if (simIndicatorSeries['macd_signal']) simIndicatorSeries['macd_signal'].setData(signal);
             else {
-                const sigPane = simChart.addLineSeries({ color: '#34d399', lineWidth: 1, priceScaleId: 'macd', lastValueVisible: false, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+                const sigPane = simChart.addLineSeries({ color: '#34d399', lineWidth: 1, priceScaleId: 'macd',
+                    lastValueVisible: false, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                 sigPane.setData(signal);
                 simIndicatorSeries['macd_signal'] = sigPane;
             }
-            const histData = histogram.map(h => ({ time: h.time, value: h.value, color: h.value >= 0 ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)' }));
+            const histData = histogram.map(h => ({ time: h.time, value: h.value,
+                color: h.value >= 0 ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)' }));
             if (simIndicatorSeries['macd_hist']) simIndicatorSeries['macd_hist'].setData(histData);
             else {
                 const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd', priceFormat: { type: 'price', precision: 4 } });
@@ -1904,9 +1939,7 @@ function updateAllIndicators() {
             }
         }
     } else {
-        ['macd', 'macd_signal', 'macd_hist'].forEach(k => {
-            if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e){} delete simIndicatorSeries[k]; }
-        });
+        ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k));
     }
 
     // Stochastic
@@ -1915,22 +1948,22 @@ function updateAllIndicators() {
         if (k.length > 0) {
             if (simIndicatorSeries['stoch_k']) simIndicatorSeries['stoch_k'].setData(k);
             else {
-                const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2, priceScaleId: 'stoch', lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2, priceScaleId: 'stoch',
+                    lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
                 simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85, bottom: 0.15 } });
                 kPane.setData(k);
                 simIndicatorSeries['stoch_k'] = kPane;
             }
             if (simIndicatorSeries['stoch_d']) simIndicatorSeries['stoch_d'].setData(d);
             else {
-                const dPane = simChart.addLineSeries({ color: '#f472b6', lineWidth: 1, priceScaleId: 'stoch', lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                const dPane = simChart.addLineSeries({ color: '#f472b6', lineWidth: 1, priceScaleId: 'stoch',
+                    lastValueVisible: true, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
                 dPane.setData(d);
                 simIndicatorSeries['stoch_d'] = dPane;
             }
         }
     } else {
-        ['stoch_k', 'stoch_d'].forEach(k => {
-            if (simIndicatorSeries[k]) { try { simChart.removeSeries(simIndicatorSeries[k]); } catch(e){} delete simIndicatorSeries[k]; }
-        });
+        ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k));
     }
 
     // VWAP
@@ -1938,19 +1971,26 @@ function updateAllIndicators() {
         const vwapData = calculateVWAP(allData);
         if (simIndicatorSeries['vwap']) simIndicatorSeries['vwap'].setData(vwapData);
         else {
-            const pane = simChart.addLineSeries({ color: indicatorColors['vwap'], lineWidth: 2, priceScaleId: 'right', lastValueVisible: true, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+            const pane = simChart.addLineSeries({ color: indicatorColors['vwap'], lineWidth: 2, priceScaleId: 'right',
+                lastValueVisible: true, priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
             pane.setData(vwapData);
             simIndicatorSeries['vwap'] = pane;
         }
     } else {
-        if (simIndicatorSeries['vwap']) { try { simChart.removeSeries(simIndicatorSeries['vwap']); } catch(e){} delete simIndicatorSeries['vwap']; }
+        removeSeries('vwap');
     }
 
-    // Volume visibility
+    // Volume visibility (FIXED: hide completely when unchecked)
     if (simVolumeSeries) {
-        const volData = allData.map(c => ({ time: c.time, value: c.volume, color: c.close >= c.open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
-        simVolumeSeries.setData(volData);
-        simChart.priceScale('').applyOptions({ scaleMargins: showVolume ? { top: 0.88, bottom: 0 } : { top: 0, bottom: 0 } });
+        if (showVolume) {
+            const volData = allData.map(c => ({ time: c.time, value: c.volume,
+                color: c.close >= c.open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
+            simVolumeSeries.setData(volData);
+            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+        } else {
+            simVolumeSeries.setData([]);
+            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+        }
     }
 }
 
@@ -2015,7 +2055,7 @@ function updateSimUI() {
     }
 
     updateSimUIFullscreen();
-    savePortfolio(); // persist to API/local
+    savePortfolio();
     if (window.innerWidth <= 768) {
         renderMobilePositions();
         updateMobileTopBar();
@@ -2043,10 +2083,9 @@ function updateSimUIFullscreen() {
 
 function savePortfolio() {
     localStorage.setItem('sim_portfolio_v9', JSON.stringify(portfolio));
-    // Optionally API call: apiFetch('/portfolio', { method: 'PUT', body: JSON.stringify(portfolio) }).catch(e => console.warn);
 }
 
-// ---------- Order Execution (FIXED) ----------
+// ---------- Order Execution ----------
 async function placeSimOrder(type) {
     const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
     const qty = parseInt(document.getElementById('simQty')?.value) || 1;
@@ -2064,7 +2103,7 @@ async function placeSimOrder(type) {
         portfolio.cash -= cost;
         if (portfolio.holdings[symbol]) {
             const h = portfolio.holdings[symbol];
-            if (h.qty < 0) { // closing short
+            if (h.qty < 0) {
                 const closeQty = Math.min(Math.abs(h.qty), qty);
                 h.qty += closeQty;
                 if (h.qty === 0) delete portfolio.holdings[symbol];
@@ -2089,7 +2128,7 @@ async function placeSimOrder(type) {
             showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
         }
         playTradeSound('buy');
-    } else { // sell
+    } else {
         if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty > 0) {
             const h = portfolio.holdings[symbol];
             const closeQty = Math.min(h.qty, qty);
@@ -2099,7 +2138,6 @@ async function placeSimOrder(type) {
             portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price, time: new Date().toLocaleTimeString(), reason: 'Close Long' });
             showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(2));
         } else {
-            // open new short or increase existing short
             if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
                 const h = portfolio.holdings[symbol];
                 const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) + qty);
@@ -2216,7 +2254,6 @@ function redrawAllLines() {
         allPriceLines[key] = line;
         manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style, lineObj: line, index: idx });
     });
-    // Add entry/SL/TP lines for holdings
     for (let sym in portfolio.holdings) {
         const h = portfolio.holdings[sym];
         if (h.entryPrice && h.entryPrice > 0) {
@@ -2293,9 +2330,55 @@ function exitFullscreenTerminal() {
     }
 }
 
-// ---------- Mobile Trading Terminal (FIXED) ----------
-let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","TSLA","MSFT","GOOGL","AMZN","EURUSD","GBPUSD"]');
+// ---------- Bengali TTS Fix ----------
+(function() {
+    let bengaliVoice = null;
+    speechSynthesis.onvoiceschanged = () => {
+        const voices = speechSynthesis.getVoices();
+        bengaliVoice = voices.find(v => v.lang === 'bn-BD' || v.lang === 'bn-IN' || v.lang.startsWith('bn'));
+        if (!bengaliVoice) {
+            // fallback: try any female voice, but we keep null to use default
+            bengaliVoice = voices.find(v => v.name.toLowerCase().includes('female')) || null;
+        }
+    };
+    window.getBengaliVoice = function() {
+        if (bengaliVoice) return bengaliVoice;
+        const voices = speechSynthesis.getVoices();
+        bengaliVoice = voices.find(v => v.lang === 'bn-BD' || v.lang === 'bn-IN' || v.lang.startsWith('bn'));
+        return bengaliVoice || null;
+    };
+})();
 
+function setupTTS(lessonId) {
+    const subj = subjects.find(s => s.id === selectedSubjectId);
+    const les = subj?.lessons?.find(l => l.id === lessonId);
+    if (!les) return;
+    const txt = les.contents ? stripHtml(t(les.contents)) : '';
+    let utterance = null;
+
+    function speak() {
+        if (!txt) { showToast('⚠️ No text to speak'); return; }
+        if (window.speechSynthesis) {
+            if (utterance) window.speechSynthesis.cancel();
+            utterance = new SpeechSynthesisUtterance(txt);
+            utterance.rate = parseFloat(document.getElementById('speedSlider')?.value || 1);
+            utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
+            if (currentLang === 'bn') {
+                const voice = window.getBengaliVoice();
+                if (voice) utterance.voice = voice;
+            }
+            utterance.onstart = () => showToast('🔊 Playing...');
+            utterance.onerror = (e) => { console.error(e); showToast('⚠️ TTS error'); };
+            window.speechSynthesis.speak(utterance);
+        } else showToast('⚠️ TTS not supported');
+    }
+    document.getElementById('playTTS').onclick = speak;
+    document.getElementById('pauseTTS').onclick = () => { if (window.speechSynthesis) window.speechSynthesis.pause(); };
+    document.getElementById('stopTTS').onclick = () => { if (window.speechSynthesis) window.speechSynthesis.cancel(); };
+}
+
+// ---------- Mobile Trading Terminal (REAL BROKER REDESIGN) ----------
+let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","TSLA","MSFT","GOOGL","AMZN","EURUSD","GBPUSD"]');
 function saveWatchlist() { localStorage.setItem('watchlist', JSON.stringify(mobileWatchlist)); }
 
 function renderMobileTerminal(container) {
@@ -2326,12 +2409,14 @@ function renderMobileTerminal(container) {
                 <div class="tab-btn active" data-panel="watchlist">★ Watchlist</div>
                 <div class="tab-btn" data-panel="chart">📈 Chart</div>
                 <div class="tab-btn" data-panel="positions">📋 Positions</div>
-                <div class="tab-btn" data-panel="trade">💰 Trade</div>
+                <div class="tab-btn" data-panel="orders">💰 Orders</div>
+                <div class="tab-btn" data-panel="tools">⚙️ Tools</div>
             </div>
             <div class="mobile-panels" id="mobilePanels">
                 <div class="panel-content" id="watchlistPanel" style="display:none;"></div>
                 <div class="panel-content" id="positionsPanel" style="display:none;"></div>
-                <div class="panel-content" id="tradePanel" style="display:none;"></div>
+                <div class="panel-content" id="ordersPanel" style="display:none;"></div>
+                <div class="panel-content" id="toolsPanel" style="display:none;"></div>
             </div>
         </div>
     `;
@@ -2388,7 +2473,8 @@ function renderMobileTerminal(container) {
 function updateMobilePanel(panel) {
     if (panel === 'watchlist') renderMobileWatchlist();
     else if (panel === 'positions') renderMobilePositions();
-    else if (panel === 'trade') renderMobileTradeForm();
+    else if (panel === 'orders') renderMobileOrders();
+    else if (panel === 'tools') renderMobileTools();
 }
 
 function renderMobileWatchlist() {
@@ -2453,8 +2539,8 @@ function renderMobilePositions() {
     panel.innerHTML = html;
 }
 
-function renderMobileTradeForm() {
-    const panel = document.getElementById('tradePanel');
+function renderMobileOrders() {
+    const panel = document.getElementById('ordersPanel');
     if (!panel) return;
     panel.innerHTML = `
         <div style="padding:14px;">
@@ -2501,6 +2587,18 @@ function renderMobileTradeForm() {
         }
         document.querySelector('.mobile-bottom-tabs .tab-btn[data-panel="positions"]').click();
     };
+}
+
+function renderMobileTools() {
+    const panel = document.getElementById('toolsPanel');
+    if (!panel) return;
+    panel.innerHTML = `
+        <div style="padding:14px;">
+            <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="resetSimPortfolio()">🔄 Reset Portfolio</button>
+            <button class="btn btn-outline" style="width:100%;margin-bottom:8px;" onclick="window.location.href='?'">← Back to Training</button>
+            <button class="btn btn-outline" style="width:100%;" onclick="logout()">🔓 Logout</button>
+        </div>
+    `;
 }
 
 function placeSimOrderMobile(side, qty, sl, tp) {
@@ -2576,7 +2674,20 @@ function updateMobileTopBar() {
     pnlEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
 }
 
-// Make sure all these functions are globally accessible
+function resetSimPortfolio() {
+    if (confirm('Reset portfolio? All trades cleared.')) {
+        portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+        simLastPrices = {};
+        activeIndicators = {};
+        simIndicatorSeries = {};
+        savePortfolio();
+        updateSimUI();
+        redrawAllLines();
+        showToast('🔄 Portfolio reset ($100,000)');
+    }
+}
+
+// Make sure all functions are globally accessible
 window.updateSimUI = updateSimUI;
 window.placeSimOrder = placeSimOrder;
 window.exitPosition = exitPosition;
@@ -2593,8 +2704,7 @@ window.selectMobileSymbol = selectMobileSymbol;
 window.placeSimOrderMobile = placeSimOrderMobile;
 window.updateMobileTopBar = updateMobileTopBar;
 window.renderMobilePositions = renderMobilePositions;
-
-// Ensure initChart, renderTradingTerminal, etc., are accessible
+window.resetSimPortfolio = resetSimPortfolio;
 window.initChart = initChart;
 
             // ── অ্যাপ্লিকেশন বুট ─────────────────────────────────────────────
