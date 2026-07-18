@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js">
     </script>
     <style>
-        /* ─── ROOT ─── */
+        /* ─── ROOT VARIABLES ─── */
         :root {
             --bg: #f4f6fa;
             --bg-secondary: #eef1f7;
@@ -119,7 +119,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-secondary);
         }
-
         .app {
             display: flex;
             height: 100vh;
@@ -2313,7 +2312,7 @@
             let simCandleCloseIntervalId = null;
             let simCurrentCandle = null;
             let simAllCandles = [];
-            let simIsLiveData = false;
+            let simLastPrices = {};
             const simMarketSymbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
                 'AVAXUSDT', 'DOTUSDT'
             ];
@@ -2341,7 +2340,6 @@
                 AVAXUSDT: 0.006,
                 DOTUSDT: 0.005
             };
-            let simLastPrices = {};
             let allPriceLines = {};
             let manualDrawnLines = [];
             let currentDrawingTool = null;
@@ -2427,6 +2425,7 @@
                                 const price = parseFloat(data.p);
                                 const timestamp = Math.floor(data.T / 1000);
                                 simLastPrices[symbol] = price;
+                                simBasePrices[symbol] = price;
                                 updateMobileTopBar();
                                 updatePriceDisplay(symbol, price);
                                 if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
@@ -3434,7 +3433,8 @@
                                 'simChartContainer'); if (chartDiv && chartDiv.clientWidth > 0) { simChart
                                 .applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                                simChart.timeScale().fitContent(); } }
+                                // No fitContent
+                            } }
                         updateSimUIFullscreen(); }, 300);
                 };
                 requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
@@ -3744,7 +3744,7 @@
                                     0) {
                                     simChart.applyOptions({ width: chartDiv.clientWidth,
                                         height: chartDiv.clientHeight });
-                                    simChart.timeScale().fitContent();
+                                    // No fitContent
                                 }
                             }
                         }, 150);
@@ -3760,8 +3760,7 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            // Remove fitContent to prevent auto-scroll
-                            // simChart.timeScale().fitContent();
+                            // No fitContent
                         }
                     }
                 });
@@ -3961,7 +3960,6 @@
             }
 
             function updatePriceDisplay(symbol, price) {
-                // Update UI elements for this symbol
                 const allPriceEls = document.querySelectorAll('.price-display-' + symbol);
                 allPriceEls.forEach(el => el.textContent = '$' + price.toFixed(4));
             }
@@ -4044,7 +4042,6 @@
 
             function resetChart() {
                 cleanupSimIntervals();
-                // Clear old chart completely
                 if (simChart) {
                     simChart.remove();
                     simChart = null;
@@ -4058,7 +4055,6 @@
                 simIndicatorSeries = {};
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-                // Remove existing chart container and recreate to avoid event listener accumulation
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) {
                     const newDiv = document.createElement('div');
@@ -4078,7 +4074,6 @@
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
-                // Remove document-level listeners if any
                 if (window._chartCleanup) window._chartCleanup();
             }
 
@@ -4121,6 +4116,7 @@
                     price = close;
                 }
                 simLastPrices[sym] = price;
+                simBasePrices[sym] = price;
                 return candles;
             }
 
@@ -4280,7 +4276,7 @@
                 const loadingEl = document.getElementById('chartLoading');
                 if (!chartDiv) return;
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
-                    requestAnimationFrame(() => initChart());
+                    setTimeout(initChart, 100);
                     return;
                 }
                 if (typeof LightweightCharts === 'undefined') {
@@ -4295,19 +4291,12 @@
                     simVolumeSeries = null;
                     simIndicatorSeries = {};
                 }
-                // Remove old canvas and loading
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // Use last known price or base
                 let basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
-                // If we have a recent trade price, use it as base for initial candle
-                if (simLastPrices[simCurrentSymbol]) {
-                    basePrice = simLastPrices[simCurrentSymbol];
-                }
                 simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
                 const lastCandle = simAllCandles[simAllCandles.length - 1];
-                // Set current candle open to last close, but high/low to same to avoid massive initial candle
                 simCurrentCandle = {
                     time: lastCandle.time + currentTimeframe,
                     open: lastCandle.close,
@@ -4364,10 +4353,9 @@
                         'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                 simVolumeSeries.setData(volData);
 
-                // Fit content once on init
                 simChart.timeScale().fitContent();
 
-                // Click to draw lines
+                // ─── Draw Events ──────────────────────────────────────────────
                 simChart.subscribeClick(param => {
                     if (dragState && dragState.active) return;
                     if (!currentDrawingTool || !param.point || !simCandleSeries) return;
@@ -4488,14 +4476,12 @@
                 if (loadingEl) loadingEl.style.display = 'none';
                 redrawAllLines();
 
-                // Price update interval
+                // ─── Price Update ─────────────────────────────────────────────
                 if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                 simPriceIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
-                    // Use last price from Binance if available, else simulate
                     let price = simLastPrices[simCurrentSymbol];
                     if (!price) {
-                        // Simulate tick
                         const vol = simVolatility[simCurrentSymbol] || 0.0015;
                         const change = simCurrentCandle.close * vol * (Math.random() - 0.48) * 0.8;
                         price = simCurrentCandle.close + change;
@@ -4513,7 +4499,7 @@
                     updateMobileTopBar();
                 }, 1000);
 
-                // Candle close interval
+                // ─── Candle Close ─────────────────────────────────────────────
                 if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                 simCandleCloseIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
@@ -4532,12 +4518,12 @@
                     if (simAllCandles.length > 300) simAllCandles.shift();
                 }, currentTimeframe * 1000);
 
-                // Resize observer - only update size, no fitContent to prevent auto-scroll
+                // ─── Resize ──────────────────────────────────────────────────
                 const debouncedResize = debounce(() => {
                     if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                         simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                 .clientHeight });
-                        // Do not call fitContent here to avoid auto-scroll
+                        // No fitContent
                     }
                 }, 100);
                 simResizeObserver = new ResizeObserver(debouncedResize);
