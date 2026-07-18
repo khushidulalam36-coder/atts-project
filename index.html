@@ -41,7 +41,6 @@
             --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.09);
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-bounce: 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-            /* MT5 Mobile */
             --mt5-bg: #0e1219;
             --mt5-surface: #161b23;
             --mt5-card: #1c212b;
@@ -106,7 +105,6 @@
             color: var(--text);
             transition: background var(--transition), color var(--transition);
         }
-        /* ─── SCROLLBAR ─── */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -1264,7 +1262,7 @@
         .chart-container-wrap #simChartContainer {
             width: 100%;
             height: 420px;
-            background: var(--chart-bg);
+            background: var(--mt5-chart-bg);
             cursor: crosshair;
             flex: 1;
         }
@@ -1415,23 +1413,24 @@
             font-family: var(--font);
             user-select: none;
             -webkit-user-select: none;
+            position: relative;
         }
         /* Top Toolbar */
         .mt5-top-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 12px;
+            padding: 8px 12px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
-            min-height: 48px;
+            min-height: 44px;
         }
         .mt5-toolbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .mt5-hamburger {
             font-size: 1.2rem;
@@ -1445,13 +1444,13 @@
         }
         .mt5-symbol {
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: var(--mt5-text-bright);
         }
         .mt5-toolbar-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .mt5-indicator-btn {
             font-size: 1.1rem;
@@ -1469,10 +1468,148 @@
             color: var(--mt5-text);
             padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
+        }
+        /* Hamburger Sidebar - Half Screen */
+        .mt5-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+        .mt5-sidebar-overlay.show {
+            display: flex;
+        }
+        .mt5-sidebar-sheet {
+            background: var(--mt5-surface);
+            width: 75%;
+            max-width: 320px;
+            height: 100%;
+            padding: 20px 16px;
+            overflow-y: auto;
+            animation: slideInLeft 0.25s ease;
+            border-right: 1px solid var(--mt5-border);
+        }
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        .mt5-sidebar-sheet .close-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+        .mt5-sidebar-sheet .close-area button {
+            background: transparent;
+            border: none;
+            color: var(--mt5-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .mt5-sidebar-sheet h4 {
+            color: var(--mt5-text-bright);
+            font-size: 0.85rem;
+            margin: 16px 0 8px 0;
+            font-family: 'Outfit', sans-serif;
+            border-bottom: 1px solid var(--mt5-border);
+            padding-bottom: 6px;
+        }
+        .mt5-sidebar-sheet .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--mt5-border);
+            margin-bottom: 8px;
+        }
+        .mt5-sidebar-sheet .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--mt5-green);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .mt5-sidebar-sheet .user-info .details .name {
+            color: var(--mt5-text-bright);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .mt5-sidebar-sheet .user-info .details .balance {
+            color: var(--mt5-text);
+            font-size: 0.75rem;
+        }
+        .mt5-sidebar-sheet .sidebar-indicators label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            color: var(--mt5-text);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .mt5-sidebar-sheet .sidebar-indicators label input {
+            accent-color: var(--mt5-green);
+        }
+        .mt5-sidebar-sheet .timeframe-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        .mt5-sidebar-sheet .timeframe-grid button {
+            background: var(--mt5-input);
+            border: 1px solid var(--mt5-border);
+            color: var(--mt5-text);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: 0.2s;
+        }
+        .mt5-sidebar-sheet .timeframe-grid button:active {
+            background: var(--mt5-green);
+            color: #fff;
+        }
+        .mt5-sidebar-sheet .theme-row {
+            display: flex;
+            gap: 8px;
+            padding: 6px 0;
+        }
+        .mt5-sidebar-sheet .theme-row button {
+            background: var(--mt5-input);
+            border: 1px solid var(--mt5-border);
+            color: var(--mt5-text);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: 0.2s;
+        }
+        .mt5-sidebar-sheet .theme-row button:active {
+            background: var(--mt5-green);
+            color: #fff;
         }
         /* Indicator Overlay */
         .mt5-indicator-overlay {
@@ -1502,18 +1639,18 @@
             color: var(--mt5-text-bright);
             margin-bottom: 12px;
             font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
         }
         .mt5-indicator-sheet label {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 0;
+            padding: 6px 0;
             color: var(--mt5-text);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
         .mt5-indicator-sheet label input {
-            margin: 0;
             accent-color: var(--mt5-green);
         }
         @keyframes slideUp {
@@ -1529,25 +1666,25 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 12px;
+            padding: 6px 12px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
         }
         .mt5-pair {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--mt5-text-bright);
         }
         .mt5-name {
             color: var(--mt5-text);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .mt5-tf-display {
             background: var(--mt5-input);
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             font-family: var(--font-mono);
             color: var(--mt5-text-bright);
@@ -1556,23 +1693,23 @@
         .mt5-quick-trade {
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
-            padding: 10px 12px;
+            padding: 8px 10px;
             flex-shrink: 0;
         }
         .mt5-quick-trade-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
         }
         .mt5-sell-btn,
         .mt5-buy-btn {
             flex: 1;
             text-align: center;
-            padding: 10px 5px;
+            padding: 8px 4px;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #fff;
             cursor: pointer;
             border: none;
@@ -1582,7 +1719,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 60px;
+            min-width: 50px;
         }
         .mt5-sell-btn {
             background: var(--mt5-red);
@@ -1599,29 +1736,35 @@
             transform: scale(0.96);
         }
         .mt5-price-display {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 400;
-            margin-top: 2px;
+            margin-top: 1px;
             opacity: 0.9;
         }
         .mt5-lot-selector {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 1px;
             background: var(--mt5-input);
-            padding: 6px 12px;
-            border-radius: 10px;
-            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            min-width: 60px;
             border: 1px solid var(--mt5-border);
+        }
+        .mt5-lot-selector .lot-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
         }
         .mt5-lot-selector button {
             background: transparent;
             border: none;
             color: var(--mt5-text-bright);
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            padding: 2px 8px;
+            padding: 2px 6px;
             transition: 0.2s;
         }
         .mt5-lot-selector button:active {
@@ -1629,24 +1772,27 @@
         }
         .mt5-lot-value {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--mt5-text-bright);
+            min-width: 30px;
+            text-align: center;
         }
         .mt5-lot-presets {
             display: flex;
-            gap: 4px;
-            margin-top: 4px;
+            gap: 3px;
+            margin-top: 2px;
         }
         .mt5-lot-presets button {
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.65rem;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.55rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            font-family: var(--font-mono);
         }
         .mt5-lot-presets button:active {
             background: var(--mt5-green);
@@ -1672,7 +1818,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 52px;
+            height: 48px;
             background: var(--mt5-nav-bg);
             border-top: 1px solid var(--mt5-border);
             flex-shrink: 0;
@@ -1685,7 +1831,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: var(--mt5-text);
             cursor: pointer;
             transition: 0.2s;
@@ -1694,7 +1840,7 @@
             background: transparent;
             border: none;
             font-family: var(--font);
-            padding: 0 4px;
+            padding: 0 2px;
             gap: 1px;
         }
         .mt5-nav-item.active {
@@ -1706,12 +1852,12 @@
             top: 0;
             left: 25%;
             right: 25%;
-            height: 3px;
+            height: 2px;
             background: var(--mt5-green);
-            border-radius: 0 0 4px 4px;
+            border-radius: 0 0 3px 3px;
         }
         .mt5-nav-item i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 1px;
         }
         .mt5-nav-item:active {
@@ -1720,7 +1866,7 @@
         /* Mobile Panels */
         .mobile-panels {
             position: absolute;
-            bottom: 52px;
+            bottom: 48px;
             left: 0;
             right: 0;
             top: 0;
@@ -1734,21 +1880,19 @@
             display: flex;
         }
         .panel-content {
-            padding: 12px;
+            padding: 10px 12px;
             flex: 1;
-        }
-        .mobile-panels .panel-content {
             display: none;
         }
-        .mobile-panels .panel-content:first-child {
+        .panel-content:first-child {
             display: block;
         }
         /* Watchlist */
         .watchlist-item {
             background: var(--mt5-card);
-            margin: 4px 0;
-            padding: 12px 14px;
-            border-radius: 10px;
+            margin: 3px 0;
+            padding: 10px 12px;
+            border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
             align-items: center;
@@ -1762,13 +1906,14 @@
         .watchlist-item .sym {
             font-weight: 600;
             color: var(--mt5-text-bright);
+            font-size: 0.85rem;
         }
         .watchlist-item .price {
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .watchlist-item .change {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
         .watchlist-item .change.up {
@@ -1778,16 +1923,16 @@
             color: var(--mt5-red);
         }
         .mobile-search {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .mobile-search input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border: 1px solid var(--mt5-border);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--mt5-input);
             color: var(--mt5-text-bright);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-family: var(--font);
             outline: none;
         }
@@ -1800,16 +1945,16 @@
         /* Position Card */
         .position-card {
             background: var(--mt5-card);
-            margin: 4px 0;
-            padding: 12px 14px;
-            border-radius: 10px;
+            margin: 3px 0;
+            padding: 10px 12px;
+            border-radius: 8px;
             border: 1px solid var(--mt5-border);
         }
         .position-card .row {
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
         }
         .position-card .row .label {
             color: var(--mt5-text);
@@ -1825,14 +1970,14 @@
             color: var(--mt5-red);
         }
         .position-card .exit-btn {
-            margin-top: 8px;
+            margin-top: 6px;
             background: var(--mt5-red);
             color: #fff;
             border: none;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: 0.2s;
             width: 100%;
@@ -1844,8 +1989,8 @@
         /* Trade Panel in mobile */
         .mt5-deposit-withdraw {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
         .mt5-deposit-withdraw input {
@@ -1853,20 +1998,20 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text-bright);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-family: var(--font);
-            min-width: 80px;
+            min-width: 60px;
         }
         .mt5-deposit-withdraw button {
             background: var(--mt5-blue);
             color: #fff;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 14px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: var(--font);
@@ -1880,9 +2025,9 @@
         /* History item */
         .history-item {
             background: var(--mt5-card);
-            margin: 4px 0;
-            padding: 12px 14px;
-            border-radius: 10px;
+            margin: 3px 0;
+            padding: 10px 12px;
+            border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
             justify-content: space-between;
@@ -1891,11 +2036,11 @@
         .history-item .left {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
         }
         .history-item .left .type {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
         }
         .history-item .left .type.buy {
             color: var(--mt5-green);
@@ -1910,12 +2055,12 @@
             color: var(--mt5-red);
         }
         .history-item .left .detail {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--mt5-text);
         }
         .history-item .right {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-family: var(--font-mono);
         }
         .history-item .right.green {
@@ -1924,6 +2069,7 @@
         .history-item .right.red {
             color: var(--mt5-red);
         }
+
         /* ─── ADMIN ─── */
         .admin-container {
             display: flex;
@@ -2045,11 +2191,11 @@
                 display: block;
             }
             .top-bar {
-                padding: 8px 10px;
-                gap: 6px;
+                padding: 6px 10px;
+                gap: 5px;
             }
             .search-box {
-                max-width: 110px;
+                max-width: 100px;
             }
             .terminal-header-bar {
                 flex-direction: column;
@@ -2085,48 +2231,11 @@
                 padding: 30px 20px;
             }
             .mt5-quick-trade-row {
-                gap: 6px;
-            }
-            .mt5-sell-btn,
-            .mt5-buy-btn {
-                font-size: 0.7rem;
-                padding: 8px 4px;
-                min-width: 50px;
-            }
-            .mt5-lot-selector {
-                min-width: 60px;
-                padding: 4px 8px;
-            }
-            .mt5-lot-value {
-                font-size: 0.85rem;
-            }
-            .mt5-top-toolbar {
-                padding: 8px 10px;
-            }
-            .mt5-symbol {
-                font-size: 0.9rem;
-            }
-            .mt5-instrument-info {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-            }
-            .mt5-pair {
-                font-size: 0.85rem;
-            }
-            .mt5-name {
-                font-size: 0.7rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.65rem;
-            }
-        }
-        @media (max-width: 400px) {
-            .mt5-quick-trade-row {
                 gap: 4px;
             }
             .mt5-sell-btn,
             .mt5-buy-btn {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 6px 3px;
                 min-width: 44px;
             }
@@ -2135,21 +2244,92 @@
                 padding: 3px 6px;
             }
             .mt5-lot-value {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
+                min-width: 24px;
             }
             .mt5-lot-presets button {
-                font-size: 0.55rem;
+                font-size: 0.5rem;
                 padding: 1px 4px;
             }
             .mt5-top-toolbar {
                 padding: 6px 8px;
+                min-height: 38px;
             }
             .mt5-symbol {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .mt5-tf-select {
                 font-size: 0.6rem;
                 padding: 3px 6px;
+            }
+            .mt5-instrument-info {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+            .mt5-pair {
+                font-size: 0.8rem;
+            }
+            .mt5-name {
+                font-size: 0.65rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.6rem;
+            }
+            .mt5-bottom-nav {
+                height: 42px;
+            }
+            .mt5-nav-item {
+                font-size: 0.55rem;
+            }
+            .mt5-nav-item i {
+                font-size: 1rem;
+            }
+            .mt5-sidebar-sheet {
+                width: 80%;
+                max-width: 280px;
+            }
+        }
+        @media (max-width: 400px) {
+            .mt5-quick-trade-row {
+                gap: 3px;
+            }
+            .mt5-sell-btn,
+            .mt5-buy-btn {
+                font-size: 0.6rem;
+                padding: 5px 2px;
+                min-width: 38px;
+            }
+            .mt5-lot-selector {
+                min-width: 42px;
+                padding: 2px 4px;
+            }
+            .mt5-lot-value {
+                font-size: 0.7rem;
+                min-width: 20px;
+            }
+            .mt5-lot-presets button {
+                font-size: 0.45rem;
+                padding: 1px 3px;
+            }
+            .mt5-top-toolbar {
+                padding: 4px 6px;
+                min-height: 34px;
+            }
+            .mt5-symbol {
+                font-size: 0.75rem;
+            }
+            .mt5-tf-select {
+                font-size: 0.55rem;
+                padding: 2px 5px;
+            }
+            .mt5-bottom-nav {
+                height: 38px;
+            }
+            .mt5-nav-item {
+                font-size: 0.5rem;
+            }
+            .mt5-nav-item i {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -2235,7 +2415,7 @@
 
             function saveWatchlist() { localStorage.setItem('watchlist', JSON.stringify(mobileWatchlist)); }
 
-            const timeframeIntervals = { '1': 60, '5': 300, '15': 900, '30': 1800, '1H': 3600, '4H': 14400, 'D': 86400 };
+            const timeframeIntervals = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
             const indicatorColors = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
                 'ema200': '#ef4444', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4',
                 'vwap': '#f472b6' };
@@ -2554,7 +2734,7 @@
                         '<p style="color:var(--text-muted);">No content available.</p>';
                     else if (tn === 'quiz') renderQuizTab(tc, les, id);
                     else tc.innerHTML =
-                        '<div style="padding:22px;background:var(--info-light);border-radius:16px;border:2px solid #3b82f6;">📂 Additional Resources</div>';
+                        '<div style="padding:22px;background:#eff6ff;border-radius:16px;border:2px solid #3b82f6;">📂 Additional Resources</div>';
                 }
                 tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
                 showTab('summary');
@@ -3119,27 +3299,25 @@
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:44px;">
-                            <div style="display:flex;align-items:center;gap:12px;">
-                                <span style="font-weight:700;font-family:Outfit,sans-serif;">📈 Trading Terminal</span>
-                                <button class="btn btn-outline btn-sm" onclick="window.location.href='?'"><i class="fas fa-arrow-left"></i> Back</button>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
                             </div>
-                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                                <span id="simCash" style="color:var(--success);font-weight:600;">💰 $${portfolio.cash.toFixed(2)}</span>
-                                <span id="simTotalValue" style="font-weight:600;">📊 $0</span>
-                                <span id="simPL" style="font-weight:600;">📈 $0</span>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${portfolio.cash.toFixed(2)}</span>
+                                <span id="simTotalValue" style="font-weight:600;font-size:0.8rem;">📊 $0</span>
+                                <span id="simPL" style="font-weight:600;font-size:0.8rem;">📈 $0</span>
                             </div>
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
                     </div>`;
+                const container = document.getElementById('terminalContainer');
                 if (isMobile) {
-                    // Mobile: MT5 style
-                    const container = document.getElementById('terminalContainer');
                     renderMobileTerminal(container);
                 } else {
-                    const container = document.getElementById('terminalContainer');
                     container.style.overflowY = 'auto';
-                    container.style.padding = '12px';
+                    container.style.padding = '10px';
                     renderDesktopTerminal(container);
                 }
             }
@@ -3162,11 +3340,11 @@
                         </div>
                         <div class="terminal-inner">
                             <div class="terminal-header-bar">
-                                <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:Outfit,sans-serif;font-size:1.2rem;">📈 Live Trading Terminal</h2></div>
+                                <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:Outfit,sans-serif;font-size:1.1rem;">📈 Live Trading Terminal</h2></div>
                                 <div class="summary-cards">
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.7rem;">💰 Virtual Cash</span><div class="val" id="simCashBar" style="color:var(--success);">$0</div></div>
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.7rem;">📊 Portfolio</span><div class="val" id="simTotalBar">$0.00</div></div>
-                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.7rem;">📈 P&L</span><div class="val" id="simPLBar" style="color:var(--success);">$0.00</div></div>
+                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">💰 Virtual Cash</span><div class="val" id="simCashBar" style="color:var(--success);">$0</div></div>
+                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">📊 Portfolio</span><div class="val" id="simTotalBar">$0.00</div></div>
+                                    <div class="summary-card"><span style="color:var(--text-secondary);font-size:0.65rem;">📈 P&L</span><div class="val" id="simPLBar" style="color:var(--success);">$0.00</div></div>
                                 </div>
                             </div>
                             <div class="terminal-toolbar">
@@ -3201,12 +3379,13 @@
                             </div>
                             <div class="trade-panel">
                                 <select id="simSymbolSelect2" style="padding:6px 10px;">${simMarketSymbols.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <input type="number" id="simQty" placeholder="Qty" value="1" min="1">
-                                <input type="number" id="simSL" placeholder="SL $" step="0.01">
-                                <input type="number" id="simTP" placeholder="TP $" step="0.01">
+                                <input type="number" id="simQty" placeholder="Qty" value="1" min="1" step="0.01">
+                                <input type="number" id="simSL" placeholder="SL $" step="0.0001">
+                                <input type="number" id="simTP" placeholder="TP $" step="0.0001">
                                 <button class="btn-buy" onclick="placeSimOrder('buy')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell')"><i class="fas fa-money-bill-wave"></i> Sell</button>
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
+                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);">Loading chart...</div></div>
@@ -3267,11 +3446,88 @@
                 updateSimUI();
             }
 
+            // ─── DESKTOP TRADE PANEL ──────────────────────────────────────────
+            function openDesktopTradePanel() {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                let html = `
+                    <div class="modal-content">
+                        <h3><i class="fas fa-wallet"></i> Trade Summary</h3>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Balance</div>
+                                <div style="font-weight:700;font-size:1.1rem;color:var(--success);">$${portfolio.cash.toFixed(2)}</div>
+                            </div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Equity</div>
+                                <div style="font-weight:700;font-size:1.1rem;">$${calcEquity().toFixed(2)}</div>
+                            </div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div>
+                                <div style="font-weight:700;font-size:1.1rem;">${Object.keys(portfolio.holdings).length}</div>
+                            </div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
+                                <div style="font-size:0.7rem;color:var(--text-muted);">P&L</div>
+                                <div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div>
+                            </div>
+                        </div>
+                        <h4 style="margin-top:10px;">Open Positions</h4>
+                        ${Object.keys(portfolio.holdings).length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
+                        Object.keys(portfolio.holdings).map(sym => {
+                            const h = portfolio.holdings[sym];
+                            const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                            const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
+                            return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
+                                <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                                <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                                <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
+                            </div>`;
+                        }).join('')}
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Close</button>
+                        </div>
+                    </div>`;
+                modal.innerHTML = html;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+                // Re-bind exit buttons inside modal
+                modal.querySelectorAll('.btn-exit').forEach(b => {
+                    const origClick = b.onclick;
+                    b.onclick = function(e) {
+                        const sym = this.closest('div').querySelector('strong').textContent;
+                        exitPosition(sym);
+                        this.closest('.modal').remove();
+                        openDesktopTradePanel();
+                    };
+                });
+            }
+
+            function calcEquity() {
+                let eq = portfolio.cash || 0;
+                for (const sym in portfolio.holdings) {
+                    const h = portfolio.holdings[sym];
+                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                    eq += Math.abs(h.qty) * cp;
+                }
+                return eq;
+            }
+
+            function calcTotalPL() {
+                let pl = 0;
+                for (const sym in portfolio.holdings) {
+                    const h = portfolio.holdings[sym];
+                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                    if (h.qty > 0) pl += (cp - h.avgPrice) * h.qty;
+                    else pl += (h.avgPrice - cp) * Math.abs(h.qty);
+                }
+                return pl;
+            }
+
             // ─── MOBILE TERMINAL (MT5 STYLE) ──────────────────────────────────
             let currentMobileLot = 0.01;
 
-            function setMobileLot(lot) { currentMobileLot = lot;
-                document.getElementById('mobileLotSize').textContent = lot.toFixed(2); }
+            function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot);
+                document.getElementById('mobileLotSize').textContent = currentMobileLot.toFixed(2); }
 
             function changeMobileLot(delta) { const newLot = Math.max(0.01, currentMobileLot + delta * 0.01);
                 setMobileLot(+(newLot.toFixed(2))); }
@@ -3286,6 +3542,7 @@
                 if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                 container.innerHTML = `
                     <div class="mobile-terminal" id="mobileTerminalRoot">
+                        <!-- Top Toolbar -->
                         <div class="mt5-top-toolbar">
                             <div class="mt5-toolbar-left">
                                 <i class="fas fa-bars mt5-hamburger" id="mt5Hamburger"></i>
@@ -3298,18 +3555,70 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- Hamburger Sidebar -->
+                        <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
+                            <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
+                                <div class="close-area">
+                                    <button id="mt5SidebarClose"><i class="fas fa-times"></i></button>
+                                </div>
+                                <div class="user-info">
+                                    <div class="avatar">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</div>
+                                    <div class="details">
+                                        <div class="name">${currentUser?.username || 'User'}</div>
+                                        <div class="balance">Balance: $${portfolio.cash.toFixed(2)} | Equity: $${calcEquity().toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                <h4>📈 Indicators</h4>
+                                <div class="sidebar-indicators">
+                                    ${Object.entries(indicatorNames).map(([k,name]) => `
+                                        <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>
+                                    `).join('')}
+                                    <label><input type="checkbox" id="sidebarVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
+                                </div>
+                                <h4>⏱ Timeframes</h4>
+                                <div class="timeframe-grid">
+                                    ${Object.keys(timeframeIntervals).map(k => `<button data-tf="${timeframeIntervals[k]}">${k}</button>`).join('')}
+                                </div>
+                                <h4>🎨 Theme</h4>
+                                <div class="theme-row">
+                                    <button id="sidebarLightTheme">☀️ Light</button>
+                                    <button id="sidebarDarkTheme">🌙 Dark</button>
+                                </div>
+                                <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);">
+                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" onclick="document.getElementById('mt5SidebarOverlay').classList.remove('show');">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Indicator Overlay -->
+                        <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
+                            <div class="mt5-indicator-sheet">
+                                <h3>📊 Indicators</h3>
+                                ${Object.entries(indicatorNames).map(([k,name]) => `
+                                    <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>
+                                `).join('')}
+                                <hr style="border-color:var(--mt5-border);margin:8px 0;">
+                                <label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
+                                <div style="margin-top:12px;display:flex;gap:8px;">
+                                    <button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Instrument Info -->
                         <div class="mt5-instrument-info">
                             <span class="mt5-pair">${simCurrentSymbol}</span>
                             <span class="mt5-name">${simCurrentSymbol} / USD</span>
                             <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(timeframeIntervals).find(k => timeframeIntervals[k] === currentTimeframe)}</span>
                         </div>
+                        <!-- Quick Trade Panel -->
                         <div class="mt5-quick-trade">
                             <div class="mt5-quick-trade-row">
                                 <button class="mt5-sell-btn" id="mobileSellBtn">SELL<br><span class="mt5-price-display" id="mobileSellPrice">-</span></button>
                                 <div class="mt5-lot-selector">
-                                    <button id="lotDownBtn">▼</button>
-                                    <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
-                                    <button id="lotUpBtn">▲</button>
+                                    <div class="lot-row">
+                                        <button id="lotDownBtn">▼</button>
+                                        <span class="mt5-lot-value" id="mobileLotSize">0.01</span>
+                                        <button id="lotUpBtn">▲</button>
+                                    </div>
                                     <div class="mt5-lot-presets">
                                         <button data-lot="0.01">0.01</button>
                                         <button data-lot="0.10">0.10</button>
@@ -3319,43 +3628,83 @@
                                 <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
                             </div>
                         </div>
+                        <!-- Chart -->
                         <div class="mobile-chart-container" id="mobileChartContainer">
                             <div id="simChartContainer" style="width:100%;height:100%;"></div>
                         </div>
+                        <!-- Bottom Navigation -->
                         <div class="mt5-bottom-nav">
                             <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
                             <button class="mt5-nav-item" data-panel="chart"><i class="fas fa-chart-line"></i> Chart</button>
                             <button class="mt5-nav-item" data-panel="trade"><i class="fas fa-wallet"></i> Trade</button>
                             <button class="mt5-nav-item" data-panel="history"><i class="fas fa-clock"></i> History</button>
                         </div>
+                        <!-- Panels -->
                         <div class="mobile-panels" id="mobilePanels">
                             <div class="panel-content" id="quotesPanel"></div>
                             <div class="panel-content" id="tradePanel"></div>
                             <div class="panel-content" id="historyPanel"></div>
                         </div>
-                    </div>
-                    <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
-                        <div class="mt5-indicator-sheet">
-                            <h3>📊 Indicators</h3>
-                            ${Object.entries(indicatorNames).map(([k,name]) => `
-                                <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>
-                            `).join('')}
-                            <hr style="border-color:var(--mt5-border);margin:8px 0;">
-                            <label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
-                            <div style="margin-top:12px;display:flex;gap:8px;">
-                                <button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;">Close</button>
-                            </div>
-                        </div>
                     </div>`;
-                // Bind mobile events
-                document.getElementById('mt5Hamburger').onclick = () => openMobileSidebar();
+                // ─── Bind mobile events ──────────────────────────────────────
+                // Hamburger
+                document.getElementById('mt5Hamburger').onclick = () => {
+                    document.getElementById('mt5SidebarOverlay').classList.toggle('show');
+                };
+                document.getElementById('mt5SidebarClose').onclick = () => {
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show');
+                };
+                document.getElementById('mt5SidebarOverlay').addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.remove('show');
+                });
+                // Sidebar indicators
+                document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => {
+                    cb.onchange = function() {
+                        activeIndicators[this.dataset.ind] = this.checked;
+                        updateAllIndicators();
+                    };
+                });
+                document.getElementById('sidebarVolumeToggle').onchange = function() {
+                    showVolume = this.checked;
+                    document.getElementById('mobileVolumeToggle').checked = showVolume;
+                    updateAllIndicators();
+                };
+                document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
+                    applyTheme();
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
+                document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
+                    applyTheme();
+                    document.getElementById('mt5SidebarOverlay').classList.remove('show'); };
+                document.querySelectorAll('.timeframe-grid button').forEach(b => {
+                    b.onclick = function() {
+                        const tf = parseInt(this.dataset.tf);
+                        currentTimeframe = tf;
+                        document.getElementById('mt5TfSelect').value = tf;
+                        document.getElementById('mobileTfDisplay').textContent = Object.keys(
+                            timeframeIntervals).find(k => timeframeIntervals[k] === tf);
+                        resetChart();
+                        document.getElementById('mt5SidebarOverlay').classList.remove('show');
+                    };
+                });
+                // Indicator overlay
                 document.getElementById('mt5IndicatorBtn').onclick = () => {
-                    const overlay = document.getElementById('mt5IndicatorOverlay');
-                    if (overlay) overlay.classList.toggle('show');
+                    document.getElementById('mt5IndicatorOverlay').classList.toggle('show');
                 };
                 document.getElementById('closeIndicatorSheet').onclick = () => {
                     document.getElementById('mt5IndicatorOverlay').classList.remove('show');
                 };
+                document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => {
+                    cb.onchange = function() {
+                        activeIndicators[this.dataset.ind] = this.checked;
+                        updateAllIndicators();
+                    };
+                });
+                document.getElementById('mobileVolumeToggle').onchange = function() {
+                    showVolume = this.checked;
+                    document.getElementById('sidebarVolumeToggle').checked = showVolume;
+                    updateAllIndicators();
+                };
+                // Timeframe
                 document.getElementById('mt5TfSelect').onchange = function() {
                     currentTimeframe = parseInt(this.value);
                     document.getElementById('mobileTfDisplay').textContent = Object.keys(timeframeIntervals).find(k =>
@@ -3369,20 +3718,17 @@
                     b.onclick = () => setMobileLot(parseFloat(b.dataset.lot));
                 });
                 // Buy/Sell
-                document.getElementById('mobileSellBtn').onclick = () => placeSimOrderMobile('sell', currentMobileLot, 0,
-                0);
-                document.getElementById('mobileBuyBtn').onclick = () => placeSimOrderMobile('buy', currentMobileLot, 0,
-                0);
-                // Indicators overlay checkboxes
-                document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => {
-                    cb.onchange = function() {
-                        activeIndicators[this.dataset.ind] = this.checked;
-                        updateAllIndicators();
-                    };
-                });
-                document.getElementById('mobileVolumeToggle').onchange = function() {
-                    showVolume = this.checked;
-                    updateAllIndicators();
+                document.getElementById('mobileSellBtn').onclick = () => {
+                    const qty = currentMobileLot;
+                    const sl = 0,
+                        tp = 0;
+                    placeSimOrderMobile('sell', qty, sl, tp);
+                };
+                document.getElementById('mobileBuyBtn').onclick = () => {
+                    const qty = currentMobileLot;
+                    const sl = 0,
+                        tp = 0;
+                    placeSimOrderMobile('buy', qty, sl, tp);
                 };
                 // Bottom nav
                 const navItems = document.querySelectorAll('.mt5-nav-item');
@@ -3419,7 +3765,7 @@
                 updateMobileTopBar();
                 updateMobilePanel('quotes');
                 updateSimUI();
-                // Handle window resize for chart
+                // Resize observer for mobile chart
                 const ro = new ResizeObserver(() => {
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
@@ -3433,28 +3779,6 @@
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) ro.observe(chartDiv);
                 window._mobileResizeObs = ro;
-            }
-
-            function openMobileSidebar() {
-                const existing = document.getElementById('mobileSidebarOverlay');
-                if (existing) { existing.remove(); return; }
-                const overlay = document.createElement('div');
-                overlay.className = 'modal';
-                overlay.id = 'mobileSidebarOverlay';
-                overlay.style.justifyContent = 'flex-start';
-                overlay.style.alignItems = 'flex-start';
-                overlay.innerHTML = `<div class="modal-content" style="width:280px;height:100vh;margin:0;border-radius:0;background:var(--mt5-surface);">
-                    <h3 style="color:var(--mt5-text-bright);margin-bottom:16px;">☰ Menu</h3>
-                    <h4>Timeframe</h4>
-                    <div style="display:flex;flex-wrap:wrap;gap:4px;">${Object.keys(timeframeIntervals).map(k => `<button class="tool-btn" onclick="document.getElementById('mt5TfSelect').value='${timeframeIntervals[k]}'; document.getElementById('mt5TfSelect').onchange(); document.getElementById('mobileSidebarOverlay').remove();">${k}</button>`).join('')}</div>
-                    <h4 style="margin-top:12px;">Indicators</h4>
-                    <div>${Object.entries(indicatorNames).map(([k,name]) => `<label class="indicator-item"><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''} onchange="activeIndicators['${k}']=this.checked; updateAllIndicators();"><span style="color:${indicatorColors[k]||'#fff'};">${name}</span></label>`).join('')}</div>
-                    <h4 style="margin-top:12px;">Theme</h4>
-                    <button class="btn btn-outline btn-sm" onclick="appTheme=appTheme==='dark'?'light':'dark'; applyTheme(); document.getElementById('mobileSidebarOverlay').remove();">${appTheme==='dark'?'☀️ Light':'🌙 Dark'}</button>
-                    <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="document.getElementById('mobileSidebarOverlay').remove();">Close</button>
-                </div>`;
-                document.body.appendChild(overlay);
-                overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
             }
 
             function updateMobilePanel(panel) {
@@ -3471,12 +3795,12 @@
                 const list = mobileWatchlist.length ? mobileWatchlist : simMarketSymbols;
                 html += list.map(sym => {
                     const price = simLastPrices[sym] || simBasePrices[sym] || '-';
-                    const change = Math.random() * 2 - 1;
+                    const change = (Math.random() * 4 - 2);
                     const cls = change >= 0 ? 'up' : 'down';
                     return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                         <span class="sym">${sym}</span>
                         <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
-                        <span class="change ${cls}">${change >= 0 ? '+' : ''}${(change * 0.5).toFixed(2)}%</span>
+                        <span class="change ${cls}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
                     </div>`;
                 }).join('');
                 panel.innerHTML = html;
@@ -3490,12 +3814,12 @@
                 panel.innerHTML = `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
                     filtered.map(sym => {
                         const price = simLastPrices[sym] || simBasePrices[sym] || '-';
-                        const change = Math.random() * 2 - 1;
+                        const change = (Math.random() * 4 - 2);
                         const cls = change >= 0 ? 'up' : 'down';
                         return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                             <span class="sym">${sym}</span>
                             <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
-                            <span class="change ${cls}">${change >= 0 ? '+' : ''}${(change * 0.5).toFixed(2)}%</span>
+                            <span class="change ${cls}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
                         </div>`;
                     }).join('');
             };
@@ -3512,16 +3836,23 @@
                 updateMobileTopBar();
                 initChart();
                 document.querySelector('.mt5-nav-item[data-panel="chart"]').click();
+                // Update watchlist highlight
+                document.querySelectorAll('.watchlist-item').forEach(el => {
+                    el.style.borderColor = 'var(--mt5-border)';
+                    if (el.querySelector('.sym')?.textContent === sym) {
+                        el.style.borderColor = 'var(--mt5-green)';
+                    }
+                });
             }
 
             function renderMobileTradeSummary() {
                 const panel = document.getElementById('tradePanel');
                 if (!panel) return;
-                let html = '<div style="padding:10px;"><h4 style="color:var(--mt5-text-bright);">Open Positions</h4>';
+                let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Open Positions</h4>';
                 const holdings = portfolio.holdings || {};
                 const keys = Object.keys(holdings);
                 if (keys.length === 0) {
-                    html += '<div style="color:var(--mt5-text);padding:12px 0;">No open positions</div>';
+                    html += '<div style="color:var(--mt5-text);padding:10px 0;">No open positions</div>';
                 } else {
                     keys.forEach(sym => {
                         const h = holdings[sym];
@@ -3530,16 +3861,19 @@
                         .qty);
                         html += `<div class="position-card">
                             <div class="row"><span class="label">${sym}</span><span class="value">${Math.abs(h.qty)} Qty</span></div>
-                            <div class="row"><span class="label">Entry</span><span class="value">$${h.avgPrice.toFixed(2)}</span></div>
-                            <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(2)}</span></div>
+                            <div class="row"><span class="label">Entry</span><span class="value">$${h.avgPrice.toFixed(4)}</span></div>
+                            <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(4)}</span></div>
                             <div class="row"><span class="label">P&L</span><span class="value ${pl>=0?'green':'red'}">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
+                            ${h.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${h.slPrice.toFixed(4)}</span></div>` : ''}
+                            ${h.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${h.tpPrice.toFixed(4)}</span></div>` : ''}
                             <button class="exit-btn" onclick="exitPosition('${sym}')">Exit Position</button>
                         </div>`;
                     });
                 }
-                html += `<div style="margin-top:12px;padding:10px;background:var(--mt5-card);border-radius:10px;">
+                html += `<div style="margin-top:10px;padding:10px;background:var(--mt5-card);border-radius:8px;">
                     <div class="row"><span class="label">Balance</span><span class="value">$${portfolio.cash.toFixed(2)}</span></div>
                     <div class="row"><span class="label">Equity</span><span class="value">$${calcEquity().toFixed(2)}</span></div>
+                    <div class="row"><span class="label">P&L</span><span class="value ${calcTotalPL()>=0?'green':'red'}">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
                     <input type="number" id="depositAmount" placeholder="Amount" step="0.01">
@@ -3548,17 +3882,6 @@
                 </div>`;
                 html += '</div>';
                 panel.innerHTML = html;
-            }
-
-            function calcEquity() {
-                let eq = portfolio.cash || 0;
-                const holdings = portfolio.holdings || {};
-                Object.keys(holdings).forEach(sym => {
-                    const h = holdings[sym];
-                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    eq += Math.abs(h.qty) * cp;
-                });
-                return eq;
             }
 
             function depositFunds() {
@@ -3590,9 +3913,9 @@
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
                 const transactions = portfolio.transactions || [];
-                let html = '<div style="padding:10px;"><h4 style="color:var(--mt5-text-bright);">Transaction History</h4>';
+                let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Transaction History</h4>';
                 if (transactions.length === 0) {
-                    html += '<div style="color:var(--mt5-text);padding:12px 0;">No transactions</div>';
+                    html += '<div style="color:var(--mt5-text);padding:10px 0;">No transactions</div>';
                 } else {
                     transactions.slice(0, 30).forEach(t => {
                         const typeCls = t.type === 'buy' ? 'buy' : t.type === 'sell' ? 'sell' : t.type ===
@@ -3619,8 +3942,8 @@
                 const price = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 0;
                 const sellPrice = document.getElementById('mobileSellPrice');
                 const buyPrice = document.getElementById('mobileBuyPrice');
-                if (sellPrice) sellPrice.textContent = '$' + (price * 0.9998).toFixed(2);
-                if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(2);
+                if (sellPrice) sellPrice.textContent = '$' + (price * 0.9998).toFixed(4);
+                if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(4);
             }
 
             function placeSimOrderMobile(side, qty, sl, tp) {
@@ -3639,7 +3962,7 @@
                             if (h.qty === 0) delete portfolio.holdings[symbol];
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Close Short' });
-                            showToast('🔄 Closed ' + closeQty + ' short ' + symbol + ' @ $' + price.toFixed(2));
+                            showToast('🔄 Closed ' + closeQty + ' short ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             const totalCost = qty * price;
                             const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
@@ -3650,7 +3973,7 @@
                             if (tp && tp > 0) h.tpPrice = tp;
                             portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                                 time: new Date().toLocaleTimeString() });
-                            showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                            showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     } else {
                         portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price,
@@ -3659,7 +3982,7 @@
                         if (tp && tp > 0) portfolio.holdings[symbol].tpPrice = tp;
                         portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                             time: new Date().toLocaleTimeString() });
-                        showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                        showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     }
                     playTradeSound('buy');
                 } else {
@@ -3671,7 +3994,7 @@
                         if (h.qty === 0) delete portfolio.holdings[symbol];
                         portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                             time: new Date().toLocaleTimeString(), reason: 'Close Long' });
-                        showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                        showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     } else {
                         if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
                             let h = portfolio.holdings[symbol];
@@ -3684,7 +4007,7 @@
                             if (tp && tp > 0) h.tpPrice = tp;
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Add Short' });
-                            showToast('🔻 Added short ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                            showToast('🔻 Added short ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
                                 entryPrice: price };
@@ -3692,7 +4015,7 @@
                             if (tp && tp > 0) portfolio.holdings[symbol].tpPrice = tp;
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Short' });
-                            showToast('🔻 Shorted ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(2));
+                            showToast('🔻 Shorted ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     }
                     playTradeSound('sell');
@@ -4398,7 +4721,7 @@
 
             async function placeSimOrder(type) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
-                const qty = parseInt(document.getElementById('simQty')?.value) || 1;
+                const qty = parseFloat(document.getElementById('simQty')?.value) || 1;
                 const slVal = parseFloat(document.getElementById('simSL')?.value);
                 const tpVal = parseFloat(document.getElementById('simTP')?.value);
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
@@ -4496,6 +4819,8 @@
                 redrawAllLines();
                 playTradeSound('sell');
                 showToast('🚪 Exited ' + symbol + ' @ $' + price.toFixed(4));
+                // Close any open modals
+                document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
             function editSLTP(symbol) {
@@ -4700,6 +5025,9 @@
             window.simCurrentSymbol = simCurrentSymbol;
             window.simLastPrices = simLastPrices;
             window.portfolio = portfolio;
+            window.openDesktopTradePanel = openDesktopTradePanel;
+            window.calcEquity = calcEquity;
+            window.calcTotalPL = calcTotalPL;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
 
@@ -4721,20 +5049,11 @@
                 }, 300);
             });
 
-            // Handle window resize for mobile
+            // Handle window resize
             let resizeTimer;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {
-                    const isMobile = window.innerWidth <= 768;
-                    const container = document.getElementById('terminalContainer');
-                    if (container && isMobile) {
-                        // If we're on mobile but not in mobile terminal mode, re-render
-                        const root = document.getElementById('mobileTerminalRoot');
-                        if (!root && container.children.length > 0) {
-                            // Already in mobile terminal
-                        }
-                    }
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
