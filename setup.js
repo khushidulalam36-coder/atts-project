@@ -1,16 +1,14 @@
 // ================================================================
-// SETUP.JS – PRODUCTION‑READY (NO SUBFOLDER, DOTENV FIX INCLUDED)
-// ================================================================
-// Run: node setup.js   (in your project root, e.g. training_hub)
-// All files will be created directly in the current folder.
-// index.html will be empty – you fill it manually.
+// SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel)
+// All files created directly in current folder.
+// index.html will be empty – you fill manually.
 // ================================================================
 
 const fs = require('fs');
 const path = require('path');
 
 // ─── KONFIG ──────────────────────────────────────────────────────────
-const PROJECT_ROOT = process.cwd();  // সরাসরি বর্তমান ফোল্ডার
+const PROJECT_ROOT = process.cwd();
 
 const ENV_TEMPLATE = `# Neon DB (PostgreSQL)
 DATABASE_URL=postgresql://user:password@ep-xxxx.neon.tech/alamquant?sslmode=require
@@ -33,7 +31,7 @@ FRONTEND_URL=http://localhost:3000
 
 // ─── FILE DEFINITIONS ───────────────────────────────────────────────
 const files = {
-  'index.html': '',   // ← USER FILLS MANUALLY (খালি থাকবে)
+  'index.html': '',   // ← USER FILLS MANUALLY
 
   'package.json': JSON.stringify({
     name: 'alamquant-backend',
@@ -99,7 +97,7 @@ npm start
 - **Change after first login!**
 `,
 
-  // ── server.js ─────────────────────────────────────────────────────
+  // ── server.js (FINAL WITH CORS FIX) ─────────────────────────────────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -140,7 +138,23 @@ setInterval(() => {
 
 // ── Middleware ────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
+
+// Explicit CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
+
+// Explicit OPTIONS handler for preflight requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200);
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -189,8 +203,8 @@ server.listen(PORT, () => {
 module.exports = { app, server, wss, broadcast };
 `,
 
-  // ── scripts/migrate.js (✅ dotenv ফিক্স সহ) ────────────────────────
-  'scripts/migrate.js': `require('dotenv').config();   // <-- এটাই আগে মিসিং ছিল
+  // ── scripts/migrate.js (dotenv fix) ─────────────────────────────────
+  'scripts/migrate.js': `require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
 
@@ -515,7 +529,7 @@ function optionalAuth(req, res, next) {
 module.exports = { authenticate, optionalAuth };
 `,
 
-  // ─── routes/auth.js ────────────────────────────────────────────────
+  // ─── ROUTES ─────────────────────────────────────────────────────────
   'routes/auth.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const {
@@ -569,7 +583,6 @@ router.get('/me', async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/subjects.js ──────────────────────────────────────────
   'routes/subjects.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -626,7 +639,6 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/lessons.js ──────────────────────────────────────────
   'routes/lessons.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -672,7 +684,6 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/quiz.js ──────────────────────────────────────────────
   'routes/quiz.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -743,7 +754,6 @@ router.get('/scores', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/progress.js ────────────────────────────────────────
   'routes/progress.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -771,7 +781,6 @@ router.put('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/bookmarks.js ───────────────────────────────────────
   'routes/bookmarks.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -800,7 +809,6 @@ router.delete('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/notes.js ───────────────────────────────────────────
   'routes/notes.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -834,7 +842,6 @@ router.put('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/portfolio.js ────────────────────────────────────────
   'routes/portfolio.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -906,7 +913,6 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/upload.js ─────────────────────────────────────────────
   'routes/upload.js': `const router = require('express').Router();
 const multer = require('multer');
 const { uploadFile, deleteFile } = require('../lib/blob');
@@ -933,7 +939,6 @@ router.delete('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/export.js ─────────────────────────────────────────────
   'routes/export.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -959,7 +964,6 @@ router.get('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ─── routes/import.js ─────────────────────────────────────────────
   'routes/import.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -997,7 +1001,6 @@ function createProject() {
   console.log('║  🚀 Alamquant Backend Setup v2.0        ║');
   console.log('╚══════════════════════════════════════════╝\n');
 
-  // Ensure folders exist
   const folders = ['routes', 'lib', 'middleware', 'scripts', 'uploads'];
   folders.forEach(f => {
     const p = path.join(PROJECT_ROOT, f);
