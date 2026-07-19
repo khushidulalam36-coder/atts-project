@@ -1,4 +1,4 @@
-require('dotenv').config();   // <-- এটাই আগে মিসিং ছিল
+require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
 

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
-const { getRealTimePrice } = require('../lib/finnhub');
+const { fetchPrice } = require('../lib/binance'); // changed from finnhub to binance
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -19,7 +19,8 @@ router.put('/', authenticate, async (req, res) => {
     let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
     let cash = parseFloat(p.cash);
-    const price = await getRealTimePrice(symbol);
+    const price = await fetchPrice(symbol);
+    if (!price) return res.status(500).json({ error: 'Could not fetch price' });
 
     if (type === 'buy') {
       const cost = qty * price;
@@ -56,7 +57,8 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
     const h = holdings[req.params.symbol];
     if (!h) return res.status(404).json({ error: 'Holding not found' });
-    const price = await getRealTimePrice(req.params.symbol);
+    const price = await fetchPrice(req.params.symbol);
+    if (!price) return res.status(500).json({ error: 'Could not fetch price' });
     cash += h.qty * price;
     transactions.unshift({ type: 'sell', symbol: req.params.symbol, qty: h.qty, price, time: new Date().toISOString(), reason: 'Manual Exit' });
     delete holdings[req.params.symbol];

@@ -1,7 +1,7 @@
 // ================================================================
 // SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel)
 // All files created directly in current folder.
-// index.html will be empty – you fill manually.
+// index.html will be empty – fill manually.
 // ================================================================
 
 const fs = require('fs');
@@ -11,13 +11,13 @@ const path = require('path');
 const PROJECT_ROOT = process.cwd();
 
 const ENV_TEMPLATE = `# Neon DB (PostgreSQL)
-DATABASE_URL=postgresql://user:password@ep-xxxx.neon.tech/alamquant?sslmode=require
+DATABASE_URL=postgresql://neondb_owner:npg_dL7R2YzkygWM@ep-dawn-grass-ahoh2dpq-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 # Vercel Blob
-VERCEL_BLOB_READ_WRITE_TOKEN=vercel_blob_read_write_token_here
+VERCEL_BLOB_READ_WRITE_TOKEN=vercel_blob_rw_1AlIc3ApesIGLHil_hE5IvGS3hoyZX7YwYT1vC70hZp6A14
 
 # JWT Secret (CHANGE THIS IN PRODUCTION!)
-JWT_SECRET=change_this_to_a_random_64_char_string_in_production
+JWT_SECRET=krfyde3332rtt#R$%$ERE$ttttrtgffft234
 
 # Finnhub API (optional – for real market prices)
 FINNHUB_API_KEY=d9bqlapr01ql2jmt3ht0d9bqlapr01ql2jmt3htg
@@ -26,12 +26,12 @@ FINNHUB_API_KEY=d9bqlapr01ql2jmt3ht0d9bqlapr01ql2jmt3htg
 PORT=5000
 
 # Frontend URL (for CORS)
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5000
 `;
 
 // ─── FILE DEFINITIONS ───────────────────────────────────────────────
 const files = {
-  'index.html': '',   // ← USER FILLS MANUALLY
+  'index.html': '', // ← USER FILLS MANUALLY
 
   'package.json': JSON.stringify({
     name: 'alamquant-backend',
@@ -56,7 +56,8 @@ const files = {
       multer: '^1.4.5-lts.1',
       ws: '^8.14.2',
       'express-rate-limit': '^7.1.5',
-      helmet: '^7.0.0'
+      helmet: '^7.0.0',
+      'node-cron': '^3.0.3' // ← নতুন
     },
     devDependencies: {
       nodemon: '^3.0.1'
@@ -97,7 +98,7 @@ npm start
 - **Change after first login!**
 `,
 
-  // ── server.js (FINAL WITH CORS FIX) ─────────────────────────────────
+  // ── server.js (FINAL WITH CORS FIX + CRON + TRADE ENGINE) ──────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -106,6 +107,7 @@ const rateLimit = require('express-rate-limit');
 const http = require('http');
 const path = require('path');
 const { WebSocketServer } = require('ws');
+const cron = require('node-cron');
 
 dotenv.config();
 
@@ -113,7 +115,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-// ── WebSocket ────────────────────────────────────────────────────────
+// ── Imports ────────────────────────────────────────────────────────
+const { updateBlobCandles } = require('./cron/updateCandles');
+const { startTradeEngine } = require('./lib/tradeEngine');
+const { fetchLatestCandle } = require('./lib/binance');
+
+// ── WebSocket ──────────────────────────────────────────────────────
 const wss = new WebSocketServer({ server });
 const wsClients = new Set();
 
@@ -128,18 +135,17 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (every 2 seconds)
+// Simulated price stream (fallback) – will be overridden by Binance WS in frontend
 setInterval(() => {
-  const syms = ['AAPL','TSLA','GOOGL','MSFT','AMZN','BTCUSD','ETHUSD','EURUSD','GBPUSD','XAUUSD'];
+  const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
   syms.forEach(s => { prices[s] = +(100 + Math.random() * 300).toFixed(2); });
   broadcast({ type: 'price_update', prices, timestamp: Date.now() });
 }, 2000);
 
-// ── Middleware ────────────────────────────────────────────────────────
+// ── Middleware ─────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
 
-// Explicit CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -147,7 +153,6 @@ app.use(cors({
   credentials: false
 }));
 
-// Explicit OPTIONS handler for preflight requests
 app.options('*', (req, res) => {
   res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -165,7 +170,7 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
-// ── Routes ───────────────────────────────────────────────────────────
+// ── Routes ─────────────────────────────────────────────────────────
 app.use('/api/auth',       require('./routes/auth'));
 app.use('/api/subjects',   require('./routes/subjects'));
 app.use('/api/lessons',    require('./routes/lessons'));
@@ -177,6 +182,18 @@ app.use('/api/portfolio',  require('./routes/portfolio'));
 app.use('/api/upload',     require('./routes/upload'));
 app.use('/api/export',     require('./routes/export'));
 app.use('/api/import',     require('./routes/import'));
+
+// ── New endpoints ──────────────────────────────────────────────────
+app.get('/api/candle/latest/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const candle = await fetchLatestCandle(symbol);
+    if (candle) res.json(candle);
+    else res.status(404).json({ error: 'Candle not found' });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime(), wsClients: wsClients.size, timestamp: new Date().toISOString() });
@@ -190,20 +207,36 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ── Start ────────────────────────────────────────────────────────────
+// ── Cron Job: Update Blob every minute ──────────────────────────
+cron.schedule('* * * * *', async () => {
+  console.log('⏰ Running candle update cron...');
+  try {
+    await updateBlobCandles();
+    console.log('✅ Blob candles updated');
+  } catch (e) {
+    console.error('❌ Cron error:', e.message);
+  }
+});
+
+// ── Start Background Trade Engine ────────────────────────────────
+startTradeEngine();
+
+// ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(\`╔══════════════════════════════════════════╗\`);
   console.log(\`║  🚀 Alamquant Backend  v2.0.0          ║\`);
   console.log(\`║  📡 API:  http://localhost:\${PORT}/api     ║\`);
   console.log(\`║  🔌 WS:   ws://localhost:\${PORT}          ║\`);
   console.log(\`║  ❤️  Health: /api/health               ║\`);
+  console.log(\`║  🕐 Cron:  Every minute (Blob update)  ║\`);
+  console.log(\`║  ⚙️  Trade Engine: Active (SL/TP)       ║\`);
   console.log(\`╚══════════════════════════════════════════╝\`);
 });
 
 module.exports = { app, server, wss, broadcast };
 `,
 
-  // ── scripts/migrate.js (dotenv fix) ─────────────────────────────────
+  // ── scripts/migrate.js (unchanged) ──────────────────────────────────
   'scripts/migrate.js': `require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
@@ -324,7 +357,7 @@ async function createAdminPortfolio() {
 })();
 `,
 
-  // ─── scripts/create-admin.js ─────────────────────────────────────────
+  // ── scripts/create-admin.js (unchanged) ────────────────────────────
   'scripts/create-admin.js': `require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
@@ -366,7 +399,7 @@ async function createAdmin() {
 createAdmin();
 `,
 
-  // ─── lib/db.js ──────────────────────────────────────────────────────
+  // ── lib/db.js (unchanged) ──────────────────────────────────────────
   'lib/db.js': `const { neon } = require('@neondatabase/serverless');
 
 if (!process.env.DATABASE_URL) {
@@ -389,7 +422,7 @@ async function query(text, params = []) {
 module.exports = { query };
 `,
 
-  // ─── lib/blob.js ────────────────────────────────────────────────────
+  // ── lib/blob.js (UPDATED: added uploadCandles) ─────────────────────
   'lib/blob.js': `const { put, del, list } = require('@vercel/blob');
 
 const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN;
@@ -413,10 +446,21 @@ async function listFiles(prefix = 'certificates/') {
   return blobs.map(b => ({ url: b.url, size: b.size, uploadedAt: b.uploadedAt }));
 }
 
-module.exports = { uploadFile, deleteFile, listFiles };
+// ── NEW: Upload candles data to Blob ──────────────────────────────
+async function uploadCandles(symbol, candles, tf = 60) {
+  const key = \`candles_\${symbol}_\${tf}.json\`;
+  const blob = await put(key, JSON.stringify(candles), {
+    access: 'public',
+    contentType: 'application/json',
+    cacheControl: 'public, max-age=60'
+  });
+  return blob.url;
+}
+
+module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
 `,
 
-  // ─── lib/auth.js ────────────────────────────────────────────────────
+  // ── lib/auth.js (unchanged) ─────────────────────────────────────────
   'lib/auth.js': `const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { query } = require('./db');
@@ -475,32 +519,181 @@ module.exports = {
 };
 `,
 
-  // ─── lib/finnhub.js ────────────────────────────────────────────────
-  'lib/finnhub.js': `const API_KEY = process.env.FINNHUB_API_KEY;
+  // ── lib/binance.js (NEW) ──────────────────────────────────────────
+  'lib/binance.js': `const fetch = require('node-fetch');
 
-async function getRealTimePrice(symbol) {
-  if (!API_KEY) return +(100 + Math.random() * 300).toFixed(2);
+const BASE_URL = 'https://api.binance.com/api/v3';
+
+// Get latest completed M1 candle (last 2 candles, return the older one)
+async function fetchLatestCandle(symbol) {
   try {
-    const res = await fetch(\`https://finnhub.io/api/v1/quote?symbol=\${symbol}&token=\${API_KEY}\`);
-    if (!res.ok) throw new Error('API error');
+    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=1m&limit=2\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
     const data = await res.json();
-    if (data?.c > 0) return data.c;
-    throw new Error('No price');
-  } catch {
-    return +(100 + Math.random() * 300).toFixed(2);
+    if (data && data.length >= 2) {
+      const k = data[data.length - 2]; // the completed candle
+      return {
+        time: Math.floor(k[0] / 1000),
+        open: parseFloat(k[1]),
+        high: parseFloat(k[2]),
+        low: parseFloat(k[3]),
+        close: parseFloat(k[4]),
+        volume: parseFloat(k[5])
+      };
+    }
+    return null;
+  } catch (e) {
+    console.error('fetchLatestCandle error:', e.message);
+    return null;
   }
 }
 
-async function getMultiplePrices(symbols) {
-  const prices = {};
-  for (const s of symbols) prices[s] = await getRealTimePrice(s);
-  return prices;
+// Get current price
+async function fetchPrice(symbol) {
+  try {
+    const url = \`\${BASE_URL}/ticker/price?symbol=\${symbol}\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
+    const data = await res.json();
+    return parseFloat(data.price);
+  } catch (e) {
+    console.error('fetchPrice error:', e.message);
+    return null;
+  }
 }
 
-module.exports = { getRealTimePrice, getMultiplePrices };
+// Get last N candles (for initial load)
+async function fetchCandles(symbol, interval = '1m', limit = 10000) {
+  try {
+    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${limit}\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
+    const data = await res.json();
+    return data.map(k => ({
+      time: Math.floor(k[0] / 1000),
+      open: parseFloat(k[1]),
+      high: parseFloat(k[2]),
+      low: parseFloat(k[3]),
+      close: parseFloat(k[4]),
+      volume: parseFloat(k[5])
+    }));
+  } catch (e) {
+    console.error('fetchCandles error:', e.message);
+    return [];
+  }
+}
+
+module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
 `,
 
-  // ─── middleware/auth.js ──────────────────────────────────────────────
+  // ── lib/tradeEngine.js (NEW) ──────────────────────────────────────
+  'lib/tradeEngine.js': `const { query } = require('./db');
+const { fetchPrice } = require('./binance');
+
+// Check open trades and execute SL/TP
+async function checkAndExecuteSLTP() {
+  try {
+    // Get all users with open positions (holdings not empty)
+    const result = await query(\`
+      SELECT user_id, holdings, cash, transactions 
+      FROM portfolios 
+      WHERE holdings != '{}' AND holdings IS NOT NULL
+    \`);
+    const rows = result.rows || result;
+    if (!rows.length) return;
+
+    for (const row of rows) {
+      let holdings = typeof row.holdings === 'string' ? JSON.parse(row.holdings) : row.holdings;
+      let cash = parseFloat(row.cash);
+      let transactions = typeof row.transactions === 'string' ? JSON.parse(row.transactions) : row.transactions;
+      let changed = false;
+
+      for (const [symbol, data] of Object.entries(holdings)) {
+        const price = await fetchPrice(symbol);
+        if (!price) continue;
+        const isShort = data.qty < 0;
+        const qty = Math.abs(data.qty);
+
+        // Check SL
+        if (data.slPrice) {
+          if ((!isShort && price <= data.slPrice) || (isShort && price >= data.slPrice)) {
+            // Close position
+            if (data.qty > 0) cash += qty * price;
+            else cash += qty * price; // short: close short = buy back
+            transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date().toISOString(), reason: 'Stop Loss' });
+            delete holdings[symbol];
+            changed = true;
+            continue;
+          }
+        }
+        // Check TP
+        if (data.tpPrice) {
+          if ((!isShort && price >= data.tpPrice) || (isShort && price <= data.tpPrice)) {
+            if (data.qty > 0) cash += qty * price;
+            else cash += qty * price;
+            transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date().toISOString(), reason: 'Take Profit' });
+            delete holdings[symbol];
+            changed = true;
+          }
+        }
+      }
+
+      if (changed) {
+        await query(
+          'UPDATE portfolios SET cash = $1, holdings = $2, transactions = $3 WHERE user_id = $4',
+          [cash, JSON.stringify(holdings), JSON.stringify(transactions), row.user_id]
+        );
+      }
+    }
+  } catch (e) {
+    console.error('Trade engine error:', e.message);
+  }
+}
+
+let engineInterval = null;
+
+function startTradeEngine() {
+  if (engineInterval) clearInterval(engineInterval);
+  engineInterval = setInterval(checkAndExecuteSLTP, 5000);
+  console.log('⚙️ Trade engine started (SL/TP check every 5s)');
+}
+
+function stopTradeEngine() {
+  if (engineInterval) { clearInterval(engineInterval); engineInterval = null; }
+}
+
+module.exports = { checkAndExecuteSLTP, startTradeEngine, stopTradeEngine };
+`,
+
+  // ── cron/updateCandles.js (NEW) ──────────────────────────────────
+  'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
+const { uploadCandles } = require('../lib/blob');
+
+const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
+const LIMIT = 10000;
+
+async function updateBlobCandles() {
+  console.log('🔄 Updating blob candles...');
+  for (const symbol of SYMBOLS) {
+    try {
+      const candles = await fetchCandles(symbol, '1m', LIMIT);
+      if (candles && candles.length > 0) {
+        const url = await uploadCandles(symbol, candles, 60);
+        console.log(\`✅ Updated \${symbol} -> \${url}\`);
+      } else {
+        console.warn(\`⚠️ No candles for \${symbol}\`);
+      }
+    } catch (e) {
+      console.error(\`❌ Error updating \${symbol}:\`, e.message);
+    }
+  }
+}
+
+module.exports = { updateBlobCandles };
+`,
+
+  // ── middleware/auth.js (unchanged) ──────────────────────────────────
   'middleware/auth.js': `const { verifyToken } = require('../lib/auth');
 
 function authenticate(req, res, next) {
@@ -529,7 +722,7 @@ function optionalAuth(req, res, next) {
 module.exports = { authenticate, optionalAuth };
 `,
 
-  // ─── ROUTES ─────────────────────────────────────────────────────────
+  // ── ROUTES (ALL UNCHANGED) ────────────────────────────────────────
   'routes/auth.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const {
@@ -846,7 +1039,7 @@ module.exports = router;
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
-const { getRealTimePrice } = require('../lib/finnhub');
+const { fetchPrice } = require('../lib/binance'); // changed from finnhub to binance
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -863,7 +1056,8 @@ router.put('/', authenticate, async (req, res) => {
     let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
     let cash = parseFloat(p.cash);
-    const price = await getRealTimePrice(symbol);
+    const price = await fetchPrice(symbol);
+    if (!price) return res.status(500).json({ error: 'Could not fetch price' });
 
     if (type === 'buy') {
       const cost = qty * price;
@@ -900,7 +1094,8 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
     const h = holdings[req.params.symbol];
     if (!h) return res.status(404).json({ error: 'Holding not found' });
-    const price = await getRealTimePrice(req.params.symbol);
+    const price = await fetchPrice(req.params.symbol);
+    if (!price) return res.status(500).json({ error: 'Could not fetch price' });
     cash += h.qty * price;
     transactions.unshift({ type: 'sell', symbol: req.params.symbol, qty: h.qty, price, time: new Date().toISOString(), reason: 'Manual Exit' });
     delete holdings[req.params.symbol];
@@ -995,13 +1190,13 @@ module.exports = router;
 `,
 };
 
-// ─── FILE CREATION ENGINE ────────────────────────────────────────────
+// ─── FILE CREATION ENGINE ───────────────────────────────────────────
 function createProject() {
   console.log('\n╔══════════════════════════════════════════╗');
   console.log('║  🚀 Alamquant Backend Setup v2.0        ║');
   console.log('╚══════════════════════════════════════════╝\n');
 
-  const folders = ['routes', 'lib', 'middleware', 'scripts', 'uploads'];
+  const folders = ['routes', 'lib', 'middleware', 'scripts', 'cron', 'uploads'];
   folders.forEach(f => {
     const p = path.join(PROJECT_ROOT, f);
     if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
@@ -1026,7 +1221,9 @@ function createProject() {
   console.log('   3.  npm run migrate');
   console.log('   4.  npm start');
   console.log('\n📌 Default Admin:  admin / admin123');
-  console.log('📌 index.html তৈরি হয়েছে – এখন ম্যানুয়ালি পেস্ট করুন।\n');
+  console.log('📌 index.html is empty – paste your frontend code manually.');
+  console.log('📌 Cron job will update Blob every minute (if token set).');
+  console.log('📌 Trade engine (SL/TP) runs in background every 5s.\n');
 }
 
 // ─── EXECUTE ─────────────────────────────────────────────────────────

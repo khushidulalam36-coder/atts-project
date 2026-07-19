@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const http = require('http');
 const path = require('path');
 const { WebSocketServer } = require('ws');
+const cron = require('node-cron');
 
 dotenv.config();
 
@@ -13,7 +14,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-// ── WebSocket ────────────────────────────────────────────────────────
+// ── Imports ────────────────────────────────────────────────────────
+const { updateBlobCandles } = require('./cron/updateCandles');
+const { startTradeEngine } = require('./lib/tradeEngine');
+const { fetchLatestCandle } = require('./lib/binance');
+
+// ── WebSocket ──────────────────────────────────────────────────────
 const wss = new WebSocketServer({ server });
 const wsClients = new Set();
 
@@ -28,18 +34,17 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (every 2 seconds)
+// Simulated price stream (fallback) – will be overridden by Binance WS in frontend
 setInterval(() => {
-  const syms = ['AAPL','TSLA','GOOGL','MSFT','AMZN','BTCUSD','ETHUSD','EURUSD','GBPUSD','XAUUSD'];
+  const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
   syms.forEach(s => { prices[s] = +(100 + Math.random() * 300).toFixed(2); });
   broadcast({ type: 'price_update', prices, timestamp: Date.now() });
 }, 2000);
 
-// ── Middleware ────────────────────────────────────────────────────────
+// ── Middleware ─────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
 
-// Explicit CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -47,7 +52,6 @@ app.use(cors({
   credentials: false
 }));
 
-// Explicit OPTIONS handler for preflight requests
 app.options('*', (req, res) => {
   res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -65,7 +69,7 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
-// ── Routes ───────────────────────────────────────────────────────────
+// ── Routes ─────────────────────────────────────────────────────────
 app.use('/api/auth',       require('./routes/auth'));
 app.use('/api/subjects',   require('./routes/subjects'));
 app.use('/api/lessons',    require('./routes/lessons'));
@@ -77,6 +81,18 @@ app.use('/api/portfolio',  require('./routes/portfolio'));
 app.use('/api/upload',     require('./routes/upload'));
 app.use('/api/export',     require('./routes/export'));
 app.use('/api/import',     require('./routes/import'));
+
+// ── New endpoints ──────────────────────────────────────────────────
+app.get('/api/candle/latest/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const candle = await fetchLatestCandle(symbol);
+    if (candle) res.json(candle);
+    else res.status(404).json({ error: 'Candle not found' });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime(), wsClients: wsClients.size, timestamp: new Date().toISOString() });
@@ -90,13 +106,29 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ── Start ────────────────────────────────────────────────────────────
+// ── Cron Job: Update Blob every minute ──────────────────────────
+cron.schedule('* * * * *', async () => {
+  console.log('⏰ Running candle update cron...');
+  try {
+    await updateBlobCandles();
+    console.log('✅ Blob candles updated');
+  } catch (e) {
+    console.error('❌ Cron error:', e.message);
+  }
+});
+
+// ── Start Background Trade Engine ────────────────────────────────
+startTradeEngine();
+
+// ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(`╔══════════════════════════════════════════╗`);
   console.log(`║  🚀 Alamquant Backend  v2.0.0          ║`);
   console.log(`║  📡 API:  http://localhost:${PORT}/api     ║`);
   console.log(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
   console.log(`║  ❤️  Health: /api/health               ║`);
+  console.log(`║  🕐 Cron:  Every minute (Blob update)  ║`);
+  console.log(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
   console.log(`╚══════════════════════════════════════════╝`);
 });
 
