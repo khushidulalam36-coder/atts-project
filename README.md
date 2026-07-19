@@ -11,7 +11,7 @@ npm start
 | Variable | Description |
 |---|---|
 | DATABASE_URL | Neon DB PostgreSQL connection string |
-| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token (private store) |
+| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token (public store) |
 | JWT_SECRET | Secret key for JWT (change this!) |
 | PORT | Server port (default 5000) |
 | FRONTEND_URL | Frontend URL for CORS |

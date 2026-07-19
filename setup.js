@@ -1,5 +1,5 @@
 // ================================================================
-// SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel Blob Private)
+// SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel Blob Public)
 // All files created directly in current folder.
 // index.html will be empty – fill manually.
 // ================================================================
@@ -13,7 +13,7 @@ const PROJECT_ROOT = process.cwd();
 const ENV_TEMPLATE = `# Neon DB (PostgreSQL)
 DATABASE_URL=postgresql://neondb_owner:npg_dL7R2YzkygWM@ep-dawn-grass-ahoh2dpq-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
-# Vercel Blob (Private store – use proxy)
+# Vercel Blob (Public store – token still required for uploads)
 VERCEL_BLOB_READ_WRITE_TOKEN=vercel_blob_rw_1AlIc3ApesIGLHil_hE5IvGS3hoyZX7YwYT1vC70hZp6A14
 
 # JWT Secret (CHANGE THIS IN PRODUCTION!)
@@ -82,7 +82,7 @@ npm start
 | Variable | Description |
 |---|---|
 | DATABASE_URL | Neon DB PostgreSQL connection string |
-| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token (private store) |
+| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token (public store) |
 | JWT_SECRET | Secret key for JWT (change this!) |
 | PORT | Server port (default 5000) |
 | FRONTEND_URL | Frontend URL for CORS |
@@ -93,7 +93,7 @@ npm start
 - **Change after first login!**
 `,
 
-  // ── server.js (with proxy for private blob) ──────────────────────
+  // ── server.js (with proxy for public blob) ──────────────────────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -194,7 +194,7 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 Proxy endpoint to serve candles from private Blob store
+// 🔥 Proxy endpoint to serve candles from public Blob store (still requires token for get)
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -325,7 +325,7 @@ async function fetchCandles(symbol, interval = '1m', limit = 10000) {
 module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
 `,
 
-  // ── lib/blob.js (explicit token, private access) ────────────────
+  // ── lib/blob.js (uses public access) ────────────────────────────
   'lib/blob.js': `const { put, del, list } = require('@vercel/blob');
 
 const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
@@ -333,7 +333,7 @@ if (!TOKEN) console.warn('⚠️ VERCEL_BLOB_READ_WRITE_TOKEN not set. Uploads w
 
 function getBlobOptions() {
   return {
-    access: 'private',   // keep store private
+    access: 'public',   // ✅ store is public, so we must use public
     token: TOKEN,
     cacheControl: 'public, max-age=60'
   };
@@ -1251,7 +1251,7 @@ function createProject() {
   console.log('   4.  npm start');
   console.log('\n📌 Default Admin:  admin / admin123');
   console.log('📌 index.html is empty – paste your frontend code manually.');
-  console.log('📌 Cron job will update Blob every minute (private store via proxy).');
+  console.log('📌 Cron job will update Blob every minute (public store with token).');
   console.log('📌 Trade engine (SL/TP) runs in background every 5s.\n');
 }
 

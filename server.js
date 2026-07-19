@@ -98,7 +98,7 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 Proxy endpoint to serve candles from private Blob store
+// 🔥 Proxy endpoint to serve candles from public Blob store (still requires token for get)
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
