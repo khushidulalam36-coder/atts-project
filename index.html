@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
     <style>
-        /* ============================================================
-           ROOT VARIABLES & THEMES (সম্পূর্ণ)
-           ============================================================ */
         :root {
             --bg: #f4f6fa;
             --bg-secondary: #eef1f7;
@@ -59,6 +60,7 @@
             --mt5-chart-bg: #0b0f17;
             --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
         }
+
         [data-theme="dark"] {
             --bg: #0c1018;
             --bg-secondary: #131a25;
@@ -94,6 +96,7 @@
             --mt5-nav-active: #182030;
             --mt5-chart-bg: #080c14;
         }
+
         * {
             margin: 0;
             padding: 0;
@@ -2222,7 +2225,6 @@
                 padding: 1px 5px;
             }
         }
-        /* ─── ADMIN STYLES ────────────────────────────────────────── */
         .admin-container {
             display: flex;
             height: calc(100vh - 60px);
@@ -2382,7 +2384,6 @@
             transform: translateY(-1px);
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
-        /* Quill editor overrides for dark mode */
         [data-theme="dark"] .ql-toolbar {
             background: #1e293b !important;
             border-color: #334155 !important;
@@ -2411,10 +2412,6 @@
             background: #1e293b !important;
             border-color: #334155 !important;
         }
-
-        /* ============================================================
-           DEBUG PANEL STYLES (এখানেই সংযুক্ত)
-           ============================================================ */
         #debugToggle {
             position: fixed;
             bottom: 20px;
@@ -2428,7 +2425,7 @@
             height: 48px;
             font-size: 1.4rem;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -2514,10 +2511,18 @@
             text-align: right;
             word-break: break-all;
         }
-        .debug-item .value.ok { color: #10b981; }
-        .debug-item .value.err { color: #ef4444; }
-        .debug-item .value.warn { color: #f59e0b; }
-        .debug-item .value.info { color: #3b82f6; }
+        .debug-item .value.ok {
+            color: #10b981;
+        }
+        .debug-item .value.err {
+            color: #ef4444;
+        }
+        .debug-item .value.warn {
+            color: #f59e0b;
+        }
+        .debug-item .value.info {
+            color: #3b82f6;
+        }
         .debug-timestamp {
             font-size: 0.6rem;
             color: var(--text-muted);
@@ -2539,19 +2544,9 @@
 </head>
 <body>
     <div id="app"></div>
-
-    <!-- ============================================================
-         DEBUG PANEL – HTML
-         ============================================================ -->
-    <button id="debugToggle" title="Debug Panel">
-        🔍
-        <span class="badge" id="debugBadge">!</span>
-    </button>
+    <button id="debugToggle" title="Debug Panel">🔍<span class="badge" id="debugBadge">!</span></button>
     <div id="debugPanel">
-        <h3>
-            🛠️ Debug Console
-            <button id="debugClose">✕</button>
-        </h3>
+        <h3>🛠️ Debug Console<button id="debugClose">✕</button></h3>
         <div id="debugContent">
             <div class="debug-item"><span class="label">Neon DB</span><span class="value" id="dbStatus">Checking...</span></div>
             <div class="debug-item"><span class="label">Vercel Blob</span><span class="value" id="blobStatus">Checking...</span></div>
@@ -2565,10 +2560,6 @@
             <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
         </div>
     </div>
-
-    <!-- ============================================================
-         JAVASCRIPT – সম্পূর্ণ অ্যাপ্লিকেশন
-         ============================================================ -->
     <script>
         (function() {
             'use strict';
@@ -2581,7 +2572,6 @@
             const TOKEN_KEY = 'auth_token_v9';
             const USER_KEY = 'auth_user_v9';
             const PORTFOLIO_KEY = 'sim_portfolio_v9';
-            const CANDLE_PREFIX = 'sim_candles_';
 
             const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
                 'AVAXUSDT', 'DOTUSDT'
@@ -2611,7 +2601,6 @@
             let isAdmin = false;
             let portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
 
-            // ─── CHART / TRADING STATE ──────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
             let simChart = null;
             let simCandleSeries = null;
@@ -2655,10 +2644,7 @@
             let fsShowBottom = false;
             let simResizeObserver = null;
             let showVolume = true;
-            let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') ||
-                JSON.stringify(['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
-                    'AVAXUSDT', 'DOTUSDT'
-                ]));
+            let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || JSON.stringify(SYMBOLS));
 
             let binanceWS = null;
             let binanceReconnectTimer = null;
@@ -2832,7 +2818,7 @@
                     if (data && data.candles && data.candles.length > 0) {
                         const last = data.candles[data.candles.length - 1];
                         const now = Math.floor(Date.now() / 1000);
-                        if (now - last.time < 86400) { // 24 hours
+                        if (now - last.time < 86400) {
                             return data.candles;
                         }
                     }
@@ -2892,7 +2878,8 @@
 
             // ─── BINANCE WS + REST ──────────────────────────────────────────
             function connectBinanceWS() {
-                if (binanceWS && binanceWS.readyState === WebSocket.OPEN) return;
+                if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket.CONNECTING)) return;
+                if (binanceWS) { try { binanceWS.close(); } catch(e) {} }
                 const streams = SYMBOLS.map(s => s.toLowerCase() + '@trade').join('/');
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
@@ -2981,22 +2968,21 @@
                 return null;
             }
 
-            // ─── BLOB LOAD / SAVE ──────────────────────────────────────────
-  async function loadBlobCandles(symbol, tf) {
-  try {
-    // এখন ব্যাকএন্ডের মাধ্যমে আনা হবে
-    const url = `${API_BASE}/candles/${symbol}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Failed to fetch candles from API');
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
-    }
-  } catch (e) {
-    console.warn('Blob fetch via API failed:', e);
-  }
-  return null;
-}
+            // ─── BLOB LOAD / SAVE (through API proxy) ──────────────────────
+            async function loadBlobCandles(symbol, tf) {
+                try {
+                    const url = `${API_BASE}/candles/${symbol}`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('Failed to fetch candles from API');
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data;
+                    }
+                } catch (e) {
+                    console.warn('Blob fetch via API failed:', e);
+                }
+                return null;
+            }
 
             // ─── MERGE ENGINE ──────────────────────────────────────────────
             function mergeCandles(historical, latest) {
@@ -3015,7 +3001,6 @@
             }
 
             // ─── LAZY LOADING ──────────────────────────────────────────────
-            const LAZY_CHUNK_SIZE = 2000;
             let lazyAllCandles = [];
             let lazyVisibleStart = 0;
             let lazyVisibleEnd = 0;
@@ -3023,8 +3008,8 @@
             function initLazy(candles) {
                 lazyAllCandles = candles.slice();
                 const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, LAZY_CHUNK_SIZE);
-                lazyVisibleStart = Math.max(0, lazyVisibleEnd - LAZY_CHUNK_SIZE);
+                lazyVisibleEnd = Math.min(total, 2000);
+                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
@@ -3347,6 +3332,8 @@
 
             // ─── CHART INIT ──────────────────────────────────────────────────
             async function initChart() {
+                if (window._chartCleanup) window._chartCleanup();
+
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
                 if (!chartDiv) return;
@@ -3355,8 +3342,7 @@
                     return;
                 }
                 if (typeof LightweightCharts === 'undefined') {
-                    if (loadingEl) loadingEl.innerHTML =
-                        '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
+                    if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
                     return;
                 }
                 if (simChart) {
@@ -3369,13 +3355,12 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ─── Step 1: Load from IndexedDB ──────────────────────────
                 let candles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
                 let useCache = false;
                 if (candles && candles.length > 0) {
                     const last = candles[candles.length - 1];
                     const now = Math.floor(Date.now() / 1000);
-                    if (now - last.time < 86400) { // 24 hours
+                    if (now - last.time < 86400) {
                         useCache = true;
                         simAllCandles = candles;
                         const lastCandle = simAllCandles[simAllCandles.length - 1];
@@ -3387,7 +3372,6 @@
                 }
 
                 if (!useCache) {
-                    // ─── Step 2: Try Blob ──────────────────────────────────
                     let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
                     if (blobData && blobData.length > 0) {
                         simAllCandles = blobData;
@@ -3398,24 +3382,21 @@
                         }
                         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
                     } else {
-                        // ─── Step 3: Generate fallback ────────────────────
-                        let basePrice = lastBinancePrice[simCurrentSymbol];
+                        let basePrice = lastBinancePrice[simCurrentSymbol] || simLastPrices[simCurrentSymbol];
                         if (!basePrice) {
                             const price = await fetchBinancePrice(simCurrentSymbol);
                             if (price) basePrice = price;
                         }
-                        if (!basePrice) {
-                            basePrice = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 150;
+                        if (!basePrice || isNaN(basePrice)) {
+                            basePrice = simBasePrices[simCurrentSymbol] || 150;
                         }
-                        if (!basePrice || isNaN(basePrice)) basePrice = 150;
                         simLastPrices[simCurrentSymbol] = basePrice;
                         simBasePrices[simCurrentSymbol] = basePrice;
-                        simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
+                        simAllCandles = generateSimulatedCandles(simCurrentSymbol, 500, basePrice, currentTimeframe);
                         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
                     }
                 }
 
-                // ─── Step 4: Get latest from Binance REST ──────────────────
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     const exists = simAllCandles.some(c => c.time === latestCandle.time);
@@ -3431,22 +3412,19 @@
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
                 }
 
-                // ─── Step 5: If still no candles, generate emergency ──────
                 if (!simAllCandles || simAllCandles.length === 0) {
                     const basePrice = simBasePrices[simCurrentSymbol] || 150;
-                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 100, basePrice, currentTimeframe);
+                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
                 }
 
-                // ─── Step 6: Lazy Load ─────────────────────────────────────
                 const visible = initLazy(simAllCandles);
 
-                // ─── Step 7: Create current candle ─────────────────────────
                 const lastCandle = simAllCandles[simAllCandles.length - 1];
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
-                const closePrice = (lastCandle && lastCandle.close) ? lastCandle.close : simBasePrices[simCurrentSymbol] ||
-                    150;
+                const closePrice = (lastCandle && lastCandle.close) ? lastCandle.close : (simLastPrices[simCurrentSymbol] ||
+                    simBasePrices[simCurrentSymbol] || 150);
                 simCurrentCandle = {
                     time: currentMinute,
                     open: closePrice,
@@ -3457,7 +3435,6 @@
                 };
                 simLastPrices[simCurrentSymbol] = closePrice;
 
-                // ─── Step 8: Render chart ──────────────────────────────────
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? chartDiv.clientHeight : 420;
                 const isDark = appTheme === 'dark';
@@ -3504,31 +3481,24 @@
                 simVolumeSeries.setData(volData);
                 simChart.timeScale().fitContent();
 
-                // ─── Step 9: Restore indicators from DB ────────────────────
                 const savedInd = await loadIndicatorsFromDB();
                 if (savedInd && Object.keys(savedInd).length) {
                     activeIndicators = savedInd;
                     updateAllIndicators();
                     updateIndDropdownBtnState();
                 }
-
-                // ─── Step 10: Restore drawings ──────────────────────────────
                 const savedDraw = await loadDrawingsFromDB(simCurrentSymbol);
                 if (savedDraw && savedDraw.length) {
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                     portfolio.drawnLines[simCurrentSymbol] = savedDraw;
                     redrawAllLines();
                 }
-
-                // ─── Step 11: Restore chart state ──────────────────────────
                 const savedState = await loadChartStateFromDB(simCurrentSymbol);
                 if (savedState && savedState.zoom) {
                     try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                 }
 
-                // ─── Step 12: Drawing events ───────────────────────────────
                 simChart.subscribeClick(param => {
-                    if (dragState && dragState.active) return;
                     if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                     if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
                         const price = simCandleSeries.coordinateToPrice(param.point.y);
@@ -3540,7 +3510,7 @@
                                 label = 'Resistance'; } else { color = '#3b82f6';
                                 label = 'H-Line'; }
                             if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] =
-                                [];
+                            [];
                             portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color,
                                 label, style: 0 });
                             savePortfolioToStorage();
@@ -3553,7 +3523,6 @@
                     }
                 });
 
-                // ─── Drag to move lines ─────────────────────────────────────
                 let dragStateLocal = null;
                 const mousedownHandler = (e) => {
                     if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -3571,10 +3540,12 @@
                                 closestDist = dist; }
                         }
                     }
-                    if (closest) { dragStateLocal = { active: true, lineKey: closest.key, startPrice: closest
-                                .price, currentPrice: closest.price, origIndex: closest.index };
+                    if (closest) {
+                        dragStateLocal = { active: true, lineKey: closest.key, startPrice: closest.price,
+                            currentPrice: closest.price, origIndex: closest.index };
                         chartDiv.classList.add('dragging-line');
-                        e.preventDefault(); }
+                        e.preventDefault();
+                    }
                 };
                 chartDiv.addEventListener('mousedown', mousedownHandler);
                 chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
@@ -3590,8 +3561,8 @@
                         if (ml && ml.lineObj) {
                             try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
                             const newLine = simCandleSeries.createPriceLine({ price: dragStateLocal
-                                    .currentPrice, color: ml.color, lineWidth: 2, lineStyle: ml
-                                    .style || 0, axisLabelVisible: true, title: ml.label });
+                                    .currentPrice, color: ml.color, lineWidth: 2, lineStyle: ml.style || 0,
+                                axisLabelVisible: true, title: ml.label });
                             ml.lineObj = newLine;
                             allPriceLines[ml.key] = newLine;
                         }
@@ -3619,7 +3590,6 @@
                 document.addEventListener('mouseup', upHandler);
                 document.addEventListener('touchend', upHandler);
 
-                // ─── Step 13: Save chart state on zoom/scroll ──────────────
                 simChart.timeScale().subscribeVisibleTimeRangeChange(range => {
                     if (range) {
                         saveChartStateToDB(simCurrentSymbol, { zoom: range });
@@ -3629,12 +3599,10 @@
                 if (loadingEl) loadingEl.style.display = 'none';
                 redrawAllLines();
 
-                // ─── Step 14: Price update interval ─────────────────────────
                 if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                 simPriceIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
                     let price = simLastPrices[simCurrentSymbol];
-                    // If price is invalid, use a fallback
                     if (!price || isNaN(price)) {
                         const vol = simVolatility[simCurrentSymbol] || 0.0015;
                         const change = (simCurrentCandle.close || 100) * vol * (Math.random() - 0.48) * 0.8;
@@ -3642,15 +3610,13 @@
                         price = +price.toFixed(4);
                         simLastPrices[simCurrentSymbol] = price;
                     }
-                    // Ensure price is a valid number
                     if (isNaN(price) || !isFinite(price)) {
                         price = simCurrentCandle.close || simBasePrices[simCurrentSymbol] || 100;
                     }
                     simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
                     simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
                     simCurrentCandle.close = price;
-                    simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math.random() *
-                    3000);
+                    simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math.random() * 3000);
                     simCandleSeries.update(simCurrentCandle);
                     updateAllIndicators();
                     checkAndExecuteSLTP();
@@ -3658,7 +3624,6 @@
                     updateMobileTopBar();
                 }, 1000);
 
-                // ─── Step 15: Candle close interval ─────────────────────────
                 if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                 simCandleCloseIntervalId = setInterval(() => {
                     if (!simCurrentCandle || !simCandleSeries) return;
@@ -3682,12 +3647,9 @@
                     }
                 }, 10000);
 
-                // ─── Step 16: Resize ────────────────────────────────────────
                 const debouncedResize = debounce(() => {
                     if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                        simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                .clientHeight });
-                        simChart.timeScale().fitContent();
+                        simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
                     }
                 }, 100);
                 simResizeObserver = new ResizeObserver(debouncedResize);
@@ -3704,15 +3666,12 @@
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     if (simResizeObserver) simResizeObserver.disconnect();
                 };
-
-                updateDebugPanel();
             }
 
             // ─── REDRAW LINES ────────────────────────────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
-                Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (
-                    e) {} });
+                Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
                 allPriceLines = {};
                 manualDrawnLines = [];
                 const symbolLines = (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) || [];
@@ -3721,8 +3680,8 @@
                         lineWidth: 2, lineStyle: l.style || 0, axisLabelVisible: true, title: l.label || '' });
                     const key = 'manual_' + idx;
                     allPriceLines[key] = line;
-                    manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l
-                            .style, lineObj: line, index: idx });
+                    manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style,
+                        lineObj: line, index: idx });
                 });
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
@@ -3762,7 +3721,7 @@
                         '<span style="color:var(--text-muted);font-size:0.68rem;">No drawn lines</span>'; return; }
                 el.innerHTML = lines.map((l, i) =>
                     `<div class="line-manager-row"><span class="line-dot" style="background:${l.color || '#3b82f6'};"></span><span style="flex:1;">${l.label || 'Line'} — $${l.price.toFixed(4)}</span><button class="line-delete-btn" onclick="deleteSingleLine(${i})" title="Delete">×</button></div>`
-                    ).join('');
+                ).join('');
             }
 
             function setDrawingTool(tool, btnId) {
@@ -3780,7 +3739,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const price = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (!price || isNaN(price)) continue;
+                    if (isNaN(price) || price <= 0) continue;
                     const isShort = h.qty < 0;
                     if (h.slPrice) {
                         if ((!isShort && price <= h.slPrice) || (isShort && price >= h.slPrice)) {
@@ -3808,9 +3767,12 @@
                         }
                     }
                 }
-                if (changed) { savePortfolioToStorage();
+                if (changed) {
+                    savePortfolioToStorage();
                     updateSimUI();
-                    redrawAllLines(); }
+                    redrawAllLines();
+                    syncPortfolioToServer();
+                }
             }
 
             let bgEngineInterval = null;
@@ -3825,6 +3787,22 @@
             function stopBackgroundEngine() {
                 if (bgEngineInterval) { clearInterval(bgEngineInterval);
                     bgEngineInterval = null; }
+            }
+
+            // ─── SERVER SYNC ─────────────────────────────────────────────────
+            async function syncPortfolioToServer() {
+                if (!token) return;
+                try {
+                    await apiFetch('/portfolio', {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            cash: portfolio.cash,
+                            holdings: portfolio.holdings,
+                            transactions: portfolio.transactions.slice(-50),
+                            drawnLines: portfolio.drawnLines
+                        })
+                    });
+                } catch (e) { console.warn('Portfolio sync error:', e.message); }
             }
 
             // ─── UI UPDATES ──────────────────────────────────────────────────
@@ -3859,20 +3837,20 @@
                     const val = Math.abs(h.qty) * cp;
                     const isShort = h.qty < 0;
                     return `<tr><td><strong>${sym}</strong> ${isShort ? '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.65rem;">LONG</span>'}</td><td>${Math.abs(h.qty)}</td><td><span class="entry-badge">$${(h.avgPrice || 0).toFixed(4)}</span></td><td>$${cp.toFixed(4)}</td><td>${h.slPrice ? '<span class="sl-badge">$' + h.slPrice.toFixed(4) + '</span>' : '—'}</td><td>${h.tpPrice ? '<span class="tp-badge">$' + h.tpPrice.toFixed(4) + '</span>' : '—'}</td><td>$${val.toFixed(2)}</td><td style="display:flex;gap:4px;"><button class="btn-exit" onclick="exitPosition('${sym}')"><i class="fas fa-times"></i> Exit</button><button class="btn btn-sm btn-outline" onclick="editSLTP('${sym}')"><i class="fas fa-sliders-h"></i></button></td></tr>`;
-                }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
+                }).join('') ||
+                    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
                 if (tbody) tbody.innerHTML = rowsHTML;
                 if (fsTbody) fsTbody.innerHTML = rowsHTML;
                 const histEl = document.getElementById('simHistoryList');
                 if (histEl) histEl.innerHTML =
                     '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' + (portfolio
                         .transactions || []).slice(0, 25).map(t =>
-                        `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : 'var(--mt5-blue)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}</li>`
+                        `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : 'var(--mt5-blue)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}</li>`
                     ).join('') + '</ul>';
                 updateSimUIFullscreen();
                 savePortfolioToStorage();
                 if (window.innerWidth <= 768) { renderMobileTradeSummary();
                     updateMobileTopBar(); }
-                updateDebugPanel();
             }
 
             function updateSimUIFullscreen() {
@@ -3923,12 +3901,16 @@
             // ─── TRADE ACTIONS ────────────────────────────────────────────────
             async function placeSimOrder(type) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
-                const qty = parseFloat(document.getElementById('simQty')?.value) || 1;
-                const slVal = parseFloat(document.getElementById('simSL')?.value);
-                const tpVal = parseFloat(document.getElementById('simTP')?.value);
+                const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
                 let price = simLastPrices[symbol];
                 if (!price || isNaN(price) || price <= 0) price = simBasePrices[symbol] || 150;
+
+                if (type === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
+                    const requiredMargin = qty * price * 0.5;
+                    if ((portfolio.cash || 0) < requiredMargin) return showToast('❌ Insufficient margin for short');
+                }
+
                 if (type === 'buy') {
                     const cost = qty * price;
                     if ((portfolio.cash || 0) < cost) return showToast('❌ Insufficient cash');
@@ -3941,27 +3923,19 @@
                             if (h.qty === 0) delete portfolio.holdings[symbol];
                             portfolio.transactions.unshift({ type: 'buy', symbol, qty: closeQty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Close Short' });
-                            showToast('🔄 Closed ' + closeQty + ' short ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             const totalCost = qty * price;
                             const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
                             h.qty += qty;
                             h.avgPrice = newAvg;
                             h.entryPrice = newAvg;
-                            if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
-                            if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
                             portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                                 time: new Date().toLocaleTimeString() });
-                            showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     } else {
-                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price,
-                        entryPrice: price };
-                        if (!isNaN(slVal) && slVal > 0) portfolio.holdings[symbol].slPrice = slVal;
-                        if (!isNaN(tpVal) && tpVal > 0) portfolio.holdings[symbol].tpPrice = tpVal;
+                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
                         portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                             time: new Date().toLocaleTimeString() });
-                        showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     }
                     playTradeSound('buy');
                 } else {
@@ -3973,28 +3947,20 @@
                         if (h.qty === 0) delete portfolio.holdings[symbol];
                         portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                             time: new Date().toLocaleTimeString(), reason: 'Close Long' });
-                        showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     } else {
                         if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
                             const h = portfolio.holdings[symbol];
-                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) +
-                                qty);
+                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) + qty);
                             h.qty -= qty;
                             h.avgPrice = newAvg;
                             h.entryPrice = newAvg;
-                            if (!isNaN(slVal) && slVal > 0) h.slPrice = slVal;
-                            if (!isNaN(tpVal) && tpVal > 0) h.tpPrice = tpVal;
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Add Short' });
-                            showToast('🔻 Added short ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
                                 entryPrice: price };
-                            if (!isNaN(slVal) && slVal > 0) portfolio.holdings[symbol].slPrice = slVal;
-                            if (!isNaN(tpVal) && tpVal > 0) portfolio.holdings[symbol].tpPrice = tpVal;
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Short' });
-                            showToast('🔻 Shorted ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     }
                     playTradeSound('sell');
@@ -4002,12 +3968,9 @@
                 savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
-                document.getElementById('simSL').value = '';
-                document.getElementById('simTP').value = '';
-                document.querySelectorAll('.modal').forEach(m => {
-                    if (m.querySelector('h3')?.textContent?.includes('TRADE')) m.remove();
-                });
-                updateDebugPanel();
+                syncPortfolioToServer();
+                document.querySelectorAll('.modal').forEach(m => { if (m.querySelector('h3')?.textContent?.includes(
+                        'TRADE')) m.remove(); });
             }
 
             async function exitPosition(symbol) {
@@ -4022,10 +3985,10 @@
                 savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
+                syncPortfolioToServer();
                 playTradeSound('sell');
                 showToast('🚪 Exited ' + symbol + ' @ $' + price.toFixed(4));
                 document.querySelectorAll('.modal').forEach(m => m.remove());
-                updateDebugPanel();
             }
 
             function editSLTP(symbol) {
@@ -4033,8 +3996,8 @@
                 if (!h) return;
                 const modal = document.createElement('div');
                 modal.className = 'modal';
-                modal.innerHTML =
-                    `<div class="modal-content"><h3>Edit SL/TP — ${symbol}</h3><label>Stop Loss ($) <input type="number" id="editSL" value="${h.slPrice || ''}" step="0.0001"></label><label>Take Profit ($) <input type="number" id="editTP" value="${h.tpPrice || ''}" step="0.0001"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
+                modal.innerHTML = `
+                    <div class="modal-content"><h3>Edit SL/TP — ${symbol}</h3><label>Stop Loss ($) <input type="number" id="editSL" value="${h.slPrice || ''}" step="0.0001"></label><label>Take Profit ($) <input type="number" id="editTP" value="${h.tpPrice || ''}" step="0.0001"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveSLTP').onclick = () => {
@@ -4045,6 +4008,7 @@
                     savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
+                    syncPortfolioToServer();
                     modal.remove();
                     showToast('✅ SL/TP updated');
                 };
@@ -4059,17 +4023,16 @@
                     savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
+                    syncPortfolioToServer();
                     showToast('🔄 Portfolio reset ($100,000)');
-                    updateDebugPanel();
                 }
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             let currentMobileLot = 0.01;
 
-            function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot);
-                const el = document.getElementById('mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(
-                2); }
+            function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot); const el = document.getElementById(
+                    'mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(2); }
 
             function changeMobileLot(delta) { const newLot = Math.max(0.01, currentMobileLot + delta * 0.01);
                 setMobileLot(+(newLot.toFixed(2))); }
@@ -4082,11 +4045,17 @@
                 if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(4);
             }
 
-            function placeSimOrderMobile(side, qty) {
+            async function placeSimOrderMobile(side, qty) {
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
                 if (!price || isNaN(price)) price = 150;
                 if (!portfolio) portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+
+                if (side === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
+                    const requiredMargin = qty * price * 0.5;
+                    if ((portfolio.cash || 0) < requiredMargin) return showToast('Insufficient margin for short');
+                }
+
                 if (side === 'buy') {
                     const cost = qty * price;
                     if ((portfolio.cash || 0) < cost) return showToast('Insufficient cash');
@@ -4099,7 +4068,6 @@
                             if (h.qty === 0) delete portfolio.holdings[symbol];
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Close Short' });
-                            showToast('🔄 Closed ' + closeQty + ' short ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             const totalCost = qty * price;
                             const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
@@ -4108,14 +4076,11 @@
                             h.entryPrice = newAvg;
                             portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                                 time: new Date().toLocaleTimeString() });
-                            showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     } else {
-                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price,
-                        entryPrice: price };
+                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
                         portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
                             time: new Date().toLocaleTimeString() });
-                        showToast('✅ Bought ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     }
                     playTradeSound('buy');
                 } else {
@@ -4127,24 +4092,20 @@
                         if (h.qty === 0) delete portfolio.holdings[symbol];
                         portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
                             time: new Date().toLocaleTimeString(), reason: 'Close Long' });
-                        showToast('✅ Sold ' + closeQty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                     } else {
                         if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
                             let h = portfolio.holdings[symbol];
-                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) +
-                                qty);
+                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) + qty);
                             h.qty -= qty;
                             h.avgPrice = newAvg;
                             h.entryPrice = newAvg;
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Add Short' });
-                            showToast('🔻 Added short ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         } else {
                             portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
                                 entryPrice: price };
                             portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
                                 time: new Date().toLocaleTimeString(), reason: 'Short' });
-                            showToast('🔻 Shorted ' + qty + ' × ' + symbol + ' @ $' + price.toFixed(4));
                         }
                     }
                     playTradeSound('sell');
@@ -4153,9 +4114,9 @@
                 updateSimUI();
                 updateMobileTopBar();
                 renderMobileTradeSummary();
+                syncPortfolioToServer();
                 document.getElementById('mobileSellBtn')?.blur();
                 document.getElementById('mobileBuyBtn')?.blur();
-                updateDebugPanel();
             }
 
             function renderMobileTradeSummary() {
@@ -4180,6 +4141,7 @@
                             ${h.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${h.slPrice.toFixed(4)}</span></div>` : ''}
                             ${h.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${h.tpPrice.toFixed(4)}</span></div>` : ''}
                             <button class="exit-btn" onclick="exitPosition('${sym}')">Exit Position</button>
+                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="openMobileSLTPModal('${sym}')">SL/TP</button>
                         </div>`;
                     });
                 }
@@ -4197,6 +4159,34 @@
                 panel.innerHTML = html;
             }
 
+            function openMobileSLTPModal(sym) {
+                const h = portfolio.holdings[sym];
+                if (!h) return;
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.zIndex = '250';
+                modal.innerHTML = `
+                    <div class="modal-content"><h3>Set SL/TP — ${sym}</h3>
+                    <label>Stop Loss ($) <input type="number" id="mobSL" value="${h.slPrice || ''}" step="0.0001"></label>
+                    <label>Take Profit ($) <input type="number" id="mobTP" value="${h.tpPrice || ''}" step="0.0001"></label>
+                    <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="mobSaveSLTP">💾 Save</button></div></div>`;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+                document.getElementById('mobSaveSLTP').onclick = () => {
+                    const sl = parseFloat(document.getElementById('mobSL').value);
+                    const tp = parseFloat(document.getElementById('mobTP').value);
+                    h.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
+                    h.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
+                    savePortfolioToStorage();
+                    updateSimUI();
+                    redrawAllLines();
+                    syncPortfolioToServer();
+                    modal.remove();
+                    renderMobileTradeSummary();
+                    showToast('✅ SL/TP updated');
+                };
+            }
+
             function depositFunds() {
                 const amt = parseFloat(document.getElementById('depositAmount')?.value);
                 if (!amt || amt <= 0) return showToast('Invalid amount');
@@ -4206,8 +4196,8 @@
                 savePortfolioToStorage();
                 updateSimUI();
                 renderMobileTradeSummary();
+                syncPortfolioToServer();
                 showToast('💰 Deposited $' + amt.toFixed(2));
-                updateDebugPanel();
             }
 
             function withdrawFunds() {
@@ -4220,8 +4210,8 @@
                 savePortfolioToStorage();
                 updateSimUI();
                 renderMobileTradeSummary();
+                syncPortfolioToServer();
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
-                updateDebugPanel();
             }
 
             function renderMobileWatchlist() {
@@ -4248,7 +4238,8 @@
                 if (!panel) return;
                 const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
                 const filtered = query ? list.filter(s => s.toLowerCase().includes(query.toLowerCase())) : list;
-                panel.innerHTML = `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
+                panel.innerHTML =
+                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
                     filtered.map(sym => {
                         const price = simLastPrices[sym] || simBasePrices[sym] || '-';
                         const change = (Math.random() * 4 - 2);
@@ -4281,14 +4272,14 @@
                     }
                 });
                 showToast('📊 Switched to ' + sym);
-                updateDebugPanel();
             }
 
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
                 const transactions = portfolio.transactions || [];
-                let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Transaction History</h4>';
+                let html =
+                    '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Transaction History</h4>';
                 if (transactions.length === 0) {
                     html += '<div style="color:var(--mt5-text);padding:10px 0;">No transactions</div>';
                 } else {
@@ -4393,7 +4384,7 @@
                 connectBinanceWS();
             }
 
-            // ─── DESKTOP TERMINAL ────────────────────────────────────────────
+            // ─── DESKTOP TERMINAL ──────────────────────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
@@ -4442,9 +4433,16 @@
                             </div>
                             <div class="trade-panel">
                                 <select id="simSymbolSelect2">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <input type="number" id="simQty" placeholder="Qty" value="1" min="0.01" step="0.01">
-                                <input type="number" id="simSL" placeholder="SL $" step="0.0001">
-                                <input type="number" id="simTP" placeholder="TP $" step="0.0001">
+                                <div style="display:flex;align-items:center;gap:4px;">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(-0.01)">▼</button>
+                                    <input type="number" id="simQty" value="0.01" min="0.01" step="0.01" style="width:60px;text-align:center;">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(0.01)">▲</button>
+                                    <div class="mt5-lot-presets" style="margin-left:4px;">
+                                        <button onclick="setDesktopLot(0.01)" style="padding:1px 4px;font-size:0.6rem;">0.01</button>
+                                        <button onclick="setDesktopLot(0.10)" style="padding:1px 4px;font-size:0.6rem;">0.10</button>
+                                        <button onclick="setDesktopLot(1.00)" style="padding:1px 4px;font-size:0.6rem;">1.00</button>
+                                    </div>
+                                </div>
                                 <button class="btn-buy" onclick="placeSimOrder('buy')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell')"><i class="fas fa-money-bill-wave"></i> Sell</button>
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
@@ -4465,14 +4463,11 @@
                             <div class="simulator-history" id="simHistoryList"></div>
                         </div>
                     </div>`;
-                // Bind events
                 document.getElementById('simSymbolSelect').onchange = function() { simCurrentSymbol = this.value;
-                    resetChart();
-                    updateDebugPanel(); };
+                    resetChart(); };
                 document.getElementById('simSymbolSelect2').onchange = function() { simCurrentSymbol = this.value;
                     document.getElementById('simSymbolSelect').value = simCurrentSymbol;
-                    resetChart();
-                    updateDebugPanel(); };
+                    resetChart(); };
                 document.getElementById('tfSelect').onchange = function() { currentTimeframe = parseInt(this.value);
                     resetChart(); };
                 const indDropdownBtn = document.getElementById('indDropdownBtn');
@@ -4485,8 +4480,7 @@
                     function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
                         updateIndDropdownBtnState();
-                        saveIndicatorsToDB(activeIndicators);
-                        updateDebugPanel(); }; });
+                        saveIndicatorsToDB(activeIndicators); }; });
                 document.getElementById('volumeToggle').onchange = function() { showVolume = this.checked;
                     updateAllIndicators(); };
                 document.getElementById('drawSupportBtn').onclick = () => setDrawingTool('support', 'drawSupportBtn');
@@ -4498,23 +4492,26 @@
                         savePortfolioToStorage();
                         saveDrawingsToDB(simCurrentSymbol, []);
                         redrawAllLines();
-                        showToast('🗑 Lines cleared');
-                        updateDebugPanel(); } };
+                        showToast('🗑 Lines cleared'); } };
                 document.getElementById('chartFullscreenBtn').onclick = () => {
                     document.getElementById('terminalWrapper').classList.add('fullscreen-active');
                     fsShowBottom = false;
                     document.getElementById('fsBottomPanel').classList.remove('show');
                     setTimeout(() => { if (simChart && simCandleSeries) { const chartDiv2 = document
-                                .getElementById('simChartContainer'); if (chartDiv2 && chartDiv2
-                                .clientWidth > 0) { simChart.applyOptions({ width: chartDiv2
-                                    .clientWidth, height: chartDiv2.clientHeight });
-                                simChart.timeScale().fitContent(); } }
-                        updateSimUIFullscreen(); }, 300);
+                            .getElementById('simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth >
+                            0) { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
+                                    .clientHeight }); } } updateSimUIFullscreen(); }, 300);
                 };
-                setTimeout(() => {
-                    requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
-                }, 100);
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
                 updateSimUI();
+
+                window.changeDesktopLot = function(delta) {
+                    const input = document.getElementById('simQty');
+                    let val = parseFloat(input.value) || 0.01;
+                    val = Math.max(0.01, val + delta);
+                    input.value = +val.toFixed(2);
+                };
+                window.setDesktopLot = function(val) { document.getElementById('simQty').value = val; };
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -4579,213 +4576,127 @@
                         </div>
                         <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
                             <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
-                                <div class="close-area">
-                                    <button id="mt5SidebarClose"><i class="fas fa-times"></i></button>
-                                </div>
-                                <div class="user-info">
-                                    <div class="avatar">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</div>
-                                    <div class="details">
-                                        <div class="name">${currentUser?.username || 'User'}</div>
-                                        <div class="balance">Balance: $${(portfolio.cash || 0).toFixed(2)} | Equity: $${calcEquity().toFixed(2)}</div>
-                                    </div>
-                                </div>
+                                <div class="close-area"><button id="mt5SidebarClose"><i class="fas fa-times"></i></button></div>
+                                <div class="user-info"><div class="avatar">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</div><div class="details"><div class="name">${currentUser?.username || 'User'}</div><div class="balance">Balance: $${(portfolio.cash || 0).toFixed(2)} | Equity: $${calcEquity().toFixed(2)}</div></div></div>
                                 <h4>📈 Indicators</h4>
                                 <div class="sidebar-indicators">
-                                    ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `
-                                        <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>
-                                    `).join('')}
+                                    ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>`).join('')}
                                     <label><input type="checkbox" id="sidebarVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
                                 </div>
                                 <h4>⏱ Timeframes</h4>
-                                <div class="timeframe-grid">
-                                    ${Object.keys(TIMEFRAMES).map(k => `<button data-tf="${TIMEFRAMES[k]}">${k}</button>`).join('')}
-                                </div>
+                                <div class="timeframe-grid">${Object.keys(TIMEFRAMES).map(k => `<button data-tf="${TIMEFRAMES[k]}">${k}</button>`).join('')}</div>
                                 <h4>🎨 Theme</h4>
-                                <div class="theme-row">
-                                    <button id="sidebarLightTheme">☀️ Light</button>
-                                    <button id="sidebarDarkTheme">🌙 Dark</button>
-                                </div>
-                                <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);">
-                                    <button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button>
-                                </div>
+                                <div class="theme-row"><button id="sidebarLightTheme">☀️ Light</button><button id="sidebarDarkTheme">🌙 Dark</button></div>
+                                <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button></div>
                             </div>
                         </div>
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
                             <div class="mt5-indicator-sheet" id="mt5IndicatorSheet">
                                 <h3>📊 Indicators</h3>
-                                ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `
-                                    <label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>
-                                `).join('')}
-                                <hr>
-                                <label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
-                                <div style="margin-top:16px;display:flex;gap:8px;">
-                                    <button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button>
-                                </div>
+                                ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>`).join('')}
+                                <hr><label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
+                                <div style="margin-top:16px;display:flex;gap:8px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button></div>
                             </div>
                         </div>
                     </div>`;
-                // Bind mobile events
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
                 document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
                 document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
-                sidebarOverlay.addEventListener('click', function(e) {
-                    if (e.target === this) this.classList.remove('show');
-                });
-                document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => {
-                    cb.onchange = function() {
-                        activeIndicators[this.dataset.ind] = this.checked;
+                sidebarOverlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove(
+                        'show'); });
+                document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => { cb.onchange =
+                    function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
                         saveIndicatorsToDB(activeIndicators);
-                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(ocb => {
-                            if (ocb.dataset.ind === this.dataset.ind) ocb.checked = this.checked;
-                        });
-                        updateDebugPanel();
-                    };
-                });
-                document.getElementById('sidebarVolumeToggle').onchange = function() {
-                    showVolume = this.checked;
+                        document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(ocb => { if (
+                                ocb.dataset.ind === this.dataset.ind) ocb.checked = this.checked; }); }; });
+                document.getElementById('sidebarVolumeToggle').onchange = function() { showVolume = this.checked;
                     document.getElementById('mobileVolumeToggle').checked = showVolume;
-                    updateAllIndicators();
-                };
+                    updateAllIndicators(); };
                 document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
                     sidebarOverlay.classList.remove('show'); };
                 document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
                     sidebarOverlay.classList.remove('show'); };
-                document.querySelectorAll('.timeframe-grid button').forEach(b => {
-                    b.onclick = function() {
-                        const tf = parseInt(this.dataset.tf);
+                document.querySelectorAll('.timeframe-grid button').forEach(b => { b.onclick = function() { const tf =
+                            parseInt(this.dataset.tf);
                         currentTimeframe = tf;
                         document.getElementById('mt5TfSelect').value = tf;
-                        document.getElementById('mobileTfDisplay').textContent = Object.keys(
-                            TIMEFRAMES).find(k => TIMEFRAMES[k] === tf);
+                        document.getElementById('mobileTfDisplay').textContent = Object.keys(TIMEFRAMES).find(k =>
+                            TIMEFRAMES[k] === tf);
                         resetChart();
-                        sidebarOverlay.classList.remove('show');
-                    };
-                });
+                        sidebarOverlay.classList.remove('show'); }; });
                 const indicatorOverlay = document.getElementById('mt5IndicatorOverlay');
                 document.getElementById('mt5IndicatorBtn').onclick = (e) => { e.stopPropagation();
                     indicatorOverlay.classList.toggle('show'); };
                 document.getElementById('closeIndicatorSheet').onclick = () => indicatorOverlay.classList.remove('show');
-                indicatorOverlay.addEventListener('click', function(e) {
-                    if (e.target === this) this.classList.remove('show');
-                });
-                document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => {
-                    cb.onchange = function() {
-                        activeIndicators[this.dataset.ind] = this.checked;
+                indicatorOverlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove(
+                        'show'); });
+                document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => { cb.onchange =
+                    function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
                         saveIndicatorsToDB(activeIndicators);
-                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(scb => {
-                            if (scb.dataset.ind === this.dataset.ind) scb.checked = this.checked;
-                        });
-                        updateDebugPanel();
-                    };
-                });
-                document.getElementById('mobileVolumeToggle').onchange = function() {
-                    showVolume = this.checked;
+                        document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(scb => { if (
+                                scb.dataset.ind === this.dataset.ind) scb.checked = this.checked; }); }; });
+                document.getElementById('mobileVolumeToggle').onchange = function() { showVolume = this.checked;
                     document.getElementById('sidebarVolumeToggle').checked = showVolume;
-                    updateAllIndicators();
-                };
-                document.getElementById('mt5TfSelect').onchange = function() {
-                    currentTimeframe = parseInt(this.value);
+                    updateAllIndicators(); };
+                document.getElementById('mt5TfSelect').onchange = function() { currentTimeframe = parseInt(this.value);
                     document.getElementById('mobileTfDisplay').textContent = Object.keys(TIMEFRAMES).find(k =>
                         TIMEFRAMES[k] === currentTimeframe);
-                    resetChart();
-                };
+                    resetChart(); };
                 document.getElementById('lotDownBtn').onclick = () => changeMobileLot(-1);
                 document.getElementById('lotUpBtn').onclick = () => changeMobileLot(1);
-                document.querySelectorAll('.mt5-lot-presets button').forEach(b => {
-                    b.onclick = () => setMobileLot(parseFloat(b.dataset.lot));
-                });
-                document.getElementById('mobileSellBtn').onclick = () => {
-                    const qty = currentMobileLot;
-                    placeSimOrderMobile('sell', qty);
-                };
-                document.getElementById('mobileBuyBtn').onclick = () => {
-                    const qty = currentMobileLot;
-                    placeSimOrderMobile('buy', qty);
-                };
+                document.querySelectorAll('.mt5-lot-presets button').forEach(b => { b.onclick = () =>
+                        setMobileLot(parseFloat(b.dataset.lot)); });
+                document.getElementById('mobileSellBtn').onclick = () => { placeSimOrderMobile('sell',
+                        currentMobileLot); };
+                document.getElementById('mobileBuyBtn').onclick = () => { placeSimOrderMobile('buy',
+                        currentMobileLot); };
                 const navItems = document.querySelectorAll('.mt5-nav-item');
                 const panelsDiv = document.getElementById('mobilePanels');
-                navItems.forEach(item => {
-                    item.onclick = () => {
-                        navItems.forEach(n => n.classList.remove('active'));
+                navItems.forEach(item => { item.onclick = () => { navItems.forEach(n => n.classList.remove(
+                            'active'));
                         item.classList.add('active');
                         const panel = item.dataset.panel;
-                        if (panel === 'chart') {
-                            panelsDiv.classList.remove('show');
-                        } else {
-                            panelsDiv.classList.add('show');
+                        if (panel === 'chart') { panelsDiv.classList.remove('show'); } else { panelsDiv
+                                .classList.add('show');
                             document.querySelectorAll('.panel-content').forEach(p => p.style.display =
                                 'none');
                             const activePanel = document.getElementById(panel + 'Panel');
                             if (activePanel) activePanel.style.display = 'block';
                             if (panel === 'quotes') renderMobileWatchlist();
                             else if (panel === 'trade') renderMobileTradeSummary();
-                            else if (panel === 'history') renderMobileHistory();
-                        }
-                        setTimeout(() => {
-                            if (simChart) {
-                                const chartDiv2 = document.getElementById('simChartContainer');
-                                if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2
-                                    .clientHeight > 0) {
-                                    simChart.applyOptions({ width: chartDiv2.clientWidth,
-                                        height: chartDiv2.clientHeight });
-                                    simChart.timeScale().fitContent();
-                                }
-                            }
-                        }, 150);
-                    };
-                });
-                setTimeout(() => {
-                    requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
-                }, 200);
+                            else if (panel === 'history') renderMobileHistory(); }
+                        setTimeout(() => { if (simChart) { const chartDiv2 = document.getElementById(
+                                'simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth > 0 &&
+                                chartDiv2.clientHeight > 0) { simChart.applyOptions({ width: chartDiv2
+                                        .clientWidth, height: chartDiv2.clientHeight }); } } }, 150); }; });
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 200);
                 updateMobileTopBar();
                 document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
-                const ro = new ResizeObserver(() => {
-                    if (simChart) {
-                        const chartDiv2 = document.getElementById('simChartContainer');
-                        if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2.clientHeight > 0) {
-                            simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
-                                    .clientHeight });
-                            simChart.timeScale().fitContent();
-                        }
-                    }
-                });
+                const ro = new ResizeObserver(() => { if (simChart) { const chartDiv2 = document.getElementById(
+                            'simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2
+                            .clientHeight > 0) { simChart.applyOptions({ width: chartDiv2.clientWidth,
+                                height: chartDiv2.clientHeight }); } } });
                 const chartDiv2 = document.getElementById('simChartContainer');
                 if (chartDiv2) ro.observe(chartDiv2);
                 window._mobileResizeObs = ro;
-                let lastTap = 0;
-                chartDiv2.addEventListener('touchend', (e) => {
-                    const now = Date.now();
-                    if (now - lastTap < 300) {
-                        if (simChart) { simChart.timeScale().fitContent();
-                            showToast('📊 Chart reset'); }
-                    }
-                    lastTap = now;
-                }, { passive: true });
                 let longPressTimer = null;
-                chartDiv2.addEventListener('touchstart', (e) => {
-                    longPressTimer = setTimeout(() => {
-                        if (simChart) {
-                            const price = simLastPrices[simCurrentSymbol] || 0;
-                            showToast('📊 ' + simCurrentSymbol + ' $' + price.toFixed(4));
-                        }
-                    }, 600);
-                }, { passive: true });
+                chartDiv2.addEventListener('touchstart', (e) => { longPressTimer = setTimeout(() => { if (
+                            simChart) { const price = simLastPrices[simCurrentSymbol] || 0;
+                            showToast('📊 ' + simCurrentSymbol + ' $' + price.toFixed(4)); } }, 600); }, { passive: true });
                 chartDiv2.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, { passive: true });
                 chartDiv2.addEventListener('touchmove', () => { clearTimeout(longPressTimer); }, { passive: true });
-                window._mobileCleanup = function() {
-                    if (window._mobileResizeObs) { window._mobileResizeObs.disconnect();
-                        window._mobileResizeObs = null; }
-                };
+                window._mobileCleanup = function() { if (window._mobileResizeObs) { window._mobileResizeObs
+                        .disconnect();
+                        window._mobileResizeObs = null; } };
                 startBackgroundEngine();
                 connectBinanceWS();
-                updateDebugPanel();
             }
 
             // ─── DESKTOP TRADE PANEL ─────────────────────────────────────────
@@ -4797,22 +4708,10 @@
                     <div class="modal-content" id="${panelId}">
                         <h3><i class="fas fa-wallet"></i> TRADE — Summary</h3>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
-                                <div style="font-size:0.7rem;color:var(--text-muted);">Balance</div>
-                                <div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div>
-                            </div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
-                                <div style="font-size:0.7rem;color:var(--text-muted);">Equity</div>
-                                <div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div>
-                            </div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
-                                <div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div>
-                                <div style="font-weight:700;font-size:1.1rem;" id="tp_count">${Object.keys(portfolio.holdings || {}).length}</div>
-                            </div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;">
-                                <div style="font-size:0.7rem;color:var(--text-muted);">P&L</div>
-                                <div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div>
-                            </div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1.1rem;" id="tp_count">${Object.keys(portfolio.holdings || {}).length}</div></div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">P&L</div><div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
                         <h4 style="margin-top:10px;">Open Positions</h4>
                         <div id="tp_positions">
@@ -4825,21 +4724,16 @@
                                     <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
                                     <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                     <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
+                                    <button class="btn btn-sm btn-outline" onclick="editSLTPInModal('${sym}')">SL/TP</button>
                                 </div>`;
                             }).join('')}
                         </div>
-                        <div class="modal-actions">
-                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Close</button>
-                        </div>
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Close</button></div>
                     </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove(); } });
-
                 let updateInterval = setInterval(() => {
-                    if (!document.body.contains(modal)) {
-                        clearInterval(updateInterval);
-                        return;
-                    }
+                    if (!document.body.contains(modal)) { clearInterval(updateInterval); return; }
                     const panel = document.getElementById(panelId);
                     if (!panel) { clearInterval(updateInterval); return; }
                     const equity = calcEquity();
@@ -4847,54 +4741,39 @@
                     const count = Object.keys(portfolio.holdings || {}).length;
                     const balance = portfolio.cash || 0;
                     const balEl = document.getElementById('tp_balance');
+                    if (balEl) balEl.textContent = '$' + balance.toFixed(2);
                     const eqEl = document.getElementById('tp_equity');
+                    if (eqEl) eqEl.textContent = '$' + equity.toFixed(2);
                     const cntEl = document.getElementById('tp_count');
-                    const plEl = document.getElementById('tp_pl');
-                    if (balEl) balEl.textContent = '$${balance.toFixed(2)}';
-                    if (eqEl) eqEl.textContent = '$${equity.toFixed(2)}';
                     if (cntEl) cntEl.textContent = count;
-                    if (plEl) {
-                        plEl.textContent = (totalPL >= 0 ? '+' : '') + '$${totalPL.toFixed(2)}';
-                        plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
-                    }
+                    const plEl = document.getElementById('tp_pl');
+                    if (plEl) { plEl.textContent = (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
+                        plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)'; }
                     const posContainer = document.getElementById('tp_positions');
                     if (posContainer) {
                         const keys = Object.keys(portfolio.holdings || {});
-                        if (keys.length === 0) {
-                            posContainer.innerHTML = '<p style="color:var(--text-muted);">No open positions</p>';
-                        } else {
-                            let html = '';
-                            keys.forEach(sym => {
-                                const h = portfolio.holdings[sym];
-                                const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice || 0;
-                                const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) *
-                                    Math.abs(h.qty);
-                                html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
-                                    <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
-                                    <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
-                                    <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
-                                </div>`;
-                            });
-                            posContainer.innerHTML = html;
-                        }
+                        let html = '';
+                        if (keys.length === 0) html = '<p style="color:var(--text-muted);">No open positions</p>';
+                        else keys.forEach(sym => {
+                            const h = portfolio.holdings[sym];
+                            const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice || 0;
+                            const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) *
+                                Math.abs(h.qty);
+                            html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
+                                <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                                <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                                <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
+                                <button class="btn btn-sm btn-outline" onclick="editSLTPInModal('${sym}')">SL/TP</button>
+                            </div>`;
+                        });
+                        posContainer.innerHTML = html;
                     }
                 }, 1000);
-
                 modal._cleanup = function() { clearInterval(updateInterval); };
                 const origRemove = modal.remove;
-                modal.remove = function() {
-                    if (modal._cleanup) modal._cleanup();
-                    origRemove.call(modal);
-                };
-                modal.querySelectorAll('.btn-exit, .btn-outline').forEach(b => {
-                    b.addEventListener('click', () => {
-                        setTimeout(() => {
-                            if (!document.body.contains(modal)) {
-                                if (modal._cleanup) modal._cleanup();
-                            }
-                        }, 100);
-                    });
-                });
+                modal.remove = function() { if (modal._cleanup) modal._cleanup();
+                    origRemove.call(modal); };
+                window.editSLTPInModal = function(sym) { editSLTP(sym); };
             }
 
             function toggleFsBottomPanel() {
@@ -4902,16 +4781,9 @@
                 const bp = document.getElementById('fsBottomPanel');
                 if (bp) bp.classList.toggle('show', fsShowBottom);
                 if (fsShowBottom) updateSimUIFullscreen();
-                setTimeout(() => {
-                    if (simChart) {
-                        const chartDiv = document.getElementById('simChartContainer');
-                        if (chartDiv) {
-                            simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight });
-                            simChart.timeScale().fitContent();
-                        }
-                    }
-                }, 200);
+                setTimeout(() => { if (simChart) { const chartDiv = document.getElementById('simChartContainer'); if (
+                        chartDiv) { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                .clientHeight }); } } }, 200);
             }
 
             function exitFullscreenTerminal() {
@@ -4921,20 +4793,16 @@
                     fsShowBottom = false;
                     const bp = document.getElementById('fsBottomPanel');
                     if (bp) bp.classList.remove('show');
-                    setTimeout(() => {
-                        if (simChart) {
-                            const chartDiv = document.getElementById('simChartContainer');
-                            if (chartDiv) {
-                                simChart.applyOptions({ width: chartDiv.clientWidth, height: 420 });
-                                simChart.timeScale().fitContent();
-                            }
-                        }
-                    }, 300);
+                    setTimeout(() => { if (simChart) { const chartDiv = document.getElementById(
+                            'simChartContainer'); if (chartDiv) { simChart.applyOptions({ width: chartDiv
+                                .clientWidth, height: 420 }); } } }, 300);
                 }
             }
 
-            // ─── USER INTERFACE (Learning Hub) ──────────────────────────────
+            // ─── USER INTERFACE ──────────────────────────────────────────────
             function renderUserInterface() {
+                stopBackgroundEngine();
+                cleanupSimIntervals();
                 document.getElementById('app').innerHTML = `
                     <div class="app">
                         <div class="sidebar" id="sidebar">
@@ -4970,8 +4838,8 @@
                 document.getElementById('langSelect').value = currentLang;
                 document.getElementById('langSelect').onchange = e => { currentLang = e.target.value;
                     localStorage.setItem(LANG_KEY, currentLang);
-                    renderSubjectList(); if (currentLessonId) showLessonDetail(currentLessonId);
-                    else showLessonList(); };
+                    renderSubjectList(); if (currentLessonId) showLessonDetail(currentLessonId); else
+                        showLessonList(); };
                 document.getElementById('searchInput').oninput = () => showLessonList();
                 document.getElementById('themeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
@@ -4979,7 +4847,7 @@
                     document.getElementById('themeToggle').innerHTML =
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
-                'open');
+                    'open');
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
                 document.getElementById('logoutBtn').onclick = logout;
                 renderSubjectList();
@@ -4994,8 +4862,8 @@
                     <div class="subject-item ${s.id === selectedSubjectId ? 'active' : ''}" data-id="${s.id}">
                         <span class="subject-icon">${s.icon || '📁'}</span><span>${t(s.names)}</span>
                     </div>`).join('');
-                c.querySelectorAll('.subject-item').forEach(el => { el.onclick = () => { selectedSubjectId = el.dataset
-                        .id;
+                c.querySelectorAll('.subject-item').forEach(el => { el.onclick = () => { selectedSubjectId = el
+                            .dataset.id;
                         currentLessonId = null;
                         renderSubjectList();
                         showLessonList();
@@ -5100,12 +4968,10 @@
                 }
                 tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
                 showTab('summary');
-                document.getElementById('bookmarkBtn').onclick = async () => {
-                    try { if (bookmarks.has(id)) { await apiFetch('/bookmarks/' + id, { method: 'DELETE' });
+                document.getElementById('bookmarkBtn').onclick = async () => { try { if (bookmarks.has(id)) { await apiFetch(
+                                '/bookmarks/' + id, { method: 'DELETE' });
                             bookmarks.delete(id); } else { await apiFetch('/bookmarks/' + id, { method: 'POST' });
-                            bookmarks.add(id); }
-                        showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); }
-                };
+                            bookmarks.add(id); } showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); } };
                 document.getElementById('noteBtn').onclick = () => openNoteModal(id);
                 document.getElementById('translateBtn').onclick = () => openTranslateOptions();
                 document.getElementById('markCompleteBtn').onclick = async () => { try { await apiFetch('/progress', {
@@ -5139,13 +5005,12 @@
                             <p style="text-align:center;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
                             <div style="text-align:center;margin-top:14px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
                         </div>`;
-                    document.getElementById('retryQuizBtn').onclick = async () => {
-                        try { await apiFetch('/quiz/reset/' + lessonId, { method: 'POST' });
+                    document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
+                            lessonId, { method: 'POST' });
                             delete quizScores[lessonId];
                             showLessonDetail(lessonId);
                             setTimeout(() => { const qt = document.querySelector('.tab[data-tab="quiz"]'); if (qt) qt
-                                    .click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); }
-                    };
+                                    .click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
                     return;
                 }
                 let answers = new Array(lesson.quiz.length).fill(null);
@@ -5170,7 +5035,8 @@
                         btn.className = 'quiz-option' + (answers[qIdx] === opt.id ? ' selected' : '');
                         btn.textContent = t(opt.text);
                         btn.onclick = () => { answers[qIdx] = opt.id;
-                            optsDiv.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
+                            optsDiv.querySelectorAll('.quiz-option').forEach(b => b.classList.remove(
+                                'selected'));
                             btn.classList.add('selected'); };
                         optsDiv.appendChild(btn);
                     });
@@ -5230,7 +5096,8 @@
             function setupPrevNext(subj, curId) {
                 const lessons = subj?.lessons || [];
                 const idx = lessons.findIndex(l => l.id === curId);
-                document.getElementById('prevLesson').onclick = () => { if (idx > 0) showLessonDetail(lessons[idx - 1].id);
+                document.getElementById('prevLesson').onclick = () => { if (idx > 0) showLessonDetail(lessons[idx - 1]
+                        .id);
                     else showToast('📌 First lesson'); };
                 document.getElementById('nextLesson').onclick = () => { if (idx < lessons.length - 1) showLessonDetail(
                         lessons[idx + 1].id);
@@ -5275,12 +5142,12 @@
                 document.body.appendChild(modal);
                 document.getElementById('closeTrans').onclick = () => modal.remove();
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-                modal.querySelectorAll('button[data-lang]').forEach(b => { b.onclick = () => { currentLang = b.dataset
-                        .lang;
+                modal.querySelectorAll('button[data-lang]').forEach(b => { b.onclick = () => { currentLang = b
+                            .dataset.lang;
                         localStorage.setItem(LANG_KEY, currentLang);
                         document.getElementById('langSelect').value = currentLang;
-                        modal.remove(); if (currentLessonId) showLessonDetail(currentLessonId);
-                        else showLessonList();
+                        modal.remove(); if (currentLessonId) showLessonDetail(currentLessonId); else
+                            showLessonList();
                         showToast('🌐 Language switched'); }; });
             }
 
@@ -5418,8 +5285,10 @@
                     try {
                         if (ex) { await apiFetch('/subjects/' + id, { method: 'PUT', body: JSON.stringify(
                                 payload) });
-                            Object.assign(ex, payload); } else { const res = await apiFetch('/subjects', { method: 'POST',
-                                body: JSON.stringify(payload) });
+                            Object.assign(ex, payload); } else { const res = await apiFetch('/subjects', {
+                                method: 'POST',
+                                body: JSON.stringify(payload)
+                            });
                             subjects.push(res); }
                         modal.remove();
                         renderAdminSubjectList();
@@ -5470,8 +5339,8 @@
             };
             window.deleteLesson = async function(id) { if (!confirm('⚠️ Delete this lesson?')) return; try { await apiFetch(
                         '/lessons/' + id, { method: 'DELETE' });
-                    const subj = subjects.find(s => s.id === selectedSubjectId); if (subj) subj.lessons = (subj.lessons ||
-                        []).filter(l => l.id !== id);
+                    const subj = subjects.find(s => s.id === selectedSubjectId); if (subj) subj.lessons = (subj
+                        .lessons || []).filter(l => l.id !== id);
                     showAdminLessonManager();
                     showToast('🗑 Lesson deleted'); } catch (e) { showToast('⚠️ ' + e.message); } };
             window.openLessonEditModal = function(id) {
@@ -5501,7 +5370,6 @@
                     </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-                // Load Quill dynamically if not loaded
                 if (typeof Quill === 'undefined') {
                     const script = document.createElement('script');
                     script.src = 'https://cdn.quilljs.com/1.3.6/quill.min.js';
@@ -5534,17 +5402,18 @@
                                 .getElementById('lHi').value.trim(), bn: document.getElementById('lBn')
                                 .value.trim() };
                         if (!titles.en) return alert('⚠️ English title required');
-                        const contents = { en: qlEn.root.innerHTML, hi: qlHi.root.innerHTML, bn: qlBn
-                                .root.innerHTML };
+                        const contents = { en: qlEn.root.innerHTML, hi: qlHi.root.innerHTML, bn: qlBn.root
+                                .innerHTML };
                         const payload = { titles, contents, duration: parseInt(document.getElementById(
                                 'lDur').value) || 15, level: document.getElementById('lLvl').value,
                             quizPassScore: parseInt(document.getElementById('lPass').value) || 80 };
                         try {
-                            if (ex) { await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON
-                                        .stringify(payload) });
-                                Object.assign(ex, payload); } else { const res = await apiFetch('/lessons', { method: 'POST',
-                                    body: JSON.stringify({ ...payload, subjectId: selectedSubjectId }) });
-                                if (!subj.lessons) subj.lessons = [];
+                            if (ex) { await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(
+                                    payload) });
+                                Object.assign(ex, payload); } else { const res = await apiFetch('/lessons', {
+                                    method: 'POST',
+                                    body: JSON.stringify({ ...payload, subjectId: selectedSubjectId })
+                                }); if (!subj.lessons) subj.lessons = [];
                                 subj.lessons.push(res); }
                             modal.remove();
                             showAdminLessonManager();
@@ -5554,27 +5423,15 @@
                 }
                 setTimeout(() => {
                     if (typeof Quill === 'undefined') {
-                        const qlEn = document.getElementById('qlEn');
-                        const qlHi = document.getElementById('qlHi');
-                        const qlBn = document.getElementById('qlBn');
-                        if (qlEn) { const ta = document.createElement('textarea');
-                            ta.style.cssText =
-                                'width:100%;height:110px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
-                            ta.value = qlEn.innerHTML;
-                            qlEn.parentNode.replaceChild(ta, qlEn);
-                            ta.id = 'qlEn'; }
-                        if (qlHi) { const ta = document.createElement('textarea');
-                            ta.style.cssText =
-                                'width:100%;height:110px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
-                            ta.value = qlHi.innerHTML;
-                            qlHi.parentNode.replaceChild(ta, qlHi);
-                            ta.id = 'qlHi'; }
-                        if (qlBn) { const ta = document.createElement('textarea');
-                            ta.style.cssText =
-                                'width:100%;height:110px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
-                            ta.value = qlBn.innerHTML;
-                            qlBn.parentNode.replaceChild(ta, qlBn);
-                            ta.id = 'qlBn'; }
+                        ['qlEn', 'qlHi', 'qlBn'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) { const ta = document.createElement('textarea');
+                                ta.style.cssText =
+                                    'width:100%;height:110px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
+                                ta.value = el.innerHTML;
+                                el.parentNode.replaceChild(ta, el);
+                                ta.id = id; }
+                        });
                     }
                 }, 2000);
             };
@@ -5667,14 +5524,16 @@
                         points: parseInt(document.getElementById('qPts').value) || 5,
                         explanation: { en: document.getElementById('expEn').value.trim(), hi: document
                                 .getElementById('expHi').value.trim(), bn: document.getElementById(
-                                    'expBn').value.trim() }
+                                'expBn').value.trim() }
                     };
                     if (!qData.question.en) return alert('⚠️ English question required');
                     try {
-                        if (ex) { await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'PUT', body: JSON
-                                    .stringify(qData) });
-                            les.quiz[idx] = qData; } else { const res = await apiFetch('/quiz/' + lessonId, { method: 'POST',
+                        if (ex) { await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'PUT',
                                 body: JSON.stringify(qData) });
+                            les.quiz[idx] = qData; } else { const res = await apiFetch('/quiz/' + lessonId, {
+                                method: 'POST',
+                                body: JSON.stringify(qData)
+                            });
                             les.quiz.push(res); }
                         modal.remove();
                         openQuizManager(lessonId);
@@ -5743,8 +5602,8 @@
                         const confirm = document.getElementById('authConfirm').value.trim();
                         if (password !== confirm) return showToast('⚠️ Passwords do not match');
                         if (password.length < 6) return showToast('⚠️ Password must be at least 6 characters');
-                        try { const res = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({
-                                    username, password }) });
+                        try { const res = await apiFetch('/auth/register', { method: 'POST', body: JSON
+                                .stringify({ username, password }) });
                             token = res.token;
                             currentUser = res.user;
                             localStorage.setItem(TOKEN_KEY, token);
@@ -5771,7 +5630,6 @@
                 if (!token || !currentUser) { renderAuthPage(); return; }
                 try {
                     loadPortfolioFromStorage();
-
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
                         apiFetch('/subjects'), apiFetch('/progress').catch(() => ({})),
                         apiFetch('/bookmarks').catch(() => ({})),
@@ -5784,7 +5642,6 @@
                     bookmarks = new Set(bmRes || []);
                     quizScores = quizRes || {};
                     userNotes = notesRes || {};
-
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
                         portfolio.holdings = portRes.holdings || {};
@@ -5793,15 +5650,11 @@
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-
                     savePortfolioToStorage();
-
                     if (currentUser.username === 'admin') isAdmin = true;
                     applyTheme();
                     renderApp();
                     connectBinanceWS();
-                    startBackgroundEngine();
-                    updateDebugPanel();
                 } catch (e) { console.error('Load error:', e); if (e.message.includes('Session expired')) logout();
                     else renderApp(); }
             }
@@ -5814,103 +5667,6 @@
                         renderUserInterface(); } return; }
                 if (mode === 'trading') { renderTradingTerminal(); return; }
                 renderUserInterface();
-            }
-
-            // ─── DEBUG PANEL ──────────────────────────────────────────────────
-            function updateDebugPanel() {
-                // 1. Neon DB – via /api/health
-                fetch(API_BASE + '/health', { signal: AbortSignal.timeout(3000) })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === 'ok') setDebugStatus('dbStatus', '✅ Connected', 'ok');
-                        else setDebugStatus('dbStatus', '⚠️ Error', 'err');
-                    })
-                    .catch(() => setDebugStatus('dbStatus', '❌ Unreachable', 'err'));
-
-                // 2. Vercel Blob – check token presence
-                const blobToken = localStorage.getItem('VERCEL_BLOB_READ_WRITE_TOKEN') ||
-                    (typeof process !== 'undefined' && process.env?.VERCEL_BLOB_READ_WRITE_TOKEN) || '';
-                if (blobToken && blobToken.startsWith('vercel_blob_')) {
-                    setDebugStatus('blobStatus', '✅ Token OK', 'ok');
-                    fetch(BLOB_BASE + '/candles_BTCUSDT_60.json', { method: 'HEAD', signal: AbortSignal.timeout(2000) })
-                        .then(res => {
-                            if (res.ok) setDebugStatus('blobStatus', '✅ File exists', 'ok');
-                            else setDebugStatus('blobStatus', '⚠️ File missing', 'warn');
-                        })
-                        .catch(() => setDebugStatus('blobStatus', '⚠️ Cannot access', 'warn'));
-                } else {
-                    setDebugStatus('blobStatus', '❌ Token missing', 'err');
-                }
-
-                // 3. Render API
-                setDebugStatus('apiStatus', '✅ ' + API_BASE, 'ok');
-
-                // 4. Binance WS
-                if (binanceWS && binanceWS.readyState === WebSocket.OPEN) {
-                    setDebugStatus('wsStatus', '✅ Connected', 'ok');
-                } else if (binanceWS && binanceWS.readyState === WebSocket.CONNECTING) {
-                    setDebugStatus('wsStatus', '⏳ Connecting...', 'warn');
-                } else {
-                    setDebugStatus('wsStatus', '❌ Disconnected', 'err');
-                }
-
-                // 5. IndexedDB
-                if (db) {
-                    setDebugStatus('idbStatus', '✅ Open', 'ok');
-                    dbGetAll('candles').then(data => {
-                        const total = data.reduce((acc, item) => acc + (item.candles?.length || 0), 0);
-                        setDebugStatus('candleCount', total + ' candles', 'info');
-                    }).catch(() => setDebugStatus('candleCount', '⚠️ Error', 'err'));
-                } else {
-                    setDebugStatus('idbStatus', '⏳ Opening...', 'warn');
-                }
-
-                // 6. Portfolio
-                if (portfolio) {
-                    const pos = Object.keys(portfolio.holdings || {}).length;
-                    setDebugStatus('portfolioStatus', `💰 $${(portfolio.cash || 0).toFixed(2)} | ${pos} pos`, 'ok');
-                } else {
-                    setDebugStatus('portfolioStatus', '⏳ Loading...', 'warn');
-                }
-
-                // 7. Last price
-                const price = simLastPrices[simCurrentSymbol];
-                if (price && !isNaN(price)) setDebugStatus('lastPrice', '$' + price.toFixed(4), 'info');
-                else setDebugStatus('lastPrice', '—', '');
-
-                // 8. Cron status
-                fetch(API_BASE + '/health')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.cronLastRun) {
-                            setDebugStatus('cronStatus', '✅ ' + new Date(data.cronLastRun).toLocaleTimeString(),
-                                'ok');
-                        } else {
-                            setDebugStatus('cronStatus', '⏳ No run yet', 'warn');
-                        }
-                    })
-                    .catch(() => setDebugStatus('cronStatus', '❌ Unknown', 'err'));
-
-                // Timestamp
-                document.getElementById('debugTimestamp').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-
-                // Badge – count errors
-                let errors = 0;
-                ['dbStatus', 'blobStatus', 'wsStatus', 'idbStatus'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && el.textContent.includes('❌')) errors++;
-                });
-                const badge = document.getElementById('debugBadge');
-                if (badge) {
-                    badge.textContent = errors || '✓';
-                    badge.style.background = errors ? '#ef4444' : '#10b981';
-                }
-            }
-
-            function setDebugStatus(id, text, cls = '') {
-                const el = document.getElementById(id);
-                if (el) { el.textContent = text;
-                    el.className = 'value' + (cls ? ' ' + cls : ''); }
             }
 
             // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
@@ -5952,7 +5708,54 @@
             window.dbGet = dbGet;
             window.dbGetAll = dbGetAll;
             window.dbDelete = dbDelete;
-            window.updateDebugPanel = updateDebugPanel;
+            window.syncPortfolioToServer = syncPortfolioToServer;
+            window.openMobileSLTPModal = openMobileSLTPModal;
+
+            // ─── DEBUG PANEL ──────────────────────────────────────────────────
+            function updateDebugPanel() {
+                const dbStatus = document.getElementById('dbStatus');
+                const blobStatus = document.getElementById('blobStatus');
+                const apiStatus = document.getElementById('apiStatus');
+                const wsStatus = document.getElementById('wsStatus');
+                const idbStatus = document.getElementById('idbStatus');
+                const candleCount = document.getElementById('candleCount');
+                const portfolioStatus = document.getElementById('portfolioStatus');
+                const lastPrice = document.getElementById('lastPrice');
+                const cronStatus = document.getElementById('cronStatus');
+                const ts = document.getElementById('debugTimestamp');
+
+                if (dbStatus) dbStatus.textContent = db ? '✅ Connected' : '⏳ Connecting...';
+                if (blobStatus) blobStatus.textContent = '✅ Available';
+                if (apiStatus) apiStatus.textContent = '✅ Online';
+                if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
+                    '✅ Connected' : '⚠️ Disconnected';
+                if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
+                if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
+                if (portfolioStatus) portfolioStatus.textContent = portfolio ? '✅ Loaded' : '⏳ Loading...';
+                if (lastPrice) lastPrice.textContent = simLastPrices[simCurrentSymbol] ? '$' + simLastPrices[
+                    simCurrentSymbol].toFixed(4) : '-';
+                if (cronStatus) cronStatus.textContent = '🔄 Running (5s)';
+                if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+            }
+
+            const debugToggle = document.getElementById('debugToggle');
+            const debugPanel = document.getElementById('debugPanel');
+            const debugClose = document.getElementById('debugClose');
+
+            debugToggle.onclick = function() {
+                debugPanel.classList.toggle('open');
+                if (debugPanel.classList.contains('open')) updateDebugPanel();
+            };
+            debugClose.onclick = function() { debugPanel.classList.remove('open'); };
+            document.addEventListener('click', function(e) {
+                if (debugPanel.classList.contains('open') && !debugPanel.contains(e.target) && e.target !==
+                    debugToggle) {
+                    debugPanel.classList.remove('open');
+                }
+            });
+
+            setInterval(updateDebugPanel, 3000);
+            updateDebugPanel();
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
             window.addEventListener('beforeunload', function() {
@@ -5967,11 +5770,8 @@
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
-
-            // Open IndexedDB first
             openDB().then(() => {
                 console.log('✅ IndexedDB ready');
-                updateDebugPanel();
                 if (token && currentUser) loadAllData();
                 else renderAuthPage();
             }).catch(err => {
@@ -5980,7 +5780,6 @@
                 else renderAuthPage();
             });
 
-            // Handle orientation changes
             window.addEventListener('orientationchange', () => {
                 setTimeout(() => {
                     if (simChart) {
@@ -5988,12 +5787,10 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
                         }
                     }
                 }, 300);
             });
-
             let resizeTimer;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
@@ -6003,52 +5800,17 @@
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight });
-                            simChart.timeScale().fitContent();
                         }
                     }
                 }, 300);
             });
-
             window.addEventListener('popstate', () => {
                 document.querySelectorAll('.modal').forEach(el => el.remove());
                 document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
                 'show'));
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
-                    'show'));
+                'show'));
             });
-
-            // ─── DEBUG PANEL AUTO-REFRESH ────────────────────────────────────
-            const toggleBtn = document.getElementById('debugToggle');
-            const panel = document.getElementById('debugPanel');
-            const closeBtn = document.getElementById('debugClose');
-            let refreshInterval = null;
-
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', () => {
-                    panel.classList.toggle('open');
-                    if (panel.classList.contains('open')) {
-                        updateDebugPanel();
-                        if (!refreshInterval) {
-                            refreshInterval = setInterval(updateDebugPanel, 5000);
-                        }
-                    } else {
-                        if (refreshInterval) {
-                            clearInterval(refreshInterval);
-                            refreshInterval = null;
-                        }
-                    }
-                });
-            }
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    panel.classList.remove('open');
-                    if (refreshInterval) {
-                        clearInterval(refreshInterval);
-                        refreshInterval = null;
-                    }
-                });
-            }
-
         })();
     </script>
 </body>
