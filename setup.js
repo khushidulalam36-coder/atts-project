@@ -333,7 +333,7 @@ if (!TOKEN) console.warn('⚠️ VERCEL_BLOB_READ_WRITE_TOKEN not set. Uploads w
 
 function getBlobOptions() {
   return {
-    access: 'public',   // ✅ store is public, so we must use public
+    access: 'private',  // ✅ matches your store's setting
     token: TOKEN,
     cacheControl: 'public, max-age=60'
   };
