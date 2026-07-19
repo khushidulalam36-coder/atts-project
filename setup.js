@@ -1,5 +1,5 @@
 // ================================================================
-// SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel)
+// SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel Blob Private)
 // All files created directly in current folder.
 // index.html will be empty – fill manually.
 // ================================================================
@@ -13,14 +13,11 @@ const PROJECT_ROOT = process.cwd();
 const ENV_TEMPLATE = `# Neon DB (PostgreSQL)
 DATABASE_URL=postgresql://neondb_owner:npg_dL7R2YzkygWM@ep-dawn-grass-ahoh2dpq-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
-# Vercel Blob
+# Vercel Blob (Private store – use proxy)
 VERCEL_BLOB_READ_WRITE_TOKEN=vercel_blob_rw_1AlIc3ApesIGLHil_hE5IvGS3hoyZX7YwYT1vC70hZp6A14
 
 # JWT Secret (CHANGE THIS IN PRODUCTION!)
 JWT_SECRET=krfyde3332rtt#R$%$ERE$ttttrtgffft234
-
-# Finnhub API (optional – for real market prices)
-FINNHUB_API_KEY=d9bqlapr01ql2jmt3ht0d9bqlapr01ql2jmt3htg
 
 # Server Port
 PORT=5000
@@ -52,12 +49,11 @@ const files = {
       bcrypt: '^5.1.1',
       '@neondatabase/serverless': '^0.9.0',
       '@vercel/blob': '^0.22.1',
-      'node-fetch': '^3.3.2',
       multer: '^1.4.5-lts.1',
       ws: '^8.14.2',
       'express-rate-limit': '^7.1.5',
       helmet: '^7.0.0',
-      'node-cron': '^3.0.3' // ← নতুন
+      'node-cron': '^3.0.3'
     },
     devDependencies: {
       nodemon: '^3.0.1'
@@ -86,9 +82,8 @@ npm start
 | Variable | Description |
 |---|---|
 | DATABASE_URL | Neon DB PostgreSQL connection string |
-| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token for file uploads |
+| VERCEL_BLOB_READ_WRITE_TOKEN | Vercel Blob token (private store) |
 | JWT_SECRET | Secret key for JWT (change this!) |
-| FINNHUB_API_KEY | Finnhub API key for real-time prices |
 | PORT | Server port (default 5000) |
 | FRONTEND_URL | Frontend URL for CORS |
 
@@ -98,7 +93,7 @@ npm start
 - **Change after first login!**
 `,
 
-  // ── server.js (FINAL WITH CORS FIX + CRON + TRADE ENGINE) ──────
+  // ── server.js (with proxy for private blob) ──────────────────────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -119,6 +114,10 @@ const server = http.createServer(app);
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
 const { fetchLatestCandle } = require('./lib/binance');
+const { get } = require('@vercel/blob');
+
+// ── Trust proxy (for rate limiter behind reverse proxy) ──────────
+app.set('trust proxy', 1);
 
 // ── WebSocket ──────────────────────────────────────────────────────
 const wss = new WebSocketServer({ server });
@@ -135,7 +134,7 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (fallback) – will be overridden by Binance WS in frontend
+// Simulated price stream (fallback)
 setInterval(() => {
   const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
@@ -195,8 +194,33 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
+// 🔥 Proxy endpoint to serve candles from private Blob store
+app.get('/api/candles/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+    if (!TOKEN) throw new Error('Blob token missing');
+    
+    const key = \`candles_\${symbol}_60.json\`;
+    const blob = await get(key, { token: TOKEN });
+    if (!blob) return res.status(404).json({ error: 'Candles not found' });
+    
+    const data = await blob.json();
+    res.json(data);
+  } catch (e) {
+    console.error('Proxy error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime(), wsClients: wsClients.size, timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    uptime: process.uptime(), 
+    wsClients: wsClients.size, 
+    timestamp: new Date().toISOString(),
+    cronLastRun: global._cronLastRun || null
+  });
 });
 
 // Static files
@@ -212,6 +236,7 @@ cron.schedule('* * * * *', async () => {
   console.log('⏰ Running candle update cron...');
   try {
     await updateBlobCandles();
+    global._cronLastRun = new Date().toISOString();
     console.log('✅ Blob candles updated');
   } catch (e) {
     console.error('❌ Cron error:', e.message);
@@ -234,6 +259,148 @@ server.listen(PORT, () => {
 });
 
 module.exports = { app, server, wss, broadcast };
+`,
+
+  // ── lib/binance.js (clean, uses native fetch) ────────────────────
+  'lib/binance.js': `// Node.js 18+ has native fetch
+const BASE_URL = 'https://api.binance.com/api/v3';
+
+async function fetchLatestCandle(symbol) {
+  try {
+    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=1m&limit=2\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
+    const data = await res.json();
+    if (data && data.length >= 2) {
+      const k = data[data.length - 2];
+      return {
+        time: Math.floor(k[0] / 1000),
+        open: parseFloat(k[1]),
+        high: parseFloat(k[2]),
+        low: parseFloat(k[3]),
+        close: parseFloat(k[4]),
+        volume: parseFloat(k[5])
+      };
+    }
+    return null;
+  } catch (e) {
+    console.error('fetchLatestCandle error:', e.message);
+    return null;
+  }
+}
+
+async function fetchPrice(symbol) {
+  try {
+    const url = \`\${BASE_URL}/ticker/price?symbol=\${symbol}\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
+    const data = await res.json();
+    return parseFloat(data.price);
+  } catch (e) {
+    console.error('fetchPrice error:', e.message);
+    return null;
+  }
+}
+
+async function fetchCandles(symbol, interval = '1m', limit = 10000) {
+  try {
+    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${limit}\`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Binance API error');
+    const data = await res.json();
+    return data.map(k => ({
+      time: Math.floor(k[0] / 1000),
+      open: parseFloat(k[1]),
+      high: parseFloat(k[2]),
+      low: parseFloat(k[3]),
+      close: parseFloat(k[4]),
+      volume: parseFloat(k[5])
+    }));
+  } catch (e) {
+    console.error('fetchCandles error:', e.message);
+    return [];
+  }
+}
+
+module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
+`,
+
+  // ── lib/blob.js (explicit token, private access) ────────────────
+  'lib/blob.js': `const { put, del, list } = require('@vercel/blob');
+
+const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+if (!TOKEN) console.warn('⚠️ VERCEL_BLOB_READ_WRITE_TOKEN not set. Uploads will fail.');
+
+function getBlobOptions() {
+  return {
+    access: 'private',   // keep store private
+    token: TOKEN,
+    cacheControl: 'public, max-age=60'
+  };
+}
+
+async function uploadFile(buffer, fileName, contentType = 'application/pdf') {
+  const blob = await put(\`certificates/\${Date.now()}-\${fileName}\`, buffer, {
+    ...getBlobOptions(),
+    contentType
+  });
+  return blob.url;
+}
+
+async function deleteFile(url) {
+  try { await del(url, { token: TOKEN }); return true; }
+  catch (e) { console.error('Blob delete error:', e); return false; }
+}
+
+async function listFiles(prefix = 'certificates/') {
+  const { blobs } = await list({ prefix, token: TOKEN });
+  return blobs.map(b => ({ url: b.url, size: b.size, uploadedAt: b.uploadedAt }));
+}
+
+async function uploadCandles(symbol, candles, tf = 60) {
+  const key = \`candles_\${symbol}_\${tf}.json\`;
+  const blob = await put(key, JSON.stringify(candles), {
+    ...getBlobOptions(),
+    contentType: 'application/json'
+  });
+  return blob.url;
+}
+
+module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
+`,
+
+  // ── cron/updateCandles.js (improved logging) ────────────────────
+  'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
+const { uploadCandles } = require('../lib/blob');
+
+const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
+const LIMIT = 10000;
+
+async function updateBlobCandles() {
+  console.log('🔄 Updating blob candles...');
+  let anyUpdated = false;
+  for (const symbol of SYMBOLS) {
+    try {
+      const candles = await fetchCandles(symbol, '1m', LIMIT);
+      if (candles && candles.length > 0) {
+        const url = await uploadCandles(symbol, candles, 60);
+        console.log(\`✅ Updated \${symbol} -> \${url}\`);
+        anyUpdated = true;
+      } else {
+        console.warn(\`⚠️ No candles for \${symbol}\`);
+      }
+    } catch (e) {
+      console.error(\`❌ Error updating \${symbol}:\`, e.message);
+    }
+  }
+  if (anyUpdated) {
+    console.log('✅ Blob candles updated (at least one symbol)');
+  } else {
+    console.warn('⚠️ No candles were updated for any symbol');
+  }
+}
+
+module.exports = { updateBlobCandles };
 `,
 
   // ── scripts/migrate.js (unchanged) ──────────────────────────────────
@@ -422,44 +589,6 @@ async function query(text, params = []) {
 module.exports = { query };
 `,
 
-  // ── lib/blob.js (UPDATED: added uploadCandles) ─────────────────────
-  'lib/blob.js': `const { put, del, list } = require('@vercel/blob');
-
-const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN;
-if (!TOKEN) console.warn('⚠️ VERCEL_BLOB_READ_WRITE_TOKEN not set. Uploads will fail.');
-
-async function uploadFile(buffer, fileName, contentType = 'application/pdf') {
-  const blob = await put(\`certificates/\${Date.now()}-\${fileName}\`, buffer, {
-    access: 'public',
-    contentType
-  });
-  return blob.url;
-}
-
-async function deleteFile(url) {
-  try { await del(url); return true; }
-  catch (e) { console.error('Blob delete error:', e); return false; }
-}
-
-async function listFiles(prefix = 'certificates/') {
-  const { blobs } = await list({ prefix });
-  return blobs.map(b => ({ url: b.url, size: b.size, uploadedAt: b.uploadedAt }));
-}
-
-// ── NEW: Upload candles data to Blob ──────────────────────────────
-async function uploadCandles(symbol, candles, tf = 60) {
-  const key = \`candles_\${symbol}_\${tf}.json\`;
-  const blob = await put(key, JSON.stringify(candles), {
-    access: 'public',
-    contentType: 'application/json',
-    cacheControl: 'public, max-age=60'
-  });
-  return blob.url;
-}
-
-module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
-`,
-
   // ── lib/auth.js (unchanged) ─────────────────────────────────────────
   'lib/auth.js': `const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -519,82 +648,12 @@ module.exports = {
 };
 `,
 
-  // ── lib/binance.js (NEW) ──────────────────────────────────────────
-  'lib/binance.js': `const fetch = require('node-fetch');
-
-const BASE_URL = 'https://api.binance.com/api/v3';
-
-// Get latest completed M1 candle (last 2 candles, return the older one)
-async function fetchLatestCandle(symbol) {
-  try {
-    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=1m&limit=2\`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Binance API error');
-    const data = await res.json();
-    if (data && data.length >= 2) {
-      const k = data[data.length - 2]; // the completed candle
-      return {
-        time: Math.floor(k[0] / 1000),
-        open: parseFloat(k[1]),
-        high: parseFloat(k[2]),
-        low: parseFloat(k[3]),
-        close: parseFloat(k[4]),
-        volume: parseFloat(k[5])
-      };
-    }
-    return null;
-  } catch (e) {
-    console.error('fetchLatestCandle error:', e.message);
-    return null;
-  }
-}
-
-// Get current price
-async function fetchPrice(symbol) {
-  try {
-    const url = \`\${BASE_URL}/ticker/price?symbol=\${symbol}\`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Binance API error');
-    const data = await res.json();
-    return parseFloat(data.price);
-  } catch (e) {
-    console.error('fetchPrice error:', e.message);
-    return null;
-  }
-}
-
-// Get last N candles (for initial load)
-async function fetchCandles(symbol, interval = '1m', limit = 10000) {
-  try {
-    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${limit}\`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Binance API error');
-    const data = await res.json();
-    return data.map(k => ({
-      time: Math.floor(k[0] / 1000),
-      open: parseFloat(k[1]),
-      high: parseFloat(k[2]),
-      low: parseFloat(k[3]),
-      close: parseFloat(k[4]),
-      volume: parseFloat(k[5])
-    }));
-  } catch (e) {
-    console.error('fetchCandles error:', e.message);
-    return [];
-  }
-}
-
-module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
-`,
-
-  // ── lib/tradeEngine.js (NEW) ──────────────────────────────────────
+  // ── lib/tradeEngine.js (unchanged) ──────────────────────────────────
   'lib/tradeEngine.js': `const { query } = require('./db');
 const { fetchPrice } = require('./binance');
 
-// Check open trades and execute SL/TP
 async function checkAndExecuteSLTP() {
   try {
-    // Get all users with open positions (holdings not empty)
     const result = await query(\`
       SELECT user_id, holdings, cash, transactions 
       FROM portfolios 
@@ -615,19 +674,16 @@ async function checkAndExecuteSLTP() {
         const isShort = data.qty < 0;
         const qty = Math.abs(data.qty);
 
-        // Check SL
         if (data.slPrice) {
           if ((!isShort && price <= data.slPrice) || (isShort && price >= data.slPrice)) {
-            // Close position
             if (data.qty > 0) cash += qty * price;
-            else cash += qty * price; // short: close short = buy back
+            else cash += qty * price;
             transactions.unshift({ type: 'sell', symbol, qty, price, time: new Date().toISOString(), reason: 'Stop Loss' });
             delete holdings[symbol];
             changed = true;
             continue;
           }
         }
-        // Check TP
         if (data.tpPrice) {
           if ((!isShort && price >= data.tpPrice) || (isShort && price <= data.tpPrice)) {
             if (data.qty > 0) cash += qty * price;
@@ -664,33 +720,6 @@ function stopTradeEngine() {
 }
 
 module.exports = { checkAndExecuteSLTP, startTradeEngine, stopTradeEngine };
-`,
-
-  // ── cron/updateCandles.js (NEW) ──────────────────────────────────
-  'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
-const { uploadCandles } = require('../lib/blob');
-
-const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
-const LIMIT = 10000;
-
-async function updateBlobCandles() {
-  console.log('🔄 Updating blob candles...');
-  for (const symbol of SYMBOLS) {
-    try {
-      const candles = await fetchCandles(symbol, '1m', LIMIT);
-      if (candles && candles.length > 0) {
-        const url = await uploadCandles(symbol, candles, 60);
-        console.log(\`✅ Updated \${symbol} -> \${url}\`);
-      } else {
-        console.warn(\`⚠️ No candles for \${symbol}\`);
-      }
-    } catch (e) {
-      console.error(\`❌ Error updating \${symbol}:\`, e.message);
-    }
-  }
-}
-
-module.exports = { updateBlobCandles };
 `,
 
   // ── middleware/auth.js (unchanged) ──────────────────────────────────
@@ -1039,7 +1068,7 @@ module.exports = router;
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
-const { fetchPrice } = require('../lib/binance'); // changed from finnhub to binance
+const { fetchPrice } = require('../lib/binance');
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -1222,7 +1251,7 @@ function createProject() {
   console.log('   4.  npm start');
   console.log('\n📌 Default Admin:  admin / admin123');
   console.log('📌 index.html is empty – paste your frontend code manually.');
-  console.log('📌 Cron job will update Blob every minute (if token set).');
+  console.log('📌 Cron job will update Blob every minute (private store via proxy).');
   console.log('📌 Trade engine (SL/TP) runs in background every 5s.\n');
 }
 

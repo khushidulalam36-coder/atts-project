@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
-const { fetchPrice } = require('../lib/binance'); // changed from finnhub to binance
+const { fetchPrice } = require('../lib/binance');
 
 router.get('/', authenticate, async (req, res) => {
   try {

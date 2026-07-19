@@ -18,6 +18,10 @@ const server = http.createServer(app);
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
 const { fetchLatestCandle } = require('./lib/binance');
+const { get } = require('@vercel/blob');
+
+// ── Trust proxy (for rate limiter behind reverse proxy) ──────────
+app.set('trust proxy', 1);
 
 // ── WebSocket ──────────────────────────────────────────────────────
 const wss = new WebSocketServer({ server });
@@ -34,7 +38,7 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (fallback) – will be overridden by Binance WS in frontend
+// Simulated price stream (fallback)
 setInterval(() => {
   const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
@@ -94,8 +98,33 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
+// 🔥 Proxy endpoint to serve candles from private Blob store
+app.get('/api/candles/:symbol', async (req, res) => {
+  try {
+    const { symbol } = req.params;
+    const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+    if (!TOKEN) throw new Error('Blob token missing');
+    
+    const key = `candles_${symbol}_60.json`;
+    const blob = await get(key, { token: TOKEN });
+    if (!blob) return res.status(404).json({ error: 'Candles not found' });
+    
+    const data = await blob.json();
+    res.json(data);
+  } catch (e) {
+    console.error('Proxy error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime(), wsClients: wsClients.size, timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    uptime: process.uptime(), 
+    wsClients: wsClients.size, 
+    timestamp: new Date().toISOString(),
+    cronLastRun: global._cronLastRun || null
+  });
 });
 
 // Static files
@@ -111,6 +140,7 @@ cron.schedule('* * * * *', async () => {
   console.log('⏰ Running candle update cron...');
   try {
     await updateBlobCandles();
+    global._cronLastRun = new Date().toISOString();
     console.log('✅ Blob candles updated');
   } catch (e) {
     console.error('❌ Cron error:', e.message);

@@ -2982,18 +2982,21 @@
             }
 
             // ─── BLOB LOAD / SAVE ──────────────────────────────────────────
-            async function loadBlobCandles(symbol, tf) {
-                try {
-                    const url = `${BLOB_BASE}/candles_${symbol}_${tf}.json`;
-                    const res = await fetch(url, { cache: 'force-cache' });
-                    if (!res.ok) throw new Error('Blob fetch failed');
-                    const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        return data;
-                    }
-                } catch (e) { console.warn('Blob load error:', e); }
-                return null;
-            }
+  async function loadBlobCandles(symbol, tf) {
+  try {
+    // এখন ব্যাকএন্ডের মাধ্যমে আনা হবে
+    const url = `${API_BASE}/candles/${symbol}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch candles from API');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return data;
+    }
+  } catch (e) {
+    console.warn('Blob fetch via API failed:', e);
+  }
+  return null;
+}
 
             // ─── MERGE ENGINE ──────────────────────────────────────────────
             function mergeCandles(historical, latest) {
