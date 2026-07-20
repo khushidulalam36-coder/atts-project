@@ -3382,7 +3382,9 @@
     chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
     if (loadingEl) loadingEl.style.display = 'flex';
 
-    // ✅ 1. সর্বপ্রথম বর্তমান বাজারমূল্য আনা (Binance REST + WebSocket fallback)
+    // ════════════════════════════════════════════
+    // 🔴 ১. বর্তমান বাজারমূল্য নিশ্চিত করুন (Binance REST / WS)
+    // ════════════════════════════════════════════
     let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
     if (!realTimePrice || isNaN(realTimePrice)) {
         const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
@@ -3393,46 +3395,47 @@
         }
     }
     if (!realTimePrice || isNaN(realTimePrice)) {
-        realTimePrice = simBasePrices[simCurrentSymbol] || 150; // ultimate fallback
+        realTimePrice = simBasePrices[simCurrentSymbol] || 150; // চূড়ান্ত fallback
     }
 
-    // ✅ 2. IndexedDB থেকে ডেটা আনা (কিন্তু ১৫ মিনিটের বেশি পুরনো হলে বাতিল)
+    // ════════════════════════════════════════════
+    // 🔵 ২. ঐতিহাসিক ক্যান্ডেল আনার চেষ্টা (IndexedDB → Blob → Simulation)
+    // ════════════════════════════════════════════
     let candles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
-    let useCache = false;
+    let hasRealData = false;
+
     if (candles && candles.length > 0) {
         const last = candles[candles.length - 1];
         const now = Math.floor(Date.now() / 1000);
-        // ১৫ মিনিটের বেশি পুরনো হলে ফ্রেশ ডেটা আনব
-        if (now - last.time < 900) { // 900 seconds = 15 minutes
-            useCache = true;
+        // ২৪ ঘণ্টার কম পুরনো ক্যাশ গ্রহণযোগ্য
+        if (now - last.time < 86400) {
             simAllCandles = candles;
-            simLastPrices[simCurrentSymbol] = realTimePrice;
-            simBasePrices[simCurrentSymbol] = realTimePrice;
+            hasRealData = true;
+            console.log('✅ IndexedDB থেকে ডেটা লোড হয়েছে');
         }
     }
 
-    if (!useCache) {
-        // ✅ 3. Blob থেকে আনার চেষ্টা
+    if (!hasRealData) {
+        // Blob থেকে আনার চেষ্টা
         let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
         if (blobData && blobData.length > 0) {
             simAllCandles = blobData;
-            simLastPrices[simCurrentSymbol] = realTimePrice;
-            simBasePrices[simCurrentSymbol] = realTimePrice;
+            hasRealData = true;
+            console.log('✅ Vercel Blob থেকে ডেটা লোড হয়েছে');
             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
         } else {
-            // ✅ 4. কোনো ডেটা না থাকলে জরুরি সিমুলেশন (কিন্তু Gap হবে না)
-            // আমরা একটি সিরিজ তৈরি করি যার শেষ প্রাইস realTimePrice-এর সমান
-            simAllCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 200, realTimePrice, currentTimeframe);
-            simLastPrices[simCurrentSymbol] = realTimePrice;
-            simBasePrices[simCurrentSymbol] = realTimePrice;
+            // একেবারেই কোনো ডেটা না থাকলে সিমুলেশন (জরুরি)
+            console.warn('⚠️ কোনো ঐতিহাসিক ডেটা নেই, সিমুলেটেড ক্যান্ডেল তৈরি হচ্ছে');
+            simAllCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice, currentTimeframe);
             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
         }
     }
 
-    // ✅ 5. Binance REST থেকে সর্বশেষ বন্ধ ক্যান্ডেল নেওয়া (যদি পাওয়া যায়)
+    // ════════════════════════════════════════════
+    // 🟢 ৩. Binance REST থেকে সর্বশেষ বন্ধ ক্যান্ডেল মার্জ করা (যদি থাকে)
+    // ════════════════════════════════════════════
     let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
     if (latestCandle && latestCandle.close) {
-        // আগের সিরিজের সাথে মার্জ
         const exists = simAllCandles.some(c => c.time === latestCandle.time);
         if (!exists) {
             simAllCandles.push(latestCandle);
@@ -3441,26 +3444,30 @@
             const idx = simAllCandles.findIndex(c => c.time === latestCandle.time);
             if (idx !== -1) simAllCandles[idx] = latestCandle;
         }
+        realTimePrice = latestCandle.close; // দাম আপডেট
         simLastPrices[simCurrentSymbol] = latestCandle.close;
         simBasePrices[simCurrentSymbol] = latestCandle.close;
         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
     }
 
-    // ✅ 6. এখনো খালি থাকলে দ্বিতীয় সিমুলেশন (নিরাপদ)
-    if (!simAllCandles || simAllCandles.length === 0) {
-        simAllCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 100, realTimePrice, currentTimeframe);
-        await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+    // ════════════════════════════════════════════
+    // 🟡 ৪. ফাঁক দূরীকরণ: শেষ ক্যান্ডেলের ক্লোজ = realTimePrice
+    // ════════════════════════════════════════════
+    if (simAllCandles.length > 0) {
+        const lastCandle = simAllCandles[simAllCandles.length - 1];
+        // শুধু ক্লোজ প্রাইস আপডেট করছি, বাকি ওএইচএল অপরিবর্তিত
+        lastCandle.close = realTimePrice;
+        // দরকার হলে হাই/লো আপডেট
+        if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
+        if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
+        console.log(`🔗 ফাঁক বন্ধ: শেষ ক্যান্ডেলের ক্লোজ → ${realTimePrice}`);
     }
 
-    // ✅ 7. বর্তমান ক্যান্ডেল তৈরি – শেষ ক্যান্ডেলের ক্লোজ = realTimePrice, তাহলে Gap হবে না
+    // ════════════════════════════════════════════
+    // 🟣 ৫. বর্তমান ক্যান্ডেল তৈরি (realTimePrice দিয়ে শুরু)
+    // ════════════════════════════════════════════
     const now = Math.floor(Date.now() / 1000);
     const currentMinute = now - (now % 60);
-    // শেষ ঐতিহাসিক ক্যান্ডেলের ক্লোজকে realTimePrice দিয়ে ওভাররাইট করে সিমলেস বানাই
-    if (simAllCandles.length > 0) {
-        simAllCandles[simAllCandles.length - 1].close = realTimePrice;
-        simAllCandles[simAllCandles.length - 1].high = Math.max(simAllCandles[simAllCandles.length - 1].high, realTimePrice);
-        simAllCandles[simAllCandles.length - 1].low = Math.min(simAllCandles[simAllCandles.length - 1].low, realTimePrice);
-    }
     simCurrentCandle = {
         time: currentMinute,
         open: realTimePrice,
@@ -3471,10 +3478,11 @@
     };
     simLastPrices[simCurrentSymbol] = realTimePrice;
 
-    // ✅ 8. Lazy load setup
+    // ════════════════════════════════════════════
+    // 🟠 ৬. Lazy load & Chart Render (আগের মতোই)
+    // ════════════════════════════════════════════
     const visible = initLazy(simAllCandles);
 
-    // ✅ 9. চার্ট রেন্ডার
     const isMobile = window.innerWidth <= 768;
     const chartHeight = isMobile ? chartDiv.clientHeight : 420;
     const isDark = appTheme === 'dark';
@@ -3520,7 +3528,9 @@
     simVolumeSeries.setData(volData);
     simChart.timeScale().fitContent();
 
-    // Restore indicators, drawings, state (unchanged)
+    // ════════════════════════════════════════════
+    // 🟤 ৭. পূর্ববর্তী ইন্ডিকেটর, ড্রইং, স্টেট পুনরুদ্ধার
+    // ════════════════════════════════════════════
     const savedInd = await loadIndicatorsFromDB();
     if (savedInd && Object.keys(savedInd).length) {
         activeIndicators = savedInd;
