@@ -3425,6 +3425,7 @@
         simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, realTimePrice, currentTimeframe);
         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
     }
+    const visible = initLazy(simAllCandles);
 
     // 🔁 Current candle creation – realTimePrice থেকে open/close
     const now = Math.floor(Date.now() / 1000);
