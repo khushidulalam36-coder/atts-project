@@ -2893,21 +2893,23 @@
                                 const symbol = data.s.toUpperCase();
                                 const price = parseFloat(data.p);
                                 const timestamp = Math.floor(data.T / 1000);
-                                simLastPrices[symbol] = price;
-                                simBasePrices[symbol] = price;
-                                lastBinancePrice[symbol] = price;
-                                updateMobileTopBar();
-                                if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
-                                    const currentMinute = timestamp - (timestamp % 60);
-                                    if (simCurrentCandle.time === currentMinute) {
-                                        simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
-                                        simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
-                                        simCurrentCandle.close = price;
-                                        simCurrentCandle.volume += Math.floor(data.q);
-                                        simCandleSeries.update(simCurrentCandle);
-                                        updateAllIndicators();
-                                        checkAndExecuteSLTP();
-                                        updateSimUI();
+                                if (!isNaN(price) && price > 0) {
+                                    simLastPrices[symbol] = price;
+                                    simBasePrices[symbol] = price;
+                                    lastBinancePrice[symbol] = price;
+                                    updateMobileTopBar();
+                                    if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
+                                        const currentMinute = timestamp - (timestamp % 60);
+                                        if (simCurrentCandle.time === currentMinute) {
+                                            simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
+                                            simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
+                                            simCurrentCandle.close = price;
+                                            simCurrentCandle.volume += Math.floor(data.q);
+                                            try { simCandleSeries.update(simCurrentCandle); } catch (e) {}
+                                            updateAllIndicators();
+                                            checkAndExecuteSLTP();
+                                            updateSimUI();
+                                        }
                                     }
                                 }
                             }
@@ -2992,6 +2994,7 @@
             }
 
             // ─── BLOB LOAD / SAVE (through API proxy) ──────────────────────
+            // NOTE: Vercel Blob may be suspended; handle gracefully
             async function loadBlobCandles(symbol, tf) {
                 try {
                     const url = `${API_BASE}/candles/${symbol}`;
@@ -3002,7 +3005,7 @@
                         return data;
                     }
                 } catch (e) {
-                    console.warn('Blob fetch via API failed:', e);
+                    console.warn('Blob fetch via API failed (may be suspended):', e.message);
                 }
                 return null;
             }
@@ -3190,12 +3193,42 @@
                 return vwap;
             }
 
+            // ─── VALIDATION ──────────────────────────────────────────────────
+            function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
+
+            function sanitizeCandle(c) {
+                if (!c) return null;
+                const result = {
+                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
+                    open: isValidNumber(c.open) ? c.open : 1,
+                    high: isValidNumber(c.high) ? c.high : 1,
+                    low: isValidNumber(c.low) ? c.low : 1,
+                    close: isValidNumber(c.close) ? c.close : 1,
+                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
+                };
+                if (result.high < result.low) { const tmp = result.high;
+                    result.high = result.low;
+                    result.low = tmp; }
+                if (result.high < result.open) result.high = result.open;
+                if (result.high < result.close) result.high = result.close;
+                if (result.low > result.open) result.low = result.open;
+                if (result.low > result.close) result.low = result.close;
+                return result;
+            }
+
+            function sanitizeCandleData(candles) {
+                if (!candles || !Array.isArray(candles)) return [];
+                return candles.map(c => sanitizeCandle(c)).filter(c => c !== null);
+            }
+
             // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
                 if (simCurrentCandle) allData.push(simCurrentCandle);
                 if (allData.length === 0) return;
+                const safeData = sanitizeCandleData(allData);
+                if (safeData.length === 0) return;
 
                 const removeSeries = (key) => {
                     if (simIndicatorSeries[key]) {
@@ -3207,119 +3240,177 @@
                     if (!key.startsWith('ema')) continue;
                     const period = parseInt(key.replace('ema', ''));
                     if (activeIndicators[key]) {
-                        const emaData = calculateEMA(allData, period);
-                        if (simIndicatorSeries[key]) simIndicatorSeries[key].setData(emaData);
-                        else {
-                            const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
-                                lastValueVisible: true, priceFormat: { type: 'price', precision: 4,
-                                    minMove: 0.0001 } });
-                            ls.setData(emaData);
-                            simIndicatorSeries[key] = ls;
+                        const emaData = calculateEMA(safeData, period);
+                        if (emaData.length > 0) {
+                            if (simIndicatorSeries[key]) {
+                                try { simIndicatorSeries[key].setData(emaData); } catch (e) { console.warn(
+                                        'EMA update error:', e); }
+                            } else {
+                                try {
+                                    const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
+                                        lastValueVisible: true, priceFormat: { type: 'price', precision: 4,
+                                            minMove: 0.0001 } });
+                                    ls.setData(emaData);
+                                    simIndicatorSeries[key] = ls;
+                                } catch (e) { console.warn('EMA create error:', e); }
+                            }
                         }
                     } else { removeSeries(key); }
                 }
                 if (activeIndicators['bb']) {
-                    const { sma, upper, lower } = calculateBB(allData);
+                    const { sma, upper, lower } = calculateBB(safeData);
                     ['bb_sma', 'bb_upper', 'bb_lower'].forEach((k, i) => {
                         const data = [sma, upper, lower][i];
-                        if (simIndicatorSeries[k]) simIndicatorSeries[k].setData(data);
-                        else {
-                            const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' : '#f59e0b',
-                                lineWidth: 1, priceScaleId: 'right', lastValueVisible: false,
-                                priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
-                            if (i > 0) ls.applyOptions({ lineStyle: 2 });
-                            ls.setData(data);
-                            simIndicatorSeries[k] = ls;
+                        if (data && data.length > 0) {
+                            if (simIndicatorSeries[k]) {
+                                try { simIndicatorSeries[k].setData(data); } catch (e) { console.warn(
+                                        'BB update error:', e); }
+                            } else {
+                                try {
+                                    const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
+                                            '#f59e0b',
+                                        lineWidth: i === 0 ? 2 : 1, priceScaleId: 'right',
+                                        lastValueVisible: false, priceFormat: { type: 'price',
+                                            precision: 4, minMove: 0.0001 } });
+                                    if (i > 0) ls.applyOptions({ lineStyle: 2 });
+                                    ls.setData(data);
+                                    simIndicatorSeries[k] = ls;
+                                } catch (e) { console.warn('BB create error:', e); }
+                            }
                         }
                     });
                 } else { ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['rsi']) {
-                    const rsiData = calculateRSI(allData);
-                    if (simIndicatorSeries['rsi']) simIndicatorSeries['rsi'].setData(rsiData);
-                    else {
-                        const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'], lineWidth: 2,
-                            priceScaleId: 'rsi', lastValueVisible: true, priceFormat: { type: 'price',
-                                precision: 2, minMove: 0.01 } });
-                        simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
-                        pane.setData(rsiData);
-                        simIndicatorSeries['rsi'] = pane;
+                    const rsiData = calculateRSI(safeData);
+                    if (rsiData.length > 0) {
+                        if (simIndicatorSeries['rsi']) {
+                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) { console.warn(
+                                    'RSI update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
+                                    lineWidth: 2, priceScaleId: 'rsi', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                                simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85,
+                                        bottom: 0 } });
+                                pane.setData(rsiData);
+                                simIndicatorSeries['rsi'] = pane;
+                            } catch (e) { console.warn('RSI create error:', e); }
+                        }
                     }
                 } else { removeSeries('rsi'); }
                 if (activeIndicators['macd']) {
-                    const { macd, signal, histogram } = calculateMACD(allData);
+                    const { macd, signal, histogram } = calculateMACD(safeData);
                     if (macd.length > 0) {
-                        if (simIndicatorSeries['macd']) simIndicatorSeries['macd'].setData(macd);
-                        else {
-                            const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'], lineWidth: 2,
-                                priceScaleId: 'macd', lastValueVisible: false,
-                                priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
-                            simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9,
-                                    bottom: 0.2 } });
-                            pane.setData(macd);
-                            simIndicatorSeries['macd'] = pane;
+                        if (simIndicatorSeries['macd']) {
+                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) { console.warn(
+                                    'MACD update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
+                                    lineWidth: 2, priceScaleId: 'macd', lastValueVisible: false,
+                                    priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+                                simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9,
+                                        bottom: 0.2 } });
+                                pane.setData(macd);
+                                simIndicatorSeries['macd'] = pane;
+                            } catch (e) { console.warn('MACD create error:', e); }
                         }
-                        if (simIndicatorSeries['macd_signal']) simIndicatorSeries['macd_signal'].setData(signal);
-                        else {
-                            const sigPane = simChart.addLineSeries({ color: '#34d399', lineWidth: 1,
-                                priceScaleId: 'macd', lastValueVisible: false,
-                                priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
-                            sigPane.setData(signal);
-                            simIndicatorSeries['macd_signal'] = sigPane;
+                        if (signal.length > 0) {
+                            if (simIndicatorSeries['macd_signal']) {
+                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) { console
+                                        .warn('MACD signal update error:', e); }
+                            } else {
+                                try {
+                                    const sigPane = simChart.addLineSeries({ color: '#34d399',
+                                        lineWidth: 1, priceScaleId: 'macd', lastValueVisible: false,
+                                        priceFormat: { type: 'price', precision: 4,
+                                        minMove: 0.0001 } });
+                                    sigPane.setData(signal);
+                                    simIndicatorSeries['macd_signal'] = sigPane;
+                                } catch (e) { console.warn('MACD signal create error:', e); }
+                            }
                         }
-                        const histData = histogram.map(h => ({ time: h.time, value: h.value, color: h
-                                .value >= 0 ? 'rgba(16,185,129,0.5)' :
-                                'rgba(239,68,68,0.5)' }));
-                        if (simIndicatorSeries['macd_hist']) simIndicatorSeries['macd_hist'].setData(histData);
-                        else {
-                            const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
-                                priceFormat: { type: 'price', precision: 4 } });
-                            histSeries.setData(histData);
-                            simIndicatorSeries['macd_hist'] = histSeries;
+                        if (histogram.length > 0) {
+                            const histData = histogram.map(h => ({ time: h.time, value: h.value, color: h
+                                    .value >= 0 ? 'rgba(16,185,129,0.5)' :
+                                    'rgba(239,68,68,0.5)' }));
+                            if (simIndicatorSeries['macd_hist']) {
+                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) { console
+                                        .warn('MACD hist update error:', e); }
+                            } else {
+                                try {
+                                    const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
+                                        priceFormat: { type: 'price', precision: 4 } });
+                                    histSeries.setData(histData);
+                                    simIndicatorSeries['macd_hist'] = histSeries;
+                                } catch (e) { console.warn('MACD hist create error:', e); }
+                            }
                         }
                     }
                 } else { ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['stoch']) {
-                    const { k, d } = calculateStochastic(allData);
+                    const { k, d } = calculateStochastic(safeData);
                     if (k.length > 0) {
-                        if (simIndicatorSeries['stoch_k']) simIndicatorSeries['stoch_k'].setData(k);
-                        else {
-                            const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
-                                priceScaleId: 'stoch', lastValueVisible: true,
-                                priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                            simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85,
-                                    bottom: 0.15 } });
-                            kPane.setData(k);
-                            simIndicatorSeries['stoch_k'] = kPane;
+                        if (simIndicatorSeries['stoch_k']) {
+                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) { console.warn(
+                                    'Stoch K update error:', e); }
+                        } else {
+                            try {
+                                const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
+                                    priceScaleId: 'stoch', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                                simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85,
+                                        bottom: 0.15 } });
+                                kPane.setData(k);
+                                simIndicatorSeries['stoch_k'] = kPane;
+                            } catch (e) { console.warn('Stoch K create error:', e); }
                         }
-                        if (simIndicatorSeries['stoch_d']) simIndicatorSeries['stoch_d'].setData(d);
-                        else {
-                            const dPane = simChart.addLineSeries({ color: '#f472b6', lineWidth: 1,
-                                priceScaleId: 'stoch', lastValueVisible: true,
-                                priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                            dPane.setData(d);
-                            simIndicatorSeries['stoch_d'] = dPane;
+                        if (d.length > 0) {
+                            if (simIndicatorSeries['stoch_d']) {
+                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) { console.warn(
+                                        'Stoch D update error:', e); }
+                            } else {
+                                try {
+                                    const dPane = simChart.addLineSeries({ color: '#f472b6',
+                                        lineWidth: 1, priceScaleId: 'stoch', lastValueVisible: true,
+                                        priceFormat: { type: 'price', precision: 2,
+                                        minMove: 0.01 } });
+                                    dPane.setData(d);
+                                    simIndicatorSeries['stoch_d'] = dPane;
+                                } catch (e) { console.warn('Stoch D create error:', e); }
+                            }
                         }
                     }
                 } else { ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['vwap']) {
-                    const vwapData = calculateVWAP(allData);
-                    if (simIndicatorSeries['vwap']) simIndicatorSeries['vwap'].setData(vwapData);
-                    else {
-                        const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'], lineWidth: 2,
-                            priceScaleId: 'right', lastValueVisible: true,
-                            priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
-                        pane.setData(vwapData);
-                        simIndicatorSeries['vwap'] = pane;
+                    const vwapData = calculateVWAP(safeData);
+                    if (vwapData.length > 0) {
+                        if (simIndicatorSeries['vwap']) {
+                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) { console.warn(
+                                    'VWAP update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'],
+                                    lineWidth: 2, priceScaleId: 'right', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+                                pane.setData(vwapData);
+                                simIndicatorSeries['vwap'] = pane;
+                            } catch (e) { console.warn('VWAP create error:', e); }
+                        }
                     }
                 } else { removeSeries('vwap'); }
                 if (simVolumeSeries) {
-                    if (showVolume) {
-                        const volData = allData.map(c => ({ time: c.time, value: c.volume, color: c.close >= c
-                                .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
-                        simVolumeSeries.setData(volData);
-                        simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
-                    } else { simVolumeSeries.setData([]);
-                        simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
+                    try {
+                        if (showVolume) {
+                            const volData = safeData.map(c => ({ time: c.time, value: c.volume || 0,
+                                color: c.close >= c.open ? 'rgba(16,185,129,0.35)' :
+                                'rgba(239,68,68,0.35)' }));
+                            simVolumeSeries.setData(volData);
+                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+                        } else { simVolumeSeries.setData([]);
+                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
+                    } catch (e) { console.warn('Volume update error:', e); }
                 }
             }
 
@@ -3371,7 +3462,7 @@
                     return;
                 }
                 if (simChart) {
-                    simChart.remove();
+                    try { simChart.remove(); } catch (e) {}
                     simChart = null;
                     simCandleSeries = null;
                     simVolumeSeries = null;
@@ -3399,30 +3490,29 @@
                 let sourceLabel = 'Simulation';
                 let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
                 if (binanceData && binanceData.length > 0) {
-                    candles = binanceData;
+                    candles = sanitizeCandleData(binanceData);
                     sourceLabel = 'Binance REST';
                     console.log('✅ Real candles from Binance REST:', candles.length);
-                    // Save to DB for cache
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                 } else {
                     // ── FALLBACK: IndexedDB ──
                     let dbCandles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
                     if (dbCandles && dbCandles.length > 0) {
-                        candles = dbCandles;
+                        candles = sanitizeCandleData(dbCandles);
                         sourceLabel = 'IndexedDB';
                         console.log('✅ Candles from IndexedDB:', candles.length);
                     } else {
-                        // ── FALLBACK: Blob ──
+                        // ── FALLBACK: Blob (may be suspended) ──
                         let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
                         if (blobData && blobData.length > 0) {
-                            candles = blobData;
+                            candles = sanitizeCandleData(blobData);
                             sourceLabel = 'Vercel Blob';
                             console.log('✅ Candles from Vercel Blob:', candles.length);
                             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                         } else {
                             // ── FINAL FALLBACK: Simulation ──
-                            candles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice,
-                            currentTimeframe);
+                            candles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
+                                realTimePrice, currentTimeframe));
                             sourceLabel = 'Simulation (Fallback)';
                             console.warn('⚠️ Using simulated candles as last resort');
                             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
@@ -3433,25 +3523,27 @@
                 // ── STEP 3: Merge with latest Binance candle to fill gaps ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
-                    const exists = candles.some(c => c.time === latestCandle.time);
-                    if (!exists) {
-                        candles.push(latestCandle);
-                        candles.sort((a, b) => a.time - b.time);
-                    } else {
-                        const idx = candles.findIndex(c => c.time === latestCandle.time);
-                        if (idx !== -1) candles[idx] = latestCandle;
+                    latestCandle = sanitizeCandle(latestCandle);
+                    if (latestCandle) {
+                        const exists = candles.some(c => c.time === latestCandle.time);
+                        if (!exists) {
+                            candles.push(latestCandle);
+                            candles.sort((a, b) => a.time - b.time);
+                        } else {
+                            const idx = candles.findIndex(c => c.time === latestCandle.time);
+                            if (idx !== -1) candles[idx] = latestCandle;
+                        }
+                        realTimePrice = latestCandle.close;
+                        simLastPrices[simCurrentSymbol] = latestCandle.close;
+                        simBasePrices[simCurrentSymbol] = latestCandle.close;
+                        sourceLabel += ' + latest';
                     }
-                    realTimePrice = latestCandle.close;
-                    simLastPrices[simCurrentSymbol] = latestCandle.close;
-                    simBasePrices[simCurrentSymbol] = latestCandle.close;
-                    sourceLabel += ' + latest';
                 }
 
                 // ── STEP 4: Ensure last candle close matches real price ──
                 if (candles.length > 0) {
                     const lastCandle = candles[candles.length - 1];
-                    // If there's a gap, adjust the last candle's close
-                    if (Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
+                    if (isValidNumber(realTimePrice) && Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
                         lastCandle.close = realTimePrice;
                         if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
                         if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
@@ -3460,23 +3552,27 @@
                 }
 
                 // ── STEP 5: Set simAllCandles ──
-                simAllCandles = candles;
+                simAllCandles = sanitizeCandleData(candles);
+                if (simAllCandles.length === 0) {
+                    simAllCandles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
+                        realTimePrice, currentTimeframe));
+                    sourceLabel = 'Simulation (Emergency)';
+                }
 
                 // ── STEP 6: Current candle ──
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
                 realTimePrice;
-                simCurrentCandle = {
+                simCurrentCandle = sanitizeCandle({
                     time: currentMinute,
                     open: lastClose,
                     high: lastClose,
                     low: lastClose,
                     close: lastClose,
                     volume: 0
-                };
-                // If there's a real-time price, use it for the current candle
-                if (realTimePrice && realTimePrice > 0) {
+                });
+                if (isValidNumber(realTimePrice) && realTimePrice > 0) {
                     simCurrentCandle.open = lastClose;
                     simCurrentCandle.close = realTimePrice;
                     simCurrentCandle.high = Math.max(lastClose, realTimePrice);
@@ -3486,246 +3582,273 @@
                 // ── STEP 7: Lazy load & Chart render ──
                 const visible = initLazy(simAllCandles);
                 const isMobile = window.innerWidth <= 768;
-                const chartHeight = isMobile ? chartDiv.clientHeight : 420;
+                const chartHeight = isMobile ? Math.max(180, chartDiv.clientHeight) : 420;
                 const isDark = appTheme === 'dark';
 
-                simChart = LightweightCharts.createChart(chartDiv, {
-                    width: chartDiv.clientWidth,
-                    height: chartHeight,
-                    timeScale: {
-                        timeVisible: true,
-                        secondsVisible: currentTimeframe < 300,
-                        rightOffset: 8,
-                        barSpacing: isMobile ? 4 : 8
-                    },
-                    layout: {
-                        background: { type: 'solid', color: 'transparent' },
-                        textColor: isDark ? '#94a3b8' : '#6b7280'
-                    },
-                    grid: { vertLines: { visible: false }, horzLines: { visible: false } },
-                    crosshair: { mode: 1 },
-                    rightPriceScale: { borderVisible: true, autoScale: true, scaleMargins: { top: 0.05,
-                            bottom: 0.05 } },
-                    handleScroll: { vertTouchDrag: false, horzTouchDrag: true },
-                    handleScale: { axisPressedMouseMove: true, pinch: true },
-                });
+                try {
+                    simChart = LightweightCharts.createChart(chartDiv, {
+                        width: chartDiv.clientWidth,
+                        height: chartHeight,
+                        timeScale: {
+                            timeVisible: true,
+                            secondsVisible: currentTimeframe < 300,
+                            rightOffset: 8,
+                            barSpacing: isMobile ? 4 : 8
+                        },
+                        layout: {
+                            background: { type: 'solid', color: 'transparent' },
+                            textColor: isDark ? '#94a3b8' : '#6b7280'
+                        },
+                        grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+                        crosshair: { mode: 1 },
+                        rightPriceScale: { borderVisible: true, autoScale: true, scaleMargins: { top: 0.05,
+                                bottom: 0.05 } },
+                        handleScroll: { vertTouchDrag: false, horzTouchDrag: true },
+                        handleScale: { axisPressedMouseMove: true, pinch: true },
+                    });
 
-                simCandleSeries = simChart.addCandlestickSeries({
-                    upColor: '#10b981',
-                    downColor: '#ef4444',
-                    borderUpColor: '#10b981',
-                    borderDownColor: '#ef4444',
-                    wickUpColor: '#10b981',
-                    wickDownColor: '#ef4444'
-                });
-                simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
-                if (showVolume) simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
-                else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+                    simCandleSeries = simChart.addCandlestickSeries({
+                        upColor: '#10b981',
+                        downColor: '#ef4444',
+                        borderUpColor: '#10b981',
+                        borderDownColor: '#ef4444',
+                        wickUpColor: '#10b981',
+                        wickDownColor: '#ef4444'
+                    });
+                    simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' },
+                        priceScaleId: '' });
+                    if (showVolume) simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88,
+                        bottom: 0 } });
+                    else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
 
-                const allCandles = [...visible];
-                if (simCurrentCandle) allCandles.push(simCurrentCandle);
-                simCandleSeries.setData(allCandles);
-                updateAllIndicators();
-                const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c.open ?
-                        'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
-                simVolumeSeries.setData(volData);
-                simChart.timeScale().fitContent();
-
-                // ── STEP 8: Restore saved state ──
-                const savedInd = await loadIndicatorsFromDB();
-                if (savedInd && Object.keys(savedInd).length) {
-                    activeIndicators = savedInd;
+                    const allCandles = [...visible];
+                    if (simCurrentCandle) allCandles.push(simCurrentCandle);
+                    const safeAll = sanitizeCandleData(allCandles);
+                    simCandleSeries.setData(safeAll);
                     updateAllIndicators();
-                    updateIndDropdownBtnState();
-                }
-                const savedDraw = await loadDrawingsFromDB(simCurrentSymbol);
-                if (savedDraw && savedDraw.length) {
-                    if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                    portfolio.drawnLines[simCurrentSymbol] = savedDraw;
-                    redrawAllLines();
-                }
-                const savedState = await loadChartStateFromDB(simCurrentSymbol);
-                if (savedState && savedState.zoom) {
-                    try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
-                }
+                    const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
+                            .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
+                    simVolumeSeries.setData(volData);
+                    simChart.timeScale().fitContent();
 
-                // ── STEP 9: Drawing tools ──
-                simChart.subscribeClick(param => {
-                    if (!currentDrawingTool || !param.point || !simCandleSeries) return;
-                    if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
-                        const price = simCandleSeries.coordinateToPrice(param.point.y);
-                        if (price !== null && price > 0) {
-                            let color, label;
-                            if (currentDrawingTool === 'support') { color = '#10b981';
-                                label = 'Support'; } else if (currentDrawingTool === 'resistance') { color =
-                                    '#ef4444';
-                                label = 'Resistance'; } else { color = '#3b82f6';
-                                label = 'H-Line'; }
-                            if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] =
-                            [];
-                            portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color,
-                                label, style: 0 });
-                            savePortfolioToStorage();
-                            saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
-                            redrawAllLines();
-                            showToast('📐 ' + label + ' at $' + price.toFixed(4));
-                            currentDrawingTool = null;
-                            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-                        }
+                    // ── STEP 8: Restore saved state ──
+                    const savedInd = await loadIndicatorsFromDB();
+                    if (savedInd && Object.keys(savedInd).length) {
+                        activeIndicators = savedInd;
+                        updateAllIndicators();
+                        updateIndDropdownBtnState();
                     }
-                });
+                    const savedDraw = await loadDrawingsFromDB(simCurrentSymbol);
+                    if (savedDraw && savedDraw.length) {
+                        if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                        portfolio.drawnLines[simCurrentSymbol] = savedDraw;
+                        redrawAllLines();
+                    }
+                    const savedState = await loadChartStateFromDB(simCurrentSymbol);
+                    if (savedState && savedState.zoom) {
+                        try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
+                    }
 
-                // ── Drag lines ──
-                let dragStateLocal = null;
-                const mousedownHandler = (e) => {
-                    if (!simCandleSeries || manualDrawnLines.length === 0) return;
-                    const rect = chartDiv.getBoundingClientRect();
-                    const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
-                    const threshold = 14;
-                    let closest = null,
-                        closestDist = Infinity;
-                    for (const ml of manualDrawnLines) {
-                        if (!ml.lineObj) continue;
-                        const lineY = simCandleSeries.priceToCoordinate(ml.price);
-                        if (lineY !== null) {
-                            const dist = Math.abs(y - lineY);
-                            if (dist < threshold && dist < closestDist) { closest = ml;
-                                closestDist = dist; }
-                        }
-                    }
-                    if (closest) {
-                        dragStateLocal = { active: true, lineKey: closest.key, startPrice: closest.price,
-                            currentPrice: closest.price, origIndex: closest.index };
-                        chartDiv.classList.add('dragging-line');
-                        e.preventDefault();
-                    }
-                };
-                chartDiv.addEventListener('mousedown', mousedownHandler);
-                chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
-
-                const moveHandler = (e) => {
-                    if (!dragStateLocal || !dragStateLocal.active || !simCandleSeries) return;
-                    const rect = chartDiv.getBoundingClientRect();
-                    const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
-                    const newPrice = simCandleSeries.coordinateToPrice(y);
-                    if (newPrice !== null && newPrice > 0) {
-                        dragStateLocal.currentPrice = +newPrice.toFixed(4);
-                        const ml = manualDrawnLines.find(m => m.key === dragStateLocal.lineKey);
-                        if (ml && ml.lineObj) {
-                            try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
-                            const newLine = simCandleSeries.createPriceLine({ price: dragStateLocal
-                                    .currentPrice, color: ml.color, lineWidth: 2, lineStyle: ml.style || 0,
-                                axisLabelVisible: true, title: ml.label });
-                            ml.lineObj = newLine;
-                            allPriceLines[ml.key] = newLine;
-                        }
-                    }
-                };
-                document.addEventListener('mousemove', moveHandler);
-                document.addEventListener('touchmove', moveHandler, { passive: false });
-
-                const upHandler = () => {
-                    if (dragStateLocal && dragStateLocal.active) {
-                        if (dragStateLocal.currentPrice !== dragStateLocal.startPrice) {
-                            const idx = dragStateLocal.origIndex;
-                            if (idx >= 0 && idx < (portfolio.drawnLines[simCurrentSymbol] || []).length) {
-                                portfolio.drawnLines[simCurrentSymbol][idx].price = dragStateLocal.currentPrice;
+                    // ── STEP 9: Drawing tools ──
+                    simChart.subscribeClick(param => {
+                        if (!currentDrawingTool || !param.point || !simCandleSeries) return;
+                        if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
+                            const price = simCandleSeries.coordinateToPrice(param.point.y);
+                            if (isValidNumber(price) && price > 0) {
+                                let color, label;
+                                if (currentDrawingTool === 'support') { color = '#10b981';
+                                    label = 'Support'; } else if (currentDrawingTool === 'resistance') { color =
+                                        '#ef4444';
+                                    label = 'Resistance'; } else { color = '#3b82f6';
+                                    label = 'H-Line'; }
+                                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[
+                                    simCurrentSymbol] = [];
+                                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4),
+                                    color, label, style: 0 });
                                 savePortfolioToStorage();
                                 saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
                                 redrawAllLines();
-                                showToast('📐 Line moved to $' + dragStateLocal.currentPrice.toFixed(4));
+                                showToast('📐 ' + label + ' at $' + price.toFixed(4));
+                                currentDrawingTool = null;
+                                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove(
+                                    'active'));
                             }
                         }
-                        dragStateLocal = null;
-                        chartDiv.classList.remove('dragging-line');
-                    }
-                };
-                document.addEventListener('mouseup', upHandler);
-                document.addEventListener('touchend', upHandler);
+                    });
 
-                simChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                    if (range) {
-                        saveChartStateToDB(simCurrentSymbol, { zoom: range });
-                    }
-                });
+                    // ── Drag lines ──
+                    let dragStateLocal = null;
+                    const mousedownHandler = (e) => {
+                        if (!simCandleSeries || manualDrawnLines.length === 0) return;
+                        const rect = chartDiv.getBoundingClientRect();
+                        const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
+                        const threshold = 14;
+                        let closest = null,
+                            closestDist = Infinity;
+                        for (const ml of manualDrawnLines) {
+                            if (!ml.lineObj) continue;
+                            const lineY = simCandleSeries.priceToCoordinate(ml.price);
+                            if (lineY !== null) {
+                                const dist = Math.abs(y - lineY);
+                                if (dist < threshold && dist < closestDist) { closest = ml;
+                                    closestDist = dist; }
+                            }
+                        }
+                        if (closest) {
+                            dragStateLocal = { active: true, lineKey: closest.key, startPrice: closest.price,
+                                currentPrice: closest.price, origIndex: closest.index };
+                            chartDiv.classList.add('dragging-line');
+                            e.preventDefault();
+                        }
+                    };
+                    chartDiv.addEventListener('mousedown', mousedownHandler);
+                    chartDiv.addEventListener('touchstart', mousedownHandler, { passive: false });
 
-                if (loadingEl) loadingEl.style.display = 'none';
-                redrawAllLines();
+                    const moveHandler = (e) => {
+                        if (!dragStateLocal || !dragStateLocal.active || !simCandleSeries) return;
+                        const rect = chartDiv.getBoundingClientRect();
+                        const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
+                        const newPrice = simCandleSeries.coordinateToPrice(y);
+                        if (isValidNumber(newPrice) && newPrice > 0) {
+                            dragStateLocal.currentPrice = +newPrice.toFixed(4);
+                            const ml = manualDrawnLines.find(m => m.key === dragStateLocal.lineKey);
+                            if (ml && ml.lineObj) {
+                                try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
+                                const newLine = simCandleSeries.createPriceLine({ price: dragStateLocal
+                                        .currentPrice, color: ml.color, lineWidth: 2, lineStyle: ml
+                                        .style || 0, axisLabelVisible: true, title: ml.label });
+                                ml.lineObj = newLine;
+                                allPriceLines[ml.key] = newLine;
+                            }
+                        }
+                    };
+                    document.addEventListener('mousemove', moveHandler);
+                    document.addEventListener('touchmove', moveHandler, { passive: false });
 
-                // ── STEP 10: Price update interval ──
-                if (simPriceIntervalId) clearInterval(simPriceIntervalId);
-                simPriceIntervalId = setInterval(() => {
-                    if (!simCurrentCandle || !simCandleSeries) return;
-                    let price = simLastPrices[simCurrentSymbol];
-                    if (!price || isNaN(price)) {
-                        const vol = simVolatility[simCurrentSymbol] || 0.0015;
-                        const change = (simCurrentCandle.close || 100) * vol * (Math.random() - 0.48) * 0.8;
-                        price = (simCurrentCandle.close || 100) + change;
-                        price = +price.toFixed(4);
-                        simLastPrices[simCurrentSymbol] = price;
-                    }
-                    if (isNaN(price) || !isFinite(price)) {
-                        price = simCurrentCandle.close || simBasePrices[simCurrentSymbol] || 100;
-                    }
-                    simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
-                    simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
-                    simCurrentCandle.close = price;
-                    simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math.random() * 3000);
-                    simCandleSeries.update(simCurrentCandle);
-                    updateAllIndicators();
-                    checkAndExecuteSLTP();
-                    updateSimUI();
-                    updateMobileTopBar();
-                }, 1000);
+                    const upHandler = () => {
+                        if (dragStateLocal && dragStateLocal.active) {
+                            if (dragStateLocal.currentPrice !== dragStateLocal.startPrice) {
+                                const idx = dragStateLocal.origIndex;
+                                if (idx >= 0 && idx < (portfolio.drawnLines[simCurrentSymbol] || [])
+                                    .length) {
+                                    portfolio.drawnLines[simCurrentSymbol][idx].price = dragStateLocal
+                                        .currentPrice;
+                                    savePortfolioToStorage();
+                                    saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[
+                                        simCurrentSymbol]);
+                                    redrawAllLines();
+                                    showToast('📐 Line moved to $' + dragStateLocal.currentPrice
+                                        .toFixed(4));
+                                }
+                            }
+                            dragStateLocal = null;
+                            chartDiv.classList.remove('dragging-line');
+                        }
+                    };
+                    document.addEventListener('mouseup', upHandler);
+                    document.addEventListener('touchend', upHandler);
 
-                // ── STEP 11: Candle close interval ──
-                if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
-                simCandleCloseIntervalId = setInterval(() => {
-                    if (!simCurrentCandle || !simCandleSeries) return;
-                    const now2 = Math.floor(Date.now() / 1000);
-                    const currentMinute2 = now2 - (now2 % 60);
-                    if (simCurrentCandle.time < currentMinute2) {
-                        simAllCandles.push({ ...simCurrentCandle });
-                        if (simAllCandles.length > 10000) simAllCandles = simAllCandles.slice(-10000);
-                        saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
-                        const newOpen = simCurrentCandle.close;
-                        simCurrentCandle = {
-                            time: currentMinute2,
-                            open: newOpen,
-                            high: newOpen,
-                            low: newOpen,
-                            close: newOpen,
-                            volume: 0
-                        };
-                        simCandleSeries.update(simCurrentCandle);
-                        updateAllIndicators();
-                    }
-                }, 10000);
+                    simChart.timeScale().subscribeVisibleTimeRangeChange(range => {
+                        if (range) {
+                            saveChartStateToDB(simCurrentSymbol, { zoom: range });
+                        }
+                    });
 
-                const debouncedResize = debounce(() => {
-                    if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                        simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
-                    }
-                }, 100);
-                simResizeObserver = new ResizeObserver(debouncedResize);
-                simResizeObserver.observe(chartDiv);
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    redrawAllLines();
 
-                window._chartCleanup = function() {
-                    document.removeEventListener('mousemove', moveHandler);
-                    document.removeEventListener('touchmove', moveHandler);
-                    document.removeEventListener('mouseup', upHandler);
-                    document.removeEventListener('touchend', upHandler);
-                    chartDiv.removeEventListener('mousedown', mousedownHandler);
-                    chartDiv.removeEventListener('touchstart', mousedownHandler);
+                    // ── STEP 10: Price update interval ──
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
-                    if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
-                    if (simResizeObserver) simResizeObserver.disconnect();
-                };
+                    simPriceIntervalId = setInterval(() => {
+                        if (!simCurrentCandle || !simCandleSeries) return;
+                        let price = simLastPrices[simCurrentSymbol];
+                        if (!isValidNumber(price)) {
+                            const vol = simVolatility[simCurrentSymbol] || 0.0015;
+                            const change = (simCurrentCandle.close || 100) * vol * (Math.random() - 0.48) *
+                                0.8;
+                            price = (simCurrentCandle.close || 100) + change;
+                            price = +price.toFixed(4);
+                            simLastPrices[simCurrentSymbol] = price;
+                        }
+                        if (!isValidNumber(price)) {
+                            price = simCurrentCandle.close || simBasePrices[simCurrentSymbol] || 100;
+                        }
+                        simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
+                        simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
+                        simCurrentCandle.close = price;
+                        simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
+                        .random() * 3000);
+                        try { simCandleSeries.update(simCurrentCandle); } catch (e) {}
+                        updateAllIndicators();
+                        checkAndExecuteSLTP();
+                        updateSimUI();
+                        updateMobileTopBar();
+                    }, 1000);
 
-                // ── Update debug panel ──
-                document.getElementById('cronStatus').textContent = sourceLabel;
-                document.getElementById('candleCount').textContent = simAllCandles.length;
-                updateDebugPanel();
+                    // ── STEP 11: Candle close interval ──
+                    if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
+                    simCandleCloseIntervalId = setInterval(() => {
+                        if (!simCurrentCandle || !simCandleSeries) return;
+                        const now2 = Math.floor(Date.now() / 1000);
+                        const currentMinute2 = now2 - (now2 % 60);
+                        if (simCurrentCandle.time < currentMinute2) {
+                            const closedCandle = sanitizeCandle({ ...simCurrentCandle });
+                            if (closedCandle) {
+                                simAllCandles.push(closedCandle);
+                                if (simAllCandles.length > 10000) simAllCandles = simAllCandles.slice(
+                                    -10000);
+                                saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+                            }
+                            const newOpen = simCurrentCandle.close;
+                            const newCandle = sanitizeCandle({
+                                time: currentMinute2,
+                                open: newOpen,
+                                high: newOpen,
+                                low: newOpen,
+                                close: newOpen,
+                                volume: 0
+                            });
+                            if (newCandle) {
+                                simCurrentCandle = newCandle;
+                                try { simCandleSeries.update(simCurrentCandle); } catch (e) {}
+                                updateAllIndicators();
+                            }
+                        }
+                    }, 10000);
+
+                    const debouncedResize = debounce(() => {
+                        if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                            try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                    .clientHeight }); } catch (e) {}
+                        }
+                    }, 100);
+                    simResizeObserver = new ResizeObserver(debouncedResize);
+                    simResizeObserver.observe(chartDiv);
+
+                    window._chartCleanup = function() {
+                        document.removeEventListener('mousemove', moveHandler);
+                        document.removeEventListener('touchmove', moveHandler);
+                        document.removeEventListener('mouseup', upHandler);
+                        document.removeEventListener('touchend', upHandler);
+                        chartDiv.removeEventListener('mousedown', mousedownHandler);
+                        chartDiv.removeEventListener('touchstart', mousedownHandler);
+                        if (simPriceIntervalId) clearInterval(simPriceIntervalId);
+                        if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
+                        if (simResizeObserver) simResizeObserver.disconnect();
+                    };
+
+                    // ── Update debug panel ──
+                    document.getElementById('cronStatus').textContent = sourceLabel;
+                    document.getElementById('candleCount').textContent = simAllCandles.length;
+                    updateDebugPanel();
+
+                } catch (err) {
+                    console.error('Chart init error:', err);
+                    if (loadingEl) loadingEl.innerHTML =
+                        '<span style="color:var(--danger);">⚠️ Chart error: ' + err.message + '</span>';
+                    if (simChart) { try { simChart.remove(); } catch (e) {}
+                        simChart = null; }
+                }
             }
 
             // ─── REDRAW LINES ────────────────────────────────────────────────
@@ -3799,7 +3922,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const price = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (isNaN(price) || price <= 0) continue;
+                    if (!isValidNumber(price) || price <= 0) continue;
                     const isShort = h.qty < 0;
                     if (h.slPrice) {
                         if ((!isShort && price <= h.slPrice) || (isShort && price >= h.slPrice)) {
@@ -3873,7 +3996,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (cp && !isNaN(cp)) {
+                    if (isValidNumber(cp)) {
                         h.currentPrice = cp;
                         if (h.qty > 0) totalPL += (cp - h.avgPrice) * h.qty;
                         else totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
@@ -3886,7 +4009,7 @@
                 if (cashEl) cashEl.textContent = '💰 $' + (portfolio.cash || 0).toFixed(2);
                 if (totalEl) totalEl.textContent = '📊 $' + totalValue.toFixed(2);
                 if (plEl) {
-                    plEl.textContent = (totalPL >= 0 ? '📈 +$' : '📈 -$') + Math.abs(totalPL).toFixed(2);
+                    plEl.textContent = (totalPL >= 0 ? '📈 +$' : '📉 -$') + Math.abs(totalPL).toFixed(2);
                     plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
                 }
                 const tbody = document.querySelector('#simHoldingsTable tbody');
@@ -3923,7 +4046,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (cp && !isNaN(cp)) {
+                    if (isValidNumber(cp)) {
                         if (h.qty > 0) totalPL += (cp - h.avgPrice) * h.qty;
                         else totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
                         totalValue += Math.abs(h.qty) * cp;
@@ -3940,7 +4063,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (cp && !isNaN(cp)) eq += Math.abs(h.qty) * cp;
+                    if (isValidNumber(cp)) eq += Math.abs(h.qty) * cp;
                 }
                 return eq;
             }
@@ -3950,7 +4073,7 @@
                 for (const sym in portfolio.holdings) {
                     const h = portfolio.holdings[sym];
                     const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (cp && !isNaN(cp)) {
+                    if (isValidNumber(cp)) {
                         if (h.qty > 0) pl += (cp - h.avgPrice) * h.qty;
                         else pl += (h.avgPrice - cp) * Math.abs(h.qty);
                     }
@@ -3964,7 +4087,7 @@
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
                 let price = simLastPrices[symbol];
-                if (!price || isNaN(price) || price <= 0) price = simBasePrices[symbol] || 150;
+                if (!isValidNumber(price) || price <= 0) price = simBasePrices[symbol] || 150;
 
                 if (type === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
                     const requiredMargin = qty * price * 0.5;
@@ -4108,7 +4231,7 @@
             async function placeSimOrderMobile(side, qty) {
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
-                if (!price || isNaN(price)) price = 150;
+                if (!isValidNumber(price)) price = 150;
                 if (!portfolio) portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
 
                 if (side === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
@@ -4381,7 +4504,7 @@
             function resetChart() {
                 cleanupSimIntervals();
                 if (simChart) {
-                    simChart.remove();
+                    try { simChart.remove(); } catch (e) {}
                     simChart = null;
                     simCandleSeries = null;
                     simVolumeSeries = null;
@@ -4559,8 +4682,8 @@
                     document.getElementById('fsBottomPanel').classList.remove('show');
                     setTimeout(() => { if (simChart && simCandleSeries) { const chartDiv2 = document
                             .getElementById('simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth >
-                            0) { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
-                                    .clientHeight }); } } updateSimUIFullscreen(); }, 300);
+                            0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
+                                    .clientHeight }); } catch (e) {} } } updateSimUIFullscreen(); }, 300);
                 };
                 setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
                 updateSimUI();
@@ -4733,16 +4856,17 @@
                             else if (panel === 'history') renderMobileHistory(); }
                         setTimeout(() => { if (simChart) { const chartDiv2 = document.getElementById(
                                 'simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth > 0 &&
-                                chartDiv2.clientHeight > 0) { simChart.applyOptions({ width: chartDiv2
-                                        .clientWidth, height: chartDiv2.clientHeight }); } } }, 150); }; });
+                                chartDiv2.clientHeight > 0) { try { simChart.applyOptions({ width: chartDiv2
+                                        .clientWidth, height: chartDiv2.clientHeight }); } catch (e) {} } } },
+                            150); }; });
                 setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 200);
                 updateMobileTopBar();
                 document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
                 const ro = new ResizeObserver(() => { if (simChart) { const chartDiv2 = document.getElementById(
                             'simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2
-                            .clientHeight > 0) { simChart.applyOptions({ width: chartDiv2.clientWidth,
-                                height: chartDiv2.clientHeight }); } } });
+                            .clientHeight > 0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth,
+                                height: chartDiv2.clientHeight }); } catch (e) {} } } });
                 const chartDiv2 = document.getElementById('simChartContainer');
                 if (chartDiv2) ro.observe(chartDiv2);
                 window._mobileResizeObs = ro;
@@ -4842,8 +4966,8 @@
                 if (bp) bp.classList.toggle('show', fsShowBottom);
                 if (fsShowBottom) updateSimUIFullscreen();
                 setTimeout(() => { if (simChart) { const chartDiv = document.getElementById('simChartContainer'); if (
-                        chartDiv) { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                .clientHeight }); } } }, 200);
+                        chartDiv) { try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                .clientHeight }); } catch (e) {} } } }, 200);
             }
 
             function exitFullscreenTerminal() {
@@ -4854,8 +4978,8 @@
                     const bp = document.getElementById('fsBottomPanel');
                     if (bp) bp.classList.remove('show');
                     setTimeout(() => { if (simChart) { const chartDiv = document.getElementById(
-                            'simChartContainer'); if (chartDiv) { simChart.applyOptions({ width: chartDiv
-                                .clientWidth, height: 420 }); } } }, 300);
+                            'simChartContainer'); if (chartDiv) { try { simChart.applyOptions({ width: chartDiv
+                                .clientWidth, height: 420 }); } catch (e) {} } } }, 300);
                 }
             }
 
@@ -5785,7 +5909,7 @@
                 const ts = document.getElementById('debugTimestamp');
 
                 if (dbStatus) dbStatus.textContent = '✅ Online';
-                if (blobStatus) blobStatus.textContent = '✅ Available';
+                if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
                 if (apiStatus) apiStatus.textContent = '✅ Online';
                 if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
                     '✅ Connected' : '⚠️ Disconnected';
@@ -5844,8 +5968,8 @@
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                            simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight });
+                            try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                    .clientHeight }); } catch (e) {}
                         }
                     }
                 }, 300);
@@ -5857,8 +5981,8 @@
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                            simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight });
+                            try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                    .clientHeight }); } catch (e) {}
                         }
                     }
                 }, 300);
