@@ -3332,108 +3332,113 @@
 
             // ─── CHART INIT ──────────────────────────────────────────────────
             async function initChart() {
-                if (window._chartCleanup) window._chartCleanup();
+    // আগের ইভেন্ট লিসেনার পরিষ্কার
+    if (window._chartCleanup) window._chartCleanup();
 
-                const chartDiv = document.getElementById('simChartContainer');
-                const loadingEl = document.getElementById('chartLoading');
-                if (!chartDiv) return;
-                if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
-                    setTimeout(initChart, 100);
-                    return;
-                }
-                if (typeof LightweightCharts === 'undefined') {
-                    if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
-                    return;
-                }
-                if (simChart) {
-                    simChart.remove();
-                    simChart = null;
-                    simCandleSeries = null;
-                    simVolumeSeries = null;
-                    simIndicatorSeries = {};
-                }
-                chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
-                if (loadingEl) loadingEl.style.display = 'flex';
+    const chartDiv = document.getElementById('simChartContainer');
+    const loadingEl = document.getElementById('chartLoading');
+    if (!chartDiv) return;
+    if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
+        setTimeout(initChart, 100);
+        return;
+    }
+    if (typeof LightweightCharts === 'undefined') {
+        if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
+        return;
+    }
+    if (simChart) {
+        simChart.remove();
+        simChart = null;
+        simCandleSeries = null;
+        simVolumeSeries = null;
+        simIndicatorSeries = {};
+    }
+    chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
+    if (loadingEl) loadingEl.style.display = 'flex';
 
-                let candles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
-                let useCache = false;
-                if (candles && candles.length > 0) {
-                    const last = candles[candles.length - 1];
-                    const now = Math.floor(Date.now() / 1000);
-                    if (now - last.time < 86400) {
-                        useCache = true;
-                        simAllCandles = candles;
-                        const lastCandle = simAllCandles[simAllCandles.length - 1];
-                        if (lastCandle && lastCandle.close) {
-                            simLastPrices[simCurrentSymbol] = lastCandle.close;
-                            simBasePrices[simCurrentSymbol] = lastCandle.close;
-                        }
-                    }
-                }
+    // ✅ 1. সর্বপ্রথম বর্তমান বাজারমূল্য নিয়ে নিন (Binance REST)
+    let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
+    if (!realTimePrice || isNaN(realTimePrice)) {
+        const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
+        if (fetchedPrice && fetchedPrice > 0) {
+            realTimePrice = fetchedPrice;
+            simLastPrices[simCurrentSymbol] = realTimePrice;
+            simBasePrices[simCurrentSymbol] = realTimePrice; // হার্ডকোডেড ভ্যালু আপডেট
+        }
+    }
+    // যদি এখনও দাম না পাওয়া যায়, তাহলে fallback (তবে এটি এড়ানো উচিত)
+    if (!realTimePrice || isNaN(realTimePrice)) {
+        realTimePrice = simBasePrices[simCurrentSymbol] || 150;
+    }
 
-                if (!useCache) {
-                    let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
-                    if (blobData && blobData.length > 0) {
-                        simAllCandles = blobData;
-                        const lastCandle = simAllCandles[simAllCandles.length - 1];
-                        if (lastCandle && lastCandle.close) {
-                            simLastPrices[simCurrentSymbol] = lastCandle.close;
-                            simBasePrices[simCurrentSymbol] = lastCandle.close;
-                        }
-                        await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
-                    } else {
-                        let basePrice = lastBinancePrice[simCurrentSymbol] || simLastPrices[simCurrentSymbol];
-                        if (!basePrice) {
-                            const price = await fetchBinancePrice(simCurrentSymbol);
-                            if (price) basePrice = price;
-                        }
-                        if (!basePrice || isNaN(basePrice)) {
-                            basePrice = simBasePrices[simCurrentSymbol] || 150;
-                        }
-                        simLastPrices[simCurrentSymbol] = basePrice;
-                        simBasePrices[simCurrentSymbol] = basePrice;
-                        simAllCandles = generateSimulatedCandles(simCurrentSymbol, 500, basePrice, currentTimeframe);
-                        await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
-                    }
-                }
+    // Step 1: IndexedDB
+    let candles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
+    let useCache = false;
+    if (candles && candles.length > 0) {
+        const last = candles[candles.length - 1];
+        const now = Math.floor(Date.now() / 1000);
+        if (now - last.time < 86400) {
+            useCache = true;
+            simAllCandles = candles;
+            // দাম হালনাগাদ রাখা (ক্যাশে থাকলেও)
+            simLastPrices[simCurrentSymbol] = realTimePrice;
+            simBasePrices[simCurrentSymbol] = realTimePrice;
+        }
+    }
 
-                let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
-                if (latestCandle && latestCandle.close) {
-                    const exists = simAllCandles.some(c => c.time === latestCandle.time);
-                    if (!exists) {
-                        simAllCandles.push(latestCandle);
-                        simAllCandles.sort((a, b) => a.time - b.time);
-                    } else {
-                        const idx = simAllCandles.findIndex(c => c.time === latestCandle.time);
-                        if (idx !== -1) simAllCandles[idx] = latestCandle;
-                    }
-                    simLastPrices[simCurrentSymbol] = latestCandle.close;
-                    simBasePrices[simCurrentSymbol] = latestCandle.close;
-                    await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
-                }
+    if (!useCache) {
+        // Step 2: Blob via API
+        let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
+        if (blobData && blobData.length > 0) {
+            simAllCandles = blobData;
+            simLastPrices[simCurrentSymbol] = realTimePrice;
+            simBasePrices[simCurrentSymbol] = realTimePrice;
+            await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+        } else {
+            // ✅ 2. ফলব্যাক সিমুলেশন – এখন realTimePrice ব্যবহার করে ক্যান্ডেল তৈরি হবে
+            simLastPrices[simCurrentSymbol] = realTimePrice;
+            simBasePrices[simCurrentSymbol] = realTimePrice;
+            simAllCandles = generateSimulatedCandles(simCurrentSymbol, 500, realTimePrice, currentTimeframe);
+            await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+        }
+    }
 
-                if (!simAllCandles || simAllCandles.length === 0) {
-                    const basePrice = simBasePrices[simCurrentSymbol] || 150;
-                    simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, basePrice, currentTimeframe);
-                    await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
-                }
+    // Step 3: Latest from Binance (optional, but we already have realTimePrice)
+    let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
+    if (latestCandle && latestCandle.close) {
+        const exists = simAllCandles.some(c => c.time === latestCandle.time);
+        if (!exists) {
+            simAllCandles.push(latestCandle);
+            simAllCandles.sort((a, b) => a.time - b.time);
+        } else {
+            const idx = simAllCandles.findIndex(c => c.time === latestCandle.time);
+            if (idx !== -1) simAllCandles[idx] = latestCandle;
+        }
+        // দাম আপডেট
+        simLastPrices[simCurrentSymbol] = latestCandle.close;
+        simBasePrices[simCurrentSymbol] = latestCandle.close;
+        await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+    }
 
-                const visible = initLazy(simAllCandles);
+    // Fallback if still empty
+    if (!simAllCandles || simAllCandles.length === 0) {
+        simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, realTimePrice, currentTimeframe);
+        await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+    }
 
-                const lastCandle = simAllCandles[simAllCandles.length - 1];
-                const now = Math.floor(Date.now() / 1000);
-                const currentMinute = now - (now % 60);
-                const closePrice = (lastCandle && lastCandle.close) ? lastCandle.close : (simLastPrices[simCurrentSymbol] ||
-                    simBasePrices[simCurrentSymbol] || 150);
-                simCurrentCandle = {
-                    time: currentMinute,
-                    open: closePrice,
-                    high: closePrice,
-                    low: closePrice,
-                    close: closePrice,
-                    volume: 0
-                };
-                simLastPrices[simCurrentSymbol] = closePrice;
+    // 🔁 Current candle creation – realTimePrice থেকে open/close
+    const now = Math.floor(Date.now() / 1000);
+    const currentMinute = now - (now % 60);
+    const closePrice = realTimePrice; // বর্তমান দাম ব্যবহার করা হচ্ছে
+    simCurrentCandle = {
+        time: currentMinute,
+        open: closePrice,
+        high: closePrice,
+        low: closePrice,
+        close: closePrice,
+        volume: 0
+    };
+    simLastPrices[simCurrentSymbol] = closePrice;
 
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? chartDiv.clientHeight : 420;
