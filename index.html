@@ -3329,9 +3329,35 @@
                 simBasePrices[sym] = price;
                 return candles;
             }
+            function generateSeamlessSimulatedCandles(sym, count, targetPrice, intervalSec) {
+    const candles = [];
+    const now = Math.floor(Date.now() / 1000);
+    // একটি সাধারণ র‌্যান্ডম ওয়াক তৈরি করি, কিন্তু শেষে টার্গেট প্রাইস সেট করব
+    let price = targetPrice * 0.98; // বর্তমান দামের থেকে সামান্য নিচ থেকে শুরু
+    for (let i = count - 1; i >= 0; i--) {
+        const time = now - (i + 1) * intervalSec;
+        const open = price;
+        // ধীরে ধীরে targetPrice-এর দিকে আগাই
+        const progress = (count - i) / count; // 0 থেকে 1
+        const target = targetPrice * 0.98 + (targetPrice * 0.02) * progress; // শেষে targetPrice-এর কাছাকাছি
+        const change = (target - open) * (0.1 + Math.random() * 0.4); // র‌্যান্ডমনেস সহ
+        const close = i === 0 ? targetPrice : open + change; // একদম শেষ ক্যান্ডেল targetPrice
+        const high = Math.max(open, close) + Math.abs(change) * 0.2;
+        const low = Math.min(open, close) - Math.abs(change) * 0.2;
+        const volume = Math.floor(50000 + Math.random() * 200000);
+        candles.push({ time, open: +open.toFixed(4), high: +high.toFixed(4), low: +low.toFixed(4),
+            close: +close.toFixed(4), volume });
+        price = close;
+    }
+    // সর্ট করে রিটার্ন
+    candles.sort((a, b) => a.time - b.time);
+    simLastPrices[sym] = targetPrice;
+    simBasePrices[sym] = targetPrice;
+    return candles;
+}
 
             // ─── CHART INIT ──────────────────────────────────────────────────
-            async function initChart() {
+  async function initChart() {
     // আগের ইভেন্ট লিসেনার পরিষ্কার
     if (window._chartCleanup) window._chartCleanup();
 
@@ -3356,38 +3382,37 @@
     chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
     if (loadingEl) loadingEl.style.display = 'flex';
 
-    // ✅ 1. সর্বপ্রথম বর্তমান বাজারমূল্য নিয়ে নিন (Binance REST)
+    // ✅ 1. সর্বপ্রথম বর্তমান বাজারমূল্য আনা (Binance REST + WebSocket fallback)
     let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
     if (!realTimePrice || isNaN(realTimePrice)) {
         const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
         if (fetchedPrice && fetchedPrice > 0) {
             realTimePrice = fetchedPrice;
             simLastPrices[simCurrentSymbol] = realTimePrice;
-            simBasePrices[simCurrentSymbol] = realTimePrice; // হার্ডকোডেড ভ্যালু আপডেট
+            simBasePrices[simCurrentSymbol] = realTimePrice;
         }
     }
-    // যদি এখনও দাম না পাওয়া যায়, তাহলে fallback (তবে এটি এড়ানো উচিত)
     if (!realTimePrice || isNaN(realTimePrice)) {
-        realTimePrice = simBasePrices[simCurrentSymbol] || 150;
+        realTimePrice = simBasePrices[simCurrentSymbol] || 150; // ultimate fallback
     }
 
-    // Step 1: IndexedDB
+    // ✅ 2. IndexedDB থেকে ডেটা আনা (কিন্তু ১৫ মিনিটের বেশি পুরনো হলে বাতিল)
     let candles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
     let useCache = false;
     if (candles && candles.length > 0) {
         const last = candles[candles.length - 1];
         const now = Math.floor(Date.now() / 1000);
-        if (now - last.time < 86400) {
+        // ১৫ মিনিটের বেশি পুরনো হলে ফ্রেশ ডেটা আনব
+        if (now - last.time < 900) { // 900 seconds = 15 minutes
             useCache = true;
             simAllCandles = candles;
-            // দাম হালনাগাদ রাখা (ক্যাশে থাকলেও)
             simLastPrices[simCurrentSymbol] = realTimePrice;
             simBasePrices[simCurrentSymbol] = realTimePrice;
         }
     }
 
     if (!useCache) {
-        // Step 2: Blob via API
+        // ✅ 3. Blob থেকে আনার চেষ্টা
         let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
         if (blobData && blobData.length > 0) {
             simAllCandles = blobData;
@@ -3395,17 +3420,19 @@
             simBasePrices[simCurrentSymbol] = realTimePrice;
             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
         } else {
-            // ✅ 2. ফলব্যাক সিমুলেশন – এখন realTimePrice ব্যবহার করে ক্যান্ডেল তৈরি হবে
+            // ✅ 4. কোনো ডেটা না থাকলে জরুরি সিমুলেশন (কিন্তু Gap হবে না)
+            // আমরা একটি সিরিজ তৈরি করি যার শেষ প্রাইস realTimePrice-এর সমান
+            simAllCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 200, realTimePrice, currentTimeframe);
             simLastPrices[simCurrentSymbol] = realTimePrice;
             simBasePrices[simCurrentSymbol] = realTimePrice;
-            simAllCandles = generateSimulatedCandles(simCurrentSymbol, 500, realTimePrice, currentTimeframe);
             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
         }
     }
 
-    // Step 3: Latest from Binance (optional, but we already have realTimePrice)
+    // ✅ 5. Binance REST থেকে সর্বশেষ বন্ধ ক্যান্ডেল নেওয়া (যদি পাওয়া যায়)
     let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
     if (latestCandle && latestCandle.close) {
+        // আগের সিরিজের সাথে মার্জ
         const exists = simAllCandles.some(c => c.time === latestCandle.time);
         if (!exists) {
             simAllCandles.push(latestCandle);
@@ -3414,95 +3441,102 @@
             const idx = simAllCandles.findIndex(c => c.time === latestCandle.time);
             if (idx !== -1) simAllCandles[idx] = latestCandle;
         }
-        // দাম আপডেট
         simLastPrices[simCurrentSymbol] = latestCandle.close;
         simBasePrices[simCurrentSymbol] = latestCandle.close;
         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
     }
 
-    // Fallback if still empty
+    // ✅ 6. এখনো খালি থাকলে দ্বিতীয় সিমুলেশন (নিরাপদ)
     if (!simAllCandles || simAllCandles.length === 0) {
-        simAllCandles = generateSimulatedCandles(simCurrentSymbol, 200, realTimePrice, currentTimeframe);
+        simAllCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 100, realTimePrice, currentTimeframe);
         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
     }
-    const visible = initLazy(simAllCandles);
 
-    // 🔁 Current candle creation – realTimePrice থেকে open/close
+    // ✅ 7. বর্তমান ক্যান্ডেল তৈরি – শেষ ক্যান্ডেলের ক্লোজ = realTimePrice, তাহলে Gap হবে না
     const now = Math.floor(Date.now() / 1000);
     const currentMinute = now - (now % 60);
-    const closePrice = realTimePrice; // বর্তমান দাম ব্যবহার করা হচ্ছে
+    // শেষ ঐতিহাসিক ক্যান্ডেলের ক্লোজকে realTimePrice দিয়ে ওভাররাইট করে সিমলেস বানাই
+    if (simAllCandles.length > 0) {
+        simAllCandles[simAllCandles.length - 1].close = realTimePrice;
+        simAllCandles[simAllCandles.length - 1].high = Math.max(simAllCandles[simAllCandles.length - 1].high, realTimePrice);
+        simAllCandles[simAllCandles.length - 1].low = Math.min(simAllCandles[simAllCandles.length - 1].low, realTimePrice);
+    }
     simCurrentCandle = {
         time: currentMinute,
-        open: closePrice,
-        high: closePrice,
-        low: closePrice,
-        close: closePrice,
+        open: realTimePrice,
+        high: realTimePrice,
+        low: realTimePrice,
+        close: realTimePrice,
         volume: 0
     };
-    simLastPrices[simCurrentSymbol] = closePrice;
+    simLastPrices[simCurrentSymbol] = realTimePrice;
 
-                const isMobile = window.innerWidth <= 768;
-                const chartHeight = isMobile ? chartDiv.clientHeight : 420;
-                const isDark = appTheme === 'dark';
+    // ✅ 8. Lazy load setup
+    const visible = initLazy(simAllCandles);
 
-                simChart = LightweightCharts.createChart(chartDiv, {
-                    width: chartDiv.clientWidth,
-                    height: chartHeight,
-                    timeScale: {
-                        timeVisible: true,
-                        secondsVisible: currentTimeframe < 300,
-                        rightOffset: 8,
-                        barSpacing: isMobile ? 4 : 8
-                    },
-                    layout: {
-                        background: { type: 'solid', color: 'transparent' },
-                        textColor: isDark ? '#94a3b8' : '#6b7280'
-                    },
-                    grid: { vertLines: { visible: false }, horzLines: { visible: false } },
-                    crosshair: { mode: 1 },
-                    rightPriceScale: { borderVisible: true, autoScale: true, scaleMargins: { top: 0.05,
-                            bottom: 0.05 } },
-                    handleScroll: { vertTouchDrag: false, horzTouchDrag: true },
-                    handleScale: { axisPressedMouseMove: true, pinch: true },
-                });
+    // ✅ 9. চার্ট রেন্ডার
+    const isMobile = window.innerWidth <= 768;
+    const chartHeight = isMobile ? chartDiv.clientHeight : 420;
+    const isDark = appTheme === 'dark';
 
-                simCandleSeries = simChart.addCandlestickSeries({
-                    upColor: '#10b981',
-                    downColor: '#ef4444',
-                    borderUpColor: '#10b981',
-                    borderDownColor: '#ef4444',
-                    wickUpColor: '#10b981',
-                    wickDownColor: '#ef4444'
-                });
-                simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
-                if (showVolume) simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
-                else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
+    simChart = LightweightCharts.createChart(chartDiv, {
+        width: chartDiv.clientWidth,
+        height: chartHeight,
+        timeScale: {
+            timeVisible: true,
+            secondsVisible: currentTimeframe < 300,
+            rightOffset: 8,
+            barSpacing: isMobile ? 4 : 8
+        },
+        layout: {
+            background: { type: 'solid', color: 'transparent' },
+            textColor: isDark ? '#94a3b8' : '#6b7280'
+        },
+        grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+        crosshair: { mode: 1 },
+        rightPriceScale: { borderVisible: true, autoScale: true, scaleMargins: { top: 0.05, bottom: 0.05 } },
+        handleScroll: { vertTouchDrag: false, horzTouchDrag: true },
+        handleScale: { axisPressedMouseMove: true, pinch: true },
+    });
 
-                const allCandles = [...visible];
-                if (simCurrentCandle) allCandles.push(simCurrentCandle);
-                simCandleSeries.setData(allCandles);
-                updateAllIndicators();
-                const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c.open ?
-                        'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
-                simVolumeSeries.setData(volData);
-                simChart.timeScale().fitContent();
+    simCandleSeries = simChart.addCandlestickSeries({
+        upColor: '#10b981',
+        downColor: '#ef4444',
+        borderUpColor: '#10b981',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#10b981',
+        wickDownColor: '#ef4444'
+    });
+    simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
+    if (showVolume) simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+    else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
 
-                const savedInd = await loadIndicatorsFromDB();
-                if (savedInd && Object.keys(savedInd).length) {
-                    activeIndicators = savedInd;
-                    updateAllIndicators();
-                    updateIndDropdownBtnState();
-                }
-                const savedDraw = await loadDrawingsFromDB(simCurrentSymbol);
-                if (savedDraw && savedDraw.length) {
-                    if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                    portfolio.drawnLines[simCurrentSymbol] = savedDraw;
-                    redrawAllLines();
-                }
-                const savedState = await loadChartStateFromDB(simCurrentSymbol);
-                if (savedState && savedState.zoom) {
-                    try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
-                }
+    const allCandles = [...visible];
+    if (simCurrentCandle) allCandles.push(simCurrentCandle);
+    simCandleSeries.setData(allCandles);
+    updateAllIndicators();
+    const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c.open ?
+            'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
+    simVolumeSeries.setData(volData);
+    simChart.timeScale().fitContent();
+
+    // Restore indicators, drawings, state (unchanged)
+    const savedInd = await loadIndicatorsFromDB();
+    if (savedInd && Object.keys(savedInd).length) {
+        activeIndicators = savedInd;
+        updateAllIndicators();
+        updateIndDropdownBtnState();
+    }
+    const savedDraw = await loadDrawingsFromDB(simCurrentSymbol);
+    if (savedDraw && savedDraw.length) {
+        if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+        portfolio.drawnLines[simCurrentSymbol] = savedDraw;
+        redrawAllLines();
+    }
+    const savedState = await loadChartStateFromDB(simCurrentSymbol);
+    if (savedState && savedState.zoom) {
+        try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
+    }
 
                 simChart.subscribeClick(param => {
                     if (!currentDrawingTool || !param.point || !simCandleSeries) return;
