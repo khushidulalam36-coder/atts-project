@@ -2540,6 +2540,85 @@
                 max-height: 60vh;
             }
         }
+        /* limit order input */
+        .limit-order-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .limit-order-input input {
+            width: 70px;
+            background: transparent;
+            border: none;
+            padding: 4px 0;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text);
+            outline: none;
+        }
+        .limit-order-input span {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .pending-orders-table {
+            font-size: 0.7rem;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .pending-orders-table th {
+            text-align: left;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+        .pending-orders-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+        }
+        .limit-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        .market-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        .hedge-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        /* account no */
+        .account-no {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -2577,6 +2656,8 @@
                 'AVAXUSDT', 'DOTUSDT'
             ];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
+            // ─── DEFAULT TIMEFRAME: M5 (300) ───────────────────────────────
+            const DEFAULT_TF = 300;
             const INDICATOR_COLORS = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
                 'ema200': '#ef4444', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4',
                 'vwap': '#f472b6' };
@@ -2599,8 +2680,16 @@
             let quizScores = {};
             let userNotes = {};
             let isAdmin = false;
-            let portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
 
+            // ─── PORTFOLIO (with hedging support) ──────────────────────────
+            // Each position: { id, symbol, type: 'long'|'short', qty, entryPrice, currentPrice, slPrice, tpPrice, openTime, fee }
+            // portfolio = { cash, positions: [], transactions: [], drawnLines: {} }
+            let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
+            // ─── PENDING ORDERS (limit) ─────────────────────────────────────
+            // { id, symbol, side: 'buy'|'sell', type: 'limit', price, qty, status: 'pending'|'filled'|'canceled', createdAt }
+            let pendingOrders = [];
+
+            // ─── CHART STATE ────────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
             let simChart = null;
             let simCandleSeries = null;
@@ -2638,17 +2727,21 @@
             let allPriceLines = {};
             let manualDrawnLines = [];
             let currentDrawingTool = null;
-            let currentTimeframe = 60;
+            let currentTimeframe = DEFAULT_TF; // M5
             let dragState = null;
             let activeIndicators = {};
             let fsShowBottom = false;
             let simResizeObserver = null;
             let showVolume = true;
             let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || JSON.stringify(SYMBOLS));
+            let userAccountNo = localStorage.getItem('userAccountNo') || (currentUser ? 'ACC-' + String(Math.floor(Math
+                .random() * 900000) + 100000) : 'ACC-000000');
 
             let binanceWS = null;
             let binanceReconnectTimer = null;
             let lastBinancePrice = {};
+            let chartInitRetryTimer = null;
+            let chartInitAttempts = 0;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache';
@@ -2786,11 +2879,14 @@
                     const saved = localStorage.getItem(PORTFOLIO_KEY);
                     if (saved) {
                         const parsed = JSON.parse(saved);
-                        portfolio.cash = parsed.cash || 100000;
-                        portfolio.holdings = parsed.holdings || {};
-                        portfolio.transactions = parsed.transactions || [];
-                        portfolio.drawnLines = parsed.drawnLines || {};
+                        portfolio.cash = parsed.cash ?? 100000;
+                        portfolio.positions = parsed.positions ?? [];
+                        portfolio.transactions = parsed.transactions ?? [];
+                        portfolio.drawnLines = parsed.drawnLines ?? {};
                         if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                        // ensure each position has an id
+                        portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
+                                .toString(36).slice(2, 6); });
                         return true;
                     }
                 } catch (e) { console.warn('Portfolio load error:', e); }
@@ -2801,11 +2897,29 @@
                 try {
                     localStorage.setItem(PORTFOLIO_KEY, JSON.stringify({
                         cash: portfolio.cash,
-                        holdings: portfolio.holdings,
+                        positions: portfolio.positions.slice(0, 500),
                         transactions: portfolio.transactions.slice(0, 500),
                         drawnLines: portfolio.drawnLines
                     }));
                 } catch (e) { console.warn('Portfolio save error:', e); }
+            }
+
+            // ─── PENDING ORDERS PERSISTENCE ────────────────────────────────
+            function loadPendingOrders() {
+                try {
+                    const saved = localStorage.getItem('pendingOrders_v9');
+                    if (saved) { pendingOrders = JSON.parse(saved); return true; }
+                } catch (e) {}
+                return false;
+            }
+
+            function savePendingOrders() {
+                try { localStorage.setItem('pendingOrders_v9', JSON.stringify(pendingOrders)); } catch (e) {}
+            }
+
+            // ─── ACCOUNT NO PERSISTENCE ─────────────────────────────────────
+            function saveAccountNo() {
+                localStorage.setItem('userAccountNo', userAccountNo);
             }
 
             // ─── INDEXEDDB CACHE HELPERS ──────────────────────────────────
@@ -2994,7 +3108,6 @@
             }
 
             // ─── BLOB LOAD / SAVE (through API proxy) ──────────────────────
-            // NOTE: Vercel Blob may be suspended; handle gracefully
             async function loadBlobCandles(symbol, tf) {
                 try {
                     const url = `${API_BASE}/candles/${symbol}`;
@@ -3446,21 +3559,28 @@
                 return candles;
             }
 
-            // ─── CHART INIT ──────────────────────────────────────────────────
+            // ─── CHART INIT (FIXED: resilient, no disappearing) ────────────
             async function initChart() {
                 if (window._chartCleanup) window._chartCleanup();
-
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
                 if (!chartDiv) return;
+                // ensure container has size
+                let attempts = 0;
+                while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 10) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                }
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
-                    setTimeout(initChart, 100);
+                    console.warn('Chart container still has 0 size, retrying...');
+                    setTimeout(initChart, 300);
                     return;
                 }
                 if (typeof LightweightCharts === 'undefined') {
                     if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
                     return;
                 }
+                // Cleanup old chart
                 if (simChart) {
                     try { simChart.remove(); } catch (e) {}
                     simChart = null;
@@ -3495,14 +3615,12 @@
                     console.log('✅ Real candles from Binance REST:', candles.length);
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                 } else {
-                    // ── FALLBACK: IndexedDB ──
                     let dbCandles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
                     if (dbCandles && dbCandles.length > 0) {
                         candles = sanitizeCandleData(dbCandles);
                         sourceLabel = 'IndexedDB';
                         console.log('✅ Candles from IndexedDB:', candles.length);
                     } else {
-                        // ── FALLBACK: Blob (may be suspended) ──
                         let blobData = await loadBlobCandles(simCurrentSymbol, currentTimeframe);
                         if (blobData && blobData.length > 0) {
                             candles = sanitizeCandleData(blobData);
@@ -3510,7 +3628,6 @@
                             console.log('✅ Candles from Vercel Blob:', candles.length);
                             await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                         } else {
-                            // ── FINAL FALLBACK: Simulation ──
                             candles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
                                 realTimePrice, currentTimeframe));
                             sourceLabel = 'Simulation (Fallback)';
@@ -3520,7 +3637,7 @@
                     }
                 }
 
-                // ── STEP 3: Merge with latest Binance candle to fill gaps ──
+                // ── STEP 3: Merge with latest Binance candle ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
@@ -3783,6 +3900,8 @@
                         checkAndExecuteSLTP();
                         updateSimUI();
                         updateMobileTopBar();
+                        // check pending limit orders
+                        checkPendingOrders();
                     }, 1000);
 
                     // ── STEP 11: Candle close interval ──
@@ -3837,7 +3956,6 @@
                         if (simResizeObserver) simResizeObserver.disconnect();
                     };
 
-                    // ── Update debug panel ──
                     document.getElementById('cronStatus').textContent = sourceLabel;
                     document.getElementById('candleCount').textContent = simAllCandles.length;
                     updateDebugPanel();
@@ -3848,6 +3966,9 @@
                         '<span style="color:var(--danger);">⚠️ Chart error: ' + err.message + '</span>';
                     if (simChart) { try { simChart.remove(); } catch (e) {}
                         simChart = null; }
+                    // Retry after delay
+                    if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
+                    chartInitRetryTimer = setTimeout(() => { initChart(); }, 2000);
                 }
             }
 
@@ -3866,24 +3987,25 @@
                     manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style,
                         lineObj: line, index: idx });
                 });
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    if (h.entryPrice && h.entryPrice > 0) {
-                        const line = simCandleSeries.createPriceLine({ price: h.entryPrice, color: '#3b82f6',
-                            lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: 'Entry ' + sym });
-                        allPriceLines['entry_' + sym] = line;
+                // entry lines per position
+                portfolio.positions.forEach(p => {
+                    if (p.symbol === simCurrentSymbol && p.entryPrice) {
+                        const line = simCandleSeries.createPriceLine({ price: p.entryPrice, color: '#3b82f6',
+                            lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: 'Entry ' + p
+                                .symbol + ' ' + p.id.slice(-4) });
+                        allPriceLines['entry_' + p.id] = line;
                     }
-                    if (h.slPrice && h.slPrice > 0) {
-                        const line = simCandleSeries.createPriceLine({ price: h.slPrice, color: '#f59e0b',
-                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SL ' + sym });
-                        allPriceLines['sl_' + sym] = line;
+                    if (p.symbol === simCurrentSymbol && p.slPrice) {
+                        const line = simCandleSeries.createPriceLine({ price: p.slPrice, color: '#f59e0b',
+                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SL ' + p.symbol });
+                        allPriceLines['sl_' + p.id] = line;
                     }
-                    if (h.tpPrice && h.tpPrice > 0) {
-                        const line = simCandleSeries.createPriceLine({ price: h.tpPrice, color: '#8b5cf6',
-                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'TP ' + sym });
-                        allPriceLines['tp_' + sym] = line;
+                    if (p.symbol === simCurrentSymbol && p.tpPrice) {
+                        const line = simCandleSeries.createPriceLine({ price: p.tpPrice, color: '#8b5cf6',
+                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'TP ' + p.symbol });
+                        allPriceLines['tp_' + p.id] = line;
                     }
-                }
+                });
                 updateLineManagerUI();
             }
 
@@ -3915,42 +4037,54 @@
                     'Resistance' : 'Horizontal line'));
             }
 
-            // ─── TRADING ENGINE (SL/TP) ──────────────────────────────────────
+            // ─── TRADING ENGINE (SL/TP + HEDGING) ───────────────────────────
             function checkAndExecuteSLTP() {
-                if (!portfolio || !portfolio.holdings) return;
+                if (!portfolio || !portfolio.positions) return;
                 let changed = false;
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    const price = simLastPrices[sym] || h.currentPrice || h.avgPrice;
+                const toRemove = [];
+                for (let i = 0; i < portfolio.positions.length; i++) {
+                    const p = portfolio.positions[i];
+                    const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice;
                     if (!isValidNumber(price) || price <= 0) continue;
-                    const isShort = h.qty < 0;
-                    if (h.slPrice) {
-                        if ((!isShort && price <= h.slPrice) || (isShort && price >= h.slPrice)) {
-                            const closeQty = Math.abs(h.qty);
-                            if (h.qty > 0) portfolio.cash += closeQty * price;
-                            portfolio.transactions.unshift({ type: 'sell', symbol: sym, qty: closeQty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Stop Loss' });
-                            delete portfolio.holdings[sym];
-                            showToast('🛑 SL triggered ' + sym + ' @ $' + price.toFixed(4));
-                            playTradeSound('sell');
-                            changed = true;
-                            continue;
+                    p.currentPrice = price;
+                    const isShort = p.type === 'short';
+                    let triggered = false;
+                    let reason = '';
+                    if (p.slPrice) {
+                        if ((!isShort && price <= p.slPrice) || (isShort && price >= p.slPrice)) {
+                            triggered = true;
+                            reason = 'Stop Loss';
                         }
                     }
-                    if (h.tpPrice) {
-                        if ((!isShort && price >= h.tpPrice) || (isShort && price <= h.tpPrice)) {
-                            const closeQty = Math.abs(h.qty);
-                            if (h.qty > 0) portfolio.cash += closeQty * price;
-                            portfolio.transactions.unshift({ type: 'sell', symbol: sym, qty: closeQty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Take Profit' });
-                            delete portfolio.holdings[sym];
-                            showToast('🎯 TP triggered ' + sym + ' @ $' + price.toFixed(4));
-                            playTradeSound('sell');
-                            changed = true;
+                    if (!triggered && p.tpPrice) {
+                        if ((!isShort && price >= p.tpPrice) || (isShort && price <= p.tpPrice)) {
+                            triggered = true;
+                            reason = 'Take Profit';
                         }
+                    }
+                    if (triggered) {
+                        const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
+                        const fee = Math.abs(p.qty * price * 0.0005);
+                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                        portfolio.transactions.unshift({
+                            type: 'close',
+                            symbol: p.symbol,
+                            qty: p.qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason,
+                            pnl: pnl - fee,
+                            id: p.id
+                        });
+                        showToast('🛑 ' + reason + ' ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
+                            fee).toFixed(2));
+                        playTradeSound('sell');
+                        toRemove.push(i);
+                        changed = true;
                     }
                 }
                 if (changed) {
+                    portfolio.positions = portfolio.positions.filter((_, i) => !toRemove.includes(i));
                     savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
@@ -3958,236 +4092,351 @@
                 }
             }
 
-            let bgEngineInterval = null;
-
-            function startBackgroundEngine() {
-                if (bgEngineInterval) clearInterval(bgEngineInterval);
-                bgEngineInterval = setInterval(() => {
-                    checkAndExecuteSLTP();
-                }, 5000);
-            }
-
-            function stopBackgroundEngine() {
-                if (bgEngineInterval) { clearInterval(bgEngineInterval);
-                    bgEngineInterval = null; }
-            }
-
-            // ─── SERVER SYNC ─────────────────────────────────────────────────
-            async function syncPortfolioToServer() {
-                if (!token) return;
-                try {
-                    await apiFetch('/portfolio', {
-                        method: 'PUT',
-                        body: JSON.stringify({
-                            cash: portfolio.cash,
-                            holdings: portfolio.holdings,
-                            transactions: portfolio.transactions.slice(-50),
-                            drawnLines: portfolio.drawnLines
-                        })
-                    });
-                } catch (e) { console.warn('Portfolio sync error:', e.message); }
-            }
-
-            // ─── UI UPDATES ──────────────────────────────────────────────────
-            function updateSimUI() {
-                if (!portfolio) return;
-                let totalPL = 0,
-                    totalValue = portfolio.cash || 0;
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (isValidNumber(cp)) {
-                        h.currentPrice = cp;
-                        if (h.qty > 0) totalPL += (cp - h.avgPrice) * h.qty;
-                        else totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
-                        totalValue += Math.abs(h.qty) * cp;
+            // ─── PENDING ORDERS CHECK ──────────────────────────────────────
+            function checkPendingOrders() {
+                if (pendingOrders.length === 0) return;
+                const now = Date.now();
+                const toRemove = [];
+                for (let i = 0; i < pendingOrders.length; i++) {
+                    const order = pendingOrders[i];
+                    if (order.status !== 'pending') { toRemove.push(i); continue; }
+                    const price = simLastPrices[order.symbol] || simBasePrices[order.symbol];
+                    if (!isValidNumber(price)) continue;
+                    // Check if limit price is hit
+                    const hit = order.side === 'buy' ? price <= order.price : price >= order.price;
+                    if (hit) {
+                        // Execute limit order
+                        const qty = order.qty;
+                        const execPrice = order.price;
+                        const fee = qty * execPrice * 0.0005;
+                        if (order.side === 'buy') {
+                            if (portfolio.cash < qty * execPrice + fee) {
+                                showToast('⚠️ Insufficient cash for limit order ' + order.symbol);
+                                order.status = 'canceled';
+                                toRemove.push(i);
+                                continue;
+                            }
+                            portfolio.cash -= qty * execPrice + fee;
+                            // find existing position or create new (hedging allowed)
+                            const existing = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
+                                'long' && p.entryPrice === execPrice);
+                            if (existing) {
+                                existing.qty += qty;
+                                existing.entryPrice = (existing.entryPrice * (existing.qty - qty) + execPrice * qty) /
+                                    existing.qty;
+                            } else {
+                                portfolio.positions.push({
+                                    id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                    symbol: order.symbol,
+                                    type: 'long',
+                                    qty,
+                                    entryPrice: execPrice,
+                                    currentPrice: execPrice,
+                                    slPrice: null,
+                                    tpPrice: null,
+                                    openTime: new Date().toISOString(),
+                                    fee
+                                });
+                            }
+                            portfolio.transactions.unshift({
+                                type: 'buy',
+                                symbol: order.symbol,
+                                qty,
+                                price: execPrice,
+                                time: new Date().toLocaleTimeString(),
+                                reason: 'Limit Order',
+                                id: order.id,
+                                fee
+                            });
+                            showToast('✅ Limit BUY executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                            playTradeSound('buy');
+                        } else {
+                            // sell
+                            // check if we have a position to sell (or short)
+                            const existingLong = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
+                                'long');
+                            const existingShort = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
+                                'short');
+                            if (existingLong && existingLong.qty >= qty) {
+                                const pnl = (execPrice - existingLong.entryPrice) * qty;
+                                portfolio.cash += qty * execPrice - fee;
+                                existingLong.qty -= qty;
+                                if (existingLong.qty === 0) {
+                                    const idx = portfolio.positions.indexOf(existingLong);
+                                    if (idx > -1) portfolio.positions.splice(idx, 1);
+                                }
+                                portfolio.transactions.unshift({
+                                    type: 'sell',
+                                    symbol: order.symbol,
+                                    qty,
+                                    price: execPrice,
+                                    time: new Date().toLocaleTimeString(),
+                                    reason: 'Limit Order (Close Long)',
+                                    id: order.id,
+                                    pnl,
+                                    fee
+                                });
+                                showToast('✅ Limit SELL executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                                playTradeSound('sell');
+                            } else {
+                                // short position
+                                const margin = qty * execPrice * 0.5;
+                                if (portfolio.cash < margin + fee) {
+                                    showToast('⚠️ Insufficient margin for short limit order');
+                                    order.status = 'canceled';
+                                    toRemove.push(i);
+                                    continue;
+                                }
+                                portfolio.cash -= fee;
+                                const newPos = {
+                                    id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                    symbol: order.symbol,
+                                    type: 'short',
+                                    qty,
+                                    entryPrice: execPrice,
+                                    currentPrice: execPrice,
+                                    slPrice: null,
+                                    tpPrice: null,
+                                    openTime: new Date().toISOString(),
+                                    fee
+                                };
+                                portfolio.positions.push(newPos);
+                                portfolio.transactions.unshift({
+                                    type: 'sell',
+                                    symbol: order.symbol,
+                                    qty,
+                                    price: execPrice,
+                                    time: new Date().toLocaleTimeString(),
+                                    reason: 'Limit Order (Short)',
+                                    id: order.id,
+                                    fee
+                                });
+                                showToast('✅ Limit SHORT executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                                playTradeSound('sell');
+                            }
+                        }
+                        order.status = 'filled';
+                        toRemove.push(i);
+                        savePortfolioToStorage();
+                        updateSimUI();
+                        redrawAllLines();
+                        syncPortfolioToServer();
                     }
                 }
-                const cashEl = document.getElementById('simCash') || document.getElementById('simCashBar');
-                const totalEl = document.getElementById('simTotalValue') || document.getElementById('simTotalBar');
-                const plEl = document.getElementById('simPL') || document.getElementById('simPLBar');
-                if (cashEl) cashEl.textContent = '💰 $' + (portfolio.cash || 0).toFixed(2);
-                if (totalEl) totalEl.textContent = '📊 $' + totalValue.toFixed(2);
-                if (plEl) {
-                    plEl.textContent = (totalPL >= 0 ? '📈 +$' : '📉 -$') + Math.abs(totalPL).toFixed(2);
-                    plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
+                if (toRemove.length) {
+                    pendingOrders = pendingOrders.filter((_, i) => !toRemove.includes(i));
+                    savePendingOrders();
+                    renderPendingOrdersUI();
                 }
-                const tbody = document.querySelector('#simHoldingsTable tbody');
-                const fsTbody = document.querySelector('#simHoldingsTableFs tbody');
-                const rowsHTML = Object.keys(portfolio.holdings || {}).map(sym => {
-                    const h = portfolio.holdings[sym];
-                    const cp = h.currentPrice || h.avgPrice || 0;
-                    const val = Math.abs(h.qty) * cp;
-                    const isShort = h.qty < 0;
-                    return `<tr><td><strong>${sym}</strong> ${isShort ? '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.65rem;">LONG</span>'}</td><td>${Math.abs(h.qty)}</td><td><span class="entry-badge">$${(h.avgPrice || 0).toFixed(4)}</span></td><td>$${cp.toFixed(4)}</td><td>${h.slPrice ? '<span class="sl-badge">$' + h.slPrice.toFixed(4) + '</span>' : '—'}</td><td>${h.tpPrice ? '<span class="tp-badge">$' + h.tpPrice.toFixed(4) + '</span>' : '—'}</td><td>$${val.toFixed(2)}</td><td style="display:flex;gap:4px;"><button class="btn-exit" onclick="exitPosition('${sym}')"><i class="fas fa-times"></i> Exit</button><button class="btn btn-sm btn-outline" onclick="editSLTP('${sym}')"><i class="fas fa-sliders-h"></i></button></td></tr>`;
-                }).join('') ||
-                    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
-                if (tbody) tbody.innerHTML = rowsHTML;
-                if (fsTbody) fsTbody.innerHTML = rowsHTML;
-                const histEl = document.getElementById('simHistoryList');
-                if (histEl) histEl.innerHTML =
-                    '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' + (portfolio
-                        .transactions || []).slice(0, 25).map(t =>
-                        `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : 'var(--mt5-blue)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}</li>`
-                    ).join('') + '</ul>';
-                updateSimUIFullscreen();
-                savePortfolioToStorage();
-                if (window.innerWidth <= 768) { renderMobileTradeSummary();
-                    updateMobileTopBar(); }
             }
 
-            function updateSimUIFullscreen() {
-                const fsCash = document.getElementById('fsCash'),
-                    fsTotal = document.getElementById('fsTotal'),
-                    fsPL = document.getElementById('fsPL');
-                if (!fsCash || !fsTotal || !fsPL) return;
-                let totalPL = 0,
-                    totalValue = portfolio.cash || 0;
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (isValidNumber(cp)) {
-                        if (h.qty > 0) totalPL += (cp - h.avgPrice) * h.qty;
-                        else totalPL += (h.avgPrice - cp) * Math.abs(h.qty);
-                        totalValue += Math.abs(h.qty) * cp;
-                    }
-                }
-                fsCash.textContent = '💰 $' + (portfolio.cash || 0).toFixed(2);
-                fsTotal.textContent = '📊 $' + totalValue.toFixed(2);
-                fsPL.textContent = '📈 ' + (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
-                fsPL.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
-            }
-
-            function calcEquity() {
-                let eq = portfolio.cash || 0;
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (isValidNumber(cp)) eq += Math.abs(h.qty) * cp;
-                }
-                return eq;
-            }
-
-            function calcTotalPL() {
-                let pl = 0;
-                for (const sym in portfolio.holdings) {
-                    const h = portfolio.holdings[sym];
-                    const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice;
-                    if (isValidNumber(cp)) {
-                        if (h.qty > 0) pl += (cp - h.avgPrice) * h.qty;
-                        else pl += (h.avgPrice - cp) * Math.abs(h.qty);
-                    }
-                }
-                return pl;
-            }
-
-            // ─── TRADE ACTIONS ────────────────────────────────────────────────
-            async function placeSimOrder(type) {
+            // ─── PLACE ORDER (Market + Limit) ──────────────────────────────
+            function placeSimOrder(type, orderType = 'market', limitPrice = null) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
-                let price = simLastPrices[symbol];
-                if (!isValidNumber(price) || price <= 0) price = simBasePrices[symbol] || 150;
+                let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
+                if (!isValidNumber(price)) price = 150;
 
-                if (type === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
-                    const requiredMargin = qty * price * 0.5;
-                    if ((portfolio.cash || 0) < requiredMargin) return showToast('❌ Insufficient margin for short');
+                if (orderType === 'limit') {
+                    if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
+                    // create pending limit order
+                    const order = {
+                        id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                        symbol,
+                        side: type,
+                        type: 'limit',
+                        price: limitPrice,
+                        qty,
+                        status: 'pending',
+                        createdAt: Date.now()
+                    };
+                    pendingOrders.push(order);
+                    savePendingOrders();
+                    renderPendingOrdersUI();
+                    showToast('📌 Limit ' + type.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4) + ' for ' + qty +
+                        ' ' + symbol);
+                    return;
                 }
 
+                // ─── MARKET ORDER ──────────────────────────────────────────
+                const fee = qty * price * 0.0005;
                 if (type === 'buy') {
-                    const cost = qty * price;
-                    if ((portfolio.cash || 0) < cost) return showToast('❌ Insufficient cash');
-                    portfolio.cash = (portfolio.cash || 0) - cost;
-                    if (portfolio.holdings[symbol]) {
-                        const h = portfolio.holdings[symbol];
-                        if (h.qty < 0) {
-                            const closeQty = Math.min(Math.abs(h.qty), qty);
-                            h.qty += closeQty;
-                            if (h.qty === 0) delete portfolio.holdings[symbol];
-                            portfolio.transactions.unshift({ type: 'buy', symbol, qty: closeQty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Close Short' });
-                        } else {
-                            const totalCost = qty * price;
-                            const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
-                            h.qty += qty;
-                            h.avgPrice = newAvg;
-                            h.entryPrice = newAvg;
-                            portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
-                                time: new Date().toLocaleTimeString() });
-                        }
+                    if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
+                    portfolio.cash -= qty * price + fee;
+                    // hedging: we allow both long and short positions to coexist
+                    const existing = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p
+                        .entryPrice === price);
+                    if (existing) {
+                        existing.qty += qty;
+                        existing.entryPrice = (existing.entryPrice * (existing.qty - qty) + price * qty) / existing
+                        .qty;
                     } else {
-                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
-                        portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
-                            time: new Date().toLocaleTimeString() });
+                        portfolio.positions.push({
+                            id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                            symbol,
+                            type: 'long',
+                            qty,
+                            entryPrice: price,
+                            currentPrice: price,
+                            slPrice: null,
+                            tpPrice: null,
+                            openTime: new Date().toISOString(),
+                            fee
+                        });
                     }
+                    portfolio.transactions.unshift({
+                        type: 'buy',
+                        symbol,
+                        qty,
+                        price,
+                        time: new Date().toLocaleTimeString(),
+                        reason: 'Market Order',
+                        fee
+                    });
                     playTradeSound('buy');
+                    showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                 } else {
-                    if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty > 0) {
-                        const h = portfolio.holdings[symbol];
-                        const closeQty = Math.min(h.qty, qty);
-                        portfolio.cash = (portfolio.cash || 0) + closeQty * price;
-                        h.qty -= closeQty;
-                        if (h.qty === 0) delete portfolio.holdings[symbol];
-                        portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
-                            time: new Date().toLocaleTimeString(), reason: 'Close Long' });
-                    } else {
-                        if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
-                            const h = portfolio.holdings[symbol];
-                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) + qty);
-                            h.qty -= qty;
-                            h.avgPrice = newAvg;
-                            h.entryPrice = newAvg;
-                            portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Add Short' });
-                        } else {
-                            portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
-                                entryPrice: price };
-                            portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Short' });
+                    // sell
+                    // check if we have a long position to close first
+                    const longPos = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p.qty >=
+                        qty);
+                    if (longPos) {
+                        const pnl = (price - longPos.entryPrice) * qty;
+                        portfolio.cash += qty * price - fee;
+                        longPos.qty -= qty;
+                        if (longPos.qty === 0) {
+                            const idx = portfolio.positions.indexOf(longPos);
+                            if (idx > -1) portfolio.positions.splice(idx, 1);
                         }
+                        portfolio.transactions.unshift({
+                            type: 'sell',
+                            symbol,
+                            qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason: 'Market Order (Close Long)',
+                            pnl,
+                            fee
+                        });
+                        playTradeSound('sell');
+                        showToast('✅ Closed Long ' + symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
+                            .toFixed(2));
+                    } else {
+                        // open short
+                        const margin = qty * price * 0.5;
+                        if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
+                        portfolio.cash -= fee;
+                        const existingShort = portfolio.positions.find(p => p.symbol === symbol && p.type === 'short' &&
+                            p.entryPrice === price);
+                        if (existingShort) {
+                            existingShort.qty += qty;
+                            existingShort.entryPrice = (existingShort.entryPrice * (existingShort.qty - qty) + price *
+                                qty) / existingShort.qty;
+                        } else {
+                            portfolio.positions.push({
+                                id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                symbol,
+                                type: 'short',
+                                qty,
+                                entryPrice: price,
+                                currentPrice: price,
+                                slPrice: null,
+                                tpPrice: null,
+                                openTime: new Date().toISOString(),
+                                fee
+                            });
+                        }
+                        portfolio.transactions.unshift({
+                            type: 'sell',
+                            symbol,
+                            qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason: 'Market Order (Short)',
+                            fee
+                        });
+                        playTradeSound('sell');
+                        showToast('✅ Market SHORT ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                     }
-                    playTradeSound('sell');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
-                document.querySelectorAll('.modal').forEach(m => { if (m.querySelector('h3')?.textContent?.includes(
-                        'TRADE')) m.remove(); });
             }
 
-            async function exitPosition(symbol) {
-                if (!portfolio.holdings[symbol]) return;
-                const h = portfolio.holdings[symbol];
-                const price = simLastPrices[symbol] || h.currentPrice || h.avgPrice || 0;
-                const closeQty = Math.abs(h.qty);
-                if (h.qty > 0) portfolio.cash = (portfolio.cash || 0) + closeQty * price;
-                portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
-                    time: new Date().toLocaleTimeString(), reason: 'Manual Exit' });
-                delete portfolio.holdings[symbol];
+            // ─── EXIT POSITION ──────────────────────────────────────────────
+            function exitPositionById(posId) {
+                const idx = portfolio.positions.findIndex(p => p.id === posId);
+                if (idx === -1) return;
+                const p = portfolio.positions[idx];
+                const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                const isShort = p.type === 'short';
+                const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
+                const fee = Math.abs(p.qty * price * 0.0005);
+                portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                portfolio.transactions.unshift({
+                    type: 'close',
+                    symbol: p.symbol,
+                    qty: p.qty,
+                    price,
+                    time: new Date().toLocaleTimeString(),
+                    reason: 'Manual Exit',
+                    pnl: pnl - fee,
+                    id: p.id
+                });
+                portfolio.positions.splice(idx, 1);
                 savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
                 playTradeSound('sell');
-                showToast('🚪 Exited ' + symbol + ' @ $' + price.toFixed(4));
+                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
-            function editSLTP(symbol) {
-                const h = portfolio.holdings[symbol];
-                if (!h) return;
+            function exitPosition(symbol) {
+                // if multiple positions, show dialog or just exit all
+                const positions = portfolio.positions.filter(p => p.symbol === symbol);
+                if (positions.length === 0) return showToast('⚠️ No position for ' + symbol);
+                if (positions.length === 1) { exitPositionById(positions[0].id); return; }
+                // multiple positions: show modal to select
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.innerHTML = `
-                    <div class="modal-content"><h3>Edit SL/TP — ${symbol}</h3><label>Stop Loss ($) <input type="number" id="editSL" value="${h.slPrice || ''}" step="0.0001"></label><label>Take Profit ($) <input type="number" id="editTP" value="${h.tpPrice || ''}" step="0.0001"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
+                    <div class="modal-content">
+                        <h3>Exit Position — ${symbol}</h3>
+                        <p>Select position to exit:</p>
+                        ${positions.map((p, i) => `
+                            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
+                                <span>${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
+                                <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
+                            </div>
+                        `).join('')}
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button></div>
+                    </div>`;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+            }
+
+            function editSLTPById(posId) {
+                const p = portfolio.positions.find(pp => pp.id === posId);
+                if (!p) return;
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content"><h3>Edit SL/TP — ${p.symbol} (${p.type})</h3>
+                    <label>Stop Loss ($) <input type="number" id="editSL" value="${p.slPrice || ''}" step="0.0001"></label>
+                    <label>Take Profit ($) <input type="number" id="editTP" value="${p.tpPrice || ''}" step="0.0001"></label>
+                    <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveSLTP').onclick = () => {
                     const sl = parseFloat(document.getElementById('editSL').value);
                     const tp = parseFloat(document.getElementById('editTP').value);
-                    h.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
-                    h.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
+                    p.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
+                    p.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
                     savePortfolioToStorage();
                     updateSimUI();
                     redrawAllLines();
@@ -4197,18 +4446,82 @@
                 };
             }
 
+            function editSLTP(symbol) {
+                const positions = portfolio.positions.filter(p => p.symbol === symbol);
+                if (positions.length === 0) return showToast('⚠️ No position for ' + symbol);
+                if (positions.length === 1) { editSLTPById(positions[0].id); return; }
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3>Edit SL/TP — ${symbol}</h3>
+                        <p>Select position:</p>
+                        ${positions.map((p, i) => `
+                            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
+                                <span>${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
+                                <button class="btn btn-outline btn-sm" onclick="editSLTPById('${p.id}');this.closest('.modal').remove();">Edit</button>
+                            </div>
+                        `).join('')}
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button></div>
+                    </div>`;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+            }
+
             function resetSimPortfolio() {
                 if (confirm('Reset portfolio? All trades cleared.')) {
-                    portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                    portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
+                    pendingOrders = [];
                     simLastPrices = {};
                     activeIndicators = {};
                     simIndicatorSeries = {};
                     savePortfolioToStorage();
+                    savePendingOrders();
                     updateSimUI();
                     redrawAllLines();
                     syncPortfolioToServer();
+                    renderPendingOrdersUI();
                     showToast('🔄 Portfolio reset ($100,000)');
                 }
+            }
+
+            // ─── RENDER PENDING ORDERS UI ──────────────────────────────────
+            function renderPendingOrdersUI() {
+                const el = document.getElementById('pendingOrdersList');
+                if (!el) return;
+                const pending = pendingOrders.filter(o => o.status === 'pending');
+                if (pending.length === 0) { el.innerHTML =
+                        '<span style="color:var(--text-muted);font-size:0.68rem;">No pending orders</span>'; return; }
+                el.innerHTML = pending.map(o =>
+                    `<div class="line-manager-row">
+                        <span style="flex:1;">${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
+                        <button class="btn btn-sm btn-danger" onclick="cancelLimitOrder('${o.id}')">Cancel</button>
+                    </div>`
+                ).join('');
+            }
+
+            function cancelLimitOrder(id) {
+                const idx = pendingOrders.findIndex(o => o.id === id);
+                if (idx === -1) return;
+                pendingOrders[idx].status = 'canceled';
+                pendingOrders = pendingOrders.filter(o => o.status !== 'canceled');
+                savePendingOrders();
+                renderPendingOrdersUI();
+                showToast('🗑 Limit order canceled');
+            }
+
+            function renderPendingOrdersUI() {
+                const el = document.getElementById('pendingOrdersList');
+                if (!el) return;
+                const pending = pendingOrders.filter(o => o.status === 'pending');
+                if (pending.length === 0) { el.innerHTML =
+                        '<span style="color:var(--text-muted);font-size:0.68rem;">No pending orders</span>'; return; }
+                el.innerHTML = pending.map(o =>
+                    `<div class="line-manager-row">
+                        <span style="flex:1;">${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
+                        <button class="btn btn-sm btn-danger" onclick="cancelLimitOrder('${o.id}')">Cancel</button>
+                    </div>`
+                ).join('');
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -4228,70 +4541,125 @@
                 if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(4);
             }
 
-            async function placeSimOrderMobile(side, qty) {
+            function placeSimOrderMobile(side, qty, orderType = 'market', limitPrice = null) {
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
                 if (!isValidNumber(price)) price = 150;
-                if (!portfolio) portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
 
-                if (side === 'sell' && (!portfolio.holdings[symbol] || portfolio.holdings[symbol].qty <= 0)) {
-                    const requiredMargin = qty * price * 0.5;
-                    if ((portfolio.cash || 0) < requiredMargin) return showToast('Insufficient margin for short');
+                if (orderType === 'limit') {
+                    if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
+                    const order = {
+                        id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                        symbol,
+                        side,
+                        type: 'limit',
+                        price: limitPrice,
+                        qty,
+                        status: 'pending',
+                        createdAt: Date.now()
+                    };
+                    pendingOrders.push(order);
+                    savePendingOrders();
+                    renderPendingOrdersUI();
+                    showToast('📌 Limit ' + side.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
+                    return;
                 }
 
+                const fee = qty * price * 0.0005;
                 if (side === 'buy') {
-                    const cost = qty * price;
-                    if ((portfolio.cash || 0) < cost) return showToast('Insufficient cash');
-                    portfolio.cash = (portfolio.cash || 0) - cost;
-                    if (portfolio.holdings[symbol]) {
-                        let h = portfolio.holdings[symbol];
-                        if (h.qty < 0) {
-                            const closeQty = Math.min(Math.abs(h.qty), qty);
-                            h.qty += closeQty;
-                            if (h.qty === 0) delete portfolio.holdings[symbol];
-                            portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Close Short' });
-                        } else {
-                            const totalCost = qty * price;
-                            const newAvg = ((h.qty * h.avgPrice) + totalCost) / (h.qty + qty);
-                            h.qty += qty;
-                            h.avgPrice = newAvg;
-                            h.entryPrice = newAvg;
-                            portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
-                                time: new Date().toLocaleTimeString() });
-                        }
+                    if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
+                    portfolio.cash -= qty * price + fee;
+                    const existing = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p
+                        .entryPrice === price);
+                    if (existing) {
+                        existing.qty += qty;
+                        existing.entryPrice = (existing.entryPrice * (existing.qty - qty) + price * qty) / existing
+                        .qty;
                     } else {
-                        portfolio.holdings[symbol] = { qty, avgPrice: price, currentPrice: price, entryPrice: price };
-                        portfolio.transactions.unshift({ type: 'buy', symbol, qty, price,
-                            time: new Date().toLocaleTimeString() });
+                        portfolio.positions.push({
+                            id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                            symbol,
+                            type: 'long',
+                            qty,
+                            entryPrice: price,
+                            currentPrice: price,
+                            slPrice: null,
+                            tpPrice: null,
+                            openTime: new Date().toISOString(),
+                            fee
+                        });
                     }
+                    portfolio.transactions.unshift({
+                        type: 'buy',
+                        symbol,
+                        qty,
+                        price,
+                        time: new Date().toLocaleTimeString(),
+                        reason: 'Market Order',
+                        fee
+                    });
                     playTradeSound('buy');
+                    showToast('✅ Market BUY ' + qty + ' ' + symbol);
                 } else {
-                    if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty > 0) {
-                        let h = portfolio.holdings[symbol];
-                        const closeQty = Math.min(h.qty, qty);
-                        portfolio.cash = (portfolio.cash || 0) + closeQty * price;
-                        h.qty -= closeQty;
-                        if (h.qty === 0) delete portfolio.holdings[symbol];
-                        portfolio.transactions.unshift({ type: 'sell', symbol, qty: closeQty, price,
-                            time: new Date().toLocaleTimeString(), reason: 'Close Long' });
-                    } else {
-                        if (portfolio.holdings[symbol] && portfolio.holdings[symbol].qty < 0) {
-                            let h = portfolio.holdings[symbol];
-                            const newAvg = ((Math.abs(h.qty) * h.avgPrice) + (qty * price)) / (Math.abs(h.qty) + qty);
-                            h.qty -= qty;
-                            h.avgPrice = newAvg;
-                            h.entryPrice = newAvg;
-                            portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Add Short' });
-                        } else {
-                            portfolio.holdings[symbol] = { qty: -qty, avgPrice: price, currentPrice: price,
-                                entryPrice: price };
-                            portfolio.transactions.unshift({ type: 'sell', symbol, qty, price,
-                                time: new Date().toLocaleTimeString(), reason: 'Short' });
+                    const longPos = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p.qty >=
+                        qty);
+                    if (longPos) {
+                        const pnl = (price - longPos.entryPrice) * qty;
+                        portfolio.cash += qty * price - fee;
+                        longPos.qty -= qty;
+                        if (longPos.qty === 0) {
+                            const idx = portfolio.positions.indexOf(longPos);
+                            if (idx > -1) portfolio.positions.splice(idx, 1);
                         }
+                        portfolio.transactions.unshift({
+                            type: 'sell',
+                            symbol,
+                            qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason: 'Market Order (Close Long)',
+                            pnl,
+                            fee
+                        });
+                        playTradeSound('sell');
+                        showToast('✅ Closed Long ' + symbol);
+                    } else {
+                        const margin = qty * price * 0.5;
+                        if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
+                        portfolio.cash -= fee;
+                        const existingShort = portfolio.positions.find(p => p.symbol === symbol && p.type === 'short' &&
+                            p.entryPrice === price);
+                        if (existingShort) {
+                            existingShort.qty += qty;
+                            existingShort.entryPrice = (existingShort.entryPrice * (existingShort.qty - qty) + price *
+                                qty) / existingShort.qty;
+                        } else {
+                            portfolio.positions.push({
+                                id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                symbol,
+                                type: 'short',
+                                qty,
+                                entryPrice: price,
+                                currentPrice: price,
+                                slPrice: null,
+                                tpPrice: null,
+                                openTime: new Date().toISOString(),
+                                fee
+                            });
+                        }
+                        portfolio.transactions.unshift({
+                            type: 'sell',
+                            symbol,
+                            qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason: 'Market Order (Short)',
+                            fee
+                        });
+                        playTradeSound('sell');
+                        showToast('✅ Market SHORT ' + qty + ' ' + symbol);
                     }
-                    playTradeSound('sell');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
@@ -4306,68 +4674,65 @@
                 const panel = document.getElementById('tradePanel');
                 if (!panel) return;
                 let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Open Positions</h4>';
-                const holdings = portfolio.holdings || {};
-                const keys = Object.keys(holdings);
-                if (keys.length === 0) {
+                const positions = portfolio.positions || [];
+                if (positions.length === 0) {
                     html += '<div style="color:var(--mt5-text);padding:10px 0;">No open positions</div>';
                 } else {
-                    keys.forEach(sym => {
-                        const h = holdings[sym];
-                        const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice || 0;
-                        const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h
-                        .qty);
+                    positions.forEach(p => {
+                        const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                        const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) *
+                        p.qty;
                         html += `<div class="position-card">
-                            <div class="row"><span class="label">${sym}</span><span class="value">${Math.abs(h.qty)} Qty</span></div>
-                            <div class="row"><span class="label">Entry</span><span class="value">$${(h.avgPrice || 0).toFixed(4)}</span></div>
+                            <div class="row"><span class="label">${p.symbol} (${p.type})</span><span class="value">${Math.abs(p.qty)} Qty</span></div>
+                            <div class="row"><span class="label">Entry</span><span class="value">$${(p.entryPrice || 0).toFixed(4)}</span></div>
                             <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(4)}</span></div>
                             <div class="row"><span class="label">P&L</span><span class="value ${pl>=0?'green':'red'}">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
-                            ${h.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${h.slPrice.toFixed(4)}</span></div>` : ''}
-                            ${h.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${h.tpPrice.toFixed(4)}</span></div>` : ''}
-                            <button class="exit-btn" onclick="exitPosition('${sym}')">Exit Position</button>
-                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="openMobileSLTPModal('${sym}')">SL/TP</button>
+                            ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
+                            ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
+                            <button class="exit-btn" onclick="exitPositionById('${p.id}')">Exit Position</button>
+                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="editSLTPById('${p.id}')">SL/TP</button>
                         </div>`;
                     });
                 }
+                const totalEquity = portfolio.cash + portfolio.positions.reduce((sum, p) => {
+                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    return sum + Math.abs(p.qty) * cp;
+                }, 0);
+                const totalPL = portfolio.positions.reduce((sum, p) => {
+                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    return sum + (p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p
+                        .qty);
+                }, 0);
                 html += `<div style="margin-top:10px;padding:10px;background:var(--mt5-card);border-radius:8px;">
                     <div class="row"><span class="label">Balance</span><span class="value">$${(portfolio.cash || 0).toFixed(2)}</span></div>
-                    <div class="row"><span class="label">Equity</span><span class="value">$${calcEquity().toFixed(2)}</span></div>
-                    <div class="row"><span class="label">P&L</span><span class="value ${calcTotalPL()>=0?'green':'red'}">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</span></div>
+                    <div class="row"><span class="label">Equity</span><span class="value">$${totalEquity.toFixed(2)}</span></div>
+                    <div class="row"><span class="label">P&L</span><span class="value ${totalPL>=0?'green':'red'}">${totalPL>=0?'+':''}$${totalPL.toFixed(2)}</span></div>
+                    <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.65rem;">${userAccountNo}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
                     <input type="number" id="depositAmount" placeholder="Amount" step="0.01">
                     <button onclick="depositFunds()">Deposit</button>
                     <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw</button>
                 </div>`;
+                html +=
+                    '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.8rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
                 html += '</div>';
                 panel.innerHTML = html;
-            }
-
-            function openMobileSLTPModal(sym) {
-                const h = portfolio.holdings[sym];
-                if (!h) return;
-                const modal = document.createElement('div');
-                modal.className = 'modal';
-                modal.style.zIndex = '250';
-                modal.innerHTML = `
-                    <div class="modal-content"><h3>Set SL/TP — ${sym}</h3>
-                    <label>Stop Loss ($) <input type="number" id="mobSL" value="${h.slPrice || ''}" step="0.0001"></label>
-                    <label>Take Profit ($) <input type="number" id="mobTP" value="${h.tpPrice || ''}" step="0.0001"></label>
-                    <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="mobSaveSLTP">💾 Save</button></div></div>`;
-                document.body.appendChild(modal);
-                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-                document.getElementById('mobSaveSLTP').onclick = () => {
-                    const sl = parseFloat(document.getElementById('mobSL').value);
-                    const tp = parseFloat(document.getElementById('mobTP').value);
-                    h.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
-                    h.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
-                    savePortfolioToStorage();
-                    updateSimUI();
-                    redrawAllLines();
-                    syncPortfolioToServer();
-                    modal.remove();
-                    renderMobileTradeSummary();
-                    showToast('✅ SL/TP updated');
-                };
+                // render pending orders in mobile
+                const pendingEl = document.getElementById('mobilePendingOrders');
+                if (pendingEl) {
+                    const pending = pendingOrders.filter(o => o.status === 'pending');
+                    if (pending.length === 0) pendingEl.innerHTML =
+                        '<span style="color:var(--mt5-text);font-size:0.65rem;">No pending orders</span>';
+                    else {
+                        pendingEl.innerHTML = pending.map(o =>
+                            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--mt5-border);font-size:0.65rem;">
+                                <span>${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
+                                <button class="btn btn-sm btn-danger" onclick="cancelLimitOrder('${o.id}');renderMobileTradeSummary();">Cancel</button>
+                            </div>`
+                        ).join('');
+                    }
+                }
             }
 
             function depositFunds() {
@@ -4471,15 +4836,17 @@
                             'deposit' ? 'deposit' : 'withdraw';
                         const isDeposit = t.type === 'deposit';
                         const isWithdraw = t.type === 'withdraw';
-                        const sign = (isDeposit || t.type === 'buy') ? '+' : '-';
+                        const sign = (isDeposit || t.type === 'buy' || t.type === 'deposit') ? '+' : '-';
                         const color = isDeposit ? 'green' : isWithdraw ? 'red' : t.type === 'buy' ? 'green' :
                             'red';
+                        const pnlText = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl
+                            .toFixed(2) : '';
                         html += `<div class="history-item">
                             <div class="left">
-                                <span class="type ${typeCls}">${t.type.toUpperCase()}</span>
+                                <span class="type ${typeCls}">${t.type.toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
                                 <span class="detail">${t.symbol || 'USD'} • ${t.time || ''}</span>
                             </div>
-                            <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}</div>
+                            <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
                         </div>`;
                     });
                 }
@@ -4494,9 +4861,11 @@
                 if (simResizeObserver) simResizeObserver.disconnect();
                 if (window._mobileResizeObs) { window._mobileResizeObs.disconnect();
                     window._mobileResizeObs = null; }
+                if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
+                chartInitRetryTimer = null;
                 if (window._chartCleanup) window._chartCleanup();
                 stopBackgroundEngine();
             }
@@ -4516,14 +4885,135 @@
                 simIndicatorSeries = {};
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                // Do NOT replace the container — just clear and re-init
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) {
-                    const newDiv = document.createElement('div');
-                    newDiv.id = 'simChartContainer';
-                    newDiv.style.cssText = 'width:100%;height:100%;touch-action:none;';
-                    chartDiv.parentNode?.replaceChild(newDiv, chartDiv);
+                    chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>';
                 }
-                initChart();
+                if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
+                chartInitRetryTimer = setTimeout(initChart, 100);
+            }
+
+            // ─── BACKGROUND ENGINE ──────────────────────────────────────────
+            let bgEngineInterval = null;
+
+            function startBackgroundEngine() {
+                if (bgEngineInterval) clearInterval(bgEngineInterval);
+                bgEngineInterval = setInterval(() => {
+                    checkAndExecuteSLTP();
+                    checkPendingOrders();
+                }, 3000);
+            }
+
+            function stopBackgroundEngine() {
+                if (bgEngineInterval) { clearInterval(bgEngineInterval);
+                    bgEngineInterval = null; }
+            }
+
+            // ─── SERVER SYNC ─────────────────────────────────────────────────
+            async function syncPortfolioToServer() {
+                if (!token) return;
+                try {
+                    await apiFetch('/portfolio', {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            cash: portfolio.cash,
+                            positions: portfolio.positions.slice(-50),
+                            transactions: portfolio.transactions.slice(-50),
+                            drawnLines: portfolio.drawnLines
+                        })
+                    });
+                } catch (e) { console.warn('Portfolio sync error:', e.message); }
+            }
+
+            // ─── UI UPDATES ──────────────────────────────────────────────────
+            function calcEquity() {
+                let eq = portfolio.cash || 0;
+                portfolio.positions.forEach(p => {
+                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    eq += Math.abs(p.qty) * cp;
+                });
+                return eq;
+            }
+
+            function calcTotalPL() {
+                let pl = 0;
+                portfolio.positions.forEach(p => {
+                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    pl += p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
+                });
+                return pl;
+            }
+
+            function updateSimUI() {
+                if (!portfolio) return;
+                const totalPL = calcTotalPL();
+                const totalEquity = calcEquity();
+                const cashEl = document.getElementById('simCash') || document.getElementById('simCashBar');
+                const totalEl = document.getElementById('simTotalValue') || document.getElementById('simTotalBar');
+                const plEl = document.getElementById('simPL') || document.getElementById('simPLBar');
+                if (cashEl) cashEl.textContent = '💰 $' + (portfolio.cash || 0).toFixed(2);
+                if (totalEl) totalEl.textContent = '📊 $' + totalEquity.toFixed(2);
+                if (plEl) {
+                    plEl.textContent = (totalPL >= 0 ? '📈 +$' : '📉 -$') + Math.abs(totalPL).toFixed(2);
+                    plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
+                }
+                // update account no
+                const accEl = document.querySelector('.account-no');
+                if (accEl) accEl.textContent = userAccountNo;
+
+                // positions table
+                const tbody = document.querySelector('#simHoldingsTable tbody');
+                const fsTbody = document.querySelector('#simHoldingsTableFs tbody');
+                const rowsHTML = portfolio.positions.map(p => {
+                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    const val = Math.abs(p.qty) * cp;
+                    const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
+                    const isShort = p.type === 'short';
+                    return `<tr>
+                        <td><strong>${p.symbol}</strong> ${isShort ? '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.65rem;">LONG</span>'}</td>
+                        <td>${Math.abs(p.qty)}</td>
+                        <td><span class="entry-badge">$${(p.entryPrice || 0).toFixed(4)}</span></td>
+                        <td>$${cp.toFixed(4)}</td>
+                        <td>${p.slPrice ? '<span class="sl-badge">$' + p.slPrice.toFixed(4) + '</span>' : '—'}</td>
+                        <td>${p.tpPrice ? '<span class="tp-badge">$' + p.tpPrice.toFixed(4) + '</span>' : '—'}</td>
+                        <td>$${val.toFixed(2)}</td>
+                        <td style="display:flex;gap:4px;">
+                            <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i> Exit</button>
+                            <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i></button>
+                        </td>
+                    </tr>`;
+                }).join('') ||
+                    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
+                if (tbody) tbody.innerHTML = rowsHTML;
+                if (fsTbody) fsTbody.innerHTML = rowsHTML;
+
+                // history
+                const histEl = document.getElementById('simHistoryList');
+                if (histEl) histEl.innerHTML =
+                    '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' + (portfolio
+                        .transactions || []).slice(0, 25).map(t =>
+                        `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : t.type === 'deposit' ? 'var(--mt5-blue)' : 'var(--mt5-red)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}${t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl.toFixed(2) : ''}</li>`
+                    ).join('') + '</ul>';
+
+                updateSimUIFullscreen();
+                savePortfolioToStorage();
+                if (window.innerWidth <= 768) { renderMobileTradeSummary();
+                    updateMobileTopBar(); }
+                renderPendingOrdersUI();
+            }
+
+            function updateSimUIFullscreen() {
+                const fsCash = document.getElementById('fsCash'),
+                    fsTotal = document.getElementById('fsTotal'),
+                    fsPL = document.getElementById('fsPL');
+                if (!fsCash || !fsTotal || !fsPL) return;
+                const totalPL = calcTotalPL();
+                const totalEquity = calcEquity();
+                fsCash.textContent = '💰 $' + (portfolio.cash || 0).toFixed(2);
+                fsTotal.textContent = '📊 $' + totalEquity.toFixed(2);
+                fsPL.textContent = '📈 ' + (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
+                fsPL.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
             }
 
             // ─── RENDER TRADING TERMINAL ─────────────────────────────────────
@@ -4532,9 +5022,10 @@
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
                         <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
-                            <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                 <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
                                 <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
+                                <span class="account-no">${userAccountNo}</span>
                             </div>
                             <div id="terminalTopBarPL" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                                 <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
@@ -4577,6 +5068,7 @@
                                 <span id="fsCash" style="color:var(--success);">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
                                 <span id="fsTotal">📊 $0</span>
                                 <span id="fsPL">📈 $0</span>
+                                <span style="font-size:0.6rem;color:var(--text-muted);">${userAccountNo}</span>
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;">
                                 <button class="tool-btn" onclick="toggleFsBottomPanel()">📋</button>
@@ -4626,10 +5118,20 @@
                                         <button onclick="setDesktopLot(1.00)" style="padding:1px 4px;font-size:0.6rem;">1.00</button>
                                     </div>
                                 </div>
-                                <button class="btn-buy" onclick="placeSimOrder('buy')"><i class="fas fa-shopping-cart"></i> Buy</button>
-                                <button class="btn-sell" onclick="placeSimOrder('sell')"><i class="fas fa-money-bill-wave"></i> Sell</button>
+                                <button class="btn-buy" onclick="placeSimOrder('buy','market')"><i class="fas fa-shopping-cart"></i> Buy</button>
+                                <button class="btn-sell" onclick="placeSimOrder('sell','market')"><i class="fas fa-money-bill-wave"></i> Sell</button>
+                                <div class="limit-order-input">
+                                    <span>Limit</span>
+                                    <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:80px;">
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))">Buy L</button>
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))">Sell L</button>
+                                </div>
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
                                 <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> TRADE</button>
+                            </div>
+                            <div style="display:flex;gap:12px;padding:4px 8px;background:var(--bg-secondary);border-radius:10px;margin-bottom:4px;flex-wrap:wrap;align-items:center;">
+                                <span style="font-size:0.7rem;font-weight:600;">📌 Pending Limits:</span>
+                                <span id="pendingOrdersList" style="font-size:0.7rem;color:var(--text-muted);">No pending orders</span>
                             </div>
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
@@ -4687,6 +5189,7 @@
                 };
                 setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
                 updateSimUI();
+                renderPendingOrdersUI();
 
                 window.changeDesktopLot = function(delta) {
                     const input = document.getElementById('simQty');
@@ -4699,7 +5202,7 @@
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             function renderMobileTerminal(container) {
-                if (!portfolio) portfolio = { cash: 100000, holdings: {}, transactions: [], drawnLines: {} };
+                if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
                 cleanupSimIntervals();
                 simAllCandles = [];
                 simCurrentCandle = null;
@@ -4724,6 +5227,7 @@
                             <span class="mt5-pair">${simCurrentSymbol}</span>
                             <span class="mt5-name">${simCurrentSymbol} / USD</span>
                             <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(TIMEFRAMES).find(k => TIMEFRAMES[k] === currentTimeframe)}</span>
+                            <span style="font-size:0.5rem;color:var(--mt5-text);">${userAccountNo}</span>
                         </div>
                         <div class="mt5-quick-trade">
                             <div class="mt5-quick-trade-row">
@@ -4741,6 +5245,12 @@
                                     </div>
                                 </div>
                                 <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
+                            </div>
+                            <div style="display:flex;gap:4px;margin-top:4px;align-items:center;">
+                                <span style="font-size:0.55rem;color:var(--mt5-text);">Limit:</span>
+                                <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:2px 6px;border-radius:4px;font-size:0.6rem;width:70px;">
+                                <button class="btn btn-outline btn-sm" style="font-size:0.5rem;padding:2px 6px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">Buy L</button>
+                                <button class="btn btn-outline btn-sm" style="font-size:0.5rem;padding:2px 6px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">Sell L</button>
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
@@ -4760,7 +5270,7 @@
                         <div class="mt5-sidebar-overlay" id="mt5SidebarOverlay">
                             <div class="mt5-sidebar-sheet" id="mt5SidebarSheet">
                                 <div class="close-area"><button id="mt5SidebarClose"><i class="fas fa-times"></i></button></div>
-                                <div class="user-info"><div class="avatar">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</div><div class="details"><div class="name">${currentUser?.username || 'User'}</div><div class="balance">Balance: $${(portfolio.cash || 0).toFixed(2)} | Equity: $${calcEquity().toFixed(2)}</div></div></div>
+                                <div class="user-info"><div class="avatar">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</div><div class="details"><div class="name">${currentUser?.username || 'User'}</div><div class="balance">Balance: $${(portfolio.cash || 0).toFixed(2)} | Equity: $${calcEquity().toFixed(2)}<br>${userAccountNo}</div></div></div>
                                 <h4>📈 Indicators</h4>
                                 <div class="sidebar-indicators">
                                     ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>`).join('')}
@@ -4894,21 +5404,21 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1.1rem;" id="tp_count">${Object.keys(portfolio.holdings || {}).length}</div></div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1.1rem;" id="tp_count">${portfolio.positions.length}</div></div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">P&L</div><div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;"><span class="account-no">${userAccountNo}</span></div>
                         <h4 style="margin-top:10px;">Open Positions</h4>
                         <div id="tp_positions">
-                            ${Object.keys(portfolio.holdings || {}).length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
-                            Object.keys(portfolio.holdings || {}).map(sym => {
-                                const h = portfolio.holdings[sym];
-                                const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice || 0;
-                                const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) * Math.abs(h.qty);
-                                return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
-                                    <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                            ${portfolio.positions.length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
+                            portfolio.positions.map(p => {
+                                const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                                const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
+                                return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
+                                    <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                     <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
-                                    <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
-                                    <button class="btn btn-sm btn-outline" onclick="editSLTPInModal('${sym}')">SL/TP</button>
+                                    <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
+                                    <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')">SL/TP</button>
                                 </div>`;
                             }).join('')}
                         </div>
@@ -4922,7 +5432,7 @@
                     if (!panel) { clearInterval(updateInterval); return; }
                     const equity = calcEquity();
                     const totalPL = calcTotalPL();
-                    const count = Object.keys(portfolio.holdings || {}).length;
+                    const count = portfolio.positions.length;
                     const balance = portfolio.cash || 0;
                     const balEl = document.getElementById('tp_balance');
                     if (balEl) balEl.textContent = '$' + balance.toFixed(2);
@@ -4935,19 +5445,18 @@
                         plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)'; }
                     const posContainer = document.getElementById('tp_positions');
                     if (posContainer) {
-                        const keys = Object.keys(portfolio.holdings || {});
                         let html = '';
-                        if (keys.length === 0) html = '<p style="color:var(--text-muted);">No open positions</p>';
-                        else keys.forEach(sym => {
-                            const h = portfolio.holdings[sym];
-                            const cp = simLastPrices[sym] || h.currentPrice || h.avgPrice || 0;
-                            const pl = h.qty > 0 ? (cp - h.avgPrice) * h.qty : (h.avgPrice - cp) *
-                                Math.abs(h.qty);
-                            html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-sym="${sym}">
-                                <span><strong>${sym}</strong> ${Math.abs(h.qty)} qty</span>
+                        if (portfolio.positions.length === 0) html =
+                            '<p style="color:var(--text-muted);">No open positions</p>';
+                        else portfolio.positions.forEach(p => {
+                            const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                            const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice -
+                                cp) * p.qty;
+                            html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
+                                <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                 <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
-                                <button class="btn-exit" onclick="exitPosition('${sym}');this.closest('.modal').remove();">Exit</button>
-                                <button class="btn btn-sm btn-outline" onclick="editSLTPInModal('${sym}')">SL/TP</button>
+                                <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
+                                <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')">SL/TP</button>
                             </div>`;
                         });
                         posContainer.innerHTML = html;
@@ -4957,7 +5466,6 @@
                 const origRemove = modal.remove;
                 modal.remove = function() { if (modal._cleanup) modal._cleanup();
                     origRemove.call(modal); };
-                window.editSLTPInModal = function(sym) { editSLTP(sym); };
             }
 
             function toggleFsBottomPanel() {
@@ -5013,6 +5521,7 @@
                                 </button>
                                 <div class="user-menu">
                                     <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
+                                    <span class="account-no">${userAccountNo}</span>
                                     <button class="logout-btn" id="logoutBtn">Logout</button>
                                 </div>
                             </div>
@@ -5035,6 +5544,10 @@
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
                 document.getElementById('logoutBtn').onclick = logout;
                 renderSubjectList();
+                // Auto-select first subject if none selected
+                if (!selectedSubjectId && subjects.length > 0) {
+                    selectedSubjectId = subjects[0].id;
+                }
                 if (currentLessonId) showLessonDetail(currentLessonId);
                 else showLessonList();
             }
@@ -5056,7 +5569,16 @@
 
             function showLessonList() {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
-                if (!subj) return;
+                if (!subj) {
+                    if (subjects.length > 0 && !selectedSubjectId) {
+                        selectedSubjectId = subjects[0].id;
+                        showLessonList();
+                        return;
+                    }
+                    document.getElementById('contentArea').innerHTML =
+                        '<div style="padding:40px;text-align:center;color:var(--text-muted);">📚 Select a subject from the sidebar.</div>';
+                    return;
+                }
                 const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
                 let lessons = subj.lessons || [];
                 if (q) lessons = lessons.filter(l => t(l.titles).toLowerCase().includes(q));
@@ -5792,6 +6314,8 @@
                             currentUser = res.user;
                             localStorage.setItem(TOKEN_KEY, token);
                             localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+                            userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                            saveAccountNo();
                             showToast('🎉 Registration successful!');
                             window.history.replaceState({}, '', '?');
                             loadAllData(); } catch (e) { showToast('❌ ' + e.message); }
@@ -5802,6 +6326,10 @@
                             currentUser = res.user;
                             localStorage.setItem(TOKEN_KEY, token);
                             localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+                            if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                                saveAccountNo();
+                            }
                             showToast('✅ Welcome back, ' + username + '!');
                             window.history.replaceState({}, '', '?');
                             loadAllData(); } catch (e) { showToast('❌ ' + e.message); }
@@ -5814,8 +6342,14 @@
                 if (!token || !currentUser) { renderAuthPage(); return; }
                 try {
                     loadPortfolioFromStorage();
+                    loadPendingOrders();
+                    if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                        userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                        saveAccountNo();
+                    }
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
-                        apiFetch('/subjects'), apiFetch('/progress').catch(() => ({})),
+                        apiFetch('/subjects').catch(() => []),
+                        apiFetch('/progress').catch(() => ({})),
                         apiFetch('/bookmarks').catch(() => ({})),
                         apiFetch('/quiz/scores').catch(() => ({})),
                         apiFetch('/notes/all').catch(() => ({})),
@@ -5828,14 +6362,21 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.holdings = portRes.holdings || {};
+                        portfolio.positions = portRes.positions || [];
                         if (portRes.transactions) portfolio.transactions = portRes.transactions;
                         if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                    // ensure each position has id
+                    portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
+                            .toString(36).slice(2, 6); });
                     savePortfolioToStorage();
                     if (currentUser.username === 'admin') isAdmin = true;
+                    // Auto-select first subject
+                    if (subjects.length > 0 && !selectedSubjectId) {
+                        selectedSubjectId = subjects[0].id;
+                    }
                     applyTheme();
                     renderApp();
                     connectBinanceWS();
@@ -5856,7 +6397,10 @@
             // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
             window.updateSimUI = updateSimUI;
             window.placeSimOrder = placeSimOrder;
+            window.placeSimOrderMobile = placeSimOrderMobile;
+            window.exitPositionById = exitPositionById;
             window.exitPosition = exitPosition;
+            window.editSLTPById = editSLTPById;
             window.editSLTP = editSLTP;
             window.checkAndExecuteSLTP = checkAndExecuteSLTP;
             window.toggleFsBottomPanel = toggleFsBottomPanel;
@@ -5867,10 +6411,10 @@
             window.setDrawingTool = setDrawingTool;
             window.resetSimPortfolio = resetSimPortfolio;
             window.initChart = initChart;
+            window.resetChart = resetChart;
             window.depositFunds = depositFunds;
             window.withdrawFunds = withdrawFunds;
             window.selectMobileSymbol = selectMobileSymbol;
-            window.placeSimOrderMobile = placeSimOrderMobile;
             window.updateMobileTopBar = updateMobileTopBar;
             window.renderMobileTradeSummary = renderMobileTradeSummary;
             window.setMobileLot = setMobileLot;
@@ -5880,20 +6424,22 @@
             window.simCurrentSymbol = simCurrentSymbol;
             window.simLastPrices = simLastPrices;
             window.portfolio = portfolio;
+            window.pendingOrders = pendingOrders;
+            window.cancelLimitOrder = cancelLimitOrder;
+            window.renderPendingOrdersUI = renderPendingOrdersUI;
             window.openDesktopTradePanel = openDesktopTradePanel;
             window.calcEquity = calcEquity;
             window.calcTotalPL = calcTotalPL;
             window.showToast = showToast;
             window.connectBinanceWS = connectBinanceWS;
             window.disconnectBinanceWS = disconnectBinanceWS;
-            window.resetChart = resetChart;
             window.openDB = openDB;
             window.dbPut = dbPut;
             window.dbGet = dbGet;
             window.dbGetAll = dbGetAll;
             window.dbDelete = dbDelete;
             window.syncPortfolioToServer = syncPortfolioToServer;
-            window.openMobileSLTPModal = openMobileSLTPModal;
+            window.checkPendingOrders = checkPendingOrders;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
@@ -5953,6 +6499,10 @@
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
+            if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                saveAccountNo();
+            }
             openDB().then(() => {
                 console.log('✅ IndexedDB ready');
                 if (token && currentUser) loadAllData();
