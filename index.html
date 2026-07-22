@@ -6382,33 +6382,42 @@
 
             // ─── Visibility API: chart recovery ──────────────────────────────
             document.addEventListener('visibilitychange', function() {
-                if (!document.hidden) {
-                    // Page became visible again — recover chart
-                    const chartDiv = document.getElementById('simChartContainer');
-                    if (chartDiv) {
-                        const hasCanvas = chartDiv.querySelector('canvas');
-                        if (!hasCanvas || (simChart && !simChart._draw)) {
-                            console.log('🔄 Recovering chart after visibility change');
-                            resetChart();
-                        } else if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                            try {
-                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                        .clientHeight });
-                                if (simCandleSeries && simAllCandles.length > 0) {
-                                    const visible = getVisibleCandles();
-                                    const allData = [...visible];
-                                    if (simCurrentCandle) allData.push(simCurrentCandle);
-                                    simCandleSeries.setData(sanitizeCandleData(allData));
-                                    simChart.timeScale().fitContent();
-                                }
-                            } catch (e) { console.warn('Chart recovery error:', e);
-                                resetChart(); }
-                        }
-                    }
+    if (!document.hidden && simChart) {
+        const chartDiv = document.getElementById('simChartContainer');
+        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+            try {
+                // ১. রিসাইজ (যদি প্রয়োজন)
+                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
+                
+                // ২. ডাটা রিফ্রেশ (নতুন ক্যান্ডেল আপডেট)
+                if (simCandleSeries && simAllCandles.length > 0) {
+                    const visible = getVisibleCandles();
+                    const allData = [...visible];
+                    if (simCurrentCandle) allData.push(simCurrentCandle);
+                    simCandleSeries.setData(sanitizeCandleData(allData));
+                    
+                    // ৩. লেটেস্ট ক্যান্ডেলে স্ক্রল
+                    simChart.timeScale().fitContent();
+                    setTimeout(() => {
+                        try { simChart.timeScale().scrollToPosition(0, true); } catch(e) {}
+                    }, 50);
                 }
-            });
-
-        })();
+                
+                // ৪. ইন্ডিকেটর ও লাইন রিফ্রেশ
+                updateAllIndicators();
+                redrawAllLines();
+                updateSimUI();
+                
+                console.log('✅ Chart refreshed after visibility change');
+            } catch (e) {
+                console.warn('Chart refresh error:', e);
+                // শুধুমাত্র মারাত্মক ত্রুটি থাকলেই রিসেট করুন, নয়তো নয়
+                // resetChart();  // ← আর auto-reset করবেন না
+            }
+        }
+    }
+});
+       })();
     </script>
 </body>
 </html>
