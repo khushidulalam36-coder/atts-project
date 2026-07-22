@@ -15,70 +15,14 @@
     <style>
         /* ─── ROOT ────────────────────────────────────────────────────────── */
         :root {
-            --bg: #f4f6fa;
-            --bg-secondary: #eef1f7;
-            --surface: #ffffff;
-            --surface-alt: #f8f9fd;
-            --surface-hover: #f0f3f9;
-            --border: #e5e7eb;
-            --border-light: #f3f4f6;
-            --border-strong: #d1d5db;
-            --text: #111827;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --primary-glow: rgba(79, 70, 229, 0.22);
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a78bfa 100%);
-            --success: #10b981;
-            --success-light: #ecfdf5;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --accent: #f59e0b;
-            --radius: 10px;
-            --radius-lg: 14px;
-            --radius-full: 9999px;
-            --font: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.07);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.09);
-            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --mt5-bg: #0e1219;
-            --mt5-surface: #161b23;
-            --mt5-card: #1c212b;
-            --mt5-input: #2a2f3a;
-            --mt5-border: #2d3340;
-            --mt5-text: #b0b8cc;
-            --mt5-text-bright: #e8edf5;
-            --mt5-green: #00c897;
-            --mt5-red: #ff3b5c;
-            --mt5-blue: #3b82f6;
-            --mt5-gold: #f59e0b;
-            --mt5-nav-bg: #12161e;
-            --mt5-nav-active: #1e2634;
-            --mt5-chart-bg: #0b0f17;
-            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
-            --trade-buy: #2ecc71;
-            --trade-sell: #e74c3c;
-            --trade-neutral: #5b6c8a;
-            --terminal-header-h: 28px;
-            --toolbar-h: 26px;
-            --tradebar-h: 32px;
-            --quotes-h: 22px;
-            --status-h: 18px;
-        }
-
-        [data-theme="dark"] {
-            --bg: #0c1018;
-            --bg-secondary: #131a25;
-            --surface: #19202d;
-            --surface-alt: #151c28;
-            --surface-hover: #1f2836;
-            --border: #334155;
+            --bg: #0b0f17;
+            --bg-secondary: #111822;
+            --surface: #151d2b;
+            --surface-alt: #1a2333;
+            --surface-hover: #1f2a3d;
+            --border: #2a3448;
             --border-light: #1e293b;
-            --border-strong: #475569;
+            --border-strong: #3d4a62;
             --text: #e2e8f0;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
@@ -90,20 +34,72 @@
             --success-light: #0a2e1f;
             --danger: #f87171;
             --danger-light: #2a1215;
-            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
-            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.28);
-            --mt5-bg: #0a0e16;
-            --mt5-surface: #11161f;
-            --mt5-card: #171d29;
-            --mt5-input: #1e2636;
-            --mt5-border: #263040;
-            --mt5-text: #b0b8cc;
-            --mt5-text-bright: #e8edf5;
-            --mt5-nav-bg: #0c1018;
-            --mt5-nav-active: #182030;
+            --accent: #f59e0b;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --font: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+            --mt5-green: #00c897;
+            --mt5-red: #ff3b5c;
+            --mt5-blue: #3b82f6;
+            --mt5-gold: #f59e0b;
+            --mt5-bg: #0b0f17;
+            --mt5-surface: #111822;
+            --mt5-card: #151d2b;
+            --mt5-input: #1a2333;
+            --mt5-border: #2a3448;
+            --mt5-text: #94a3b8;
+            --mt5-text-bright: #e2e8f0;
+            --mt5-nav-bg: #0b0f17;
+            --mt5-nav-active: #1a2333;
             --mt5-chart-bg: #080c14;
+            --trade-buy: #00c897;
+            --trade-sell: #ff3b5c;
+            --trade-neutral: #5b6c8a;
+            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
+        }
+
+        [data-theme="light"] {
+            --bg: #f0f2f5;
+            --bg-secondary: #e8ebf0;
+            --surface: #ffffff;
+            --surface-alt: #f5f7fa;
+            --surface-hover: #eef0f3;
+            --border: #dce0e8;
+            --border-light: #eef0f3;
+            --border-strong: #c8ced8;
+            --text: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.22);
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a78bfa 100%);
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.1);
+            --mt5-bg: #f0f2f5;
+            --mt5-surface: #ffffff;
+            --mt5-card: #f5f7fa;
+            --mt5-input: #e8ebf0;
+            --mt5-border: #dce0e8;
+            --mt5-text: #6b7280;
+            --mt5-text-bright: #111827;
+            --mt5-nav-bg: #ffffff;
+            --mt5-nav-active: #eef0f3;
+            --mt5-chart-bg: #fafbfc;
+            --mt5-green: #10b981;
+            --mt5-red: #ef4444;
+            --trade-buy: #10b981;
+            --trade-sell: #ef4444;
         }
 
         /* ─── RESET ────────────────────────────────────────────────────────── */
@@ -145,7 +141,7 @@
 
         /* ─── SIDEBAR ────────────────────────────────────────────────────── */
         .sidebar {
-            width: 220px;
+            width: 210px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
@@ -160,10 +156,10 @@
             transform: translateX(-100%);
         }
         .sidebar-header {
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-bottom: 1px solid var(--border-light);
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -171,23 +167,23 @@
             font-family: 'Outfit', sans-serif;
         }
         .sidebar-header .logo-icon {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 8px;
             background: var(--primary-gradient);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             box-shadow: 0 3px 12px var(--primary-glow);
         }
         .subject-list {
             flex: 1;
-            padding: 6px 4px;
+            padding: 4px 4px;
         }
         .subject-item {
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: var(--radius);
             cursor: pointer;
             display: flex;
@@ -197,16 +193,16 @@
             transition: all var(--transition);
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
         }
         .subject-item .subject-icon {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background: var(--surface-alt);
             transition: all var(--transition-bounce);
             flex-shrink: 0;
@@ -228,12 +224,6 @@
             color: var(--text);
             transform: translateX(2px);
         }
-        .subject-item:hover:not(.active) .subject-icon {
-            background: var(--primary-light);
-            color: var(--primary);
-            transform: scale(1.06);
-            box-shadow: 0 3px 14px var(--primary-glow);
-        }
 
         /* ─── MAIN ────────────────────────────────────────────────────────── */
         .main-area {
@@ -252,18 +242,15 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            background: rgba(255, 255, 255, 0.92);
+            background: var(--surface);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 20;
             flex-wrap: wrap;
             min-height: 28px;
             transition: background var(--transition);
-        }
-        [data-theme="dark"] .top-bar {
-            background: rgba(25, 32, 45, 0.92);
         }
 
         .mobile-toggle {
@@ -282,16 +269,16 @@
         .search-box {
             flex: 1;
             position: relative;
-            max-width: 140px;
-            min-width: 60px;
+            max-width: 130px;
+            min-width: 50px;
         }
         .search-box input {
             width: 100%;
-            padding: 3px 8px 3px 22px;
+            padding: 2px 8px 2px 20px;
             border: 1.5px solid var(--border);
             border-radius: var(--radius-full);
             outline: none;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             transition: all var(--transition);
             background: var(--bg-secondary);
             font-family: var(--font);
@@ -304,23 +291,23 @@
         }
         .search-box i {
             position: absolute;
-            left: 8px;
+            left: 7px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
             pointer-events: none;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
         }
 
         .terminal-nav-btn {
             background: var(--primary-gradient);
             color: #fff;
             border: none;
-            padding: 3px 10px;
+            padding: 2px 10px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             display: flex;
             align-items: center;
             gap: 3px;
@@ -335,12 +322,12 @@
         }
 
         .lang-select {
-            padding: 2px 18px 2px 6px;
+            padding: 1px 16px 1px 6px;
             border-radius: var(--radius-full);
             border: 1.5px solid var(--border);
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             background: var(--bg-secondary);
             font-family: var(--font);
             color: var(--text);
@@ -351,18 +338,14 @@
             background-position: right 5px center;
             flex-shrink: 0;
         }
-        .lang-select:hover {
-            border-color: var(--primary);
-            box-shadow: 0 3px 14px var(--primary-glow);
-        }
 
         .theme-toggle-btn {
-            padding: 2px 8px;
+            padding: 1px 8px;
             border-radius: var(--radius-full);
             border: 1.5px solid var(--border);
             background: var(--bg-secondary);
             cursor: pointer;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -388,7 +371,7 @@
         }
         .user-menu .username {
             font-weight: 600;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-secondary);
         }
         .user-menu .logout-btn {
@@ -398,7 +381,7 @@
             padding: 1px 8px;
             border-radius: var(--radius-full);
             cursor: pointer;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             font-weight: 600;
             transition: all var(--transition);
             font-family: var(--font);
@@ -727,7 +710,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 15, 25, 0.55);
+            background: rgba(10, 15, 25, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -830,7 +813,7 @@
         }
         .btn-sm {
             padding: 2px 8px;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
         }
         .btn-danger {
             background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -863,7 +846,6 @@
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
 
-        /* ─── TRADE BUTTONS ──────────────────────────────────────────────── */
         .btn-trade {
             color: #fff;
             border: none;
@@ -914,7 +896,7 @@
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             transition: all var(--transition);
             font-family: var(--font);
             display: inline-flex;
@@ -942,8 +924,8 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             max-width: 90vw;
         }
-        [data-theme="dark"] .toast {
-            background: linear-gradient(135deg, #374151, #1f2937);
+        [data-theme="light"] .toast {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
         }
         @keyframes toastIn {
             from {
@@ -1022,15 +1004,12 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(155deg, #f0f4ff, #f4f6fa 30%, #fefce8 65%, #f8f9fd);
+            background: var(--bg);
             transition: background var(--transition);
             padding: 20px;
         }
-        [data-theme="dark"] .auth-container {
-            background: linear-gradient(155deg, #0c1018, #131a25 30%, #19202d 65%, #0c1018);
-        }
         .auth-box {
-            background: rgba(255, 255, 255, 0.84);
+            background: var(--surface);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
             padding: 28px 24px;
@@ -1040,12 +1019,8 @@
             max-width: 100%;
             text-align: center;
             z-index: 1;
-            border: 1px solid rgba(255, 255, 255, 0.65);
+            border: 1px solid var(--border);
             transition: all var(--transition);
-        }
-        [data-theme="dark"] .auth-box {
-            background: rgba(25, 32, 45, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .auth-box h2 {
             font-weight: 700;
@@ -1103,7 +1078,7 @@
         .terminal-wrapper {
             background: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 4px;
+            padding: 2px;
             border: 1.5px solid var(--border);
             box-shadow: var(--shadow);
             transition: all var(--transition);
@@ -1127,14 +1102,6 @@
             display: flex;
             flex-direction: column;
             background: var(--bg);
-        }
-        .terminal-wrapper.fullscreen-active .terminal-inner {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 2px;
-            gap: 1px;
         }
 
         .terminal-fs-topbar {
@@ -2484,148 +2451,6 @@
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* ─── DEBUG ────────────────────────────────────────────────────────── */
-        #debugToggle {
-            position: fixed;
-            bottom: 12px;
-            left: 12px;
-            z-index: 9999;
-            background: #1e293b;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 34px;
-            height: 34px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #debugToggle:hover {
-            transform: scale(1.06);
-            background: #0f172a;
-        }
-        #debugToggle .badge {
-            position: absolute;
-            top: -3px;
-            right: -3px;
-            background: #ef4444;
-            color: #fff;
-            border-radius: 50%;
-            width: 14px;
-            height: 14px;
-            font-size: 0.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-        #debugPanel {
-            position: fixed;
-            bottom: 56px;
-            left: 12px;
-            width: 300px;
-            max-height: 55vh;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            z-index: 10000;
-            padding: 12px 14px;
-            overflow-y: auto;
-            display: none;
-            font-size: 0.65rem;
-            font-family: var(--font-mono);
-            transition: all 0.3s ease;
-            color: var(--text);
-        }
-        #debugPanel.open {
-            display: block;
-        }
-        #debugPanel h3 {
-            margin: 0 0 6px 0;
-            font-size: 0.75rem;
-            font-weight: 700;
-            font-family: 'Outfit', sans-serif;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 3px;
-        }
-        #debugPanel h3 button {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.6rem;
-            padding: 1px 5px;
-            border-radius: 4px;
-        }
-        #debugPanel h3 button:hover {
-            background: var(--surface-hover);
-        }
-        .debug-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.6rem;
-        }
-        .debug-item .label {
-            color: var(--text-secondary);
-        }
-        .debug-item .value {
-            font-weight: 600;
-            max-width: 55%;
-            text-align: right;
-            word-break: break-all;
-        }
-        .debug-item .value.ok {
-            color: #10b981;
-        }
-        .debug-item .value.err {
-            color: #ef4444;
-        }
-        .debug-item .value.warn {
-            color: #f59e0b;
-        }
-        .debug-item .value.info {
-            color: #3b82f6;
-        }
-        .debug-timestamp {
-            font-size: 0.5rem;
-            color: var(--text-muted);
-            text-align: right;
-            margin-top: 3px;
-            border-top: 1px solid var(--border-light);
-            padding-top: 3px;
-        }
-
-        .pending-orders-table {
-            font-size: 0.55rem;
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .pending-orders-table th {
-            text-align: left;
-            padding: 2px 4px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.45rem;
-            text-transform: uppercase;
-        }
-        .pending-orders-table td {
-            padding: 2px 4px;
-            border-bottom: 1px solid var(--border-light);
-            font-family: var(--font-mono);
-            font-size: 0.5rem;
-        }
-
         /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
             .sidebar {
@@ -2770,20 +2595,6 @@
                 padding: 2px;
                 min-height: 250px;
             }
-            #debugPanel {
-                left: 6px;
-                right: 6px;
-                width: auto;
-                bottom: 50px;
-                max-height: 50vh;
-            }
-            #debugToggle {
-                bottom: 10px;
-                left: 10px;
-                width: 30px;
-                height: 30px;
-                font-size: 0.75rem;
-            }
             .status-bar {
                 font-size: 0.45rem;
                 min-height: 16px;
@@ -2889,6 +2700,21 @@
             }
         }
 
+        [data-theme="light"] .ql-toolbar {
+            background: #f8f9fa !important;
+            border-color: #dce0e8 !important;
+        }
+        [data-theme="light"] .ql-container {
+            background: #fff !important;
+            border-color: #dce0e8 !important;
+        }
+        [data-theme="light"] .ql-editor {
+            color: #111827 !important;
+            background: #fff !important;
+        }
+        [data-theme="light"] .ql-editor.ql-blank::before {
+            color: #9ca3af !important;
+        }
         [data-theme="dark"] .ql-toolbar {
             background: #1e293b !important;
             border-color: #334155 !important;
@@ -2918,7 +2744,6 @@
             border-color: #334155 !important;
         }
 
-        /* ─── SCROLLBAR HIDE ─────────────────────────────────────────────── */
         .hide-scrollbar::-webkit-scrollbar {
             width: 2px;
             height: 2px;
@@ -2930,22 +2755,6 @@
 </head>
 <body>
     <div id="app"></div>
-    <button id="debugToggle" title="Debug Panel">🔍<span class="badge" id="debugBadge">!</span></button>
-    <div id="debugPanel">
-        <h3>🛠️ Debug Console<button id="debugClose">✕</button></h3>
-        <div id="debugContent">
-            <div class="debug-item"><span class="label">Binance REST</span><span class="value" id="dbStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Vercel Blob</span><span class="value" id="blobStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Render API</span><span class="value" id="apiStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Binance WS</span><span class="value" id="wsStatus">Disconnected</span></div>
-            <div class="debug-item"><span class="label">IndexedDB</span><span class="value" id="idbStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Chart Candles</span><span class="value" id="candleCount">0</span></div>
-            <div class="debug-item"><span class="label">Portfolio</span><span class="value" id="portfolioStatus">Loading...</span></div>
-            <div class="debug-item"><span class="label">Last Price</span><span class="value" id="lastPrice">-</span></div>
-            <div class="debug-item"><span class="label">Candle Source</span><span class="value" id="cronStatus">Waiting...</span></div>
-            <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
-        </div>
-    </div>
     <script>
         (function() {
             'use strict';
@@ -3253,7 +3062,6 @@
                         transactions: portfolio.transactions.slice(0, 500),
                         drawnLines: portfolio.drawnLines
                     }));
-                    // Also save to IndexedDB
                     dbPut('portfolio', { id: 'main', ...portfolio, updated: Date.now() }).catch(() => {});
                 } catch (e) { console.warn('Portfolio save error:', e); }
             }
@@ -3350,8 +3158,7 @@
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected');
-                        updateDebugPanel(); };
+                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected'); };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -3387,7 +3194,6 @@
                         console.log('⚠️ Binance WebSocket closed, reconnecting...');
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
                         binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
-                        updateDebugPanel();
                     };
                     binanceWS.onerror = (e) => { console.error('Binance WS error:', e);
                         binanceWS.close(); };
@@ -3521,7 +3327,6 @@
                     return;
                 }
 
-                // Ensure container has size
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 15) {
                     await new Promise(r => setTimeout(r, 80));
@@ -3537,7 +3342,6 @@
                     return;
                 }
 
-                // Cleanup old chart
                 if (simChart) {
                     try { simChart.remove(); } catch (e) {}
                     simChart = null;
@@ -3548,7 +3352,6 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ── STEP 1: Fetch REAL price ──
                 let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
                 if (!realTimePrice || isNaN(realTimePrice)) {
                     const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
@@ -3562,7 +3365,6 @@
                     realTimePrice = simBasePrices[simCurrentSymbol] || 45000;
                 }
 
-                // ── STEP 2: PRIMARY → Binance REST ──
                 let candles = null;
                 let sourceLabel = 'Simulation';
                 let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
@@ -3583,7 +3385,6 @@
                     }
                 }
 
-                // ── STEP 3: Merge latest ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
@@ -3603,7 +3404,6 @@
                     }
                 }
 
-                // ── STEP 4: Ensure last candle close matches price ──
                 if (candles.length > 0) {
                     const lastCandle = candles[candles.length - 1];
                     if (isValidNumber(realTimePrice) && Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
@@ -3620,7 +3420,6 @@
                     sourceLabel = 'Simulation (Emergency)';
                 }
 
-                // ── STEP 5: Current candle ──
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
@@ -3640,7 +3439,6 @@
                     simCurrentCandle.low = Math.min(lastClose, realTimePrice);
                 }
 
-                // ── STEP 6: Render ──
                 const visible = initLazy(simAllCandles);
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? Math.max(140, chartDiv.clientHeight) : Math.max(220, chartDiv.clientHeight);
@@ -3709,7 +3507,6 @@
                         }
                     }
 
-                    // ── STEP 7: Restore saved state ──
                     const savedInd = await loadIndicatorsFromDB();
                     if (savedInd && Object.keys(savedInd).length) {
                         activeIndicators = savedInd;
@@ -3727,7 +3524,6 @@
                         try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                     }
 
-                    // ── STEP 8: Drawing tools ──
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -3754,7 +3550,6 @@
                         }
                     });
 
-                    // ── Drag lines ──
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -3835,7 +3630,6 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
-                    // ── STEP 9: Price update interval ──
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3866,7 +3660,6 @@
                         checkPendingOrders();
                     }, 1000);
 
-                    // ── STEP 10: Candle close interval ──
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3934,11 +3727,8 @@
                             simChart = null; }
                     };
 
-                    document.getElementById('cronStatus').textContent = sourceLabel;
                     document.getElementById('candleCount').textContent = simAllCandles.length;
-                    updateDebugPanel();
 
-                    // ── STEP 11: Visibility change (FIX: chart disappearing) ──
                     if (chartVisibilityHandler) document.removeEventListener('visibilitychange',
                     chartVisibilityHandler);
                     chartVisibilityHandler = () => {
@@ -3991,7 +3781,6 @@
                         lineObj: line, index: idx });
                 });
 
-                // ── ENTRY, SL, TP lines per position ──
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol && p.entryPrice) {
                         const line = simCandleSeries.createPriceLine({
@@ -4244,7 +4033,6 @@
                     return;
                 }
 
-                // ─── MARKET ORDER ──────────────────────────────────────────
                 const fee = qty * price * 0.0005;
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
@@ -4360,6 +4148,39 @@
                     </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+            }
+
+            function closeAllPositions() {
+                if (portfolio.positions.length === 0) return showToast('⚠️ No open positions');
+                if (!confirm('⚠️ Close ALL positions?')) return;
+                const toClose = [...portfolio.positions];
+                let totalPnl = 0;
+                toClose.forEach(p => {
+                    const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                    const isShort = p.type === 'short';
+                    const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
+                    const fee = Math.abs(p.qty * price * 0.0005);
+                    portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                    portfolio.transactions.unshift({
+                        type: 'close',
+                        symbol: p.symbol,
+                        qty: p.qty,
+                        price,
+                        time: new Date().toLocaleTimeString(),
+                        reason: 'Close All',
+                        pnl: pnl - fee,
+                        id: p.id
+                    });
+                    totalPnl += (pnl - fee);
+                });
+                portfolio.positions = [];
+                savePortfolioToStorage();
+                updateSimUI();
+                redrawAllLines();
+                syncPortfolioToServer();
+                sendNotification('🚪 All Positions Closed', 'Total P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl
+                    .toFixed(2), totalPnl >= 0 ? 'success' : 'error');
+                showToast('🚪 All positions closed | Total P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(2));
             }
 
             function editSLTPById(posId) {
@@ -4948,62 +4769,15 @@
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
-                        <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:2px 8px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:26px;">
-                            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button class="btn btn-outline btn-sm" id="terminalExitBtn" style="font-size:0.55rem;padding:2px 8px;"><i class="fas fa-arrow-left"></i> Exit</button>
-                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.7rem;">📈 Trading Terminal</span>
-                                <span class="account-no">${userAccountNo}</span>
-                            </div>
-                            <div id="terminalTopBarPL" style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;">
-                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.6rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
-                                <span id="simTotalValue" style="font-weight:600;font-size:0.6rem;">📊 $0</span>
-                                <span id="simPL" style="font-weight:600;font-size:0.6rem;">📈 $0</span>
-                            </div>
-                        </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
                     </div>`;
 
-                document.getElementById('terminalExitBtn').onclick = () => {
-                    if (confirm('⚠️ Are you sure you want to exit the Trading Terminal? Your positions and SL/TP will continue to manage in the background.')) {
-                        isExitingTerminal = true;
-                        cleanupSimIntervals();
-                        disconnectBinanceWS();
-                        stopBackgroundEngine();
-                        savePortfolioToStorage();
-                        savePendingOrders();
-                        window.history.replaceState({}, '', '?');
-                        renderApp();
-                        showToast('👋 Exited Trading Terminal');
-                    }
-                };
-
-                window._beforeUnloadHandler = function(e) {
-                    if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
-                        e.preventDefault();
-                        e.returnValue =
-                            '⚠️ You are leaving the Trading Terminal. Your positions will continue to manage in the background. Continue?';
-                        return e.returnValue;
-                    }
-                };
-                window.addEventListener('beforeunload', window._beforeUnloadHandler);
-
                 const container = document.getElementById('terminalContainer');
-                if (isMobile) {
-                    const plBar = document.getElementById('terminalTopBarPL');
-                    if (plBar) plBar.style.display = 'none';
-                    const topBar = document.getElementById('terminalTopBar');
-                    if (topBar) topBar.style.display = 'none';
-                } else {
-                    const plBar = document.getElementById('terminalTopBarPL');
-                    if (plBar) plBar.style.display = 'flex';
-                    const topBar = document.getElementById('terminalTopBar');
-                    if (topBar) topBar.style.display = 'flex';
-                }
                 if (isMobile) {
                     renderMobileTerminal(container);
                 } else {
                     container.style.overflowY = 'auto';
-                    container.style.padding = '4px';
+                    container.style.padding = '2px';
                     renderDesktopTerminal(container);
                 }
                 startBackgroundEngine();
@@ -5030,76 +4804,76 @@
                         </div>
                         <div class="terminal-inner">
                             <div id="terminalQuotesBar" class="quotes-bar"></div>
-                            <div class="terminal-toolbar">
-                                <div class="tool-group">
-                                    <span style="font-size:0.45rem;color:var(--text-muted);font-weight:600;">Sym:</span>
-                                    <select id="simSymbolSelect" style="font-size:0.5rem;padding:1px 3px;">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                </div>
-                                <div class="tool-group">
-                                    <span style="font-size:0.45rem;color:var(--text-muted);font-weight:600;">TF:</span>
-                                    <select id="tfSelect" class="tf-select" style="font-size:0.45rem;">${Object.entries(TIMEFRAMES).map(([k,v]) => `<option value="${v}" ${currentTimeframe===v?'selected':''}>${k}</option>`).join('')}</select>
-                                </div>
-                                <div class="tool-group">
-                                    <div class="indicator-dropdown" id="indicatorDropdown">
-                                        <button class="indicator-dropdown-btn" id="indDropdownBtn" style="font-size:0.45rem;">📊 ▾</button>
-                                        <div class="indicator-dropdown-menu" id="indDropdownMenu">
-                                            ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label class="indicator-item"><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}><span style="color:${INDICATOR_COLORS[k]||'#fff'};font-size:0.55rem;">${name}</span></label>`).join('')}
-                                            <hr style="border-color:var(--border);margin:1px 0;">
-                                            <label class="indicator-item"><input type="checkbox" id="volumeToggle" ${showVolume?'checked':''}><span style="font-size:0.55rem;">📊 Vol</span></label>
+                            <div class="terminal-toolbar" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:2px 6px;background:var(--surface);border-bottom:1px solid var(--border);min-height:26px;">
+                                <div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;flex:1;">
+                                    <span style="font-size:0.5rem;font-weight:600;color:var(--text-muted);">Sym:</span>
+                                    <select id="simSymbolSelect" style="font-size:0.5rem;padding:1px 4px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text);">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                    <span style="font-size:0.5rem;font-weight:600;color:var(--text-muted);">TF:</span>
+                                    <select id="tfSelect" class="tf-select" style="font-size:0.45rem;padding:1px 4px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text);">${Object.entries(TIMEFRAMES).map(([k,v]) => `<option value="${v}" ${currentTimeframe===v?'selected':''}>${k}</option>`).join('')}</select>
+                                    <div class="indicator-dropdown" id="indicatorDropdown" style="position:relative;">
+                                        <button class="indicator-dropdown-btn" id="indDropdownBtn" style="font-size:0.45rem;padding:1px 6px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;">📊 ▾</button>
+                                        <div class="indicator-dropdown-menu" id="indDropdownMenu" style="display:none;position:absolute;top:100%;left:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 6px;z-index:200;min-width:140px;">
+                                            ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label class="indicator-item" style="display:flex;align-items:center;gap:4px;padding:2px 0;font-size:0.5rem;cursor:pointer;"><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''} style="accent-color:var(--primary);"> <span style="color:${INDICATOR_COLORS[k]||'#fff'};font-size:0.5rem;">${name}</span></label>`).join('')}
+                                            <hr style="border-color:var(--border);margin:2px 0;">
+                                            <label class="indicator-item" style="display:flex;align-items:center;gap:4px;padding:2px 0;font-size:0.5rem;cursor:pointer;"><input type="checkbox" id="volumeToggle" ${showVolume?'checked':''} style="accent-color:var(--primary);"> 📊 Vol</label>
                                         </div>
                                     </div>
+                                    <span style="font-size:0.5rem;font-weight:600;color:var(--text-muted);">Draw:</span>
+                                    <button class="tool-btn" id="drawSupportBtn" data-tool="support" title="Support" style="font-size:0.45rem;padding:1px 5px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer;">📏 S</button>
+                                    <button class="tool-btn" id="drawResistanceBtn" data-tool="resistance" title="Resistance" style="font-size:0.45rem;padding:1px 5px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer;">📐 R</button>
+                                    <button class="tool-btn" id="drawHLineBtn" data-tool="hline" title="Horizontal" style="font-size:0.45rem;padding:1px 5px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer;">➖ H</button>
+                                    <button class="tool-btn" id="clearLinesBtn" style="color:var(--danger);font-size:0.45rem;padding:1px 5px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer;" title="Clear lines">🗑</button>
+                                    <span style="font-size:0.5rem;font-weight:600;color:var(--text-muted);">Lines:</span>
+                                    <span id="lineManagerList" style="font-size:0.45rem;color:var(--text-muted);">No lines</span>
                                 </div>
-                                <div class="tool-group">
-                                    <span style="font-size:0.45rem;color:var(--text-muted);font-weight:600;">Draw:</span>
-                                    <button class="tool-btn" id="drawSupportBtn" data-tool="support" title="Support" style="font-size:0.45rem;">📏 S</button>
-                                    <button class="tool-btn" id="drawResistanceBtn" data-tool="resistance" title="Resistance" style="font-size:0.45rem;">📐 R</button>
-                                    <button class="tool-btn" id="drawHLineBtn" data-tool="hline" title="Horizontal" style="font-size:0.45rem;">➖ H</button>
-                                    <button class="tool-btn" id="clearLinesBtn" style="color:var(--danger);font-size:0.45rem;" title="Clear lines">🗑</button>
-                                </div>
-                                <div class="tool-group" style="flex:1;min-width:60px;max-width:140px;overflow-y:auto;max-height:36px;" id="lineManagerList">
-                                    <span style="color:var(--text-muted);font-size:0.45rem;">No lines</span>
+                                <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto;">
+                                    <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.55rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
+                                    <span id="simTotalValue" style="font-weight:600;font-size:0.55rem;">📊 $${calcEquity().toFixed(2)}</span>
+                                    <span id="simPL" style="font-weight:600;font-size:0.55rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};">${calcTotalPL()>=0?'📈 +$':'📉 -$'}${Math.abs(calcTotalPL()).toFixed(2)}</span>
+                                    <span class="account-no" style="font-size:0.45rem;padding:1px 4px;">${userAccountNo}</span>
+                                    <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()" style="font-size:0.45rem;padding:1px 4px;">🔄</button>
                                 </div>
                             </div>
-                            <div class="trade-panel">
-                                <select id="simSymbolSelect2" style="font-size:0.55rem;">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <div style="display:flex;align-items:center;gap:1px;">
-                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(-0.01)" style="font-size:0.45rem;padding:1px 4px;">▼</button>
-                                    <input type="number" id="simQty" value="0.01" min="0.01" step="0.01" style="width:38px;text-align:center;font-size:0.55rem;padding:1px 3px;">
-                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(0.01)" style="font-size:0.45rem;padding:1px 4px;">▲</button>
-                                    <div class="mt5-lot-presets" style="margin-left:2px;">
-                                        <button onclick="setDesktopLot(0.01)" style="padding:1px 2px;font-size:0.4rem;">0.01</button>
-                                        <button onclick="setDesktopLot(0.10)" style="padding:1px 2px;font-size:0.4rem;">0.10</button>
-                                        <button onclick="setDesktopLot(1.00)" style="padding:1px 2px;font-size:0.4rem;">1.00</button>
+                            <div class="trade-panel" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:2px 6px;background:var(--surface);border-bottom:1px solid var(--border);min-height:26px;">
+                                <select id="simSymbolSelect2" style="font-size:0.55rem;padding:1px 4px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text);">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                <div style="display:flex;align-items:center;gap:2px;">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(-0.01)" style="font-size:0.4rem;padding:1px 4px;">▼</button>
+                                    <input type="number" id="simQty" value="0.01" min="0.01" step="0.01" style="width:38px;text-align:center;font-size:0.55rem;padding:1px 3px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(0.01)" style="font-size:0.4rem;padding:1px 4px;">▲</button>
+                                    <div class="mt5-lot-presets" style="display:flex;gap:1px;margin-left:2px;">
+                                        <button onclick="setDesktopLot(0.01)" style="padding:1px 3px;font-size:0.35rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:3px;color:var(--text);cursor:pointer;">0.01</button>
+                                        <button onclick="setDesktopLot(0.10)" style="padding:1px 3px;font-size:0.35rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:3px;color:var(--text);cursor:pointer;">0.10</button>
+                                        <button onclick="setDesktopLot(1.00)" style="padding:1px 3px;font-size:0.35rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:3px;color:var(--text);cursor:pointer;">1.00</button>
                                     </div>
                                 </div>
-                                <button class="btn-trade" onclick="placeSimOrder('buy','market')" style="font-size:0.55rem;padding:3px 10px;background:var(--mt5-green);"><i class="fas fa-shopping-cart"></i> Buy</button>
-                                <button class="btn-trade" onclick="placeSimOrder('sell','market')" style="font-size:0.55rem;padding:3px 10px;background:var(--mt5-red);"><i class="fas fa-money-bill-wave"></i> Sell</button>
-                                <div class="limit-order-input">
-                                    <span style="font-size:0.45rem;">Lmt</span>
-                                    <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:48px;font-size:0.5rem;">
-                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.45rem;padding:1px 4px;">B</button>
-                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.45rem;padding:1px 4px;">S</button>
+                                <button class="btn-trade" onclick="placeSimOrder('buy','market')" style="font-size:0.5rem;padding:3px 10px;background:var(--mt5-green);">Buy</button>
+                                <button class="btn-trade" onclick="placeSimOrder('sell','market')" style="font-size:0.5rem;padding:3px 10px;background:var(--mt5-red);">Sell</button>
+                                <div class="limit-order-input" style="display:flex;align-items:center;gap:2px;background:var(--bg-secondary);padding:1px 4px;border-radius:4px;border:1px solid var(--border);">
+                                    <span style="font-size:0.4rem;color:var(--text-muted);">Lmt</span>
+                                    <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:48px;font-size:0.5rem;background:transparent;border:none;padding:2px 0;color:var(--text);outline:none;">
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.4rem;padding:1px 4px;">B</button>
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.4rem;padding:1px 4px;">S</button>
                                 </div>
-                                <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()" style="font-size:0.45rem;">🔄</button>
-                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;"><i class="fas fa-wallet"></i> Trade</button>
+                                <button class="btn btn-danger btn-sm" onclick="closeAllPositions()" style="font-size:0.5rem;padding:2px 8px;">Close All</button>
+                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;padding:1px 6px;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
-                            <div style="display:flex;gap:4px;padding:1px 5px;background:var(--bg-secondary);border-radius:6px;margin-bottom:1px;flex-wrap:wrap;align-items:center;min-height:16px;">
-                                <span style="font-size:0.45rem;font-weight:600;">📌 Pending:</span>
+                            <div style="display:flex;gap:4px;padding:1px 6px;background:var(--bg-secondary);border-radius:4px;margin-bottom:1px;flex-wrap:wrap;align-items:center;min-height:16px;">
+                                <span style="font-size:0.45rem;font-weight:600;color:var(--text-muted);">📌 Pending:</span>
                                 <span id="pendingOrdersList" style="font-size:0.5rem;color:var(--text-muted);">No pending orders</span>
                             </div>
-                            <div class="chart-container-wrap">
-                                <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
-                                <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen" style="font-size:0.5rem;padding:1px 5px;"><i class="fas fa-expand"></i></button>
+                            <div class="chart-container-wrap" style="flex:1;position:relative;margin-bottom:1px;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-height:250px;">
+                                <div id="simChartContainer" style="width:100%;height:100%;min-height:250px;background:var(--mt5-chart-bg);cursor:crosshair;flex:1;"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
+                                <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen" style="position:absolute;top:4px;right:4px;z-index:10;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:0.6rem;"><i class="fas fa-expand"></i></button>
                             </div>
-                            <div class="positions-table-wrap" style="max-height:120px;overflow-y:auto;">
-                                <table class="positions-table" id="simHoldingsTable">
+                            <div class="positions-table-wrap" style="max-height:100px;overflow-y:auto;margin-top:1px;">
+                                <table class="positions-table" id="simHoldingsTable" style="width:100%;border-collapse:collapse;font-size:0.6rem;">
                                     <thead><tr><th>Symbol</th><th>Qty</th><th>Entry</th><th>Current</th><th>SL</th><th>TP</th><th>Value</th><th>Actions</th></tr></thead>
                                     <tbody></tbody></table>
                             </div>
-                            <div class="fs-bottom-panel" id="fsBottomPanel">
-                                <table class="positions-table" id="simHoldingsTableFs"><thead><tr><th>Sym</th><th>Qty</th><th>Entry</th><th>Cur</th><th>SL</th><th>TP</th><th>Val</th><th>Act</th></tr></thead><tbody></tbody></table>
+                            <div class="fs-bottom-panel" id="fsBottomPanel" style="display:none;background:var(--surface);border-top:1px solid var(--border);max-height:100px;overflow-y:auto;padding:4px;font-size:0.6rem;">
+                                <table class="positions-table" id="simHoldingsTableFs" style="width:100%;border-collapse:collapse;font-size:0.55rem;"><thead><tr><th>Sym</th><th>Qty</th><th>Entry</th><th>Cur</th><th>SL</th><th>TP</th><th>Val</th><th>Act</th></tr></thead><tbody></tbody></table>
                             </div>
-                            <div class="simulator-history" id="simHistoryList"></div>
+                            <div class="simulator-history" id="simHistoryList" style="max-height:70px;overflow-y:auto;margin-top:1px;font-size:0.6rem;background:var(--bg-secondary);border-radius:4px;padding:4px 6px;font-family:var(--font-mono);"></div>
                         </div>
                     </div>`;
 
@@ -5116,13 +4890,12 @@
                 const indDropdownBtn = document.getElementById('indDropdownBtn');
                 const indDropdownMenu = document.getElementById('indDropdownMenu');
                 indDropdownBtn.onclick = (e) => { e.stopPropagation();
-                    indDropdownMenu.classList.toggle('show'); };
-                document.addEventListener('click', () => indDropdownMenu.classList.remove('show'));
+                    indDropdownMenu.style.display = indDropdownMenu.style.display === 'block' ? 'none' : 'block'; };
+                document.addEventListener('click', () => indDropdownMenu.style.display = 'none');
                 indDropdownMenu.addEventListener('click', e => e.stopPropagation());
                 indDropdownMenu.querySelectorAll('input[type="checkbox"][data-ind]').forEach(cb => { cb.onchange =
                     function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
-                        updateIndDropdownBtnState();
                         saveIndicatorsToDB(activeIndicators); }; });
                 document.getElementById('volumeToggle').onchange = function() { showVolume = this.checked;
                     updateAllIndicators(); };
@@ -5139,7 +4912,7 @@
                 document.getElementById('chartFullscreenBtn').onclick = () => {
                     document.getElementById('terminalWrapper').classList.add('fullscreen-active');
                     fsShowBottom = false;
-                    document.getElementById('fsBottomPanel').classList.remove('show');
+                    document.getElementById('fsBottomPanel').style.display = 'none';
                     setTimeout(() => { if (simChart && simCandleSeries) { const chartDiv2 = document
                             .getElementById('simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth >
                             0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
@@ -5210,6 +4983,7 @@
                                 <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:1px 4px;border-radius:3px;font-size:0.45rem;width:48px;">
                                 <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:1px 4px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">B L</button>
                                 <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:1px 4px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">S L</button>
+                                <button class="btn btn-danger btn-sm" onclick="closeAllPositions()" style="font-size:0.4rem;padding:1px 4px;">Close All</button>
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
@@ -5379,7 +5153,7 @@
                             <div style="background:var(--bg-secondary);padding:8px;border-radius:8px;"><div style="font-size:0.55rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:0.9rem;" id="tp_count">${portfolio.positions.length}</div></div>
                             <div style="background:var(--bg-secondary);padding:8px;border-radius:8px;"><div style="font-size:0.55rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:0.9rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
-                        <div style="display:flex;gap:4px;margin-bottom:4px;"><span class="account-no" style="font-size:0.55rem;">${userAccountNo}</span></div>
+                        <div style="display:flex;gap:4px;margin-bottom:4px;"><span class="account-no" style="font-size:0.55rem;">${userAccountNo}</span><button class="btn btn-danger btn-sm" onclick="closeAllPositions();this.closest('.modal').remove();" style="font-size:0.5rem;padding:1px 6px;">Close All</button></div>
                         <h4 style="margin-top:6px;font-size:0.8rem;">Open Positions</h4>
                         <div id="tp_positions" style="max-height:200px;overflow-y:auto;">
                             ${portfolio.positions.length === 0 ? '<p style="color:var(--text-muted);font-size:0.7rem;">No open positions</p>' :
@@ -5443,7 +5217,7 @@
             function toggleFsBottomPanel() {
                 fsShowBottom = !fsShowBottom;
                 const bp = document.getElementById('fsBottomPanel');
-                if (bp) bp.classList.toggle('show', fsShowBottom);
+                if (bp) bp.style.display = fsShowBottom ? 'block' : 'none';
                 if (fsShowBottom) updateSimUIFullscreen();
                 setTimeout(() => { if (simChart) { const chartDiv = document.getElementById('simChartContainer'); if (
                         chartDiv) { try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
@@ -5457,7 +5231,7 @@
                     wrapper.classList.remove('fullscreen-active');
                     fsShowBottom = false;
                     const bp = document.getElementById('fsBottomPanel');
-                    if (bp) bp.classList.remove('show');
+                    if (bp) bp.style.display = 'none';
                     setTimeout(() => { if (simChart) { const chartDiv = document.getElementById(
                             'simChartContainer'); if (chartDiv) { try { simChart.applyOptions({ width: chartDiv
                                 .clientWidth, height: Math.max(220, chartDiv.clientHeight) }); } catch (e) { console
@@ -6796,6 +6570,7 @@
             window.exitPosition = exitPosition;
             window.editSLTPById = editSLTPById;
             window.editSLTP = editSLTP;
+            window.closeAllPositions = closeAllPositions;
             window.checkAndExecuteSLTP = checkAndExecuteSLTP;
             window.toggleFsBottomPanel = toggleFsBottomPanel;
             window.exitFullscreenTerminal = exitFullscreenTerminal;
@@ -6838,72 +6613,6 @@
             window.checkPendingOrders = checkPendingOrders;
             window.updateQuotesBar = updateQuotesBar;
             window.renderQuotesBar = renderQuotesBar;
-
-            // ─── DEBUG PANEL ──────────────────────────────────────────────────
-            function updateDebugPanel() {
-                const dbStatus = document.getElementById('dbStatus');
-                const blobStatus = document.getElementById('blobStatus');
-                const apiStatus = document.getElementById('apiStatus');
-                const wsStatus = document.getElementById('wsStatus');
-                const idbStatus = document.getElementById('idbStatus');
-                const candleCount = document.getElementById('candleCount');
-                const portfolioStatus = document.getElementById('portfolioStatus');
-                const lastPrice = document.getElementById('lastPrice');
-                const cronStatus = document.getElementById('cronStatus');
-                const ts = document.getElementById('debugTimestamp');
-
-                if (dbStatus) dbStatus.textContent = '✅ Online';
-                if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
-                if (apiStatus) apiStatus.textContent = '✅ Online';
-                if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
-                    '✅ Connected' : '⚠️ Disconnected';
-                if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
-                if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
-                if (portfolioStatus) portfolioStatus.textContent = portfolio ? '✅ Loaded' : '⏳ Loading...';
-                if (lastPrice) lastPrice.textContent = simLastPrices[simCurrentSymbol] ? '$' + simLastPrices[
-                    simCurrentSymbol].toFixed(4) : '-';
-                if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-            }
-
-            const debugToggle = document.getElementById('debugToggle');
-            const debugPanel = document.getElementById('debugPanel');
-            const debugClose = document.getElementById('debugClose');
-
-            debugToggle.onclick = function() {
-                debugPanel.classList.toggle('open');
-                if (debugPanel.classList.contains('open')) updateDebugPanel();
-            };
-            debugClose.onclick = function() { debugPanel.classList.remove('open'); };
-            document.addEventListener('click', function(e) {
-                if (debugPanel.classList.contains('open') && !debugPanel.contains(e.target) && e.target !==
-                    debugToggle) {
-                    debugPanel.classList.remove('open');
-                }
-            });
-
-            setInterval(updateDebugPanel, 3000);
-            updateDebugPanel();
-
-            // ─── AUTO CLEANUP ──────────────────────────────────────────────────
-            window.addEventListener('beforeunload', function(e) {
-                if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
-                    if (!terminalExitConfirmShown) {
-                        terminalExitConfirmShown = true;
-                        e.preventDefault();
-                        e.returnValue =
-                            '⚠️ You are leaving the Trading Terminal. Your positions will continue to manage in the background. Continue?';
-                        return e.returnValue;
-                    }
-                }
-                cleanupSimIntervals();
-                disconnectBinanceWS();
-                stopBackgroundEngine();
-                if (window._chartCleanup) window._chartCleanup();
-                if (window._mobileCleanup) window._mobileCleanup();
-                document.querySelectorAll('.toast').forEach(el => el.remove());
-                document.querySelectorAll('.modal').forEach(el => el.remove());
-                terminalExitConfirmShown = false;
-            });
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
@@ -6953,6 +6662,27 @@
                 'show'));
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
                 'show'));
+            });
+
+            // ─── BEFORE UNLOAD ──────────────────────────────────────────────
+            window.addEventListener('beforeunload', function(e) {
+                if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
+                    if (!terminalExitConfirmShown) {
+                        terminalExitConfirmShown = true;
+                        e.preventDefault();
+                        e.returnValue =
+                            '⚠️ You are leaving the Trading Terminal. Your positions will continue to manage in the background. Continue?';
+                        return e.returnValue;
+                    }
+                }
+                cleanupSimIntervals();
+                disconnectBinanceWS();
+                stopBackgroundEngine();
+                if (window._chartCleanup) window._chartCleanup();
+                if (window._mobileCleanup) window._mobileCleanup();
+                document.querySelectorAll('.toast').forEach(el => el.remove());
+                document.querySelectorAll('.modal').forEach(el => el.remove());
+                terminalExitConfirmShown = false;
             });
         })();
     </script>
