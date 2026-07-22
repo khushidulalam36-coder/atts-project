@@ -951,6 +951,9 @@
             box-shadow: var(--shadow);
             transition: all var(--transition);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .terminal-wrapper.fullscreen-active {
             position: fixed;
@@ -1017,6 +1020,7 @@
             border-radius: var(--radius);
             border: 1px solid var(--border);
             margin-bottom: 6px;
+            flex-shrink: 0;
         }
         .terminal-wrapper.fullscreen-active .terminal-toolbar {
             margin-bottom: 2px;
@@ -1141,6 +1145,7 @@
             border-radius: var(--radius);
             border: 1px solid var(--border);
             margin-bottom: 6px;
+            flex-shrink: 0;
         }
         .trade-panel select,
         .trade-panel input {
@@ -1220,13 +1225,16 @@
             display: flex;
             flex-direction: column;
             min-height: 350px;
+            background: var(--mt5-chart-bg);
         }
         .chart-container-wrap #simChartContainer {
             width: 100%;
-            height: 420px;
+            height: 100%;
+            min-height: 350px;
             background: var(--mt5-chart-bg);
             cursor: crosshair;
             flex: 1;
+            position: relative;
         }
         .chart-container-wrap #simChartContainer.dragging-line {
             cursor: row-resize;
@@ -1339,6 +1347,7 @@
             border-radius: var(--radius);
             padding: 8px;
             font-family: var(--font-mono);
+            flex-shrink: 0;
         }
         .simulator-history li {
             padding: 4px 0;
@@ -1979,6 +1988,14 @@
             font-size: 0.75rem;
             font-family: var(--font);
             min-width: 60px;
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+        .mt5-deposit-withdraw input::-webkit-inner-spin-button,
+        .mt5-deposit-withdraw input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
         }
         .mt5-deposit-withdraw input:focus {
             border-color: var(--mt5-green);
@@ -2090,7 +2107,8 @@
                 align-items: stretch;
             }
             .chart-container-wrap #simChartContainer {
-                height: 280px;
+                min-height: 180px;
+                height: 100%;
             }
             .admin-left {
                 width: 100%;
@@ -2622,7 +2640,6 @@
             border-radius: 6px;
             border: 1px solid var(--border);
         }
-        /* Notification Banner */
         .notification-banner {
             position: fixed;
             top: 10px;
@@ -2682,7 +2699,6 @@
                 transform: translateY(0) scale(1);
             }
         }
-        /* Modify button style */
         .btn-modify {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #fff;
@@ -2702,18 +2718,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
         }
-        /* Make deposit/withdraw inputs work */
-        .mt5-deposit-withdraw input[type="number"] {
-            -moz-appearance: textfield;
-            appearance: none;  /* add this line */
-        }
-        .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
-        .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            appearance: none;   /* add this line for full compatibility */
-            margin: 0;
-        }
-        /* Entry, SL, TP line colors */
         .entry-line-color {
             color: #3b82f6;
         }
@@ -2722,6 +2726,105 @@
         }
         .tp-line-color {
             color: #8b5cf6;
+        }
+
+        /* --- extra fix for chart container --- */
+        .chart-container-wrap .chart-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--mt5-chart-bg);
+            color: var(--text-muted);
+            z-index: 5;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .chart-container-wrap #simChartContainer {
+            position: relative;
+            z-index: 1;
+        }
+        .chart-container-wrap #simChartContainer canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .mt5-deposit-withdraw input[type="number"] {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+        .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
+        .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        /* terminal exit confirm button */
+        .btn-exit-terminal {
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.72rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-exit-terminal:hover {
+            filter: brightness(1.15);
+            transform: scale(1.04);
+        }
+
+        /* quotes panel - only 3 symbols */
+        .quotes-symbol-list .watchlist-item {
+            background: var(--mt5-card);
+            margin: 3px 0;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--mt5-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quotes-symbol-list .watchlist-item:active {
+            background: var(--mt5-nav-active);
+        }
+        .quotes-symbol-list .watchlist-item .sym {
+            font-weight: 700;
+            color: var(--mt5-text-bright);
+            font-size: 0.85rem;
+        }
+        .quotes-symbol-list .watchlist-item .price {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--mt5-text-bright);
+        }
+        .quotes-symbol-list .watchlist-item .change {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .quotes-symbol-list .watchlist-item .change.up {
+            color: var(--mt5-green);
+            background: rgba(0, 200, 151, 0.12);
+        }
+        .quotes-symbol-list .watchlist-item .change.down {
+            color: var(--mt5-red);
+            background: rgba(255, 59, 92, 0.12);
         }
     </style>
 </head>
@@ -2756,9 +2859,8 @@
             const USER_KEY = 'auth_user_v9';
             const PORTFOLIO_KEY = 'sim_portfolio_v9';
 
-            const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT',
-                'AVAXUSDT', 'DOTUSDT'
-            ];
+            // Only 3 symbols
+            const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
             const DEFAULT_TF = 300;
             const INDICATOR_COLORS = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
@@ -2802,26 +2904,12 @@
             let simBasePrices = {
                 BTCUSDT: 45000,
                 ETHUSDT: 3000,
-                SOLUSDT: 150,
-                XRPUSDT: 0.5,
-                BNBUSDT: 600,
-                DOGEUSDT: 0.15,
-                ADAUSDT: 0.35,
-                LINKUSDT: 15,
-                AVAXUSDT: 30,
-                DOTUSDT: 7
+                SOLUSDT: 150
             };
             let simVolatility = {
                 BTCUSDT: 0.002,
                 ETHUSDT: 0.003,
-                SOLUSDT: 0.005,
-                XRPUSDT: 0.004,
-                BNBUSDT: 0.003,
-                DOGEUSDT: 0.008,
-                ADAUSDT: 0.005,
-                LINKUSDT: 0.004,
-                AVAXUSDT: 0.006,
-                DOTUSDT: 0.005
+                SOLUSDT: 0.005
             };
             let allPriceLines = {};
             let manualDrawnLines = [];
@@ -2832,7 +2920,6 @@
             let fsShowBottom = false;
             let simResizeObserver = null;
             let showVolume = true;
-            let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || JSON.stringify(SYMBOLS));
             let userAccountNo = localStorage.getItem('userAccountNo') || (currentUser ? 'ACC-' + String(Math.floor(Math
                 .random() * 900000) + 100000) : 'ACC-000000');
 
@@ -2937,7 +3024,7 @@
 
             // ─── NOTIFICATION SYSTEM ────────────────────────────────────────
             function sendNotification(title, body, type = 'info') {
-                // Show banner
+                // Banner
                 const existing = document.querySelector('.notification-banner');
                 if (existing) existing.remove();
                 const banner = document.createElement('div');
@@ -2952,18 +3039,15 @@
                 banner.querySelector('.notif-close').onclick = () => banner.remove();
                 setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
 
-                // Try browser notification
+                // Browser notification
                 if ('Notification' in window && Notification.permission === 'granted') {
                     try { new Notification('📊 ATTS: ' + title, { body: body, icon: '📊' }); } catch (e) {}
                 } else if ('Notification' in window && Notification.permission === 'default') {
                     Notification.requestPermission();
                 }
-
-                // Also toast
                 showToast(title + ' — ' + body);
             }
 
-            // Request notification permission
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
             }
@@ -3689,7 +3773,7 @@
                 return candles;
             }
 
-            // ─── CHART INIT (FIXED: resilient, no disappearing) ────────────
+            // ─── CHART INIT (RESILIENT, NO DISAPPEAR) ────────────────────
             async function initChart() {
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
@@ -3835,7 +3919,6 @@
                 const isDark = appTheme === 'dark';
 
                 try {
-                    // Fix candle width on mobile: adjust barSpacing and visible range
                     const barSpacing = isMobile ? 2 : 6;
                     simChart = LightweightCharts.createChart(chartDiv, {
                         width: chartDiv.clientWidth,
@@ -3882,15 +3965,12 @@
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                     simVolumeSeries.setData(volData);
 
-                    // Auto-scroll to live candle (rightmost)
                     simChart.timeScale().fitContent();
-                    // Then scroll to the rightmost edge to show live candle
                     const visibleRange = simChart.timeScale().getVisibleRange();
                     if (visibleRange) {
                         const rightEdge = visibleRange.to;
                         const leftEdge = visibleRange.from;
                         const rangeWidth = rightEdge - leftEdge;
-                        // Shift to show latest candle at the right edge
                         const lastTime = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].time :
                             Date.now() / 1000;
                         const newRight = lastTime + 60;
@@ -4091,7 +4171,6 @@
                         if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight }); } catch (e) {}
-                            // Re-adjust visible range to keep live candle visible
                             try {
                                 const vr = simChart.timeScale().getVisibleRange();
                                 if (vr && simAllCandles.length > 0) {
@@ -4127,19 +4206,24 @@
                     document.getElementById('candleCount').textContent = simAllCandles.length;
                     updateDebugPanel();
 
-                    // ── STEP 12: Visibility change handler (fix chart hiding) ──
+                    // ── STEP 12: Visibility change handler (FIX: chart hiding) ──
                     const visibilityHandler = () => {
-                        if (document.visibilityState === 'visible' && simChart) {
-                            // Chart is visible, ensure it's rendered correctly
-                            if (chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                        if (document.visibilityState === 'visible') {
+                            if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                                 try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                         .clientHeight }); } catch (e) {}
                                 try { simChart.timeScale().fitContent(); } catch (e) {}
+                                // Re-apply data to ensure it's rendered
+                                if (simCandleSeries && simAllCandles.length > 0) {
+                                    try {
+                                        const allC = [...simAllCandles];
+                                        if (simCurrentCandle) allC.push(simCurrentCandle);
+                                        simCandleSeries.setData(sanitizeCandleData(allC));
+                                        updateAllIndicators();
+                                    } catch (e) {}
+                                }
+                                console.log('📊 Chart re-rendered after visibility change');
                             }
-                        } else if (document.visibilityState === 'hidden' && simChart) {
-                            // Chart is hidden, but we keep it alive
-                            // Just log
-                            console.log('📴 Chart hidden, preserving state');
                         }
                     };
                     document.addEventListener('visibilitychange', visibilityHandler);
@@ -4156,7 +4240,7 @@
                 }
             }
 
-            // ─── REDRAW LINES (with Entry, SL, TP) ─────────────────────────
+            // ─── REDRAW LINES (Entry, SL, TP) ─────────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
@@ -4174,7 +4258,7 @@
                         lineObj: line, index: idx });
                 });
 
-                // ── ENTRY, SL, TP lines per position ──
+                // Entry, SL, TP lines per position
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol && p.entryPrice) {
                         const line = simCandleSeries.createPriceLine({
@@ -4463,7 +4547,7 @@
                     return;
                 }
 
-                // ─── MARKET ORDER ──────────────────────────────────────────
+                // MARKET ORDER
                 const fee = qty * price * 0.0005;
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
@@ -4906,7 +4990,7 @@
                 html += `<div style="margin-top:10px;padding:10px;background:var(--mt5-card);border-radius:8px;">
                     <div class="row"><span class="label">Balance</span><span class="value">$${(portfolio.cash || 0).toFixed(2)}</span></div>
                     <div class="row"><span class="label">Equity</span><span class="value">$${totalEquity.toFixed(2)}</span></div>
-                    <div class="row"><span class="label">P&L</span><span class="value ${totalPL>=0?'green':'red'}">${totalPL>=0?'+':''}$${totalPL.toFixed(2)}</span></div>
+                    <div class="row"><span class="label">Total P&L</span><span class="value ${totalPL>=0?'green':'red'}">${totalPL>=0?'+':''}$${totalPL.toFixed(2)}</span></div>
                     <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.65rem;">${userAccountNo}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
@@ -4918,7 +5002,6 @@
                     '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.8rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
                 html += '</div>';
                 panel.innerHTML = html;
-                // Fix: Ensure deposit/withdraw inputs work by re-binding
                 const depInput = document.getElementById('depositAmount');
                 if (depInput) {
                     depInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9.]/g,
@@ -4981,39 +5064,42 @@
             function renderMobileWatchlist() {
                 const panel = document.getElementById('quotesPanel');
                 if (!panel) return;
+                const list = SYMBOLS;
                 let html =
-                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." oninput="window.watchlistSearch(this.value)"></div>`;
-                const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
-                html += list.map(sym => {
+                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." oninput="window.watchlistSearch(this.value)"></div><div class="quotes-symbol-list">`;
+                list.forEach(sym => {
                     const price = simLastPrices[sym] || simBasePrices[sym] || '-';
                     const change = (Math.random() * 4 - 2);
                     const cls = change >= 0 ? 'up' : 'down';
-                    return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
+                    html += `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                         <span class="sym">${sym}</span>
                         <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
                         <span class="change ${cls}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
                     </div>`;
-                }).join('');
+                });
+                html += '</div>';
                 panel.innerHTML = html;
             }
 
             window.watchlistSearch = function(query) {
                 const panel = document.getElementById('quotesPanel');
                 if (!panel) return;
-                const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
+                const list = SYMBOLS;
                 const filtered = query ? list.filter(s => s.toLowerCase().includes(query.toLowerCase())) : list;
-                panel.innerHTML =
-                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
-                    filtered.map(sym => {
-                        const price = simLastPrices[sym] || simBasePrices[sym] || '-';
-                        const change = (Math.random() * 4 - 2);
-                        const cls = change >= 0 ? 'up' : 'down';
-                        return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
-                            <span class="sym">${sym}</span>
-                            <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
-                            <span class="change ${cls}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
-                        </div>`;
-                    }).join('');
+                let html =
+                    `<div class="mobile-search"><input type="text" id="watchlistSearch" placeholder="Search symbol..." value="${query}" oninput="window.watchlistSearch(this.value)"></div><div class="quotes-symbol-list">`;
+                filtered.forEach(sym => {
+                    const price = simLastPrices[sym] || simBasePrices[sym] || '-';
+                    const change = (Math.random() * 4 - 2);
+                    const cls = change >= 0 ? 'up' : 'down';
+                    html += `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
+                        <span class="sym">${sym}</span>
+                        <span class="price">$${typeof price === 'number' ? price.toFixed(4) : price}</span>
+                        <span class="change ${cls}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
+                    </div>`;
+                });
+                html += '</div>';
+                panel.innerHTML = html;
             };
 
             function selectMobileSymbol(sym) {
@@ -5204,11 +5290,17 @@
                 if (fsTbody) fsTbody.innerHTML = rowsHTML;
 
                 const histEl = document.getElementById('simHistoryList');
-                if (histEl) histEl.innerHTML =
-                    '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' + (portfolio
-                        .transactions || []).slice(0, 25).map(t =>
-                        `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : t.type === 'deposit' ? 'var(--mt5-blue)' : 'var(--mt5-red)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}${t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl.toFixed(2) : ''}</li>`
-                    ).join('') + '</ul>';
+                if (histEl) {
+                    let histHtml = '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">';
+                    (portfolio.transactions || []).slice(0, 25).forEach(t => {
+                        const pnlStr = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl
+                            .toFixed(2) : '';
+                        histHtml +=
+                            `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--success)' : t.type === 'sell' ? 'var(--danger)' : t.type === 'deposit' ? 'var(--mt5-blue)' : 'var(--mt5-red)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}${pnlStr}</li>`;
+                    });
+                    histHtml += '</ul>';
+                    histEl.innerHTML = histHtml;
+                }
 
                 updateSimUIFullscreen();
                 savePortfolioToStorage();
@@ -5237,7 +5329,7 @@
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
                         <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+                                <button class="btn btn-outline btn-sm" id="terminalBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
                                 <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
                                 <span class="account-no">${userAccountNo}</span>
                             </div>
@@ -5249,6 +5341,12 @@
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
                     </div>`;
+                // Back button with confirmation
+                document.getElementById('terminalBackBtn').onclick = () => {
+                    if (confirm('⚠️ Exit Trading Terminal? Your positions and SL/TP will continue running in the background.')) {
+                        window.history.back();
+                    }
+                };
                 const container = document.getElementById('terminalContainer');
                 if (isMobile) {
                     const plBar = document.getElementById('terminalTopBarPL');
@@ -5286,7 +5384,7 @@
                             </div>
                             <div style="display:flex;gap:6px;align-items:center;">
                                 <button class="tool-btn" onclick="toggleFsBottomPanel()">📋</button>
-                                <button class="btn-exit" onclick="exitFullscreenTerminal()"><i class="fas fa-compress"></i> Exit</button>
+                                <button class="btn-exit-terminal" onclick="exitFullscreenTerminal()"><i class="fas fa-compress"></i> Exit FS</button>
                             </div>
                         </div>
                         <div class="terminal-inner">
@@ -5401,6 +5499,19 @@
                             0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
                                     .clientHeight }); } catch (e) {} } } updateSimUIFullscreen(); }, 300);
                 };
+                // Exit fullscreen with confirmation
+                window.exitFullscreenTerminal = function() {
+                    if (confirm('Exit fullscreen? Your positions will continue running.')) {
+                        const wrapper = document.getElementById('terminalWrapper');
+                        if (wrapper) wrapper.classList.remove('fullscreen-active');
+                        fsShowBottom = false;
+                        const bp = document.getElementById('fsBottomPanel');
+                        if (bp) bp.classList.remove('show');
+                        setTimeout(() => { if (simChart) { const chartDiv2 = document.getElementById(
+                                'simChartContainer'); if (chartDiv2) { try { simChart.applyOptions({ width: chartDiv2
+                                        .clientWidth, height: 420 }); } catch (e) {} } } }, 300);
+                    }
+                };
                 setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
                 updateSimUI();
                 renderPendingOrdersUI();
@@ -5495,6 +5606,7 @@
                                 <h4>🎨 Theme</h4>
                                 <div class="theme-row"><button id="sidebarLightTheme">☀️ Light</button><button id="sidebarDarkTheme">🌙 Dark</button></div>
                                 <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button></div>
+                                <div style="margin-top:10px;"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-red);border-color:var(--mt5-red);" id="sidebarExitBtn">🚪 Exit Terminal</button></div>
                             </div>
                         </div>
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
@@ -5507,18 +5619,21 @@
                         </div>
                     </div>`;
 
-                // ─── FIX: Hamburger menu close on blank area click ───
+                // Sidebar
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
-                // Already closes on overlay click (see below)
-
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
                 document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
                 document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
-                // Close on blank area click
                 sidebarOverlay.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
                 });
+                // Exit terminal from sidebar with confirmation
+                document.getElementById('sidebarExitBtn').onclick = () => {
+                    if (confirm('⚠️ Exit Trading Terminal? Your positions and SL/TP will continue running in the background.')) {
+                        window.history.back();
+                    }
+                };
 
                 document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => { cb.onchange =
                     function() { activeIndicators[this.dataset.ind] = this.checked;
@@ -5633,7 +5748,7 @@
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
                             <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1.1rem;" id="tp_count">${portfolio.positions.length}</div></div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">P&L</div><div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
                         <div style="display:flex;gap:8px;margin-bottom:8px;"><span class="account-no">${userAccountNo}</span></div>
                         <h4 style="margin-top:10px;">Open Positions</h4>
@@ -5706,19 +5821,6 @@
                                 .clientHeight }); } catch (e) {} } } }, 200);
             }
 
-            function exitFullscreenTerminal() {
-                const wrapper = document.getElementById('terminalWrapper');
-                if (wrapper) {
-                    wrapper.classList.remove('fullscreen-active');
-                    fsShowBottom = false;
-                    const bp = document.getElementById('fsBottomPanel');
-                    if (bp) bp.classList.remove('show');
-                    setTimeout(() => { if (simChart) { const chartDiv = document.getElementById(
-                            'simChartContainer'); if (chartDiv) { try { simChart.applyOptions({ width: chartDiv
-                                .clientWidth, height: 420 }); } catch (e) {} } } }, 300);
-                }
-            }
-
             // ─── USER INTERFACE ──────────────────────────────────────────────
             function renderUserInterface() {
                 stopBackgroundEngine();
@@ -5769,7 +5871,11 @@
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                     'open');
-                document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
+                document.getElementById('topTerminalBtn').onclick = () => {
+                    if (confirm('⚠️ Open Trading Terminal? Your positions will continue running in the background.')) {
+                        window.open('?mode=trading', '_blank');
+                    }
+                };
                 document.getElementById('logoutBtn').onclick = logout;
                 renderSubjectList();
                 if (!selectedSubjectId && subjects.length > 0) {
@@ -6000,7 +6106,7 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── TTS WITH PAUSE/RESUME FIX ──────────────────────────────────
+            // ─── TTS ──────────────────────────────────────────────────────────
             function setupTTS(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -6008,15 +6114,12 @@
                 const txt = les.contents ? stripHtml(t(les.contents)) : '';
                 let utterance = null;
                 let isPaused = false;
-                let pausedTime = 0;
-                let totalDuration = 0;
 
                 function speak() {
                     if (!txt) { showToast('⚠️ No text to speak'); return; }
                     if (window.speechSynthesis) {
                         if (utterance && !isPaused) window.speechSynthesis.cancel();
                         if (isPaused && utterance) {
-                            // Resume from pause
                             window.speechSynthesis.resume();
                             isPaused = false;
                             showToast('▶️ Resumed');
@@ -6025,16 +6128,12 @@
                         utterance = new SpeechSynthesisUtterance(txt);
                         utterance.rate = parseFloat(document.getElementById('speedSlider')?.value || 1);
                         utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-                        utterance.onstart = () => {
-                            showToast('🔊 Playing...');
-                            isPaused = false;
-                            pausedTime = 0;
-                        };
+                        utterance.onstart = () => { showToast('🔊 Playing...');
+                            isPaused = false; };
                         utterance.onerror = () => { showToast('⚠️ TTS error');
                             isPaused = false; };
                         utterance.onend = () => { showToast('✅ TTS finished');
-                            isPaused = false;
-                            pausedTime = 0; };
+                            isPaused = false; };
                         utterance.onpause = () => { isPaused = true;
                             showToast('⏸️ Paused'); };
                         utterance.onresume = () => { isPaused = false;
@@ -6042,31 +6141,20 @@
                         window.speechSynthesis.speak(utterance);
                     } else showToast('⚠️ TTS not supported');
                 }
-
                 document.getElementById('playTTS').onclick = speak;
                 document.getElementById('pauseTTS').onclick = () => {
                     if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                        if (isPaused) {
-                            window.speechSynthesis.resume();
+                        if (isPaused) { window.speechSynthesis.resume();
                             isPaused = false;
-                            showToast('▶️ Resumed');
-                        } else {
-                            window.speechSynthesis.pause();
+                            showToast('▶️ Resumed'); } else { window.speechSynthesis.pause();
                             isPaused = true;
-                            showToast('⏸️ Paused');
-                        }
-                    } else {
-                        showToast('⚠️ No audio playing');
-                    }
+                            showToast('⏸️ Paused'); }
+                    } else { showToast('⚠️ No audio playing'); }
                 };
-                document.getElementById('stopTTS').onclick = () => {
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
+                document.getElementById('stopTTS').onclick = () => { if (window.speechSynthesis) { window
+                        .speechSynthesis.cancel();
                         isPaused = false;
-                        pausedTime = 0;
-                        showToast('⏹️ Stopped');
-                    }
-                };
+                        showToast('⏹️ Stopped'); } };
             }
 
             function setupPrevNext(subj, curId) {
@@ -6756,7 +6844,7 @@
             updateDebugPanel();
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
-            window.addEventListener('beforeunload', function() {
+            window.addEventListener('beforeunload', function(e) {
                 cleanupSimIntervals();
                 disconnectBinanceWS();
                 stopBackgroundEngine();
