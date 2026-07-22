@@ -2412,204 +2412,6 @@
             background: #1e293b !important;
             border-color: #334155 !important;
         }
-        #debugToggle {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 9999;
-            background: #1e293b;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            font-size: 1.4rem;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #debugToggle:hover {
-            transform: scale(1.08);
-            background: #0f172a;
-        }
-        #debugToggle .badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #ef4444;
-            color: #fff;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-        #debugPanel {
-            position: fixed;
-            bottom: 80px;
-            left: 20px;
-            width: 380px;
-            max-height: 70vh;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            z-index: 10000;
-            padding: 16px 18px;
-            overflow-y: auto;
-            display: none;
-            font-size: 0.78rem;
-            font-family: var(--font-mono);
-            transition: all 0.3s ease;
-            color: var(--text);
-        }
-        #debugPanel.open {
-            display: block;
-        }
-        #debugPanel h3 {
-            margin: 0 0 10px 0;
-            font-size: 0.9rem;
-            font-weight: 700;
-            font-family: 'Outfit', sans-serif;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 6px;
-        }
-        #debugPanel h3 button {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
-        #debugPanel h3 button:hover {
-            background: var(--surface-hover);
-        }
-        .debug-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.74rem;
-        }
-        .debug-item .label {
-            color: var(--text-secondary);
-        }
-        .debug-item .value {
-            font-weight: 600;
-            max-width: 60%;
-            text-align: right;
-            word-break: break-all;
-        }
-        .debug-item .value.ok {
-            color: #10b981;
-        }
-        .debug-item .value.err {
-            color: #ef4444;
-        }
-        .debug-item .value.warn {
-            color: #f59e0b;
-        }
-        .debug-item .value.info {
-            color: #3b82f6;
-        }
-        .debug-timestamp {
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            text-align: right;
-            margin-top: 6px;
-            border-top: 1px solid var(--border-light);
-            padding-top: 4px;
-        }
-        @media (max-width: 480px) {
-            #debugPanel {
-                left: 10px;
-                right: 10px;
-                width: auto;
-                bottom: 70px;
-                max-height: 60vh;
-            }
-        }
-        /* limit order input */
-        .limit-order-input {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: var(--bg-secondary);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-        .limit-order-input input {
-            width: 70px;
-            background: transparent;
-            border: none;
-            padding: 4px 0;
-            font-size: 0.72rem;
-            font-family: var(--font-mono);
-            color: var(--text);
-            outline: none;
-        }
-        .limit-order-input span {
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .pending-orders-table {
-            font-size: 0.7rem;
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .pending-orders-table th {
-            text-align: left;
-            padding: 4px 6px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-        }
-        .pending-orders-table td {
-            padding: 4px 6px;
-            border-bottom: 1px solid var(--border-light);
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-        }
-        .limit-badge {
-            background: #e0e7ff;
-            color: #3730a3;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.6rem;
-        }
-        .market-badge {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.6rem;
-        }
-        .hedge-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.6rem;
-        }
-        /* account no */
         .account-no {
             font-size: 0.65rem;
             color: var(--text-muted);
@@ -2619,26 +2421,32 @@
             border-radius: 6px;
             border: 1px solid var(--border);
         }
+        .notification-permission-btn {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 600;
+            font-family: var(--font);
+            transition: all var(--transition);
+        }
+        .notification-permission-btn:hover {
+            transform: scale(1.05);
+        }
+        .position-line-label {
+            font-size: 0.55rem;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
     </style>
 </head>
 <body>
     <div id="app"></div>
-    <button id="debugToggle" title="Debug Panel">🔍<span class="badge" id="debugBadge">!</span></button>
-    <div id="debugPanel">
-        <h3>🛠️ Debug Console<button id="debugClose">✕</button></h3>
-        <div id="debugContent">
-            <div class="debug-item"><span class="label">Binance REST</span><span class="value" id="dbStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Vercel Blob</span><span class="value" id="blobStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Render API</span><span class="value" id="apiStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Binance WS</span><span class="value" id="wsStatus">Disconnected</span></div>
-            <div class="debug-item"><span class="label">IndexedDB</span><span class="value" id="idbStatus">Checking...</span></div>
-            <div class="debug-item"><span class="label">Chart Candles</span><span class="value" id="candleCount">0</span></div>
-            <div class="debug-item"><span class="label">Portfolio</span><span class="value" id="portfolioStatus">Loading...</span></div>
-            <div class="debug-item"><span class="label">Last Price</span><span class="value" id="lastPrice">-</span></div>
-            <div class="debug-item"><span class="label">Candle Source</span><span class="value" id="cronStatus">Waiting...</span></div>
-            <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
-        </div>
-    </div>
     <script>
         (function() {
             'use strict';
@@ -2656,7 +2464,6 @@
                 'AVAXUSDT', 'DOTUSDT'
             ];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
-            // ─── DEFAULT TIMEFRAME: M5 (300) ───────────────────────────────
             const DEFAULT_TF = 300;
             const INDICATOR_COLORS = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
                 'ema200': '#ef4444', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4',
@@ -2681,12 +2488,8 @@
             let userNotes = {};
             let isAdmin = false;
 
-            // ─── PORTFOLIO (with hedging support) ──────────────────────────
-            // Each position: { id, symbol, type: 'long'|'short', qty, entryPrice, currentPrice, slPrice, tpPrice, openTime, fee }
-            // portfolio = { cash, positions: [], transactions: [], drawnLines: {} }
+            // ─── PORTFOLIO ──────────────────────────────────────────────────
             let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
-            // ─── PENDING ORDERS (limit) ─────────────────────────────────────
-            // { id, symbol, side: 'buy'|'sell', type: 'limit', price, qty, status: 'pending'|'filled'|'canceled', createdAt }
             let pendingOrders = [];
 
             // ─── CHART STATE ────────────────────────────────────────────────
@@ -2727,7 +2530,7 @@
             let allPriceLines = {};
             let manualDrawnLines = [];
             let currentDrawingTool = null;
-            let currentTimeframe = DEFAULT_TF; // M5
+            let currentTimeframe = DEFAULT_TF;
             let dragState = null;
             let activeIndicators = {};
             let fsShowBottom = false;
@@ -2742,6 +2545,9 @@
             let lastBinancePrice = {};
             let chartInitRetryTimer = null;
             let chartInitAttempts = 0;
+            let bgEngineInterval = null;
+            let ttsState = { utterance: null, isPaused: false, currentChunk: 0, chunks: [], isPlaying: false };
+            let notificationPermissionGranted = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache';
@@ -2873,6 +2679,67 @@
             function debounce(fn, delay) { let timer; return function(...args) { clearTimeout(timer);
                     timer = setTimeout(() => fn.apply(this, args), delay); }; }
 
+            function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
+
+            function sanitizeCandle(c) {
+                if (!c) return null;
+                const result = {
+                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
+                    open: isValidNumber(c.open) ? c.open : 1,
+                    high: isValidNumber(c.high) ? c.high : 1,
+                    low: isValidNumber(c.low) ? c.low : 1,
+                    close: isValidNumber(c.close) ? c.close : 1,
+                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
+                };
+                if (result.high < result.low) { const tmp = result.high;
+                    result.high = result.low;
+                    result.low = tmp; }
+                if (result.high < result.open) result.high = result.open;
+                if (result.high < result.close) result.high = result.close;
+                if (result.low > result.open) result.low = result.open;
+                if (result.low > result.close) result.low = result.close;
+                return result;
+            }
+
+            function sanitizeCandleData(candles) {
+                if (!candles || !Array.isArray(candles)) return [];
+                return candles.map(c => sanitizeCandle(c)).filter(c => c !== null);
+            }
+
+            function getCandleKey(symbol, tf) { return symbol + '_' + tf; }
+
+            // ─── NOTIFICATIONS ──────────────────────────────────────────────
+            function requestNotificationPermission() {
+                if (!('Notification' in window)) return;
+                if (Notification.permission === 'granted') { notificationPermissionGranted = true; return; }
+                if (Notification.permission === 'denied') { showToast('⚠️ Notifications blocked. Please enable in browser settings.');
+                    return; }
+                Notification.requestPermission().then(permission => {
+                    notificationPermissionGranted = permission === 'granted';
+                    if (notificationPermissionGranted) showToast('🔔 Notifications enabled!');
+                });
+            }
+
+            function sendPushNotification(title, body, icon = '📊', tag = null) {
+                if (!('Notification' in window)) return;
+                if (Notification.permission !== 'granted') {
+                    requestNotificationPermission();
+                    return;
+                }
+                try {
+                    const options = {
+                        body: body,
+                        icon: '🔔',
+                        badge: '🔔',
+                        vibrate: [200, 100, 200],
+                        tag: tag || Date.now().toString(),
+                        requireInteraction: true,
+                        data: { timestamp: Date.now() }
+                    };
+                    new Notification(`📊 ${title}`, options);
+                } catch (e) { console.warn('Notification error:', e); }
+            }
+
             // ─── PORTFOLIO PERSISTENCE ──────────────────────────────────────
             function loadPortfolioFromStorage() {
                 try {
@@ -2884,7 +2751,6 @@
                         portfolio.transactions = parsed.transactions ?? [];
                         portfolio.drawnLines = parsed.drawnLines ?? {};
                         if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                        // ensure each position has an id
                         portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
                                 .toString(36).slice(2, 6); });
                         return true;
@@ -2904,7 +2770,6 @@
                 } catch (e) { console.warn('Portfolio save error:', e); }
             }
 
-            // ─── PENDING ORDERS PERSISTENCE ────────────────────────────────
             function loadPendingOrders() {
                 try {
                     const saved = localStorage.getItem('pendingOrders_v9');
@@ -2917,14 +2782,11 @@
                 try { localStorage.setItem('pendingOrders_v9', JSON.stringify(pendingOrders)); } catch (e) {}
             }
 
-            // ─── ACCOUNT NO PERSISTENCE ─────────────────────────────────────
             function saveAccountNo() {
                 localStorage.setItem('userAccountNo', userAccountNo);
             }
 
-            // ─── INDEXEDDB CACHE HELPERS ──────────────────────────────────
-            function getCandleKey(symbol, tf) { return symbol + '_' + tf; }
-
+            // ─── DB HELPERS ──────────────────────────────────────────────────
             async function loadCandlesFromDB(symbol, tf) {
                 try {
                     const key = getCandleKey(symbol, tf);
@@ -2932,9 +2794,7 @@
                     if (data && data.candles && data.candles.length > 0) {
                         const last = data.candles[data.candles.length - 1];
                         const now = Math.floor(Date.now() / 1000);
-                        if (now - last.time < 86400) {
-                            return data.candles;
-                        }
+                        if (now - last.time < 86400) return data.candles;
                     }
                 } catch (e) { console.warn('DB load error:', e); }
                 return null;
@@ -2949,57 +2809,42 @@
             }
 
             async function loadChartStateFromDB(symbol) {
-                try {
-                    const data = await dbGet('chartState', symbol);
-                    if (data) return data;
-                } catch (e) {}
+                try { const data = await dbGet('chartState', symbol); if (data) return data; } catch (e) {}
                 return null;
             }
 
             async function saveChartStateToDB(symbol, state) {
-                try {
-                    await dbPut('chartState', { id: symbol, ...state, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('chartState', { id: symbol, ...state, updated: Date.now() }); } catch (e) {}
             }
 
             async function loadIndicatorsFromDB() {
-                try {
-                    const data = await dbGet('indicators', 'active');
-                    if (data) return data.indicators || {};
-                } catch (e) {}
+                try { const data = await dbGet('indicators', 'active'); if (data) return data.indicators || {}; } catch (
+                e) {}
                 return {};
             }
 
             async function saveIndicatorsToDB(indicators) {
-                try {
-                    await dbPut('indicators', { id: 'active', indicators, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('indicators', { id: 'active', indicators, updated: Date.now() }); } catch (e) {}
             }
 
             async function loadDrawingsFromDB(symbol) {
-                try {
-                    const data = await dbGet('drawings', symbol);
-                    if (data) return data.lines || [];
-                } catch (e) {}
+                try { const data = await dbGet('drawings', symbol); if (data) return data.lines || []; } catch (e) {}
                 return [];
             }
 
             async function saveDrawingsToDB(symbol, lines) {
-                try {
-                    await dbPut('drawings', { id: symbol, lines, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
             }
 
             // ─── BINANCE WS + REST ──────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket.CONNECTING)) return;
-                if (binanceWS) { try { binanceWS.close(); } catch(e) {} }
+                if (binanceWS) { try { binanceWS.close(); } catch (e) {} }
                 const streams = SYMBOLS.map(s => s.toLowerCase() + '@trade').join('/');
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected');
-                        updateDebugPanel(); };
+                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected'); };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -3033,7 +2878,6 @@
                         console.log('⚠️ Binance WebSocket closed, reconnecting...');
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
                         binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
-                        updateDebugPanel();
                     };
                     binanceWS.onerror = (e) => { console.error('Binance WS error:', e);
                         binanceWS.close(); };
@@ -3046,7 +2890,6 @@
                     binanceReconnectTimer = null; }
             }
 
-            // ─── BINANCE REST: FETCH REAL CANDLES ──────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit = 500) {
                 try {
                     const url =
@@ -3063,10 +2906,7 @@
                         close: parseFloat(k[4]),
                         volume: parseFloat(k[5])
                     }));
-                } catch (e) {
-                    console.warn('Binance REST candles fetch failed:', e);
-                    return null;
-                }
+                } catch (e) { console.warn('Binance REST candles fetch failed:', e); return null; }
             }
 
             async function fetchBinanceLatest(symbol) {
@@ -3107,53 +2947,15 @@
                 return null;
             }
 
-            // ─── BLOB LOAD / SAVE (through API proxy) ──────────────────────
             async function loadBlobCandles(symbol, tf) {
                 try {
                     const url = `${API_BASE}/candles/${symbol}`;
                     const res = await fetch(url);
                     if (!res.ok) throw new Error('Failed to fetch candles from API');
                     const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        return data;
-                    }
-                } catch (e) {
-                    console.warn('Blob fetch via API failed (may be suspended):', e.message);
-                }
+                    if (Array.isArray(data) && data.length > 0) return data;
+                } catch (e) { console.warn('Blob fetch via API failed:', e.message); }
                 return null;
-            }
-
-            // ─── MERGE ENGINE ──────────────────────────────────────────────
-            function mergeCandles(historical, latest) {
-                let result = historical ? [...historical] : [];
-                if (latest) {
-                    const exists = result.some(c => c.time === latest.time);
-                    if (!exists) {
-                        result.push(latest);
-                    } else {
-                        const idx = result.findIndex(c => c.time === latest.time);
-                        if (idx !== -1) result[idx] = latest;
-                    }
-                }
-                result.sort((a, b) => a.time - b.time);
-                return result;
-            }
-
-            // ─── LAZY LOADING ──────────────────────────────────────────────
-            let lazyAllCandles = [];
-            let lazyVisibleStart = 0;
-            let lazyVisibleEnd = 0;
-
-            function initLazy(candles) {
-                lazyAllCandles = candles.slice();
-                const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, 2000);
-                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
-                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
-            }
-
-            function getVisibleCandles() {
-                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
             // ─── INDICATOR CALCULATIONS ────────────────────────────────────
@@ -3306,34 +3108,6 @@
                 return vwap;
             }
 
-            // ─── VALIDATION ──────────────────────────────────────────────────
-            function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
-
-            function sanitizeCandle(c) {
-                if (!c) return null;
-                const result = {
-                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
-                    open: isValidNumber(c.open) ? c.open : 1,
-                    high: isValidNumber(c.high) ? c.high : 1,
-                    low: isValidNumber(c.low) ? c.low : 1,
-                    close: isValidNumber(c.close) ? c.close : 1,
-                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
-                };
-                if (result.high < result.low) { const tmp = result.high;
-                    result.high = result.low;
-                    result.low = tmp; }
-                if (result.high < result.open) result.high = result.open;
-                if (result.high < result.close) result.high = result.close;
-                if (result.low > result.open) result.low = result.open;
-                if (result.low > result.close) result.low = result.close;
-                return result;
-            }
-
-            function sanitizeCandleData(candles) {
-                if (!candles || !Array.isArray(candles)) return [];
-                return candles.map(c => sanitizeCandle(c)).filter(c => c !== null);
-            }
-
             // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
@@ -3356,8 +3130,7 @@
                         const emaData = calculateEMA(safeData, period);
                         if (emaData.length > 0) {
                             if (simIndicatorSeries[key]) {
-                                try { simIndicatorSeries[key].setData(emaData); } catch (e) { console.warn(
-                                        'EMA update error:', e); }
+                                try { simIndicatorSeries[key].setData(emaData); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
@@ -3365,7 +3138,7 @@
                                             minMove: 0.0001 } });
                                     ls.setData(emaData);
                                     simIndicatorSeries[key] = ls;
-                                } catch (e) { console.warn('EMA create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     } else { removeSeries(key); }
@@ -3376,8 +3149,7 @@
                         const data = [sma, upper, lower][i];
                         if (data && data.length > 0) {
                             if (simIndicatorSeries[k]) {
-                                try { simIndicatorSeries[k].setData(data); } catch (e) { console.warn(
-                                        'BB update error:', e); }
+                                try { simIndicatorSeries[k].setData(data); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
@@ -3388,7 +3160,7 @@
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
                                     ls.setData(data);
                                     simIndicatorSeries[k] = ls;
-                                } catch (e) { console.warn('BB create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     });
@@ -3397,8 +3169,7 @@
                     const rsiData = calculateRSI(safeData);
                     if (rsiData.length > 0) {
                         if (simIndicatorSeries['rsi']) {
-                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) { console.warn(
-                                    'RSI update error:', e); }
+                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
@@ -3408,7 +3179,7 @@
                                         bottom: 0 } });
                                 pane.setData(rsiData);
                                 simIndicatorSeries['rsi'] = pane;
-                            } catch (e) { console.warn('RSI create error:', e); }
+                            } catch (e) {}
                         }
                     }
                 } else { removeSeries('rsi'); }
@@ -3416,8 +3187,7 @@
                     const { macd, signal, histogram } = calculateMACD(safeData);
                     if (macd.length > 0) {
                         if (simIndicatorSeries['macd']) {
-                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) { console.warn(
-                                    'MACD update error:', e); }
+                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
@@ -3427,12 +3197,11 @@
                                         bottom: 0.2 } });
                                 pane.setData(macd);
                                 simIndicatorSeries['macd'] = pane;
-                            } catch (e) { console.warn('MACD create error:', e); }
+                            } catch (e) {}
                         }
                         if (signal.length > 0) {
                             if (simIndicatorSeries['macd_signal']) {
-                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) { console
-                                        .warn('MACD signal update error:', e); }
+                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) {}
                             } else {
                                 try {
                                     const sigPane = simChart.addLineSeries({ color: '#34d399',
@@ -3441,7 +3210,7 @@
                                         minMove: 0.0001 } });
                                     sigPane.setData(signal);
                                     simIndicatorSeries['macd_signal'] = sigPane;
-                                } catch (e) { console.warn('MACD signal create error:', e); }
+                                } catch (e) {}
                             }
                         }
                         if (histogram.length > 0) {
@@ -3449,15 +3218,14 @@
                                     .value >= 0 ? 'rgba(16,185,129,0.5)' :
                                     'rgba(239,68,68,0.5)' }));
                             if (simIndicatorSeries['macd_hist']) {
-                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) { console
-                                        .warn('MACD hist update error:', e); }
+                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) {}
                             } else {
                                 try {
                                     const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
                                         priceFormat: { type: 'price', precision: 4 } });
                                     histSeries.setData(histData);
                                     simIndicatorSeries['macd_hist'] = histSeries;
-                                } catch (e) { console.warn('MACD hist create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     }
@@ -3466,8 +3234,7 @@
                     const { k, d } = calculateStochastic(safeData);
                     if (k.length > 0) {
                         if (simIndicatorSeries['stoch_k']) {
-                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) { console.warn(
-                                    'Stoch K update error:', e); }
+                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) {}
                         } else {
                             try {
                                 const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
@@ -3477,12 +3244,11 @@
                                         bottom: 0.15 } });
                                 kPane.setData(k);
                                 simIndicatorSeries['stoch_k'] = kPane;
-                            } catch (e) { console.warn('Stoch K create error:', e); }
+                            } catch (e) {}
                         }
                         if (d.length > 0) {
                             if (simIndicatorSeries['stoch_d']) {
-                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) { console.warn(
-                                        'Stoch D update error:', e); }
+                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) {}
                             } else {
                                 try {
                                     const dPane = simChart.addLineSeries({ color: '#f472b6',
@@ -3491,7 +3257,7 @@
                                         minMove: 0.01 } });
                                     dPane.setData(d);
                                     simIndicatorSeries['stoch_d'] = dPane;
-                                } catch (e) { console.warn('Stoch D create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     }
@@ -3500,8 +3266,7 @@
                     const vwapData = calculateVWAP(safeData);
                     if (vwapData.length > 0) {
                         if (simIndicatorSeries['vwap']) {
-                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) { console.warn(
-                                    'VWAP update error:', e); }
+                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'],
@@ -3509,7 +3274,7 @@
                                     priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                                 pane.setData(vwapData);
                                 simIndicatorSeries['vwap'] = pane;
-                            } catch (e) { console.warn('VWAP create error:', e); }
+                            } catch (e) {}
                         }
                     }
                 } else { removeSeries('vwap'); }
@@ -3523,7 +3288,7 @@
                             simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
                         } else { simVolumeSeries.setData([]);
                             simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
-                    } catch (e) { console.warn('Volume update error:', e); }
+                    } catch (e) {}
                 }
             }
 
@@ -3534,7 +3299,6 @@
                 btn.classList.toggle('active', hasActive);
             }
 
-            // ─── GENERATE SIMULATED CANDLES (FALLBACK ─ ONLY WHEN NO REAL DATA) ──
             function generateSeamlessSimulatedCandles(sym, count, targetPrice, intervalSec) {
                 const candles = [];
                 const now = Math.floor(Date.now() / 1000);
@@ -3559,13 +3323,29 @@
                 return candles;
             }
 
-            // ─── CHART INIT (FIXED: resilient, no disappearing) ────────────
+            // ─── LAZY LOAD ──────────────────────────────────────────────────
+            let lazyAllCandles = [];
+            let lazyVisibleStart = 0;
+            let lazyVisibleEnd = 0;
+
+            function initLazy(candles) {
+                lazyAllCandles = candles.slice();
+                const total = lazyAllCandles.length;
+                lazyVisibleEnd = Math.min(total, 2000);
+                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
+                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
+            }
+
+            function getVisibleCandles() {
+                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
+            }
+
+            // ─── CHART INIT ──────────────────────────────────────────────────
             async function initChart() {
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
                 if (!chartDiv) return;
-                // ensure container has size
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 10) {
                     await new Promise(r => setTimeout(r, 100));
@@ -3580,7 +3360,6 @@
                     if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
                     return;
                 }
-                // Cleanup old chart
                 if (simChart) {
                     try { simChart.remove(); } catch (e) {}
                     simChart = null;
@@ -3591,7 +3370,6 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ── STEP 1: Fetch REAL price from Binance ──
                 let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
                 if (!realTimePrice || isNaN(realTimePrice)) {
                     const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
@@ -3605,7 +3383,6 @@
                     realTimePrice = simBasePrices[simCurrentSymbol] || 45000;
                 }
 
-                // ── STEP 2: PRIMARY SOURCE → Binance REST candles ──
                 let candles = null;
                 let sourceLabel = 'Simulation';
                 let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
@@ -3637,7 +3414,6 @@
                     }
                 }
 
-                // ── STEP 3: Merge with latest Binance candle ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
@@ -3657,18 +3433,15 @@
                     }
                 }
 
-                // ── STEP 4: Ensure last candle close matches real price ──
                 if (candles.length > 0) {
                     const lastCandle = candles[candles.length - 1];
                     if (isValidNumber(realTimePrice) && Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
                         lastCandle.close = realTimePrice;
                         if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
                         if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
-                        console.log('🔗 Gap closed: last candle close →', realTimePrice);
                     }
                 }
 
-                // ── STEP 5: Set simAllCandles ──
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
                     simAllCandles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
@@ -3676,7 +3449,6 @@
                     sourceLabel = 'Simulation (Emergency)';
                 }
 
-                // ── STEP 6: Current candle ──
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
@@ -3696,7 +3468,6 @@
                     simCurrentCandle.low = Math.min(lastClose, realTimePrice);
                 }
 
-                // ── STEP 7: Lazy load & Chart render ──
                 const visible = initLazy(simAllCandles);
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? Math.max(180, chartDiv.clientHeight) : 420;
@@ -3710,7 +3481,8 @@
                             timeVisible: true,
                             secondsVisible: currentTimeframe < 300,
                             rightOffset: 8,
-                            barSpacing: isMobile ? 4 : 8
+                            barSpacing: isMobile ? 3 : 8,
+                            minBarSpacing: isMobile ? 1 : 4,
                         },
                         layout: {
                             background: { type: 'solid', color: 'transparent' },
@@ -3746,9 +3518,17 @@
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                     simVolumeSeries.setData(volData);
-                    simChart.timeScale().fitContent();
 
-                    // ── STEP 8: Restore saved state ──
+                    // ── Scroll to latest candle ──
+                    if (simChart) {
+                        simChart.timeScale().fitContent();
+                        setTimeout(() => {
+                            if (simChart) {
+                                try { simChart.timeScale().scrollToPosition(0, true); } catch (e) {}
+                            }
+                        }, 100);
+                    }
+
                     const savedInd = await loadIndicatorsFromDB();
                     if (savedInd && Object.keys(savedInd).length) {
                         activeIndicators = savedInd;
@@ -3766,7 +3546,6 @@
                         try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                     }
 
-                    // ── STEP 9: Drawing tools ──
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -3793,7 +3572,6 @@
                         }
                     });
 
-                    // ── Drag lines ──
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -3874,7 +3652,6 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
-                    // ── STEP 10: Price update interval ──
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3900,11 +3677,9 @@
                         checkAndExecuteSLTP();
                         updateSimUI();
                         updateMobileTopBar();
-                        // check pending limit orders
                         checkPendingOrders();
                     }, 1000);
 
-                    // ── STEP 11: Candle close interval ──
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3958,7 +3733,6 @@
 
                     document.getElementById('cronStatus').textContent = sourceLabel;
                     document.getElementById('candleCount').textContent = simAllCandles.length;
-                    updateDebugPanel();
 
                 } catch (err) {
                     console.error('Chart init error:', err);
@@ -3966,7 +3740,6 @@
                         '<span style="color:var(--danger);">⚠️ Chart error: ' + err.message + '</span>';
                     if (simChart) { try { simChart.remove(); } catch (e) {}
                         simChart = null; }
-                    // Retry after delay
                     if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
                     chartInitRetryTimer = setTimeout(() => { initChart(); }, 2000);
                 }
@@ -3987,23 +3760,44 @@
                     manualDrawnLines.push({ key, price: l.price, color: l.color, label: l.label, style: l.style,
                         lineObj: line, index: idx });
                 });
-                // entry lines per position
+
+                // ── Entry, SL, TP lines for all positions ──
                 portfolio.positions.forEach(p => {
-                    if (p.symbol === simCurrentSymbol && p.entryPrice) {
-                        const line = simCandleSeries.createPriceLine({ price: p.entryPrice, color: '#3b82f6',
-                            lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: 'Entry ' + p
-                                .symbol + ' ' + p.id.slice(-4) });
-                        allPriceLines['entry_' + p.id] = line;
-                    }
-                    if (p.symbol === simCurrentSymbol && p.slPrice) {
-                        const line = simCandleSeries.createPriceLine({ price: p.slPrice, color: '#f59e0b',
-                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'SL ' + p.symbol });
-                        allPriceLines['sl_' + p.id] = line;
-                    }
-                    if (p.symbol === simCurrentSymbol && p.tpPrice) {
-                        const line = simCandleSeries.createPriceLine({ price: p.tpPrice, color: '#8b5cf6',
-                            lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'TP ' + p.symbol });
-                        allPriceLines['tp_' + p.id] = line;
+                    if (p.symbol === simCurrentSymbol) {
+                        if (p.entryPrice) {
+                            const entryColor = p.type === 'long' ? '#10b981' : '#ef4444';
+                            const line = simCandleSeries.createPriceLine({
+                                price: p.entryPrice,
+                                color: entryColor,
+                                lineWidth: 2,
+                                lineStyle: 0,
+                                axisLabelVisible: true,
+                                title: `📌 Entry ${p.symbol} ${p.id.slice(-4)}`
+                            });
+                            allPriceLines['entry_' + p.id] = line;
+                        }
+                        if (p.slPrice) {
+                            const line = simCandleSeries.createPriceLine({
+                                price: p.slPrice,
+                                color: '#f59e0b',
+                                lineWidth: 2,
+                                lineStyle: 2,
+                                axisLabelVisible: true,
+                                title: `🛑 SL ${p.symbol}`
+                            });
+                            allPriceLines['sl_' + p.id] = line;
+                        }
+                        if (p.tpPrice) {
+                            const line = simCandleSeries.createPriceLine({
+                                price: p.tpPrice,
+                                color: '#8b5cf6',
+                                lineWidth: 2,
+                                lineStyle: 2,
+                                axisLabelVisible: true,
+                                title: `🎯 TP ${p.symbol}`
+                            });
+                            allPriceLines['tp_' + p.id] = line;
+                        }
                     }
                 });
                 updateLineManagerUI();
@@ -4037,7 +3831,7 @@
                     'Resistance' : 'Horizontal line'));
             }
 
-            // ─── TRADING ENGINE (SL/TP + HEDGING) ───────────────────────────
+            // ─── TRADING ENGINE ──────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
                 let changed = false;
@@ -4066,6 +3860,14 @@
                         const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                         const fee = Math.abs(p.qty * price * 0.0005);
                         portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                        const pnlText = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
+                        const side = p.type === 'long' ? 'LONG' : 'SHORT';
+                        sendPushNotification(
+                            `${reason === 'Stop Loss' ? '🛑' : '🎯'} ${reason} ${p.symbol}`,
+                            `${side} ${p.qty} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText} | Balance: $${portfolio.cash.toFixed(2)}`,
+                            reason === 'Stop Loss' ? '🛑' : '🎯',
+                            `sl_tp_${p.id}`
+                        );
                         portfolio.transactions.unshift({
                             type: 'close',
                             symbol: p.symbol,
@@ -4076,8 +3878,7 @@
                             pnl: pnl - fee,
                             id: p.id
                         });
-                        showToast('🛑 ' + reason + ' ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
-                            fee).toFixed(2));
+                        showToast(`🛑 ${reason} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText}`);
                         playTradeSound('sell');
                         toRemove.push(i);
                         changed = true;
@@ -4092,20 +3893,16 @@
                 }
             }
 
-            // ─── PENDING ORDERS CHECK ──────────────────────────────────────
             function checkPendingOrders() {
                 if (pendingOrders.length === 0) return;
-                const now = Date.now();
                 const toRemove = [];
                 for (let i = 0; i < pendingOrders.length; i++) {
                     const order = pendingOrders[i];
                     if (order.status !== 'pending') { toRemove.push(i); continue; }
                     const price = simLastPrices[order.symbol] || simBasePrices[order.symbol];
                     if (!isValidNumber(price)) continue;
-                    // Check if limit price is hit
                     const hit = order.side === 'buy' ? price <= order.price : price >= order.price;
                     if (hit) {
-                        // Execute limit order
                         const qty = order.qty;
                         const execPrice = order.price;
                         const fee = qty * execPrice * 0.0005;
@@ -4117,7 +3914,6 @@
                                 continue;
                             }
                             portfolio.cash -= qty * execPrice + fee;
-                            // find existing position or create new (hedging allowed)
                             const existing = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
                                 'long' && p.entryPrice === execPrice);
                             if (existing) {
@@ -4148,11 +3944,13 @@
                                 id: order.id,
                                 fee
                             });
+                            sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
+                                `BUY ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
+                                '✅', `limit_${order.id}`
+                            );
                             showToast('✅ Limit BUY executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
                             playTradeSound('buy');
                         } else {
-                            // sell
-                            // check if we have a position to sell (or short)
                             const existingLong = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
                                 'long');
                             const existingShort = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
@@ -4176,10 +3974,13 @@
                                     pnl,
                                     fee
                                 });
+                                sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
+                                    `SELL ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
+                                    '✅', `limit_${order.id}`
+                                );
                                 showToast('✅ Limit SELL executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
                                 playTradeSound('sell');
                             } else {
-                                // short position
                                 const margin = qty * execPrice * 0.5;
                                 if (portfolio.cash < margin + fee) {
                                     showToast('⚠️ Insufficient margin for short limit order');
@@ -4211,6 +4012,10 @@
                                     id: order.id,
                                     fee
                                 });
+                                sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
+                                    `SHORT ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
+                                    '✅', `limit_${order.id}`
+                                );
                                 showToast('✅ Limit SHORT executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
                                 playTradeSound('sell');
                             }
@@ -4230,7 +4035,7 @@
                 }
             }
 
-            // ─── PLACE ORDER (Market + Limit) ──────────────────────────────
+            // ─── PLACE ORDER ──────────────────────────────────────────────────
             function placeSimOrder(type, orderType = 'market', limitPrice = null) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
@@ -4240,7 +4045,6 @@
 
                 if (orderType === 'limit') {
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
-                    // create pending limit order
                     const order = {
                         id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol,
@@ -4259,12 +4063,10 @@
                     return;
                 }
 
-                // ─── MARKET ORDER ──────────────────────────────────────────
                 const fee = qty * price * 0.0005;
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
                     portfolio.cash -= qty * price + fee;
-                    // hedging: we allow both long and short positions to coexist
                     const existing = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p
                         .entryPrice === price);
                     if (existing) {
@@ -4297,8 +4099,6 @@
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                 } else {
-                    // sell
-                    // check if we have a long position to close first
                     const longPos = portfolio.positions.find(p => p.symbol === symbol && p.type === 'long' && p.qty >=
                         qty);
                     if (longPos) {
@@ -4323,7 +4123,6 @@
                         showToast('✅ Closed Long ' + symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
                             .toFixed(2));
                     } else {
-                        // open short
                         const margin = qty * price * 0.5;
                         if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
                         portfolio.cash -= fee;
@@ -4366,7 +4165,6 @@
                 syncPortfolioToServer();
             }
 
-            // ─── EXIT POSITION ──────────────────────────────────────────────
             function exitPositionById(posId) {
                 const idx = portfolio.positions.findIndex(p => p.id === posId);
                 if (idx === -1) return;
@@ -4397,11 +4195,9 @@
             }
 
             function exitPosition(symbol) {
-                // if multiple positions, show dialog or just exit all
                 const positions = portfolio.positions.filter(p => p.symbol === symbol);
                 if (positions.length === 0) return showToast('⚠️ No position for ' + symbol);
                 if (positions.length === 1) { exitPositionById(positions[0].id); return; }
-                // multiple positions: show modal to select
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.innerHTML = `
@@ -4485,7 +4281,6 @@
                 }
             }
 
-            // ─── RENDER PENDING ORDERS UI ──────────────────────────────────
             function renderPendingOrdersUI() {
                 const el = document.getElementById('pendingOrdersList');
                 if (!el) return;
@@ -4508,20 +4303,6 @@
                 savePendingOrders();
                 renderPendingOrdersUI();
                 showToast('🗑 Limit order canceled');
-            }
-
-            function renderPendingOrdersUI() {
-                const el = document.getElementById('pendingOrdersList');
-                if (!el) return;
-                const pending = pendingOrders.filter(o => o.status === 'pending');
-                if (pending.length === 0) { el.innerHTML =
-                        '<span style="color:var(--text-muted);font-size:0.68rem;">No pending orders</span>'; return; }
-                el.innerHTML = pending.map(o =>
-                    `<div class="line-manager-row">
-                        <span style="flex:1;">${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
-                        <button class="btn btn-sm btn-danger" onclick="cancelLimitOrder('${o.id}')">Cancel</button>
-                    </div>`
-                ).join('');
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -4718,7 +4499,6 @@
                     '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.8rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
                 html += '</div>';
                 panel.innerHTML = html;
-                // render pending orders in mobile
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
                     const pending = pendingOrders.filter(o => o.status === 'pending');
@@ -4885,7 +4665,6 @@
                 simIndicatorSeries = {};
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-                // Do NOT replace the container — just clear and re-init
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) {
                     chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>';
@@ -4895,8 +4674,6 @@
             }
 
             // ─── BACKGROUND ENGINE ──────────────────────────────────────────
-            let bgEngineInterval = null;
-
             function startBackgroundEngine() {
                 if (bgEngineInterval) clearInterval(bgEngineInterval);
                 bgEngineInterval = setInterval(() => {
@@ -4958,11 +4735,9 @@
                     plEl.textContent = (totalPL >= 0 ? '📈 +$' : '📉 -$') + Math.abs(totalPL).toFixed(2);
                     plEl.style.color = totalPL >= 0 ? 'var(--success)' : 'var(--danger)';
                 }
-                // update account no
                 const accEl = document.querySelector('.account-no');
                 if (accEl) accEl.textContent = userAccountNo;
 
-                // positions table
                 const tbody = document.querySelector('#simHoldingsTable tbody');
                 const fsTbody = document.querySelector('#simHoldingsTableFs tbody');
                 const rowsHTML = portfolio.positions.map(p => {
@@ -4988,7 +4763,6 @@
                 if (tbody) tbody.innerHTML = rowsHTML;
                 if (fsTbody) fsTbody.innerHTML = rowsHTML;
 
-                // history
                 const histEl = document.getElementById('simHistoryList');
                 if (histEl) histEl.innerHTML =
                     '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">' + (portfolio
@@ -5031,6 +4805,7 @@
                                 <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
                                 <span id="simTotalValue" style="font-weight:600;font-size:0.8rem;">📊 $0</span>
                                 <span id="simPL" style="font-weight:600;font-size:0.8rem;">📈 $0</span>
+                                <button class="notification-permission-btn" onclick="requestNotificationPermission()">🔔 Notify</button>
                             </div>
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
@@ -5292,13 +5067,23 @@
                             </div>
                         </div>
                     </div>`;
+
+                // ── Hamburger: close on blank area click ──
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
+                const toggleSidebar = (show) => {
+                    if (show === undefined) sidebarOverlay.classList.toggle('show');
+                    else if (show) sidebarOverlay.classList.add('show');
+                    else sidebarOverlay.classList.remove('show');
+                };
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
-                    sidebarOverlay.classList.toggle('show'); };
-                document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
-                document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
-                sidebarOverlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove(
-                        'show'); });
+                    toggleSidebar(); };
+                document.getElementById('mt5SidebarClose').onclick = () => toggleSidebar(false);
+                document.getElementById('sidebarCloseBtn').onclick = () => toggleSidebar(false);
+                // ✅ Blank area click closes sidebar
+                sidebarOverlay.addEventListener('click', function(e) {
+                    if (e.target === this) toggleSidebar(false);
+                });
+
                 document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => { cb.onchange =
                     function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
@@ -5310,10 +5095,10 @@
                     updateAllIndicators(); };
                 document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
-                    sidebarOverlay.classList.remove('show'); };
+                    toggleSidebar(false); };
                 document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
-                    sidebarOverlay.classList.remove('show'); };
+                    toggleSidebar(false); };
                 document.querySelectorAll('.timeframe-grid button').forEach(b => { b.onclick = function() { const tf =
                             parseInt(this.dataset.tf);
                         currentTimeframe = tf;
@@ -5321,7 +5106,8 @@
                         document.getElementById('mobileTfDisplay').textContent = Object.keys(TIMEFRAMES).find(k =>
                             TIMEFRAMES[k] === tf);
                         resetChart();
-                        sidebarOverlay.classList.remove('show'); }; });
+                        toggleSidebar(false); }; });
+
                 const indicatorOverlay = document.getElementById('mt5IndicatorOverlay');
                 document.getElementById('mt5IndicatorBtn').onclick = (e) => { e.stopPropagation();
                     indicatorOverlay.classList.toggle('show'); };
@@ -5349,6 +5135,7 @@
                         currentMobileLot); };
                 document.getElementById('mobileBuyBtn').onclick = () => { placeSimOrderMobile('buy',
                         currentMobileLot); };
+
                 const navItems = document.querySelectorAll('.mt5-nav-item');
                 const panelsDiv = document.getElementById('mobilePanels');
                 navItems.forEach(item => { item.onclick = () => { navItems.forEach(n => n.classList.remove(
@@ -5519,6 +5306,7 @@
                                 <button class="theme-toggle-btn" id="themeToggle">
                                     <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
                                 </button>
+                                <button class="notification-permission-btn" onclick="requestNotificationPermission()">🔔 Notify</button>
                                 <div class="user-menu">
                                     <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
                                     <span class="account-no">${userAccountNo}</span>
@@ -5539,12 +5327,22 @@
                     applyTheme();
                     document.getElementById('themeToggle').innerHTML =
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
-                document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
-                    'open');
+                document.getElementById('menuToggle').onclick = function(e) {
+                    e.stopPropagation();
+                    document.getElementById('sidebar').classList.toggle('open');
+                };
+                // Sidebar close on blank area click
+                document.addEventListener('click', function(e) {
+                    const sidebar = document.getElementById('sidebar');
+                    const toggle = document.getElementById('menuToggle');
+                    if (sidebar && toggle && sidebar.classList.contains('open') &&
+                        !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                });
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
                 document.getElementById('logoutBtn').onclick = logout;
                 renderSubjectList();
-                // Auto-select first subject if none selected
                 if (!selectedSubjectId && subjects.length > 0) {
                     selectedSubjectId = subjects[0].id;
                 }
@@ -5773,30 +5571,111 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
+            // ─── TTS WITH PAUSE/RESUME ──────────────────────────────────────
             function setupTTS(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
                 if (!les) return;
                 const txt = les.contents ? stripHtml(t(les.contents)) : '';
-                let utterance = null;
+                ttsState.chunks = splitTextIntoChunks(txt, 200);
+                ttsState.currentChunk = 0;
+                ttsState.isPlaying = false;
+                ttsState.isPaused = false;
+                ttsState.utterance = null;
 
-                function speak() {
-                    if (!txt) { showToast('⚠️ No text to speak'); return; }
+                function speakChunk(index) {
+                    if (index >= ttsState.chunks.length) {
+                        ttsState.isPlaying = false;
+                        ttsState.currentChunk = 0;
+                        showToast('🔊 Done');
+                        return;
+                    }
                     if (window.speechSynthesis) {
-                        if (utterance) window.speechSynthesis.cancel();
-                        utterance = new SpeechSynthesisUtterance(txt);
+                        window.speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance(ttsState.chunks[index]);
                         utterance.rate = parseFloat(document.getElementById('speedSlider')?.value || 1);
                         utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-                        utterance.onstart = () => showToast('🔊 Playing...');
-                        utterance.onerror = () => showToast('⚠️ TTS error');
+                        utterance.onstart = function() {
+                            ttsState.isPlaying = true;
+                            ttsState.isPaused = false;
+                            showToast(`🔊 Part ${index+1}/${ttsState.chunks.length}`);
+                        };
+                        utterance.onpause = function() {
+                            ttsState.isPaused = true;
+                            ttsState.currentChunk = index;
+                            showToast('⏸ Paused');
+                        };
+                        utterance.onresume = function() {
+                            ttsState.isPaused = false;
+                            showToast('▶️ Resumed');
+                        };
+                        utterance.onend = function() {
+                            if (!ttsState.isPaused) {
+                                speakChunk(index + 1);
+                            }
+                        };
+                        utterance.onerror = function(e) {
+                            if (e.error !== 'canceled') {
+                                console.warn('TTS error:', e);
+                                speakChunk(index + 1);
+                            }
+                        };
+                        ttsState.utterance = utterance;
                         window.speechSynthesis.speak(utterance);
-                    } else showToast('⚠️ TTS not supported');
+                    }
                 }
-                document.getElementById('playTTS').onclick = speak;
-                document.getElementById('pauseTTS').onclick = () => { if (window.speechSynthesis) window.speechSynthesis
-                        .pause(); };
-                document.getElementById('stopTTS').onclick = () => { if (window.speechSynthesis) window.speechSynthesis
-                        .cancel(); };
+
+                document.getElementById('playTTS').onclick = function() {
+                    if (!ttsState.chunks.length || !ttsState.chunks[0]) { showToast('⚠️ No text to speak'); return; }
+                    if (!window.speechSynthesis) { showToast('⚠️ TTS not supported'); return; }
+                    // If paused, resume
+                    if (ttsState.isPaused && ttsState.utterance) {
+                        window.speechSynthesis.resume();
+                        ttsState.isPaused = false;
+                        showToast('▶️ Resumed');
+                        return;
+                    }
+                    // Start fresh or restart
+                    if (ttsState.utterance) window.speechSynthesis.cancel();
+                    ttsState.currentChunk = 0;
+                    speakChunk(0);
+                };
+
+                document.getElementById('pauseTTS').onclick = function() {
+                    if (window.speechSynthesis && ttsState.isPlaying && !ttsState.isPaused) {
+                        window.speechSynthesis.pause();
+                        ttsState.isPaused = true;
+                        showToast('⏸ Paused');
+                    } else {
+                        showToast('⚠️ Nothing is playing');
+                    }
+                };
+
+                document.getElementById('stopTTS').onclick = function() {
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                        ttsState.isPlaying = false;
+                        ttsState.isPaused = false;
+                        ttsState.currentChunk = 0;
+                        showToast('⏹ Stopped');
+                    }
+                };
+            }
+
+            function splitTextIntoChunks(text, maxLength) {
+                const chunks = [];
+                const sentences = text.split(/(?<=[.!?])\s+/);
+                let currentChunk = '';
+                for (const sentence of sentences) {
+                    if ((currentChunk + sentence).length > maxLength) {
+                        chunks.push(currentChunk.trim());
+                        currentChunk = sentence;
+                    } else {
+                        currentChunk += (currentChunk ? ' ' : '') + sentence;
+                    }
+                }
+                if (currentChunk.trim()) chunks.push(currentChunk.trim());
+                return chunks.length ? chunks : [text];
             }
 
             function setupPrevNext(subj, curId) {
@@ -6368,18 +6247,17 @@
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                    // ensure each position has id
                     portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
                             .toString(36).slice(2, 6); });
                     savePortfolioToStorage();
                     if (currentUser.username === 'admin') isAdmin = true;
-                    // Auto-select first subject
                     if (subjects.length > 0 && !selectedSubjectId) {
                         selectedSubjectId = subjects[0].id;
                     }
                     applyTheme();
                     renderApp();
                     connectBinanceWS();
+                    requestNotificationPermission();
                 } catch (e) { console.error('Load error:', e); if (e.message.includes('Session expired')) logout();
                     else renderApp(); }
             }
@@ -6440,51 +6318,8 @@
             window.dbDelete = dbDelete;
             window.syncPortfolioToServer = syncPortfolioToServer;
             window.checkPendingOrders = checkPendingOrders;
-
-            // ─── DEBUG PANEL ──────────────────────────────────────────────────
-            function updateDebugPanel() {
-                const dbStatus = document.getElementById('dbStatus');
-                const blobStatus = document.getElementById('blobStatus');
-                const apiStatus = document.getElementById('apiStatus');
-                const wsStatus = document.getElementById('wsStatus');
-                const idbStatus = document.getElementById('idbStatus');
-                const candleCount = document.getElementById('candleCount');
-                const portfolioStatus = document.getElementById('portfolioStatus');
-                const lastPrice = document.getElementById('lastPrice');
-                const cronStatus = document.getElementById('cronStatus');
-                const ts = document.getElementById('debugTimestamp');
-
-                if (dbStatus) dbStatus.textContent = '✅ Online';
-                if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
-                if (apiStatus) apiStatus.textContent = '✅ Online';
-                if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
-                    '✅ Connected' : '⚠️ Disconnected';
-                if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
-                if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
-                if (portfolioStatus) portfolioStatus.textContent = portfolio ? '✅ Loaded' : '⏳ Loading...';
-                if (lastPrice) lastPrice.textContent = simLastPrices[simCurrentSymbol] ? '$' + simLastPrices[
-                    simCurrentSymbol].toFixed(4) : '-';
-                if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-            }
-
-            const debugToggle = document.getElementById('debugToggle');
-            const debugPanel = document.getElementById('debugPanel');
-            const debugClose = document.getElementById('debugClose');
-
-            debugToggle.onclick = function() {
-                debugPanel.classList.toggle('open');
-                if (debugPanel.classList.contains('open')) updateDebugPanel();
-            };
-            debugClose.onclick = function() { debugPanel.classList.remove('open'); };
-            document.addEventListener('click', function(e) {
-                if (debugPanel.classList.contains('open') && !debugPanel.contains(e.target) && e.target !==
-                    debugToggle) {
-                    debugPanel.classList.remove('open');
-                }
-            });
-
-            setInterval(updateDebugPanel, 3000);
-            updateDebugPanel();
+            window.requestNotificationPermission = requestNotificationPermission;
+            window.sendPushNotification = sendPushNotification;
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
             window.addEventListener('beforeunload', function() {
@@ -6544,6 +6379,35 @@
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
                 'show'));
             });
+
+            // ─── Visibility API: chart recovery ──────────────────────────────
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    // Page became visible again — recover chart
+                    const chartDiv = document.getElementById('simChartContainer');
+                    if (chartDiv) {
+                        const hasCanvas = chartDiv.querySelector('canvas');
+                        if (!hasCanvas || (simChart && !simChart._draw)) {
+                            console.log('🔄 Recovering chart after visibility change');
+                            resetChart();
+                        } else if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                            try {
+                                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                        .clientHeight });
+                                if (simCandleSeries && simAllCandles.length > 0) {
+                                    const visible = getVisibleCandles();
+                                    const allData = [...visible];
+                                    if (simCurrentCandle) allData.push(simCurrentCandle);
+                                    simCandleSeries.setData(sanitizeCandleData(allData));
+                                    simChart.timeScale().fitContent();
+                                }
+                            } catch (e) { console.warn('Chart recovery error:', e);
+                                resetChart(); }
+                        }
+                    }
+                }
+            });
+
         })();
     </script>
 </body>
