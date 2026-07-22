@@ -847,6 +847,7 @@
             font-size: 0.88rem;
             box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 90vw;
         }
         [data-theme="dark"] .toast {
             background: linear-gradient(135deg, #374151, #1f2937);
@@ -1980,8 +1981,8 @@
             min-width: 60px;
         }
         .mt5-deposit-withdraw input:focus {
-            outline: 1px solid var(--mt5-green);
             border-color: var(--mt5-green);
+            outline: none;
         }
         .mt5-deposit-withdraw button {
             background: var(--mt5-blue);
@@ -2416,6 +2417,202 @@
             background: #1e293b !important;
             border-color: #334155 !important;
         }
+        #debugToggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: #1e293b;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #debugToggle:hover {
+            transform: scale(1.08);
+            background: #0f172a;
+        }
+        #debugToggle .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        #debugPanel {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            width: 380px;
+            max-height: 70vh;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            padding: 16px 18px;
+            overflow-y: auto;
+            display: none;
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+        #debugPanel.open {
+            display: block;
+        }
+        #debugPanel h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 6px;
+        }
+        #debugPanel h3 button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        #debugPanel h3 button:hover {
+            background: var(--surface-hover);
+        }
+        .debug-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.74rem;
+        }
+        .debug-item .label {
+            color: var(--text-secondary);
+        }
+        .debug-item .value {
+            font-weight: 600;
+            max-width: 60%;
+            text-align: right;
+            word-break: break-all;
+        }
+        .debug-item .value.ok {
+            color: #10b981;
+        }
+        .debug-item .value.err {
+            color: #ef4444;
+        }
+        .debug-item .value.warn {
+            color: #f59e0b;
+        }
+        .debug-item .value.info {
+            color: #3b82f6;
+        }
+        .debug-timestamp {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 6px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 4px;
+        }
+        @media (max-width: 480px) {
+            #debugPanel {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                bottom: 70px;
+                max-height: 60vh;
+            }
+        }
+        .limit-order-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .limit-order-input input {
+            width: 70px;
+            background: transparent;
+            border: none;
+            padding: 4px 0;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text);
+            outline: none;
+        }
+        .limit-order-input span {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .pending-orders-table {
+            font-size: 0.7rem;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .pending-orders-table th {
+            text-align: left;
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+        .pending-orders-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+        }
+        .limit-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        .market-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        .hedge-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
         .account-no {
             font-size: 0.65rem;
             color: var(--text-muted);
@@ -2425,67 +2622,127 @@
             border-radius: 6px;
             border: 1px solid var(--border);
         }
-        .notification-permission-btn {
-            background: var(--primary-gradient);
+        /* Notification Banner */
+        .notification-banner {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 800;
+            max-width: 380px;
+            width: 90%;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            background: var(--surface);
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--shadow-lg);
+            animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font);
+            color: var(--text);
+        }
+        .notification-banner.success {
+            border-left-color: var(--success);
+        }
+        .notification-banner.error {
+            border-left-color: var(--danger);
+        }
+        .notification-banner.warning {
+            border-left-color: var(--accent);
+        }
+        .notification-banner .notif-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .notification-banner .notif-content {
+            flex: 1;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+        .notification-banner .notif-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 6px;
+            transition: 0.2s;
+        }
+        .notification-banner .notif-close:hover {
+            color: var(--text);
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        /* Modify button style */
+        .btn-modify {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #fff;
             border: none;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: var(--radius-full);
             cursor: pointer;
-            font-size: 0.65rem;
             font-weight: 600;
-            font-family: var(--font);
-            transition: all var(--transition);
-        }
-        .notification-permission-btn:hover {
-            transform: scale(1.05);
-        }
-        .position-line-label {
-            font-size: 0.55rem;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-weight: 700;
-            font-family: var(--font-mono);
-        }
-        .deposit-input-fix {
-            background: var(--mt5-input) !important;
-            border: 1px solid var(--mt5-border) !important;
-            color: var(--mt5-text-bright) !important;
-            padding: 5px 10px !important;
-            border-radius: 6px !important;
-            font-size: 0.75rem !important;
-            font-family: var(--font) !important;
-            min-width: 60px !important;
-            flex: 1 !important;
-        }
-        .deposit-input-fix:focus {
-            outline: 1px solid var(--mt5-green) !important;
-            border-color: var(--mt5-green) !important;
-        }
-        .modify-btn {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            font-size: 0.7rem;
-            cursor: pointer;
+            font-size: 0.72rem;
             transition: all var(--transition);
             font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .modify-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.3);
+        .btn-modify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
         }
-        .chart-stable {
-            transition: none !important;
-            will-change: auto !important;
+        /* Make deposit/withdraw inputs work */
+        .mt5-deposit-withdraw input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: none;  /* add this line */
+        }
+        .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
+        .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;   /* add this line for full compatibility */
+            margin: 0;
+        }
+        /* Entry, SL, TP line colors */
+        .entry-line-color {
+            color: #3b82f6;
+        }
+        .sl-line-color {
+            color: #f59e0b;
+        }
+        .tp-line-color {
+            color: #8b5cf6;
         }
     </style>
 </head>
 <body>
     <div id="app"></div>
+    <button id="debugToggle" title="Debug Panel">🔍<span class="badge" id="debugBadge">!</span></button>
+    <div id="debugPanel">
+        <h3>🛠️ Debug Console<button id="debugClose">✕</button></h3>
+        <div id="debugContent">
+            <div class="debug-item"><span class="label">Binance REST</span><span class="value" id="dbStatus">Checking...</span></div>
+            <div class="debug-item"><span class="label">Vercel Blob</span><span class="value" id="blobStatus">Checking...</span></div>
+            <div class="debug-item"><span class="label">Render API</span><span class="value" id="apiStatus">Checking...</span></div>
+            <div class="debug-item"><span class="label">Binance WS</span><span class="value" id="wsStatus">Disconnected</span></div>
+            <div class="debug-item"><span class="label">IndexedDB</span><span class="value" id="idbStatus">Checking...</span></div>
+            <div class="debug-item"><span class="label">Chart Candles</span><span class="value" id="candleCount">0</span></div>
+            <div class="debug-item"><span class="label">Portfolio</span><span class="value" id="portfolioStatus">Loading...</span></div>
+            <div class="debug-item"><span class="label">Last Price</span><span class="value" id="lastPrice">-</span></div>
+            <div class="debug-item"><span class="label">Candle Source</span><span class="value" id="cronStatus">Waiting...</span></div>
+            <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
+        </div>
+    </div>
     <script>
         (function() {
             'use strict';
@@ -2584,11 +2841,11 @@
             let lastBinancePrice = {};
             let chartInitRetryTimer = null;
             let chartInitAttempts = 0;
-            let bgEngineInterval = null;
-            let ttsState = { utterance: null, isPaused: false, currentChunk: 0, chunks: [], isPlaying: false };
-            let notificationPermissionGranted = false;
-            let isChartInitializing = false;
-            let chartStable = true;
+            let currentMobileLot = 0.01;
+            let ttsUtterance = null;
+            let ttsPausedAt = 0;
+            let ttsTotalLength = 0;
+            let ttsStartTime = 0;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache';
@@ -2675,7 +2932,40 @@
                 document.body.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0';
                     el.style.transition = 'opacity 0.3s';
-                    setTimeout(() => el.remove(), 300); }, 2500);
+                    setTimeout(() => el.remove(), 300); }, 3000);
+            }
+
+            // ─── NOTIFICATION SYSTEM ────────────────────────────────────────
+            function sendNotification(title, body, type = 'info') {
+                // Show banner
+                const existing = document.querySelector('.notification-banner');
+                if (existing) existing.remove();
+                const banner = document.createElement('div');
+                banner.className = 'notification-banner ' + type;
+                const icons = { success: '✅', error: '❌', warning: '⚠️', info: '📢' };
+                banner.innerHTML = `
+                    <span class="notif-icon">${icons[type] || '📢'}</span>
+                    <span class="notif-content"><strong>${title}</strong> ${body}</span>
+                    <button class="notif-close">✕</button>
+                `;
+                document.body.appendChild(banner);
+                banner.querySelector('.notif-close').onclick = () => banner.remove();
+                setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
+
+                // Try browser notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    try { new Notification('📊 ATTS: ' + title, { body: body, icon: '📊' }); } catch (e) {}
+                } else if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+
+                // Also toast
+                showToast(title + ' — ' + body);
+            }
+
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
             }
 
             function applyTheme() { document.documentElement.setAttribute('data-theme', appTheme);
@@ -2719,67 +3009,6 @@
 
             function debounce(fn, delay) { let timer; return function(...args) { clearTimeout(timer);
                     timer = setTimeout(() => fn.apply(this, args), delay); }; }
-
-            function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
-
-            function sanitizeCandle(c) {
-                if (!c) return null;
-                const result = {
-                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
-                    open: isValidNumber(c.open) ? c.open : 1,
-                    high: isValidNumber(c.high) ? c.high : 1,
-                    low: isValidNumber(c.low) ? c.low : 1,
-                    close: isValidNumber(c.close) ? c.close : 1,
-                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
-                };
-                if (result.high < result.low) { const tmp = result.high;
-                    result.high = result.low;
-                    result.low = tmp; }
-                if (result.high < result.open) result.high = result.open;
-                if (result.high < result.close) result.high = result.close;
-                if (result.low > result.open) result.low = result.open;
-                if (result.low > result.close) result.low = result.close;
-                return result;
-            }
-
-            function sanitizeCandleData(candles) {
-                if (!candles || !Array.isArray(candles)) return [];
-                return candles.map(c => sanitizeCandle(c)).filter(c => c !== null);
-            }
-
-            function getCandleKey(symbol, tf) { return symbol + '_' + tf; }
-
-            // ─── NOTIFICATIONS ──────────────────────────────────────────────
-            function requestNotificationPermission() {
-                if (!('Notification' in window)) return;
-                if (Notification.permission === 'granted') { notificationPermissionGranted = true; return; }
-                if (Notification.permission === 'denied') { showToast('⚠️ Notifications blocked. Please enable in browser settings.');
-                    return; }
-                Notification.requestPermission().then(permission => {
-                    notificationPermissionGranted = permission === 'granted';
-                    if (notificationPermissionGranted) showToast('🔔 Notifications enabled!');
-                });
-            }
-
-            function sendPushNotification(title, body, icon = '📊', tag = null) {
-                if (!('Notification' in window)) return;
-                if (Notification.permission !== 'granted') {
-                    requestNotificationPermission();
-                    return;
-                }
-                try {
-                    const options = {
-                        body: body,
-                        icon: '🔔',
-                        badge: '🔔',
-                        vibrate: [200, 100, 200],
-                        tag: tag || Date.now().toString(),
-                        requireInteraction: true,
-                        data: { timestamp: Date.now() }
-                    };
-                    new Notification(`📊 ${title}`, options);
-                } catch (e) { console.warn('Notification error:', e); }
-            }
 
             // ─── PORTFOLIO PERSISTENCE ──────────────────────────────────────
             function loadPortfolioFromStorage() {
@@ -2827,7 +3056,9 @@
                 localStorage.setItem('userAccountNo', userAccountNo);
             }
 
-            // ─── DB HELPERS ──────────────────────────────────────────────────
+            // ─── INDEXEDDB CACHE HELPERS ──────────────────────────────────
+            function getCandleKey(symbol, tf) { return symbol + '_' + tf; }
+
             async function loadCandlesFromDB(symbol, tf) {
                 try {
                     const key = getCandleKey(symbol, tf);
@@ -2835,7 +3066,9 @@
                     if (data && data.candles && data.candles.length > 0) {
                         const last = data.candles[data.candles.length - 1];
                         const now = Math.floor(Date.now() / 1000);
-                        if (now - last.time < 86400) return data.candles;
+                        if (now - last.time < 86400) {
+                            return data.candles;
+                        }
                     }
                 } catch (e) { console.warn('DB load error:', e); }
                 return null;
@@ -2850,42 +3083,57 @@
             }
 
             async function loadChartStateFromDB(symbol) {
-                try { const data = await dbGet('chartState', symbol); if (data) return data; } catch (e) {}
+                try {
+                    const data = await dbGet('chartState', symbol);
+                    if (data) return data;
+                } catch (e) {}
                 return null;
             }
 
             async function saveChartStateToDB(symbol, state) {
-                try { await dbPut('chartState', { id: symbol, ...state, updated: Date.now() }); } catch (e) {}
+                try {
+                    await dbPut('chartState', { id: symbol, ...state, updated: Date.now() });
+                } catch (e) {}
             }
 
             async function loadIndicatorsFromDB() {
-                try { const data = await dbGet('indicators', 'active'); if (data) return data.indicators || {}; } catch (
-                e) {}
+                try {
+                    const data = await dbGet('indicators', 'active');
+                    if (data) return data.indicators || {};
+                } catch (e) {}
                 return {};
             }
 
             async function saveIndicatorsToDB(indicators) {
-                try { await dbPut('indicators', { id: 'active', indicators, updated: Date.now() }); } catch (e) {}
+                try {
+                    await dbPut('indicators', { id: 'active', indicators, updated: Date.now() });
+                } catch (e) {}
             }
 
             async function loadDrawingsFromDB(symbol) {
-                try { const data = await dbGet('drawings', symbol); if (data) return data.lines || []; } catch (e) {}
+                try {
+                    const data = await dbGet('drawings', symbol);
+                    if (data) return data.lines || [];
+                } catch (e) {}
                 return [];
             }
 
             async function saveDrawingsToDB(symbol, lines) {
-                try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
+                try {
+                    await dbPut('drawings', { id: symbol, lines, updated: Date.now() });
+                } catch (e) {}
             }
 
             // ─── BINANCE WS + REST ──────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket.CONNECTING)) return;
-                if (binanceWS) { try { binanceWS.close(); } catch (e) {} }
+                if (binanceWS) { try { binanceWS.close(); } catch(e) {} }
                 const streams = SYMBOLS.map(s => s.toLowerCase() + '@trade').join('/');
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected'); };
+                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected');
+                        updateDebugPanel(); };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -2919,6 +3167,7 @@
                         console.log('⚠️ Binance WebSocket closed, reconnecting...');
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
                         binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
+                        updateDebugPanel();
                     };
                     binanceWS.onerror = (e) => { console.error('Binance WS error:', e);
                         binanceWS.close(); };
@@ -2931,6 +3180,7 @@
                     binanceReconnectTimer = null; }
             }
 
+            // ─── BINANCE REST ──────────────────────────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit = 500) {
                 try {
                     const url =
@@ -2947,7 +3197,10 @@
                         close: parseFloat(k[4]),
                         volume: parseFloat(k[5])
                     }));
-                } catch (e) { console.warn('Binance REST candles fetch failed:', e); return null; }
+                } catch (e) {
+                    console.warn('Binance REST candles fetch failed:', e);
+                    return null;
+                }
             }
 
             async function fetchBinanceLatest(symbol) {
@@ -2994,9 +3247,45 @@
                     const res = await fetch(url);
                     if (!res.ok) throw new Error('Failed to fetch candles from API');
                     const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) return data;
-                } catch (e) { console.warn('Blob fetch via API failed:', e.message); }
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data;
+                    }
+                } catch (e) {
+                    console.warn('Blob fetch via API failed (may be suspended):', e.message);
+                }
                 return null;
+            }
+
+            function mergeCandles(historical, latest) {
+                let result = historical ? [...historical] : [];
+                if (latest) {
+                    const exists = result.some(c => c.time === latest.time);
+                    if (!exists) {
+                        result.push(latest);
+                    } else {
+                        const idx = result.findIndex(c => c.time === latest.time);
+                        if (idx !== -1) result[idx] = latest;
+                    }
+                }
+                result.sort((a, b) => a.time - b.time);
+                return result;
+            }
+
+            // ─── LAZY LOADING ──────────────────────────────────────────────
+            let lazyAllCandles = [];
+            let lazyVisibleStart = 0;
+            let lazyVisibleEnd = 0;
+
+            function initLazy(candles) {
+                lazyAllCandles = candles.slice();
+                const total = lazyAllCandles.length;
+                lazyVisibleEnd = Math.min(total, 2000);
+                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
+                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
+            }
+
+            function getVisibleCandles() {
+                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
             // ─── INDICATOR CALCULATIONS ────────────────────────────────────
@@ -3149,6 +3438,33 @@
                 return vwap;
             }
 
+            function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
+
+            function sanitizeCandle(c) {
+                if (!c) return null;
+                const result = {
+                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
+                    open: isValidNumber(c.open) ? c.open : 1,
+                    high: isValidNumber(c.high) ? c.high : 1,
+                    low: isValidNumber(c.low) ? c.low : 1,
+                    close: isValidNumber(c.close) ? c.close : 1,
+                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
+                };
+                if (result.high < result.low) { const tmp = result.high;
+                    result.high = result.low;
+                    result.low = tmp; }
+                if (result.high < result.open) result.high = result.open;
+                if (result.high < result.close) result.high = result.close;
+                if (result.low > result.open) result.low = result.open;
+                if (result.low > result.close) result.low = result.close;
+                return result;
+            }
+
+            function sanitizeCandleData(candles) {
+                if (!candles || !Array.isArray(candles)) return [];
+                return candles.map(c => sanitizeCandle(c)).filter(c => c !== null);
+            }
+
             // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
@@ -3171,7 +3487,8 @@
                         const emaData = calculateEMA(safeData, period);
                         if (emaData.length > 0) {
                             if (simIndicatorSeries[key]) {
-                                try { simIndicatorSeries[key].setData(emaData); } catch (e) {}
+                                try { simIndicatorSeries[key].setData(emaData); } catch (e) { console.warn(
+                                        'EMA update error:', e); }
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
@@ -3179,7 +3496,7 @@
                                             minMove: 0.0001 } });
                                     ls.setData(emaData);
                                     simIndicatorSeries[key] = ls;
-                                } catch (e) {}
+                                } catch (e) { console.warn('EMA create error:', e); }
                             }
                         }
                     } else { removeSeries(key); }
@@ -3190,7 +3507,8 @@
                         const data = [sma, upper, lower][i];
                         if (data && data.length > 0) {
                             if (simIndicatorSeries[k]) {
-                                try { simIndicatorSeries[k].setData(data); } catch (e) {}
+                                try { simIndicatorSeries[k].setData(data); } catch (e) { console.warn(
+                                        'BB update error:', e); }
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
@@ -3201,7 +3519,7 @@
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
                                     ls.setData(data);
                                     simIndicatorSeries[k] = ls;
-                                } catch (e) {}
+                                } catch (e) { console.warn('BB create error:', e); }
                             }
                         }
                     });
@@ -3210,7 +3528,8 @@
                     const rsiData = calculateRSI(safeData);
                     if (rsiData.length > 0) {
                         if (simIndicatorSeries['rsi']) {
-                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) {}
+                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) { console.warn(
+                                    'RSI update error:', e); }
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
@@ -3220,7 +3539,7 @@
                                         bottom: 0 } });
                                 pane.setData(rsiData);
                                 simIndicatorSeries['rsi'] = pane;
-                            } catch (e) {}
+                            } catch (e) { console.warn('RSI create error:', e); }
                         }
                     }
                 } else { removeSeries('rsi'); }
@@ -3228,7 +3547,8 @@
                     const { macd, signal, histogram } = calculateMACD(safeData);
                     if (macd.length > 0) {
                         if (simIndicatorSeries['macd']) {
-                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) {}
+                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) { console.warn(
+                                    'MACD update error:', e); }
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
@@ -3238,11 +3558,12 @@
                                         bottom: 0.2 } });
                                 pane.setData(macd);
                                 simIndicatorSeries['macd'] = pane;
-                            } catch (e) {}
+                            } catch (e) { console.warn('MACD create error:', e); }
                         }
                         if (signal.length > 0) {
                             if (simIndicatorSeries['macd_signal']) {
-                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) {}
+                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) { console
+                                        .warn('MACD signal update error:', e); }
                             } else {
                                 try {
                                     const sigPane = simChart.addLineSeries({ color: '#34d399',
@@ -3251,7 +3572,7 @@
                                         minMove: 0.0001 } });
                                     sigPane.setData(signal);
                                     simIndicatorSeries['macd_signal'] = sigPane;
-                                } catch (e) {}
+                                } catch (e) { console.warn('MACD signal create error:', e); }
                             }
                         }
                         if (histogram.length > 0) {
@@ -3259,14 +3580,15 @@
                                     .value >= 0 ? 'rgba(16,185,129,0.5)' :
                                     'rgba(239,68,68,0.5)' }));
                             if (simIndicatorSeries['macd_hist']) {
-                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) {}
+                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) { console
+                                        .warn('MACD hist update error:', e); }
                             } else {
                                 try {
                                     const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
                                         priceFormat: { type: 'price', precision: 4 } });
                                     histSeries.setData(histData);
                                     simIndicatorSeries['macd_hist'] = histSeries;
-                                } catch (e) {}
+                                } catch (e) { console.warn('MACD hist create error:', e); }
                             }
                         }
                     }
@@ -3275,7 +3597,8 @@
                     const { k, d } = calculateStochastic(safeData);
                     if (k.length > 0) {
                         if (simIndicatorSeries['stoch_k']) {
-                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) {}
+                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) { console.warn(
+                                    'Stoch K update error:', e); }
                         } else {
                             try {
                                 const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
@@ -3285,11 +3608,12 @@
                                         bottom: 0.15 } });
                                 kPane.setData(k);
                                 simIndicatorSeries['stoch_k'] = kPane;
-                            } catch (e) {}
+                            } catch (e) { console.warn('Stoch K create error:', e); }
                         }
                         if (d.length > 0) {
                             if (simIndicatorSeries['stoch_d']) {
-                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) {}
+                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) { console.warn(
+                                        'Stoch D update error:', e); }
                             } else {
                                 try {
                                     const dPane = simChart.addLineSeries({ color: '#f472b6',
@@ -3298,7 +3622,7 @@
                                         minMove: 0.01 } });
                                     dPane.setData(d);
                                     simIndicatorSeries['stoch_d'] = dPane;
-                                } catch (e) {}
+                                } catch (e) { console.warn('Stoch D create error:', e); }
                             }
                         }
                     }
@@ -3307,7 +3631,8 @@
                     const vwapData = calculateVWAP(safeData);
                     if (vwapData.length > 0) {
                         if (simIndicatorSeries['vwap']) {
-                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) {}
+                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) { console.warn(
+                                    'VWAP update error:', e); }
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'],
@@ -3315,7 +3640,7 @@
                                     priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                                 pane.setData(vwapData);
                                 simIndicatorSeries['vwap'] = pane;
-                            } catch (e) {}
+                            } catch (e) { console.warn('VWAP create error:', e); }
                         }
                     }
                 } else { removeSeries('vwap'); }
@@ -3329,7 +3654,7 @@
                             simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
                         } else { simVolumeSeries.setData([]);
                             simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
-                    } catch (e) {}
+                    } catch (e) { console.warn('Volume update error:', e); }
                 }
             }
 
@@ -3364,34 +3689,14 @@
                 return candles;
             }
 
-            // ─── LAZY LOAD ──────────────────────────────────────────────────
-            let lazyAllCandles = [];
-            let lazyVisibleStart = 0;
-            let lazyVisibleEnd = 0;
-
-            function initLazy(candles) {
-                lazyAllCandles = candles.slice();
-                const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, 2000);
-                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
-                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
-            }
-
-            function getVisibleCandles() {
-                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
-            }
-
-            // ─── CHART INIT ──────────────────────────────────────────────────
+            // ─── CHART INIT (FIXED: resilient, no disappearing) ────────────
             async function initChart() {
-                if (isChartInitializing) {
-                    console.log('⏳ Chart init already in progress, skipping');
-                    return;
-                }
-                isChartInitializing = true;
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
-                if (!chartDiv) { isChartInitializing = false; return; }
+                if (!chartDiv) return;
+
+                // Ensure container has size
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 10) {
                     await new Promise(r => setTimeout(r, 100));
@@ -3399,15 +3704,15 @@
                 }
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
                     console.warn('Chart container still has 0 size, retrying...');
-                    isChartInitializing = false;
                     setTimeout(initChart, 300);
                     return;
                 }
                 if (typeof LightweightCharts === 'undefined') {
                     if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
-                    isChartInitializing = false;
                     return;
                 }
+
+                // Cleanup old chart
                 if (simChart) {
                     try { simChart.remove(); } catch (e) {}
                     simChart = null;
@@ -3418,6 +3723,7 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
+                // ── STEP 1: Fetch REAL price from Binance ──
                 let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
                 if (!realTimePrice || isNaN(realTimePrice)) {
                     const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
@@ -3431,6 +3737,7 @@
                     realTimePrice = simBasePrices[simCurrentSymbol] || 45000;
                 }
 
+                // ── STEP 2: PRIMARY SOURCE → Binance REST candles ──
                 let candles = null;
                 let sourceLabel = 'Simulation';
                 let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
@@ -3462,6 +3769,7 @@
                     }
                 }
 
+                // ── STEP 3: Merge with latest Binance candle ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
@@ -3481,15 +3789,18 @@
                     }
                 }
 
+                // ── STEP 4: Ensure last candle close matches real price ──
                 if (candles.length > 0) {
                     const lastCandle = candles[candles.length - 1];
                     if (isValidNumber(realTimePrice) && Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
                         lastCandle.close = realTimePrice;
                         if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
                         if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
+                        console.log('🔗 Gap closed: last candle close →', realTimePrice);
                     }
                 }
 
+                // ── STEP 5: Set simAllCandles ──
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
                     simAllCandles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
@@ -3497,6 +3808,7 @@
                     sourceLabel = 'Simulation (Emergency)';
                 }
 
+                // ── STEP 6: Current candle ──
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
@@ -3516,21 +3828,24 @@
                     simCurrentCandle.low = Math.min(lastClose, realTimePrice);
                 }
 
+                // ── STEP 7: Lazy load & Chart render ──
                 const visible = initLazy(simAllCandles);
                 const isMobile = window.innerWidth <= 768;
                 const chartHeight = isMobile ? Math.max(180, chartDiv.clientHeight) : 420;
                 const isDark = appTheme === 'dark';
 
                 try {
+                    // Fix candle width on mobile: adjust barSpacing and visible range
+                    const barSpacing = isMobile ? 2 : 6;
                     simChart = LightweightCharts.createChart(chartDiv, {
                         width: chartDiv.clientWidth,
                         height: chartHeight,
                         timeScale: {
                             timeVisible: true,
                             secondsVisible: currentTimeframe < 300,
-                            rightOffset: 8,
-                            barSpacing: isMobile ? 3 : 8,
-                            minBarSpacing: isMobile ? 1 : 4,
+                            rightOffset: isMobile ? 4 : 12,
+                            barSpacing: barSpacing,
+                            minBarSpacing: isMobile ? 1 : 3
                         },
                         layout: {
                             background: { type: 'solid', color: 'transparent' },
@@ -3567,15 +3882,26 @@
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                     simVolumeSeries.setData(volData);
 
-                    if (simChart) {
-                        simChart.timeScale().fitContent();
-                        setTimeout(() => {
-                            if (simChart) {
-                                try { simChart.timeScale().scrollToPosition(0, true); } catch (e) {}
-                            }
-                        }, 100);
+                    // Auto-scroll to live candle (rightmost)
+                    simChart.timeScale().fitContent();
+                    // Then scroll to the rightmost edge to show live candle
+                    const visibleRange = simChart.timeScale().getVisibleRange();
+                    if (visibleRange) {
+                        const rightEdge = visibleRange.to;
+                        const leftEdge = visibleRange.from;
+                        const rangeWidth = rightEdge - leftEdge;
+                        // Shift to show latest candle at the right edge
+                        const lastTime = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].time :
+                            Date.now() / 1000;
+                        const newRight = lastTime + 60;
+                        const newLeft = newRight - rangeWidth;
+                        if (newLeft > 0) {
+                            try { simChart.timeScale().setVisibleRange({ from: newLeft, to: newRight }); } catch (
+                            e) {}
+                        }
                     }
 
+                    // ── STEP 8: Restore saved state ──
                     const savedInd = await loadIndicatorsFromDB();
                     if (savedInd && Object.keys(savedInd).length) {
                         activeIndicators = savedInd;
@@ -3593,6 +3919,7 @@
                         try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                     }
 
+                    // ── STEP 9: Drawing tools ──
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -3619,6 +3946,7 @@
                         }
                     });
 
+                    // ── Drag lines ──
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -3699,6 +4027,7 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
+                    // ── STEP 10: Price update interval ──
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3727,6 +4056,7 @@
                         checkPendingOrders();
                     }, 1000);
 
+                    // ── STEP 11: Candle close interval ──
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3761,6 +4091,19 @@
                         if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight }); } catch (e) {}
+                            // Re-adjust visible range to keep live candle visible
+                            try {
+                                const vr = simChart.timeScale().getVisibleRange();
+                                if (vr && simAllCandles.length > 0) {
+                                    const last = simAllCandles[simAllCandles.length - 1].time;
+                                    const right = vr.to;
+                                    if (last > right - 60) {
+                                        const width = vr.to - vr.from;
+                                        simChart.timeScale().setVisibleRange({ from: vr.from, to: last +
+                                            60 });
+                                    }
+                                }
+                            } catch (e) {}
                         }
                     }, 100);
                     simResizeObserver = new ResizeObserver(debouncedResize);
@@ -3776,11 +4119,31 @@
                         if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                         if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                         if (simResizeObserver) simResizeObserver.disconnect();
-                        if (window._chartCleanup) window._chartCleanup = null;
+                        if (simChart) { try { simChart.remove(); } catch (e) {}
+                            simChart = null; }
                     };
 
                     document.getElementById('cronStatus').textContent = sourceLabel;
                     document.getElementById('candleCount').textContent = simAllCandles.length;
+                    updateDebugPanel();
+
+                    // ── STEP 12: Visibility change handler (fix chart hiding) ──
+                    const visibilityHandler = () => {
+                        if (document.visibilityState === 'visible' && simChart) {
+                            // Chart is visible, ensure it's rendered correctly
+                            if (chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                                try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                        .clientHeight }); } catch (e) {}
+                                try { simChart.timeScale().fitContent(); } catch (e) {}
+                            }
+                        } else if (document.visibilityState === 'hidden' && simChart) {
+                            // Chart is hidden, but we keep it alive
+                            // Just log
+                            console.log('📴 Chart hidden, preserving state');
+                        }
+                    };
+                    document.addEventListener('visibilitychange', visibilityHandler);
+                    window._visibilityHandler = visibilityHandler;
 
                 } catch (err) {
                     console.error('Chart init error:', err);
@@ -3789,19 +4152,18 @@
                     if (simChart) { try { simChart.remove(); } catch (e) {}
                         simChart = null; }
                     if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                    chartInitRetryTimer = setTimeout(() => { isChartInitializing = false;
-                        initChart(); }, 2000);
+                    chartInitRetryTimer = setTimeout(() => { initChart(); }, 2000);
                 }
-                isChartInitializing = false;
-                chartStable = true;
             }
 
-            // ─── REDRAW LINES ────────────────────────────────────────────────
+            // ─── REDRAW LINES (with Entry, SL, TP) ─────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
                 allPriceLines = {};
                 manualDrawnLines = [];
+
+                // User drawn lines
                 const symbolLines = (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) || [];
                 symbolLines.forEach((l, idx) => {
                     const line = simCandleSeries.createPriceLine({ price: l.price, color: l.color || '#3b82f6',
@@ -3812,42 +4174,40 @@
                         lineObj: line, index: idx });
                 });
 
+                // ── ENTRY, SL, TP lines per position ──
                 portfolio.positions.forEach(p => {
-                    if (p.symbol === simCurrentSymbol) {
-                        if (p.entryPrice) {
-                            const entryColor = p.type === 'long' ? '#10b981' : '#ef4444';
-                            const line = simCandleSeries.createPriceLine({
-                                price: p.entryPrice,
-                                color: entryColor,
-                                lineWidth: 2,
-                                lineStyle: 0,
-                                axisLabelVisible: true,
-                                title: `📌 Entry ${p.symbol} ${p.id.slice(-4)}`
-                            });
-                            allPriceLines['entry_' + p.id] = line;
-                        }
-                        if (p.slPrice) {
-                            const line = simCandleSeries.createPriceLine({
-                                price: p.slPrice,
-                                color: '#f59e0b',
-                                lineWidth: 2,
-                                lineStyle: 2,
-                                axisLabelVisible: true,
-                                title: `🛑 SL ${p.symbol}`
-                            });
-                            allPriceLines['sl_' + p.id] = line;
-                        }
-                        if (p.tpPrice) {
-                            const line = simCandleSeries.createPriceLine({
-                                price: p.tpPrice,
-                                color: '#8b5cf6',
-                                lineWidth: 2,
-                                lineStyle: 2,
-                                axisLabelVisible: true,
-                                title: `🎯 TP ${p.symbol}`
-                            });
-                            allPriceLines['tp_' + p.id] = line;
-                        }
+                    if (p.symbol === simCurrentSymbol && p.entryPrice) {
+                        const line = simCandleSeries.createPriceLine({
+                            price: p.entryPrice,
+                            color: '#3b82f6',
+                            lineWidth: 1.5,
+                            lineStyle: 0,
+                            axisLabelVisible: true,
+                            title: 'Entry ' + p.symbol + ' ' + p.id.slice(-4)
+                        });
+                        allPriceLines['entry_' + p.id] = line;
+                    }
+                    if (p.symbol === simCurrentSymbol && p.slPrice) {
+                        const line = simCandleSeries.createPriceLine({
+                            price: p.slPrice,
+                            color: '#f59e0b',
+                            lineWidth: 1.5,
+                            lineStyle: 2,
+                            axisLabelVisible: true,
+                            title: 'SL ' + p.symbol
+                        });
+                        allPriceLines['sl_' + p.id] = line;
+                    }
+                    if (p.symbol === simCurrentSymbol && p.tpPrice) {
+                        const line = simCandleSeries.createPriceLine({
+                            price: p.tpPrice,
+                            color: '#8b5cf6',
+                            lineWidth: 1.5,
+                            lineStyle: 2,
+                            axisLabelVisible: true,
+                            title: 'TP ' + p.symbol
+                        });
+                        allPriceLines['tp_' + p.id] = line;
                     }
                 });
                 updateLineManagerUI();
@@ -3877,11 +4237,11 @@
                 currentDrawingTool = tool;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                 if (btnId) document.getElementById(btnId)?.classList.add('active');
-                showToast('📐 Click price scale to draw ' + (tool === 'support' ? 'Support' : tool === 'resistance' ?
+                showToast('📐 Click chart to draw ' + (tool === 'support' ? 'Support' : tool === 'resistance' ?
                     'Resistance' : 'Horizontal line'));
             }
 
-            // ─── TRADING ENGINE ──────────────────────────────────────────────
+            // ─── TRADING ENGINE (SL/TP + HEDGING) ───────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
                 let changed = false;
@@ -3910,15 +4270,7 @@
                         const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                         const fee = Math.abs(p.qty * price * 0.0005);
                         portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
-                        const pnlText = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
-                        const side = p.type === 'long' ? 'LONG' : 'SHORT';
-                        sendPushNotification(
-                            `${reason === 'Stop Loss' ? '🛑' : '🎯'} ${reason} ${p.symbol}`,
-                            `${side} ${p.qty} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText} | Balance: $${portfolio.cash.toFixed(2)}`,
-                            reason === 'Stop Loss' ? '🛑' : '🎯',
-                            `sl_tp_${p.id}`
-                        );
-                        portfolio.transactions.unshift({
+                        const tx = {
                             type: 'close',
                             symbol: p.symbol,
                             qty: p.qty,
@@ -3927,8 +4279,10 @@
                             reason,
                             pnl: pnl - fee,
                             id: p.id
-                        });
-                        showToast(`🛑 ${reason} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText}`);
+                        };
+                        portfolio.transactions.unshift(tx);
+                        sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
+                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
                         toRemove.push(i);
                         changed = true;
@@ -3943,8 +4297,10 @@
                 }
             }
 
+            // ─── PENDING ORDERS CHECK ──────────────────────────────────────
             function checkPendingOrders() {
                 if (pendingOrders.length === 0) return;
+                const now = Date.now();
                 const toRemove = [];
                 for (let i = 0; i < pendingOrders.length; i++) {
                     const order = pendingOrders[i];
@@ -3958,7 +4314,8 @@
                         const fee = qty * execPrice * 0.0005;
                         if (order.side === 'buy') {
                             if (portfolio.cash < qty * execPrice + fee) {
-                                showToast('⚠️ Insufficient cash for limit order ' + order.symbol);
+                                sendNotification('⚠️ Insufficient cash', 'Limit order ' + order.symbol + ' canceled',
+                                    'warning');
                                 order.status = 'canceled';
                                 toRemove.push(i);
                                 continue;
@@ -3994,11 +4351,8 @@
                                 id: order.id,
                                 fee
                             });
-                            sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
-                                `BUY ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
-                                '✅', `limit_${order.id}`
-                            );
-                            showToast('✅ Limit BUY executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                            sendNotification('✅ Limit BUY Executed', order.symbol + ' @ $' + execPrice.toFixed(4),
+                                'success');
                             playTradeSound('buy');
                         } else {
                             const existingLong = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
@@ -4024,16 +4378,14 @@
                                     pnl,
                                     fee
                                 });
-                                sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
-                                    `SELL ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
-                                    '✅', `limit_${order.id}`
-                                );
-                                showToast('✅ Limit SELL executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                                sendNotification('✅ Limit SELL Executed', order.symbol + ' @ $' + execPrice.toFixed(
+                                    4), 'success');
                                 playTradeSound('sell');
                             } else {
                                 const margin = qty * execPrice * 0.5;
                                 if (portfolio.cash < margin + fee) {
-                                    showToast('⚠️ Insufficient margin for short limit order');
+                                    sendNotification('⚠️ Insufficient margin', 'Short limit order ' + order.symbol +
+                                        ' canceled', 'warning');
                                     order.status = 'canceled';
                                     toRemove.push(i);
                                     continue;
@@ -4062,11 +4414,8 @@
                                     id: order.id,
                                     fee
                                 });
-                                sendPushNotification(`✅ Limit Order Filled: ${order.symbol}`,
-                                    `SHORT ${qty} ${order.symbol} @ $${execPrice.toFixed(4)}`,
-                                    '✅', `limit_${order.id}`
-                                );
-                                showToast('✅ Limit SHORT executed ' + order.symbol + ' @ $' + execPrice.toFixed(4));
+                                sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
+                                    4), 'success');
                                 playTradeSound('sell');
                             }
                         }
@@ -4085,7 +4434,7 @@
                 }
             }
 
-            // ─── PLACE ORDER ──────────────────────────────────────────────────
+            // ─── PLACE ORDER (Market + Limit) ──────────────────────────────
             function placeSimOrder(type, orderType = 'market', limitPrice = null) {
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
@@ -4108,11 +4457,13 @@
                     pendingOrders.push(order);
                     savePendingOrders();
                     renderPendingOrdersUI();
-                    showToast('📌 Limit ' + type.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4) + ' for ' + qty +
-                        ' ' + symbol);
+                    sendNotification('📌 Limit Order Placed', type.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
+                        limitPrice.toFixed(4), 'info');
+                    showToast('📌 Limit ' + type.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
                     return;
                 }
 
+                // ─── MARKET ORDER ──────────────────────────────────────────
                 const fee = qty * price * 0.0005;
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
@@ -4146,6 +4497,7 @@
                         reason: 'Market Order',
                         fee
                     });
+                    sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                 } else {
@@ -4169,6 +4521,8 @@
                             pnl,
                             fee
                         });
+                        sendNotification('✅ Closed Long', symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
+                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
                         showToast('✅ Closed Long ' + symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
                             .toFixed(2));
@@ -4205,6 +4559,8 @@
                             reason: 'Market Order (Short)',
                             fee
                         });
+                        sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4),
+                        'success');
                         playTradeSound('sell');
                         showToast('✅ Market SHORT ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                     }
@@ -4215,6 +4571,7 @@
                 syncPortfolioToServer();
             }
 
+            // ─── EXIT POSITION ──────────────────────────────────────────────
             function exitPositionById(posId) {
                 const idx = portfolio.positions.findIndex(p => p.id === posId);
                 if (idx === -1) return;
@@ -4224,14 +4581,6 @@
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                 const fee = Math.abs(p.qty * price * 0.0005);
                 portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
-                const pnlText = (pnl - fee) >= 0 ? `+$${(pnl - fee).toFixed(2)}` : `-$${Math.abs(pnl - fee).toFixed(2)}`;
-                const side = p.type === 'long' ? 'LONG' : 'SHORT';
-                sendPushNotification(
-                    `🚪 Manual Exit ${p.symbol}`,
-                    `${side} ${p.qty} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText} | Balance: $${portfolio.cash.toFixed(2)}`,
-                    '🚪',
-                    `exit_${p.id}`
-                );
                 portfolio.transactions.unshift({
                     type: 'close',
                     symbol: p.symbol,
@@ -4247,8 +4596,10 @@
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
+                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
+                    .toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                 playTradeSound('sell');
-                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + pnlText);
+                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -4280,15 +4631,10 @@
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.innerHTML = `
-                    <div class="modal-content">
-                        <h3>✏️ Modify SL/TP — ${p.symbol} (${p.type})</h3>
-                        <label>Stop Loss ($) <input type="number" id="editSL" value="${p.slPrice || ''}" step="0.0001"></label>
-                        <label>Take Profit ($) <input type="number" id="editTP" value="${p.tpPrice || ''}" step="0.0001"></label>
-                        <div class="modal-actions">
-                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button>
-                            <button class="modify-btn" id="saveSLTP">✏️ Modify</button>
-                        </div>
-                    </div>`;
+                    <div class="modal-content"><h3>🔧 Modify SL/TP — ${p.symbol} (${p.type})</h3>
+                    <label>Stop Loss ($) <input type="number" id="editSL" value="${p.slPrice || ''}" step="0.0001"></label>
+                    <label>Take Profit ($) <input type="number" id="editTP" value="${p.tpPrice || ''}" step="0.0001"></label>
+                    <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-modify" id="saveSLTP">🔧 Modify</button></div></div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveSLTP').onclick = () => {
@@ -4301,7 +4647,9 @@
                     redrawAllLines();
                     syncPortfolioToServer();
                     modal.remove();
-                    showToast('✏️ SL/TP modified');
+                    sendNotification('🔧 SL/TP Modified', p.symbol + ' SL: ' + (p.slPrice || 'None') + ' TP: ' + (p
+                        .tpPrice || 'None'), 'info');
+                    showToast('✅ SL/TP modified');
                 };
             }
 
@@ -4313,12 +4661,12 @@
                 modal.className = 'modal';
                 modal.innerHTML = `
                     <div class="modal-content">
-                        <h3>✏️ Modify SL/TP — ${symbol}</h3>
+                        <h3>🔧 Modify SL/TP — ${symbol}</h3>
                         <p>Select position:</p>
                         ${positions.map((p, i) => `
                             <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
                                 <span>${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
-                                <button class="btn btn-outline btn-sm" onclick="editSLTPById('${p.id}');this.closest('.modal').remove();">Modify</button>
+                                <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}');this.closest('.modal').remove();">Modify</button>
                             </div>
                         `).join('')}
                         <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button></div>
@@ -4340,10 +4688,12 @@
                     redrawAllLines();
                     syncPortfolioToServer();
                     renderPendingOrdersUI();
+                    sendNotification('🔄 Portfolio Reset', 'Balance $100,000', 'info');
                     showToast('🔄 Portfolio reset ($100,000)');
                 }
             }
 
+            // ─── RENDER PENDING ORDERS UI ──────────────────────────────────
             function renderPendingOrdersUI() {
                 const el = document.getElementById('pendingOrdersList');
                 if (!el) return;
@@ -4365,12 +4715,11 @@
                 pendingOrders = pendingOrders.filter(o => o.status !== 'canceled');
                 savePendingOrders();
                 renderPendingOrdersUI();
+                sendNotification('🗑 Limit Order Canceled', 'Order ID: ' + id.slice(-6), 'warning');
                 showToast('🗑 Limit order canceled');
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
-            let currentMobileLot = 0.01;
-
             function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot); const el = document.getElementById(
                     'mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(2); }
 
@@ -4406,6 +4755,8 @@
                     pendingOrders.push(order);
                     savePendingOrders();
                     renderPendingOrdersUI();
+                    sendNotification('📌 Limit Order Placed', side.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
+                        limitPrice.toFixed(4), 'info');
                     showToast('📌 Limit ' + side.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
                     return;
                 }
@@ -4443,6 +4794,7 @@
                         reason: 'Market Order',
                         fee
                     });
+                    sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol);
                 } else {
@@ -4466,6 +4818,8 @@
                             pnl,
                             fee
                         });
+                        sendNotification('✅ Closed Long', symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
+                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
                         showToast('✅ Closed Long ' + symbol);
                     } else {
@@ -4501,6 +4855,8 @@
                             reason: 'Market Order (Short)',
                             fee
                         });
+                        sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4),
+                        'success');
                         playTradeSound('sell');
                         showToast('✅ Market SHORT ' + qty + ' ' + symbol);
                     }
@@ -4534,7 +4890,7 @@
                             ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
                             ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
                             <button class="exit-btn" onclick="exitPositionById('${p.id}')">Exit Position</button>
-                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="editSLTPById('${p.id}')">✏️ Modify SL/TP</button>
+                            <button class="btn btn-modify btn-sm" style="margin-top:4px;width:100%;" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
                         </div>`;
                     });
                 }
@@ -4554,7 +4910,7 @@
                     <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.65rem;">${userAccountNo}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
-                    <input type="number" id="depositAmount" class="deposit-input-fix" placeholder="Amount" step="0.01" min="0.01">
+                    <input type="number" id="depositAmount" placeholder="Amount" step="0.01" value="">
                     <button onclick="depositFunds()">Deposit</button>
                     <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw</button>
                 </div>`;
@@ -4562,6 +4918,15 @@
                     '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.8rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
                 html += '</div>';
                 panel.innerHTML = html;
+                // Fix: Ensure deposit/withdraw inputs work by re-binding
+                const depInput = document.getElementById('depositAmount');
+                if (depInput) {
+                    depInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9.]/g,
+                        ''); });
+                    depInput.addEventListener('blur', function() { if (this.value && !isNaN(parseFloat(this
+                            .value)) && parseFloat(this.value) > 0) { /* valid */ } else { this.value =
+                            ''; } });
+                }
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
                     const pending = pendingOrders.filter(o => o.status === 'pending');
@@ -4576,19 +4941,13 @@
                         ).join('');
                     }
                 }
-                // Ensure deposit input works
-                const depInput = document.getElementById('depositAmount');
-                if (depInput) {
-                    depInput.addEventListener('focus', function() { this.select(); });
-                    depInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { depositFunds(); } });
-                }
             }
 
             function depositFunds() {
-                const input = document.getElementById('depositAmount');
-                if (!input) { showToast('⚠️ Input not found'); return; }
-                const amt = parseFloat(input.value);
-                if (!amt || amt <= 0) { showToast('⚠️ Enter a valid amount'); input.focus(); return; }
+                const amtInput = document.getElementById('depositAmount');
+                if (!amtInput) return;
+                const amt = parseFloat(amtInput.value);
+                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
                 portfolio.cash = (portfolio.cash || 0) + amt;
                 portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
@@ -4596,16 +4955,17 @@
                 updateSimUI();
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
+                sendNotification('💰 Deposit', '$' + amt.toFixed(2) + ' added to balance', 'success');
                 showToast('💰 Deposited $' + amt.toFixed(2));
-                input.value = '';
+                amtInput.value = '';
             }
 
             function withdrawFunds() {
-                const input = document.getElementById('depositAmount');
-                if (!input) { showToast('⚠️ Input not found'); return; }
-                const amt = parseFloat(input.value);
-                if (!amt || amt <= 0) { showToast('⚠️ Enter a valid amount'); input.focus(); return; }
-                if ((portfolio.cash || 0) < amt) { showToast('⚠️ Insufficient balance'); input.focus(); return; }
+                const amtInput = document.getElementById('depositAmount');
+                if (!amtInput) return;
+                const amt = parseFloat(amtInput.value);
+                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
+                if ((portfolio.cash || 0) < amt) { showToast('❌ Insufficient balance'); return; }
                 portfolio.cash = (portfolio.cash || 0) - amt;
                 portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
@@ -4613,8 +4973,9 @@
                 updateSimUI();
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
+                sendNotification('💸 Withdrawal', '$' + amt.toFixed(2) + ' withdrawn from balance', 'info');
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
-                input.value = '';
+                amtInput.value = '';
             }
 
             function renderMobileWatchlist() {
@@ -4717,6 +5078,8 @@
                 if (window._mobileResizeObs) { window._mobileResizeObs.disconnect();
                     window._mobileResizeObs = null; }
                 if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
+                if (window._visibilityHandler) document.removeEventListener('visibilitychange', window
+                    ._visibilityHandler);
                 simPriceIntervalId = null;
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
@@ -4745,11 +5108,12 @@
                     chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>';
                 }
                 if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                chartInitRetryTimer = setTimeout(() => { isChartInitializing = false;
-                    initChart(); }, 100);
+                chartInitRetryTimer = setTimeout(initChart, 100);
             }
 
             // ─── BACKGROUND ENGINE ──────────────────────────────────────────
+            let bgEngineInterval = null;
+
             function startBackgroundEngine() {
                 if (bgEngineInterval) clearInterval(bgEngineInterval);
                 bgEngineInterval = setInterval(() => {
@@ -4829,9 +5193,9 @@
                         <td>${p.slPrice ? '<span class="sl-badge">$' + p.slPrice.toFixed(4) + '</span>' : '—'}</td>
                         <td>${p.tpPrice ? '<span class="tp-badge">$' + p.tpPrice.toFixed(4) + '</span>' : '—'}</td>
                         <td>$${val.toFixed(2)}</td>
-                        <td style="display:flex;gap:4px;">
+                        <td style="display:flex;gap:4px;flex-wrap:wrap;">
                             <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i> Exit</button>
-                            <button class="modify-btn" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i> Modify</button>
+                            <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i> Modify</button>
                         </td>
                     </tr>`;
                 }).join('') ||
@@ -4873,7 +5237,7 @@
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
                         <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <button class="btn btn-outline btn-sm" onclick="goBackFromTerminal()"><i class="fas fa-arrow-left"></i> Back</button>
+                                <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
                                 <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
                                 <span class="account-no">${userAccountNo}</span>
                             </div>
@@ -4881,7 +5245,6 @@
                                 <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
                                 <span id="simTotalValue" style="font-weight:600;font-size:0.8rem;">📊 $0</span>
                                 <span id="simPL" style="font-weight:600;font-size:0.8rem;">📈 $0</span>
-                                <button class="notification-permission-btn" onclick="requestNotificationPermission()">🔔 Notify</button>
                             </div>
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
@@ -4907,11 +5270,6 @@
                 }
                 startBackgroundEngine();
                 connectBinanceWS();
-            }
-
-            function goBackFromTerminal() {
-                // Keep engine running in background
-                window.history.back();
             }
 
             // ─── DESKTOP TERMINAL ──────────────────────────────────────────────
@@ -4976,8 +5334,8 @@
                                 </div>
                                 <button class="btn-buy" onclick="placeSimOrder('buy','market')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell','market')"><i class="fas fa-money-bill-wave"></i> Sell</button>
-                                <div class="limit-order-input" style="display:flex;align-items:center;gap:4px;">
-                                    <span style="font-size:0.7rem;color:var(--text-muted);">Limit</span>
+                                <div class="limit-order-input">
+                                    <span>Limit</span>
                                     <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:80px;">
                                     <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))">Buy L</button>
                                     <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))">Sell L</button>
@@ -4990,7 +5348,7 @@
                                 <span id="pendingOrdersList" style="font-size:0.7rem;color:var(--text-muted);">No pending orders</span>
                             </div>
                             <div class="chart-container-wrap">
-                                <div id="simChartContainer" class="chart-stable"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
+                                <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
                                 <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen"><i class="fas fa-expand"></i></button>
                             </div>
                             <div class="positions-table-wrap">
@@ -5043,9 +5401,7 @@
                             0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
                                     .clientHeight }); } catch (e) {} } } updateSimUIFullscreen(); }, 300);
                 };
-                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => { isChartInitializing =
-                            false;
-                        initChart(); })); }, 100);
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
                 updateSimUI();
                 renderPendingOrdersUI();
 
@@ -5112,7 +5468,7 @@
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
-                            <div id="simChartContainer" class="chart-stable" style="width:100%;height:100%;touch-action:none;"></div>
+                            <div id="simChartContainer" style="width:100%;height:100%;touch-action:none;"></div>
                         </div>
                         <div class="mt5-bottom-nav" id="mt5BottomNav">
                             <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
@@ -5151,18 +5507,17 @@
                         </div>
                     </div>`;
 
+                // ─── FIX: Hamburger menu close on blank area click ───
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
-                const toggleSidebar = (show) => {
-                    if (show === undefined) sidebarOverlay.classList.toggle('show');
-                    else if (show) sidebarOverlay.classList.add('show');
-                    else sidebarOverlay.classList.remove('show');
-                };
+                // Already closes on overlay click (see below)
+
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
-                    toggleSidebar(); };
-                document.getElementById('mt5SidebarClose').onclick = () => toggleSidebar(false);
-                document.getElementById('sidebarCloseBtn').onclick = () => toggleSidebar(false);
+                    sidebarOverlay.classList.toggle('show'); };
+                document.getElementById('mt5SidebarClose').onclick = () => sidebarOverlay.classList.remove('show');
+                document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
+                // Close on blank area click
                 sidebarOverlay.addEventListener('click', function(e) {
-                    if (e.target === this) toggleSidebar(false);
+                    if (e.target === this) this.classList.remove('show');
                 });
 
                 document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => { cb.onchange =
@@ -5176,10 +5531,10 @@
                     updateAllIndicators(); };
                 document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
-                    toggleSidebar(false); };
+                    sidebarOverlay.classList.remove('show'); };
                 document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
-                    toggleSidebar(false); };
+                    sidebarOverlay.classList.remove('show'); };
                 document.querySelectorAll('.timeframe-grid button').forEach(b => { b.onclick = function() { const tf =
                             parseInt(this.dataset.tf);
                         currentTimeframe = tf;
@@ -5187,7 +5542,7 @@
                         document.getElementById('mobileTfDisplay').textContent = Object.keys(TIMEFRAMES).find(k =>
                             TIMEFRAMES[k] === tf);
                         resetChart();
-                        toggleSidebar(false); }; });
+                        sidebarOverlay.classList.remove('show'); }; });
 
                 const indicatorOverlay = document.getElementById('mt5IndicatorOverlay');
                 document.getElementById('mt5IndicatorBtn').onclick = (e) => { e.stopPropagation();
@@ -5195,6 +5550,7 @@
                 document.getElementById('closeIndicatorSheet').onclick = () => indicatorOverlay.classList.remove('show');
                 indicatorOverlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove(
                         'show'); });
+
                 document.querySelectorAll('#mt5IndicatorOverlay input[data-ind]').forEach(cb => { cb.onchange =
                     function() { activeIndicators[this.dataset.ind] = this.checked;
                         updateAllIndicators();
@@ -5237,12 +5593,12 @@
                                 chartDiv2.clientHeight > 0) { try { simChart.applyOptions({ width: chartDiv2
                                         .clientWidth, height: chartDiv2.clientHeight }); } catch (e) {} } } },
                             150); }; });
-                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => { isChartInitializing =
-                            false;
-                        initChart(); })); }, 200);
+
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 200);
                 updateMobileTopBar();
                 document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
+
                 const ro = new ResizeObserver(() => { if (simChart) { const chartDiv2 = document.getElementById(
                             'simChartContainer'); if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2
                             .clientHeight > 0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth,
@@ -5250,12 +5606,14 @@
                 const chartDiv2 = document.getElementById('simChartContainer');
                 if (chartDiv2) ro.observe(chartDiv2);
                 window._mobileResizeObs = ro;
+
                 let longPressTimer = null;
                 chartDiv2.addEventListener('touchstart', (e) => { longPressTimer = setTimeout(() => { if (
                             simChart) { const price = simLastPrices[simCurrentSymbol] || 0;
                             showToast('📊 ' + simCurrentSymbol + ' $' + price.toFixed(4)); } }, 600); }, { passive: true });
                 chartDiv2.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, { passive: true });
                 chartDiv2.addEventListener('touchmove', () => { clearTimeout(longPressTimer); }, { passive: true });
+
                 window._mobileCleanup = function() { if (window._mobileResizeObs) { window._mobileResizeObs
                         .disconnect();
                         window._mobileResizeObs = null; } };
@@ -5288,7 +5646,7 @@
                                     <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                     <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                     <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                    <button class="modify-btn" onclick="editSLTPById('${p.id}')">✏️ Modify</button>
+                                    <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
                                 </div>`;
                             }).join('')}
                         </div>
@@ -5326,7 +5684,7 @@
                                 <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                 <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                 <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                <button class="modify-btn" onclick="editSLTPById('${p.id}')">✏️ Modify</button>
+                                <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
                             </div>`;
                         });
                         posContainer.innerHTML = html;
@@ -5389,7 +5747,6 @@
                                 <button class="theme-toggle-btn" id="themeToggle">
                                     <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
                                 </button>
-                                <button class="notification-permission-btn" onclick="requestNotificationPermission()">🔔 Notify</button>
                                 <div class="user-menu">
                                     <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
                                     <span class="account-no">${userAccountNo}</span>
@@ -5410,18 +5767,8 @@
                     applyTheme();
                     document.getElementById('themeToggle').innerHTML =
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
-                document.getElementById('menuToggle').onclick = function(e) {
-                    e.stopPropagation();
-                    document.getElementById('sidebar').classList.toggle('open');
-                };
-                document.addEventListener('click', function(e) {
-                    const sidebar = document.getElementById('sidebar');
-                    const toggle = document.getElementById('menuToggle');
-                    if (sidebar && toggle && sidebar.classList.contains('open') &&
-                        !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-                        sidebar.classList.remove('open');
-                    }
-                });
+                document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
+                    'open');
                 document.getElementById('topTerminalBtn').onclick = () => window.open('?mode=trading', '_blank');
                 document.getElementById('logoutBtn').onclick = logout;
                 renderSubjectList();
@@ -5653,109 +6000,73 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── TTS WITH PAUSE/RESUME ──────────────────────────────────────
+            // ─── TTS WITH PAUSE/RESUME FIX ──────────────────────────────────
             function setupTTS(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
                 if (!les) return;
                 const txt = les.contents ? stripHtml(t(les.contents)) : '';
-                ttsState.chunks = splitTextIntoChunks(txt, 200);
-                ttsState.currentChunk = 0;
-                ttsState.isPlaying = false;
-                ttsState.isPaused = false;
-                ttsState.utterance = null;
+                let utterance = null;
+                let isPaused = false;
+                let pausedTime = 0;
+                let totalDuration = 0;
 
-                function speakChunk(index) {
-                    if (index >= ttsState.chunks.length) {
-                        ttsState.isPlaying = false;
-                        ttsState.currentChunk = 0;
-                        showToast('🔊 Done');
-                        return;
-                    }
+                function speak() {
+                    if (!txt) { showToast('⚠️ No text to speak'); return; }
                     if (window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                        const utterance = new SpeechSynthesisUtterance(ttsState.chunks[index]);
+                        if (utterance && !isPaused) window.speechSynthesis.cancel();
+                        if (isPaused && utterance) {
+                            // Resume from pause
+                            window.speechSynthesis.resume();
+                            isPaused = false;
+                            showToast('▶️ Resumed');
+                            return;
+                        }
+                        utterance = new SpeechSynthesisUtterance(txt);
                         utterance.rate = parseFloat(document.getElementById('speedSlider')?.value || 1);
                         utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-                        utterance.onstart = function() {
-                            ttsState.isPlaying = true;
-                            ttsState.isPaused = false;
-                            showToast(`🔊 Part ${index+1}/${ttsState.chunks.length}`);
+                        utterance.onstart = () => {
+                            showToast('🔊 Playing...');
+                            isPaused = false;
+                            pausedTime = 0;
                         };
-                        utterance.onpause = function() {
-                            ttsState.isPaused = true;
-                            ttsState.currentChunk = index;
-                            showToast('⏸ Paused');
-                        };
-                        utterance.onresume = function() {
-                            ttsState.isPaused = false;
-                            showToast('▶️ Resumed');
-                        };
-                        utterance.onend = function() {
-                            if (!ttsState.isPaused) {
-                                speakChunk(index + 1);
-                            }
-                        };
-                        utterance.onerror = function(e) {
-                            if (e.error !== 'canceled') {
-                                console.warn('TTS error:', e);
-                                speakChunk(index + 1);
-                            }
-                        };
-                        ttsState.utterance = utterance;
+                        utterance.onerror = () => { showToast('⚠️ TTS error');
+                            isPaused = false; };
+                        utterance.onend = () => { showToast('✅ TTS finished');
+                            isPaused = false;
+                            pausedTime = 0; };
+                        utterance.onpause = () => { isPaused = true;
+                            showToast('⏸️ Paused'); };
+                        utterance.onresume = () => { isPaused = false;
+                            showToast('▶️ Resumed'); };
                         window.speechSynthesis.speak(utterance);
-                    }
+                    } else showToast('⚠️ TTS not supported');
                 }
 
-                document.getElementById('playTTS').onclick = function() {
-                    if (!ttsState.chunks.length || !ttsState.chunks[0]) { showToast('⚠️ No text to speak'); return; }
-                    if (!window.speechSynthesis) { showToast('⚠️ TTS not supported'); return; }
-                    if (ttsState.isPaused && ttsState.utterance) {
-                        window.speechSynthesis.resume();
-                        ttsState.isPaused = false;
-                        showToast('▶️ Resumed');
-                        return;
-                    }
-                    if (ttsState.utterance) window.speechSynthesis.cancel();
-                    ttsState.currentChunk = 0;
-                    speakChunk(0);
-                };
-
-                document.getElementById('pauseTTS').onclick = function() {
-                    if (window.speechSynthesis && ttsState.isPlaying && !ttsState.isPaused) {
-                        window.speechSynthesis.pause();
-                        ttsState.isPaused = true;
-                        showToast('⏸ Paused');
+                document.getElementById('playTTS').onclick = speak;
+                document.getElementById('pauseTTS').onclick = () => {
+                    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                        if (isPaused) {
+                            window.speechSynthesis.resume();
+                            isPaused = false;
+                            showToast('▶️ Resumed');
+                        } else {
+                            window.speechSynthesis.pause();
+                            isPaused = true;
+                            showToast('⏸️ Paused');
+                        }
                     } else {
-                        showToast('⚠️ Nothing is playing');
+                        showToast('⚠️ No audio playing');
                     }
                 };
-
-                document.getElementById('stopTTS').onclick = function() {
+                document.getElementById('stopTTS').onclick = () => {
                     if (window.speechSynthesis) {
                         window.speechSynthesis.cancel();
-                        ttsState.isPlaying = false;
-                        ttsState.isPaused = false;
-                        ttsState.currentChunk = 0;
-                        showToast('⏹ Stopped');
+                        isPaused = false;
+                        pausedTime = 0;
+                        showToast('⏹️ Stopped');
                     }
                 };
-            }
-
-            function splitTextIntoChunks(text, maxLength) {
-                const chunks = [];
-                const sentences = text.split(/(?<=[.!?])\s+/);
-                let currentChunk = '';
-                for (const sentence of sentences) {
-                    if ((currentChunk + sentence).length > maxLength) {
-                        chunks.push(currentChunk.trim());
-                        currentChunk = sentence;
-                    } else {
-                        currentChunk += (currentChunk ? ' ' : '') + sentence;
-                    }
-                }
-                if (currentChunk.trim()) chunks.push(currentChunk.trim());
-                return chunks.length ? chunks : [text];
             }
 
             function setupPrevNext(subj, curId) {
@@ -6337,7 +6648,6 @@
                     applyTheme();
                     renderApp();
                     connectBinanceWS();
-                    requestNotificationPermission();
                 } catch (e) { console.error('Load error:', e); if (e.message.includes('Session expired')) logout();
                     else renderApp(); }
             }
@@ -6389,6 +6699,7 @@
             window.calcEquity = calcEquity;
             window.calcTotalPL = calcTotalPL;
             window.showToast = showToast;
+            window.sendNotification = sendNotification;
             window.connectBinanceWS = connectBinanceWS;
             window.disconnectBinanceWS = disconnectBinanceWS;
             window.openDB = openDB;
@@ -6398,9 +6709,51 @@
             window.dbDelete = dbDelete;
             window.syncPortfolioToServer = syncPortfolioToServer;
             window.checkPendingOrders = checkPendingOrders;
-            window.requestNotificationPermission = requestNotificationPermission;
-            window.sendPushNotification = sendPushNotification;
-            window.goBackFromTerminal = goBackFromTerminal;
+
+            // ─── DEBUG PANEL ──────────────────────────────────────────────────
+            function updateDebugPanel() {
+                const dbStatus = document.getElementById('dbStatus');
+                const blobStatus = document.getElementById('blobStatus');
+                const apiStatus = document.getElementById('apiStatus');
+                const wsStatus = document.getElementById('wsStatus');
+                const idbStatus = document.getElementById('idbStatus');
+                const candleCount = document.getElementById('candleCount');
+                const portfolioStatus = document.getElementById('portfolioStatus');
+                const lastPrice = document.getElementById('lastPrice');
+                const cronStatus = document.getElementById('cronStatus');
+                const ts = document.getElementById('debugTimestamp');
+
+                if (dbStatus) dbStatus.textContent = '✅ Online';
+                if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
+                if (apiStatus) apiStatus.textContent = '✅ Online';
+                if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
+                    '✅ Connected' : '⚠️ Disconnected';
+                if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
+                if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
+                if (portfolioStatus) portfolioStatus.textContent = portfolio ? '✅ Loaded' : '⏳ Loading...';
+                if (lastPrice) lastPrice.textContent = simLastPrices[simCurrentSymbol] ? '$' + simLastPrices[
+                    simCurrentSymbol].toFixed(4) : '-';
+                if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+            }
+
+            const debugToggle = document.getElementById('debugToggle');
+            const debugPanel = document.getElementById('debugPanel');
+            const debugClose = document.getElementById('debugClose');
+
+            debugToggle.onclick = function() {
+                debugPanel.classList.toggle('open');
+                if (debugPanel.classList.contains('open')) updateDebugPanel();
+            };
+            debugClose.onclick = function() { debugPanel.classList.remove('open'); };
+            document.addEventListener('click', function(e) {
+                if (debugPanel.classList.contains('open') && !debugPanel.contains(e.target) && e.target !==
+                    debugToggle) {
+                    debugPanel.classList.remove('open');
+                }
+            });
+
+            setInterval(updateDebugPanel, 3000);
+            updateDebugPanel();
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
             window.addEventListener('beforeunload', function() {
@@ -6459,36 +6812,6 @@
                 'show'));
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
                 'show'));
-            });
-
-            // ─── Visibility API: chart recovery ──────────────────────────────
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden && simChart) {
-                    const chartDiv = document.getElementById('simChartContainer');
-                    if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-                        try {
-                            simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight });
-                            if (simCandleSeries && simAllCandles.length > 0) {
-                                const visible = getVisibleCandles();
-                                const allData = [...visible];
-                                if (simCurrentCandle) allData.push(simCurrentCandle);
-                                simCandleSeries.setData(sanitizeCandleData(allData));
-                                simChart.timeScale().fitContent();
-                                setTimeout(() => {
-                                    try { simChart.timeScale().scrollToPosition(0, true); } catch (
-                                    e) {}
-                                }, 50);
-                            }
-                            updateAllIndicators();
-                            redrawAllLines();
-                            updateSimUI();
-                            console.log('✅ Chart refreshed after visibility change');
-                        } catch (e) {
-                            console.warn('Chart refresh error:', e);
-                        }
-                    }
-                }
             });
         })();
     </script>
