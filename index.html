@@ -1979,6 +1979,10 @@
             font-family: var(--font);
             min-width: 60px;
         }
+        .mt5-deposit-withdraw input:focus {
+            outline: 1px solid var(--mt5-green);
+            border-color: var(--mt5-green);
+        }
         .mt5-deposit-withdraw button {
             background: var(--mt5-blue);
             color: #fff;
@@ -2443,6 +2447,41 @@
             font-weight: 700;
             font-family: var(--font-mono);
         }
+        .deposit-input-fix {
+            background: var(--mt5-input) !important;
+            border: 1px solid var(--mt5-border) !important;
+            color: var(--mt5-text-bright) !important;
+            padding: 5px 10px !important;
+            border-radius: 6px !important;
+            font-size: 0.75rem !important;
+            font-family: var(--font) !important;
+            min-width: 60px !important;
+            flex: 1 !important;
+        }
+        .deposit-input-fix:focus {
+            outline: 1px solid var(--mt5-green) !important;
+            border-color: var(--mt5-green) !important;
+        }
+        .modify-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .modify-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.3);
+        }
+        .chart-stable {
+            transition: none !important;
+            will-change: auto !important;
+        }
     </style>
 </head>
 <body>
@@ -2548,6 +2587,8 @@
             let bgEngineInterval = null;
             let ttsState = { utterance: null, isPaused: false, currentChunk: 0, chunks: [], isPlaying: false };
             let notificationPermissionGranted = false;
+            let isChartInitializing = false;
+            let chartStable = true;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache';
@@ -3342,10 +3383,15 @@
 
             // ─── CHART INIT ──────────────────────────────────────────────────
             async function initChart() {
+                if (isChartInitializing) {
+                    console.log('⏳ Chart init already in progress, skipping');
+                    return;
+                }
+                isChartInitializing = true;
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
-                if (!chartDiv) return;
+                if (!chartDiv) { isChartInitializing = false; return; }
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 10) {
                     await new Promise(r => setTimeout(r, 100));
@@ -3353,11 +3399,13 @@
                 }
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
                     console.warn('Chart container still has 0 size, retrying...');
+                    isChartInitializing = false;
                     setTimeout(initChart, 300);
                     return;
                 }
                 if (typeof LightweightCharts === 'undefined') {
                     if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--danger);">⚠️ Chart library not loaded.</span>';
+                    isChartInitializing = false;
                     return;
                 }
                 if (simChart) {
@@ -3519,7 +3567,6 @@
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
                     simVolumeSeries.setData(volData);
 
-                    // ── Scroll to latest candle ──
                     if (simChart) {
                         simChart.timeScale().fitContent();
                         setTimeout(() => {
@@ -3729,6 +3776,7 @@
                         if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                         if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                         if (simResizeObserver) simResizeObserver.disconnect();
+                        if (window._chartCleanup) window._chartCleanup = null;
                     };
 
                     document.getElementById('cronStatus').textContent = sourceLabel;
@@ -3741,8 +3789,11 @@
                     if (simChart) { try { simChart.remove(); } catch (e) {}
                         simChart = null; }
                     if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                    chartInitRetryTimer = setTimeout(() => { initChart(); }, 2000);
+                    chartInitRetryTimer = setTimeout(() => { isChartInitializing = false;
+                        initChart(); }, 2000);
                 }
+                isChartInitializing = false;
+                chartStable = true;
             }
 
             // ─── REDRAW LINES ────────────────────────────────────────────────
@@ -3761,7 +3812,6 @@
                         lineObj: line, index: idx });
                 });
 
-                // ── Entry, SL, TP lines for all positions ──
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol) {
                         if (p.entryPrice) {
@@ -4174,6 +4224,14 @@
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                 const fee = Math.abs(p.qty * price * 0.0005);
                 portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                const pnlText = (pnl - fee) >= 0 ? `+$${(pnl - fee).toFixed(2)}` : `-$${Math.abs(pnl - fee).toFixed(2)}`;
+                const side = p.type === 'long' ? 'LONG' : 'SHORT';
+                sendPushNotification(
+                    `🚪 Manual Exit ${p.symbol}`,
+                    `${side} ${p.qty} ${p.symbol} @ $${price.toFixed(4)} | P&L: ${pnlText} | Balance: $${portfolio.cash.toFixed(2)}`,
+                    '🚪',
+                    `exit_${p.id}`
+                );
                 portfolio.transactions.unshift({
                     type: 'close',
                     symbol: p.symbol,
@@ -4190,7 +4248,7 @@
                 redrawAllLines();
                 syncPortfolioToServer();
                 playTradeSound('sell');
-                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
+                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + pnlText);
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -4222,10 +4280,15 @@
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.innerHTML = `
-                    <div class="modal-content"><h3>Edit SL/TP — ${p.symbol} (${p.type})</h3>
-                    <label>Stop Loss ($) <input type="number" id="editSL" value="${p.slPrice || ''}" step="0.0001"></label>
-                    <label>Take Profit ($) <input type="number" id="editTP" value="${p.tpPrice || ''}" step="0.0001"></label>
-                    <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-primary" id="saveSLTP">💾 Save</button></div></div>`;
+                    <div class="modal-content">
+                        <h3>✏️ Modify SL/TP — ${p.symbol} (${p.type})</h3>
+                        <label>Stop Loss ($) <input type="number" id="editSL" value="${p.slPrice || ''}" step="0.0001"></label>
+                        <label>Take Profit ($) <input type="number" id="editTP" value="${p.tpPrice || ''}" step="0.0001"></label>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button class="modify-btn" id="saveSLTP">✏️ Modify</button>
+                        </div>
+                    </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveSLTP').onclick = () => {
@@ -4238,7 +4301,7 @@
                     redrawAllLines();
                     syncPortfolioToServer();
                     modal.remove();
-                    showToast('✅ SL/TP updated');
+                    showToast('✏️ SL/TP modified');
                 };
             }
 
@@ -4250,12 +4313,12 @@
                 modal.className = 'modal';
                 modal.innerHTML = `
                     <div class="modal-content">
-                        <h3>Edit SL/TP — ${symbol}</h3>
+                        <h3>✏️ Modify SL/TP — ${symbol}</h3>
                         <p>Select position:</p>
                         ${positions.map((p, i) => `
                             <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);">
                                 <span>${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
-                                <button class="btn btn-outline btn-sm" onclick="editSLTPById('${p.id}');this.closest('.modal').remove();">Edit</button>
+                                <button class="btn btn-outline btn-sm" onclick="editSLTPById('${p.id}');this.closest('.modal').remove();">Modify</button>
                             </div>
                         `).join('')}
                         <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button></div>
@@ -4471,7 +4534,7 @@
                             ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
                             ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
                             <button class="exit-btn" onclick="exitPositionById('${p.id}')">Exit Position</button>
-                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="editSLTPById('${p.id}')">SL/TP</button>
+                            <button class="btn btn-sm btn-outline" style="margin-top:4px;width:100%;" onclick="editSLTPById('${p.id}')">✏️ Modify SL/TP</button>
                         </div>`;
                     });
                 }
@@ -4491,7 +4554,7 @@
                     <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.65rem;">${userAccountNo}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
-                    <input type="number" id="depositAmount" placeholder="Amount" step="0.01">
+                    <input type="number" id="depositAmount" class="deposit-input-fix" placeholder="Amount" step="0.01" min="0.01">
                     <button onclick="depositFunds()">Deposit</button>
                     <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw</button>
                 </div>`;
@@ -4513,11 +4576,19 @@
                         ).join('');
                     }
                 }
+                // Ensure deposit input works
+                const depInput = document.getElementById('depositAmount');
+                if (depInput) {
+                    depInput.addEventListener('focus', function() { this.select(); });
+                    depInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { depositFunds(); } });
+                }
             }
 
             function depositFunds() {
-                const amt = parseFloat(document.getElementById('depositAmount')?.value);
-                if (!amt || amt <= 0) return showToast('Invalid amount');
+                const input = document.getElementById('depositAmount');
+                if (!input) { showToast('⚠️ Input not found'); return; }
+                const amt = parseFloat(input.value);
+                if (!amt || amt <= 0) { showToast('⚠️ Enter a valid amount'); input.focus(); return; }
                 portfolio.cash = (portfolio.cash || 0) + amt;
                 portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
@@ -4526,12 +4597,15 @@
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
                 showToast('💰 Deposited $' + amt.toFixed(2));
+                input.value = '';
             }
 
             function withdrawFunds() {
-                const amt = parseFloat(document.getElementById('depositAmount')?.value);
-                if (!amt || amt <= 0) return showToast('Invalid amount');
-                if ((portfolio.cash || 0) < amt) return showToast('Insufficient balance');
+                const input = document.getElementById('depositAmount');
+                if (!input) { showToast('⚠️ Input not found'); return; }
+                const amt = parseFloat(input.value);
+                if (!amt || amt <= 0) { showToast('⚠️ Enter a valid amount'); input.focus(); return; }
+                if ((portfolio.cash || 0) < amt) { showToast('⚠️ Insufficient balance'); input.focus(); return; }
                 portfolio.cash = (portfolio.cash || 0) - amt;
                 portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
                     time: new Date().toLocaleTimeString() });
@@ -4540,6 +4614,7 @@
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
+                input.value = '';
             }
 
             function renderMobileWatchlist() {
@@ -4670,7 +4745,8 @@
                     chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>';
                 }
                 if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                chartInitRetryTimer = setTimeout(initChart, 100);
+                chartInitRetryTimer = setTimeout(() => { isChartInitializing = false;
+                    initChart(); }, 100);
             }
 
             // ─── BACKGROUND ENGINE ──────────────────────────────────────────
@@ -4755,7 +4831,7 @@
                         <td>$${val.toFixed(2)}</td>
                         <td style="display:flex;gap:4px;">
                             <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i> Exit</button>
-                            <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i></button>
+                            <button class="modify-btn" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i> Modify</button>
                         </td>
                     </tr>`;
                 }).join('') ||
@@ -4797,7 +4873,7 @@
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
                         <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <button class="btn btn-outline btn-sm" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+                                <button class="btn btn-outline btn-sm" onclick="goBackFromTerminal()"><i class="fas fa-arrow-left"></i> Back</button>
                                 <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
                                 <span class="account-no">${userAccountNo}</span>
                             </div>
@@ -4831,6 +4907,11 @@
                 }
                 startBackgroundEngine();
                 connectBinanceWS();
+            }
+
+            function goBackFromTerminal() {
+                // Keep engine running in background
+                window.history.back();
             }
 
             // ─── DESKTOP TERMINAL ──────────────────────────────────────────────
@@ -4895,8 +4976,8 @@
                                 </div>
                                 <button class="btn-buy" onclick="placeSimOrder('buy','market')"><i class="fas fa-shopping-cart"></i> Buy</button>
                                 <button class="btn-sell" onclick="placeSimOrder('sell','market')"><i class="fas fa-money-bill-wave"></i> Sell</button>
-                                <div class="limit-order-input">
-                                    <span>Limit</span>
+                                <div class="limit-order-input" style="display:flex;align-items:center;gap:4px;">
+                                    <span style="font-size:0.7rem;color:var(--text-muted);">Limit</span>
                                     <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:80px;">
                                     <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))">Buy L</button>
                                     <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))">Sell L</button>
@@ -4909,7 +4990,7 @@
                                 <span id="pendingOrdersList" style="font-size:0.7rem;color:var(--text-muted);">No pending orders</span>
                             </div>
                             <div class="chart-container-wrap">
-                                <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
+                                <div id="simChartContainer" class="chart-stable"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
                                 <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen"><i class="fas fa-expand"></i></button>
                             </div>
                             <div class="positions-table-wrap">
@@ -4962,7 +5043,9 @@
                             0) { try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
                                     .clientHeight }); } catch (e) {} } } updateSimUIFullscreen(); }, 300);
                 };
-                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 100);
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => { isChartInitializing =
+                            false;
+                        initChart(); })); }, 100);
                 updateSimUI();
                 renderPendingOrdersUI();
 
@@ -5029,7 +5112,7 @@
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
-                            <div id="simChartContainer" style="width:100%;height:100%;touch-action:none;"></div>
+                            <div id="simChartContainer" class="chart-stable" style="width:100%;height:100%;touch-action:none;"></div>
                         </div>
                         <div class="mt5-bottom-nav" id="mt5BottomNav">
                             <button class="mt5-nav-item active" data-panel="quotes"><i class="fas fa-list-ul"></i> Quotes</button>
@@ -5068,7 +5151,6 @@
                         </div>
                     </div>`;
 
-                // ── Hamburger: close on blank area click ──
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 const toggleSidebar = (show) => {
                     if (show === undefined) sidebarOverlay.classList.toggle('show');
@@ -5079,7 +5161,6 @@
                     toggleSidebar(); };
                 document.getElementById('mt5SidebarClose').onclick = () => toggleSidebar(false);
                 document.getElementById('sidebarCloseBtn').onclick = () => toggleSidebar(false);
-                // ✅ Blank area click closes sidebar
                 sidebarOverlay.addEventListener('click', function(e) {
                     if (e.target === this) toggleSidebar(false);
                 });
@@ -5156,7 +5237,9 @@
                                 chartDiv2.clientHeight > 0) { try { simChart.applyOptions({ width: chartDiv2
                                         .clientWidth, height: chartDiv2.clientHeight }); } catch (e) {} } } },
                             150); }; });
-                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 200);
+                setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => { isChartInitializing =
+                            false;
+                        initChart(); })); }, 200);
                 updateMobileTopBar();
                 document.querySelector('.mt5-nav-item[data-panel="quotes"]')?.click();
                 updateSimUI();
@@ -5205,7 +5288,7 @@
                                     <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                     <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                     <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                    <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')">SL/TP</button>
+                                    <button class="modify-btn" onclick="editSLTPById('${p.id}')">✏️ Modify</button>
                                 </div>`;
                             }).join('')}
                         </div>
@@ -5243,7 +5326,7 @@
                                 <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
                                 <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                 <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                <button class="btn btn-sm btn-outline" onclick="editSLTPById('${p.id}')">SL/TP</button>
+                                <button class="modify-btn" onclick="editSLTPById('${p.id}')">✏️ Modify</button>
                             </div>`;
                         });
                         posContainer.innerHTML = html;
@@ -5331,7 +5414,6 @@
                     e.stopPropagation();
                     document.getElementById('sidebar').classList.toggle('open');
                 };
-                // Sidebar close on blank area click
                 document.addEventListener('click', function(e) {
                     const sidebar = document.getElementById('sidebar');
                     const toggle = document.getElementById('menuToggle');
@@ -5628,14 +5710,12 @@
                 document.getElementById('playTTS').onclick = function() {
                     if (!ttsState.chunks.length || !ttsState.chunks[0]) { showToast('⚠️ No text to speak'); return; }
                     if (!window.speechSynthesis) { showToast('⚠️ TTS not supported'); return; }
-                    // If paused, resume
                     if (ttsState.isPaused && ttsState.utterance) {
                         window.speechSynthesis.resume();
                         ttsState.isPaused = false;
                         showToast('▶️ Resumed');
                         return;
                     }
-                    // Start fresh or restart
                     if (ttsState.utterance) window.speechSynthesis.cancel();
                     ttsState.currentChunk = 0;
                     speakChunk(0);
@@ -6320,6 +6400,7 @@
             window.checkPendingOrders = checkPendingOrders;
             window.requestNotificationPermission = requestNotificationPermission;
             window.sendPushNotification = sendPushNotification;
+            window.goBackFromTerminal = goBackFromTerminal;
 
             // ─── AUTO CLEANUP ──────────────────────────────────────────────────
             window.addEventListener('beforeunload', function() {
@@ -6382,42 +6463,34 @@
 
             // ─── Visibility API: chart recovery ──────────────────────────────
             document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && simChart) {
-        const chartDiv = document.getElementById('simChartContainer');
-        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
-            try {
-                // ১. রিসাইজ (যদি প্রয়োজন)
-                simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv.clientHeight });
-                
-                // ২. ডাটা রিফ্রেশ (নতুন ক্যান্ডেল আপডেট)
-                if (simCandleSeries && simAllCandles.length > 0) {
-                    const visible = getVisibleCandles();
-                    const allData = [...visible];
-                    if (simCurrentCandle) allData.push(simCurrentCandle);
-                    simCandleSeries.setData(sanitizeCandleData(allData));
-                    
-                    // ৩. লেটেস্ট ক্যান্ডেলে স্ক্রল
-                    simChart.timeScale().fitContent();
-                    setTimeout(() => {
-                        try { simChart.timeScale().scrollToPosition(0, true); } catch(e) {}
-                    }, 50);
+                if (!document.hidden && simChart) {
+                    const chartDiv = document.getElementById('simChartContainer');
+                    if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                        try {
+                            simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                                    .clientHeight });
+                            if (simCandleSeries && simAllCandles.length > 0) {
+                                const visible = getVisibleCandles();
+                                const allData = [...visible];
+                                if (simCurrentCandle) allData.push(simCurrentCandle);
+                                simCandleSeries.setData(sanitizeCandleData(allData));
+                                simChart.timeScale().fitContent();
+                                setTimeout(() => {
+                                    try { simChart.timeScale().scrollToPosition(0, true); } catch (
+                                    e) {}
+                                }, 50);
+                            }
+                            updateAllIndicators();
+                            redrawAllLines();
+                            updateSimUI();
+                            console.log('✅ Chart refreshed after visibility change');
+                        } catch (e) {
+                            console.warn('Chart refresh error:', e);
+                        }
+                    }
                 }
-                
-                // ৪. ইন্ডিকেটর ও লাইন রিফ্রেশ
-                updateAllIndicators();
-                redrawAllLines();
-                updateSimUI();
-                
-                console.log('✅ Chart refreshed after visibility change');
-            } catch (e) {
-                console.warn('Chart refresh error:', e);
-                // শুধুমাত্র মারাত্মক ত্রুটি থাকলেই রিসেট করুন, নয়তো নয়
-                // resetChart();  // ← আর auto-reset করবেন না
-            }
-        }
-    }
-});
-       })();
+            });
+        })();
     </script>
 </body>
 </html>
