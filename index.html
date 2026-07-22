@@ -136,8 +136,9 @@
             z-index: 1;
         }
 
+        /* ─── SIDEBAR ────────────────────────────────────────────────────── */
         .sidebar {
-            width: 275px;
+            width: 260px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
@@ -152,10 +153,10 @@
             transform: translateX(-100%);
         }
         .sidebar-header {
-            padding: 20px 18px;
+            padding: 16px 16px;
             border-bottom: 1px solid var(--border-light);
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 9px;
@@ -163,42 +164,42 @@
             font-family: 'Outfit', sans-serif;
         }
         .sidebar-header .logo-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 10px;
             background: var(--primary-gradient);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
             box-shadow: 0 3px 12px var(--primary-glow);
         }
         .subject-list {
             flex: 1;
-            padding: 12px 8px;
+            padding: 10px 6px;
         }
         .subject-item {
-            padding: 11px 14px;
+            padding: 9px 12px;
             border-radius: var(--radius);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 11px;
-            margin-bottom: 3px;
+            gap: 10px;
+            margin-bottom: 2px;
             transition: all var(--transition);
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
         }
         .subject-item .subject-icon {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             background: var(--surface-alt);
             transition: all var(--transition-bounce);
             flex-shrink: 0;
@@ -227,6 +228,7 @@
             box-shadow: 0 3px 14px var(--primary-glow);
         }
 
+        /* ─── MAIN ────────────────────────────────────────────────────────── */
         .main-area {
             flex: 1;
             display: flex;
@@ -237,11 +239,12 @@
             min-width: 0;
         }
 
+        /* ─── TOP BAR (COMPRESSED) ──────────────────────────────────────── */
         .top-bar {
-            padding: 10px 20px;
+            padding: 4px 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(18px);
             border-bottom: 1px solid var(--border-light);
@@ -249,7 +252,7 @@
             top: 0;
             z-index: 20;
             flex-wrap: wrap;
-            min-height: 52px;
+            min-height: 38px;
             transition: background var(--transition);
         }
         [data-theme="dark"] .top-bar {
@@ -260,11 +263,11 @@
             display: none;
             background: var(--surface-alt);
             border: 2px solid var(--border);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             color: var(--text-secondary);
-            padding: 7px 9px;
-            border-radius: 10px;
+            padding: 4px 8px;
+            border-radius: 8px;
             transition: all var(--transition);
             flex-shrink: 0;
         }
@@ -272,16 +275,16 @@
         .search-box {
             flex: 1;
             position: relative;
-            max-width: 340px;
-            min-width: 120px;
+            max-width: 200px;
+            min-width: 80px;
         }
         .search-box input {
             width: 100%;
-            padding: 9px 14px 9px 38px;
+            padding: 5px 10px 5px 30px;
             border: 2px solid var(--border);
             border-radius: var(--radius-full);
             outline: none;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             transition: all var(--transition);
             background: var(--bg-secondary);
             font-family: var(--font);
@@ -294,26 +297,26 @@
         }
         .search-box i {
             position: absolute;
-            left: 14px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
             pointer-events: none;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
         }
 
         .terminal-nav-btn {
             background: var(--primary-gradient);
             color: #fff;
             border: none;
-            padding: 8px 16px;
+            padding: 5px 12px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.82rem;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             box-shadow: 0 2px 10px var(--primary-glow);
             transition: all var(--transition);
             font-family: var(--font);
@@ -325,12 +328,12 @@
         }
 
         .lang-select {
-            padding: 8px 28px 8px 12px;
+            padding: 4px 24px 4px 10px;
             border-radius: var(--radius-full);
             border: 2px solid var(--border);
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             background: var(--bg-secondary);
             font-family: var(--font);
             color: var(--text);
@@ -338,7 +341,7 @@
             -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 10px center;
+            background-position: right 8px center;
             flex-shrink: 0;
         }
         .lang-select:hover {
@@ -347,16 +350,16 @@
         }
 
         .theme-toggle-btn {
-            padding: 8px 12px;
+            padding: 4px 10px;
             border-radius: var(--radius-full);
             border: 2px solid var(--border);
             background: var(--bg-secondary);
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             transition: all var(--transition);
             color: var(--text-secondary);
             font-family: var(--font);
@@ -372,23 +375,23 @@
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             margin-left: auto;
             flex-shrink: 0;
         }
         .user-menu .username {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
         .user-menu .logout-btn {
             background: transparent;
             border: 1.5px solid var(--danger);
             color: var(--danger);
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: var(--radius-full);
             cursor: pointer;
-            font-size: 0.72rem;
+            font-size: 0.65rem;
             font-weight: 600;
             transition: all var(--transition);
             font-family: var(--font);
@@ -398,24 +401,25 @@
             color: #fff;
         }
 
+        /* ─── LESSON LIST ────────────────────────────────────────────────── */
         .lesson-list {
-            padding: 24px;
+            padding: 16px 20px;
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
         }
         .lesson-list h2 {
-            font-size: 1.45rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-family: 'Outfit', sans-serif;
         }
         .lesson-card {
             background: var(--surface);
             border: 2px solid transparent;
             border-radius: var(--radius-lg);
-            padding: 18px 22px;
-            margin-bottom: 10px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -432,27 +436,27 @@
         .lesson-info {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             flex: 1;
             min-width: 0;
         }
         .lesson-title {
             font-weight: 600;
-            font-size: 0.98rem;
+            font-size: 0.9rem;
         }
         .lesson-meta {
-            font-size: 0.76rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
         }
         .badge {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: var(--radius-full);
-            font-size: 0.68rem;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
             white-space: nowrap;
@@ -484,30 +488,31 @@
         .chevron-icon {
             color: var(--text-muted);
             transition: all var(--transition-bounce);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .lesson-card:hover .chevron-icon {
             transform: translateX(4px);
             color: var(--primary);
         }
 
+        /* ─── DETAIL VIEW ────────────────────────────────────────────────── */
         .detail-view {
-            padding: 26px;
+            padding: 20px;
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
         }
         .back-btn {
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             font-weight: 600;
             color: var(--primary);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: 9px 18px;
+            gap: 6px;
+            padding: 6px 14px;
             border-radius: var(--radius-full);
-            font-size: 0.88rem;
+            font-size: 0.8rem;
             background: var(--primary-light);
             border: 2px solid transparent;
             transition: all var(--transition);
@@ -520,10 +525,10 @@
         }
 
         .progress-bar {
-            height: 8px;
+            height: 6px;
             background: var(--border);
             border-radius: var(--radius-full);
-            margin: 16px 0;
+            margin: 10px 0;
             overflow: hidden;
         }
         .progress-fill {
@@ -537,13 +542,13 @@
 
         .tabs {
             display: flex;
-            gap: 5px;
-            margin: 22px 0;
+            gap: 4px;
+            margin: 16px 0;
             border-bottom: 2px solid var(--border);
             flex-wrap: wrap;
         }
         .tab {
-            padding: 10px 20px;
+            padding: 8px 16px;
             cursor: pointer;
             font-weight: 600;
             color: var(--text-secondary);
@@ -551,7 +556,7 @@
             transition: all var(--transition);
             border-radius: 10px 10px 0 0;
             margin-bottom: -2px;
-            font-size: 0.88rem;
+            font-size: 0.8rem;
             white-space: nowrap;
         }
         .tab.active {
@@ -564,30 +569,31 @@
             background: var(--surface-hover);
         }
         .tab-content {
-            padding: 20px 0;
-            line-height: 1.75;
+            padding: 16px 0;
+            line-height: 1.7;
+            font-size: 0.9rem;
         }
 
         .tts-controls {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
-            margin: 24px 0;
+            margin: 18px 0;
             flex-wrap: wrap;
         }
         .tts-btn {
             background: var(--primary-gradient);
             color: #fff;
             border: none;
-            padding: 10px 18px;
+            padding: 7px 14px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.83rem;
+            font-size: 0.75rem;
             transition: all var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             box-shadow: 0 3px 16px var(--primary-glow);
             font-family: var(--font);
         }
@@ -599,15 +605,15 @@
             background: transparent;
             border: 2px solid var(--border);
             color: var(--text-secondary);
-            padding: 9px 16px;
+            padding: 6px 12px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 500;
-            font-size: 0.83rem;
+            font-size: 0.75rem;
             transition: all var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             font-family: var(--font);
             white-space: nowrap;
         }
@@ -625,16 +631,16 @@
         }
 
         .speed-slider {
-            width: 80px;
+            width: 70px;
             accent-color: var(--primary);
             cursor: pointer;
         }
         .speed-label {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             font-weight: 600;
             white-space: nowrap;
-            min-width: 32px;
+            min-width: 28px;
             text-align: center;
         }
 
@@ -642,15 +648,15 @@
             background: linear-gradient(135deg, #10b981, #059669);
             color: #fff;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: all var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             box-shadow: 0 3px 16px var(--shadow-glow-success);
             font-family: var(--font);
             animation: certGlow 2.2s ease-in-out infinite;
@@ -671,27 +677,27 @@
         .quiz-container {
             background: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 26px;
+            padding: 22px;
             border: 2px solid var(--border);
             box-shadow: var(--shadow);
         }
         .quiz-question {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .quiz-option {
             display: block;
             width: 100%;
-            padding: 13px 17px;
-            margin-bottom: 7px;
+            padding: 11px 15px;
+            margin-bottom: 6px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             background: var(--bg-secondary);
             cursor: pointer;
             text-align: left;
             font-family: var(--font);
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             transition: all var(--transition);
             color: var(--text);
             font-weight: 500;
@@ -734,7 +740,7 @@
         .modal-content {
             background: var(--surface);
             border-radius: 24px;
-            padding: 28px;
+            padding: 24px;
             max-width: 680px;
             width: 93%;
             max-height: 85vh;
@@ -753,29 +759,29 @@
             }
         }
         .modal-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 18px;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
             font-weight: 700;
             font-family: 'Outfit', sans-serif;
         }
         .modal-content label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 500;
-            font-size: 0.83rem;
+            font-size: 0.78rem;
             color: var(--text-secondary);
         }
         .modal-content input,
         .modal-content select,
         .modal-content textarea {
             width: 100%;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             font-family: var(--font);
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             transition: all var(--transition);
-            margin-top: 4px;
+            margin-top: 3px;
             background: var(--bg-secondary);
             color: var(--text);
         }
@@ -787,22 +793,22 @@
         .modal-actions {
             display: flex;
             gap: 8px;
-            margin-top: 20px;
+            margin-top: 16px;
             justify-content: flex-end;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 9px 16px;
+            padding: 7px 14px;
             border-radius: var(--radius-full);
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.82rem;
+            font-size: 0.75rem;
             transition: all var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             font-family: var(--font);
             white-space: nowrap;
         }
@@ -816,8 +822,8 @@
             transform: translateY(-2px);
         }
         .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.74rem;
+            padding: 4px 10px;
+            font-size: 0.65rem;
         }
         .btn-danger {
             background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -849,41 +855,36 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
-        .btn-buy {
-            background: var(--trade-buy);
+
+        /* ─── TRADE BUTTONS ──────────────────────────────────────────────── */
+        .btn-trade {
             color: #fff;
             border: none;
             font-weight: 700;
             cursor: pointer;
-            padding: 7px 14px;
+            padding: 6px 14px;
             border-radius: var(--radius-full);
             transition: all var(--transition);
             font-family: var(--font);
-            font-size: 0.76rem;
+            font-size: 0.72rem;
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            background: var(--primary-gradient);
+            box-shadow: 0 3px 14px var(--primary-glow);
         }
-        .btn-sell {
-            background: var(--trade-sell);
-            color: #fff;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 7px 14px;
-            border-radius: var(--radius-full);
-            transition: all var(--transition);
-            font-family: var(--font);
-            font-size: 0.76rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-buy:hover,
-        .btn-sell:hover {
+        .btn-trade:hover {
             filter: brightness(1.15);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+        .btn-trade.buy {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 3px 14px rgba(16, 185, 129, 0.3);
+        }
+        .btn-trade.sell {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 3px 14px rgba(239, 68, 68, 0.3);
         }
 
         .btn-exit {
@@ -892,14 +893,14 @@
             border: none;
             font-weight: 700;
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 3px 8px;
             border-radius: var(--radius-full);
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             transition: all var(--transition);
             font-family: var(--font);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
         .btn-exit:hover {
             filter: brightness(1.2);
@@ -910,16 +911,16 @@
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #fff;
             border: none;
-            padding: 6px 14px;
+            padding: 4px 12px;
             border-radius: var(--radius-full);
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.72rem;
+            font-size: 0.65rem;
             transition: all var(--transition);
             font-family: var(--font);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
         .btn-modify:hover {
             transform: translateY(-2px);
@@ -928,16 +929,16 @@
 
         .toast {
             position: fixed;
-            bottom: 28px;
-            right: 28px;
+            bottom: 24px;
+            right: 24px;
             background: linear-gradient(135deg, #1e293b, #0f172a);
             color: white;
-            padding: 14px 22px;
+            padding: 12px 20px;
             border-radius: var(--radius-full);
             z-index: 700;
             animation: toastIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
             font-weight: 600;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255, 255, 255, 0.08);
             max-width: 90vw;
@@ -963,7 +964,7 @@
             z-index: 800;
             max-width: 380px;
             width: 90%;
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-radius: var(--radius);
             background: var(--surface);
             border-left: 5px solid var(--primary);
@@ -971,7 +972,7 @@
             animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-family: var(--font);
             color: var(--text);
         }
@@ -985,12 +986,12 @@
             border-left-color: var(--accent);
         }
         .notification-banner .notif-icon {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             flex-shrink: 0;
         }
         .notification-banner .notif-content {
             flex: 1;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 500;
         }
         .notification-banner .notif-close {
@@ -998,7 +999,7 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             padding: 2px 6px;
             transition: 0.2s;
         }
@@ -1016,6 +1017,7 @@
             }
         }
 
+        /* ─── AUTH ────────────────────────────────────────────────────────── */
         .auth-container {
             display: flex;
             align-items: center;
@@ -1032,7 +1034,7 @@
             background: rgba(255, 255, 255, 0.84);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
-            padding: 44px 38px;
+            padding: 36px 32px;
             border-radius: 24px;
             box-shadow: var(--shadow-lg);
             width: 400px;
@@ -1048,23 +1050,23 @@
         }
         .auth-box h2 {
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             letter-spacing: -0.03em;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-family: 'Outfit', sans-serif;
         }
         .auth-box .subtitle {
             color: var(--text-secondary);
-            margin-bottom: 22px;
-            font-size: 0.9rem;
+            margin-bottom: 18px;
+            font-size: 0.85rem;
         }
         .auth-box input {
             width: 100%;
-            padding: 12px 17px;
-            margin: 8px 0;
+            padding: 10px 14px;
+            margin: 6px 0;
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-family: var(--font);
             transition: all var(--transition);
             background: var(--bg-secondary);
@@ -1078,14 +1080,14 @@
         }
         .auth-box .btn {
             width: 100%;
-            margin-top: 12px;
-            padding: 12px;
-            font-size: 0.93rem;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 0.85rem;
             justify-content: center;
         }
         .auth-box .auth-switch {
-            margin-top: 16px;
-            font-size: 0.85rem;
+            margin-top: 14px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
         .auth-box .auth-switch a {
@@ -1102,11 +1104,15 @@
         .terminal-wrapper {
             background: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 14px;
+            padding: 8px;
             border: 2px solid var(--border);
             box-shadow: var(--shadow);
             transition: all var(--transition);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 500px;
         }
         .terminal-wrapper.fullscreen-active {
             position: fixed;
@@ -1127,7 +1133,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            padding: 4px;
+            padding: 3px;
             gap: 2px;
         }
 
@@ -1135,12 +1141,12 @@
             display: none;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            padding: 6px 12px;
+            padding: 4px 10px;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            min-height: 38px;
+            min-height: 32px;
             z-index: 10;
         }
         .terminal-wrapper.fullscreen-active .terminal-fs-topbar {
@@ -1148,48 +1154,50 @@
         }
         .terminal-fs-topbar .fs-title {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-family: 'Outfit', sans-serif;
             color: var(--text);
         }
         .terminal-fs-topbar .fs-summary {
             display: flex;
-            gap: 12px;
-            font-size: 0.75rem;
+            gap: 8px;
+            font-size: 0.7rem;
             font-family: var(--font-mono);
             font-weight: 600;
         }
         .terminal-fs-topbar .fs-summary span {
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 10px;
             background: var(--bg-secondary);
         }
 
+        /* ─── COMPRESSED TOOLBAR ────────────────────────────────────────── */
         .terminal-toolbar {
             display: flex;
-            gap: 6px;
+            gap: 3px;
             flex-wrap: wrap;
             align-items: center;
-            padding: 6px 10px;
+            padding: 3px 6px;
             background: var(--surface);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            margin-bottom: 6px;
+            margin-bottom: 3px;
+            min-height: 30px;
         }
         .terminal-wrapper.fullscreen-active .terminal-toolbar {
             margin-bottom: 2px;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 0;
             border-left: none;
             border-right: none;
         }
         .terminal-toolbar .tool-group {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             align-items: center;
-            padding-right: 8px;
+            padding-right: 4px;
             border-right: 1px solid var(--border-light);
-            margin-right: 4px;
+            margin-right: 3px;
         }
         .terminal-toolbar .tool-group:last-child {
             border-right: none;
@@ -1198,12 +1206,12 @@
         }
 
         .tool-btn {
-            padding: 5px 8px;
-            border-radius: 10px;
+            padding: 3px 6px;
+            border-radius: 8px;
             border: 1.5px solid var(--border);
             background: var(--bg-secondary);
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 600;
             transition: all var(--transition);
             color: var(--text);
@@ -1222,13 +1230,13 @@
         }
 
         .tf-select {
-            padding: 4px 6px;
-            border-radius: 10px;
+            padding: 2px 5px;
+            border-radius: 8px;
             border: 1.5px solid var(--border);
             background: var(--bg-secondary);
             color: var(--text);
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.6rem;
             cursor: pointer;
         }
 
@@ -1237,19 +1245,19 @@
             display: inline-block;
         }
         .indicator-dropdown-btn {
-            padding: 4px 10px;
+            padding: 2px 8px;
             border: 1.5px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--bg-secondary);
             color: var(--text);
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 600;
             transition: all var(--transition);
             font-family: var(--font-mono);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
         .indicator-dropdown-btn.active {
             background: var(--primary);
@@ -1266,8 +1274,8 @@
             border-radius: 10px;
             box-shadow: var(--shadow-md);
             z-index: 200;
-            min-width: 200px;
-            padding: 6px 8px;
+            min-width: 180px;
+            padding: 4px 6px;
         }
         .indicator-dropdown-menu.show {
             display: block;
@@ -1275,9 +1283,9 @@
         .indicator-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 8px;
-            font-size: 0.7rem;
+            gap: 5px;
+            padding: 3px 6px;
+            font-size: 0.65rem;
             cursor: pointer;
             border-radius: 6px;
         }
@@ -1289,74 +1297,78 @@
         }
         .indicator-item .vol-toggle {
             margin-left: auto;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
         }
 
+        /* ─── TRADE PANEL (COMPRESSED) ──────────────────────────────────── */
         .trade-panel {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             flex-wrap: wrap;
             align-items: center;
-            padding: 8px 12px;
+            padding: 4px 8px;
             background: var(--surface);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            margin-bottom: 6px;
+            margin-bottom: 3px;
+            min-height: 32px;
         }
         .trade-panel select,
         .trade-panel input {
-            padding: 6px 10px;
-            border-radius: 10px;
+            padding: 3px 6px;
+            border-radius: 8px;
             border: 2px solid var(--border);
             background: var(--bg-secondary);
             color: var(--text);
             font-family: var(--font);
-            font-size: 0.78rem;
+            font-size: 0.7rem;
         }
         .trade-panel input {
-            width: 65px;
+            width: 55px;
         }
 
         .limit-order-input {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             background: var(--bg-secondary);
-            padding: 2px 8px;
-            border-radius: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
             border: 1px solid var(--border);
         }
         .limit-order-input input {
-            width: 70px;
+            width: 60px;
             background: transparent;
             border: none;
-            padding: 4px 0;
-            font-size: 0.72rem;
+            padding: 3px 0;
+            font-size: 0.65rem;
             font-family: var(--font-mono);
             color: var(--text);
             outline: none;
         }
         .limit-order-input span {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: var(--text-muted);
             font-weight: 600;
         }
 
+        /* ─── CHART ───────────────────────────────────────────────────────── */
         .chart-container-wrap {
             position: relative;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             border: 1px solid var(--border);
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 350px;
+            min-height: 300px;
         }
         .chart-container-wrap #simChartContainer {
             width: 100%;
-            height: 420px;
+            height: 100%;
+            min-height: 300px;
             background: var(--mt5-chart-bg);
             cursor: crosshair;
             flex: 1;
@@ -1366,84 +1378,85 @@
         }
         .chart-fullscreen-btn {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 6px;
+            right: 6px;
             z-index: 10;
             background: rgba(0, 0, 0, 0.55);
             color: #fff;
             border: none;
             border-radius: 6px;
-            padding: 5px 9px;
+            padding: 4px 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             transition: all var(--transition);
         }
         .chart-fullscreen-btn:hover {
             background: rgba(0, 0, 0, 0.75);
         }
 
+        /* ─── POSITIONS TABLE ────────────────────────────────────────────── */
         .positions-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 6px 0;
-            font-size: 0.78rem;
+            margin: 4px 0;
+            font-size: 0.7rem;
         }
         .positions-table th {
             text-align: left;
-            padding: 7px 6px;
+            padding: 4px 5px;
             border-bottom: 2px solid var(--border);
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.68rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
         .positions-table td {
-            padding: 7px 6px;
+            padding: 4px 5px;
             border-bottom: 1px solid var(--border-light);
             font-family: var(--font-mono);
-            font-size: 0.74rem;
+            font-size: 0.68rem;
         }
 
         .sl-badge {
             background: #fef3c7;
             color: #92400e;
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
         }
         .tp-badge {
             background: #ede9fe;
             color: #5b21b6;
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
         }
         .entry-badge {
             background: #dbeafe;
             color: #1d4ed8;
-            padding: 2px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
         }
 
         .line-manager-row {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 3px 6px;
+            gap: 4px;
+            padding: 2px 5px;
             background: var(--bg-secondary);
             border-radius: 4px;
             margin: 2px 0;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-family: var(--font-mono);
         }
         .line-manager-row .line-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
         }
@@ -1452,10 +1465,10 @@
             color: #fff;
             border: none;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1468,17 +1481,17 @@
         }
 
         .simulator-history {
-            max-height: 120px;
+            max-height: 100px;
             overflow-y: auto;
-            margin-top: 6px;
-            font-size: 0.74rem;
+            margin-top: 4px;
+            font-size: 0.68rem;
             background: var(--bg-secondary);
             border-radius: var(--radius);
-            padding: 8px;
+            padding: 6px;
             font-family: var(--font-mono);
         }
         .simulator-history li {
-            padding: 4px 0;
+            padding: 3px 0;
             border-bottom: 1px solid var(--border-light);
             list-style: none;
         }
@@ -1493,23 +1506,76 @@
             display: none;
             background: var(--surface);
             border-top: 2px solid var(--border);
-            max-height: 180px;
+            max-height: 150px;
             overflow-y: auto;
-            padding: 8px;
-            font-size: 0.75rem;
+            padding: 6px;
+            font-size: 0.7rem;
         }
         .terminal-wrapper.fullscreen-active .fs-bottom-panel.show {
             display: block;
         }
 
         .account-no {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
             font-family: var(--font-mono);
             background: var(--bg-secondary);
-            padding: 2px 8px;
+            padding: 1px 6px;
             border-radius: 6px;
             border: 1px solid var(--border);
+        }
+
+        /* ─── QUOTES BAR ──────────────────────────────────────────────────── */
+        .quotes-bar {
+            display: flex;
+            gap: 10px;
+            padding: 2px 10px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            overflow-x: auto;
+            font-size: 0.65rem;
+            align-items: center;
+            min-height: 24px;
+        }
+        .quotes-bar .quote-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-weight: 500;
+            padding: 1px 6px;
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quotes-bar .quote-item:hover {
+            background: var(--surface-hover);
+        }
+        .quotes-bar .quote-item .sym {
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.6rem;
+        }
+        .quotes-bar .quote-item .price {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+        .quotes-bar .quote-item .change {
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+        .quotes-bar .quote-item .change.up {
+            color: var(--trade-buy);
+        }
+        .quotes-bar .quote-item .change.down {
+            color: var(--trade-sell);
+        }
+        .quotes-bar .quote-item.active {
+            border: 1px solid var(--primary);
+            background: var(--primary-light);
         }
 
         /* ─── MOBILE TERMINAL ────────────────────────────────────────────── */
@@ -1531,23 +1597,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 10px;
+            padding: 4px 8px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
-            min-height: 40px;
+            min-height: 34px;
         }
         .mt5-toolbar-left {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .mt5-hamburger {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--mt5-text-bright);
             cursor: pointer;
-            padding: 4px;
+            padding: 3px;
             transition: 0.2s;
             background: transparent;
             border: none;
@@ -1557,19 +1623,19 @@
         }
         .mt5-symbol {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: var(--mt5-text-bright);
         }
         .mt5-toolbar-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
         .mt5-indicator-btn {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: var(--mt5-text-bright);
             cursor: pointer;
-            padding: 4px 6px;
+            padding: 3px 5px;
             transition: 0.2s;
             background: transparent;
             border: none;
@@ -1582,9 +1648,9 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 6px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
@@ -1594,26 +1660,26 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 3px 10px;
+            padding: 2px 8px;
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
-            min-height: 28px;
+            min-height: 22px;
         }
         .mt5-pair {
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--mt5-text-bright);
         }
         .mt5-name {
             color: var(--mt5-text);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
         }
         .mt5-tf-display {
             background: var(--mt5-input);
-            padding: 1px 8px;
+            padding: 1px 6px;
             border-radius: 4px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 600;
             font-family: var(--font-mono);
             color: var(--mt5-text-bright);
@@ -1622,23 +1688,23 @@
         .mt5-quick-trade {
             background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
-            padding: 6px 8px;
+            padding: 4px 6px;
             flex-shrink: 0;
         }
         .mt5-quick-trade-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 4px;
+            gap: 3px;
         }
         .mt5-sell-btn,
         .mt5-buy-btn {
             flex: 1;
             text-align: center;
-            padding: 6px 4px;
+            padding: 5px 3px;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #fff;
             cursor: pointer;
             border: none;
@@ -1648,7 +1714,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 44px;
+            min-width: 40px;
             touch-action: manipulation;
         }
         .mt5-sell-btn {
@@ -1666,7 +1732,7 @@
             transform: scale(0.96);
         }
         .mt5-price-display {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 400;
             margin-top: 1px;
             opacity: 0.9;
@@ -1678,16 +1744,16 @@
             align-items: center;
             gap: 1px;
             background: var(--mt5-input);
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 8px;
-            min-width: 56px;
+            min-width: 48px;
             border: 1px solid var(--mt5-border);
             flex-shrink: 0;
         }
         .mt5-lot-selector .lot-row {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             width: 100%;
             justify-content: center;
         }
@@ -1695,9 +1761,9 @@
             background: transparent;
             border: none;
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            padding: 2px 4px;
+            padding: 1px 3px;
             transition: 0.2s;
             touch-action: manipulation;
         }
@@ -1706,9 +1772,9 @@
         }
         .mt5-lot-value {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--mt5-text-bright);
-            min-width: 28px;
+            min-width: 22px;
             text-align: center;
         }
         .mt5-lot-presets {
@@ -1720,9 +1786,9 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 1px 4px;
+            padding: 1px 3px;
             border-radius: 3px;
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
@@ -1749,13 +1815,14 @@
             height: 100%;
             background: var(--mt5-chart-bg);
             touch-action: none;
+            min-height: 200px;
         }
 
         .mt5-bottom-nav {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 44px;
+            height: 40px;
             background: var(--mt5-nav-bg);
             border-top: 1px solid var(--mt5-border);
             flex-shrink: 0;
@@ -1769,7 +1836,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             color: var(--mt5-text);
             cursor: pointer;
             transition: 0.2s;
@@ -1796,7 +1863,7 @@
             border-radius: 0 0 3px 3px;
         }
         .mt5-nav-item i {
-            font-size: 1rem;
+            font-size: 0.9rem;
             margin-bottom: 1px;
         }
         .mt5-nav-item:active {
@@ -1805,7 +1872,7 @@
 
         .mobile-panels {
             position: absolute;
-            bottom: 44px;
+            bottom: 40px;
             left: 0;
             right: 0;
             top: 0;
@@ -1814,13 +1881,13 @@
             display: none;
             flex-direction: column;
             z-index: 10;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
         }
         .mobile-panels.show {
             display: flex;
         }
         .panel-content {
-            padding: 10px 12px;
+            padding: 8px 10px;
             flex: 1;
             display: none;
             overflow-y: auto;
@@ -1847,9 +1914,9 @@
         .mt5-sidebar-sheet {
             background: var(--mt5-surface);
             width: 75%;
-            max-width: 320px;
+            max-width: 300px;
             height: 100%;
-            padding: 20px 16px;
+            padding: 16px 14px;
             overflow-y: auto;
             animation: slideInLeft 0.25s ease;
             border-right: 1px solid var(--mt5-border);
@@ -1865,35 +1932,35 @@
         .mt5-sidebar-sheet .close-area {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .mt5-sidebar-sheet .close-area button {
             background: transparent;
             border: none;
             color: var(--mt5-text);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 3px 6px;
         }
         .mt5-sidebar-sheet h4 {
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
-            margin: 14px 0 6px 0;
+            font-size: 0.75rem;
+            margin: 10px 0 4px 0;
             font-family: 'Outfit', sans-serif;
             border-bottom: 1px solid var(--mt5-border);
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
         .mt5-sidebar-sheet .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 6px 0;
+            gap: 10px;
+            padding: 4px 0;
             border-bottom: 1px solid var(--mt5-border);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .mt5-sidebar-sheet .user-info .avatar {
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--mt5-green);
             color: #fff;
@@ -1901,25 +1968,25 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             flex-shrink: 0;
         }
         .mt5-sidebar-sheet .user-info .details .name {
             color: var(--mt5-text-bright);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .mt5-sidebar-sheet .user-info .details .balance {
             color: var(--mt5-text);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         .mt5-sidebar-sheet .sidebar-indicators label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 4px 0;
+            gap: 6px;
+            padding: 3px 0;
             color: var(--mt5-text);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
         }
         .mt5-sidebar-sheet .sidebar-indicators label input {
@@ -1928,16 +1995,16 @@
         .mt5-sidebar-sheet .timeframe-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            padding: 4px 0;
+            gap: 3px;
+            padding: 3px 0;
         }
         .mt5-sidebar-sheet .timeframe-grid button {
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
@@ -1950,16 +2017,16 @@
         }
         .mt5-sidebar-sheet .theme-row {
             display: flex;
-            gap: 6px;
-            padding: 4px 0;
+            gap: 4px;
+            padding: 3px 0;
         }
         .mt5-sidebar-sheet .theme-row button {
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             cursor: pointer;
             font-family: var(--font);
             transition: 0.2s;
@@ -1990,22 +2057,22 @@
             width: 100%;
             max-width: 400px;
             border-radius: 16px 16px 0 0;
-            padding: 20px 18px 28px;
+            padding: 16px 16px 24px;
             animation: slideUp 0.25s ease;
         }
         .mt5-indicator-sheet h3 {
             color: var(--mt5-text-bright);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .mt5-indicator-sheet label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 5px 0;
+            gap: 6px;
+            padding: 4px 0;
             color: var(--mt5-text);
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             cursor: pointer;
         }
         .mt5-indicator-sheet label input {
@@ -2013,7 +2080,7 @@
         }
         .mt5-indicator-sheet hr {
             border-color: var(--mt5-border);
-            margin: 6px 0;
+            margin: 4px 0;
         }
         @keyframes slideUp {
             from {
@@ -2027,7 +2094,7 @@
         .watchlist-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -2043,14 +2110,14 @@
         .watchlist-item .sym {
             font-weight: 600;
             color: var(--mt5-text-bright);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .watchlist-item .price {
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .watchlist-item .change {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
         }
         .watchlist-item .change.up {
@@ -2063,7 +2130,7 @@
         .position-card {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
         }
@@ -2071,7 +2138,7 @@
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
-            font-size: 0.74rem;
+            font-size: 0.7rem;
         }
         .position-card .row .label {
             color: var(--mt5-text);
@@ -2087,14 +2154,14 @@
             color: var(--mt5-red);
         }
         .position-card .exit-btn {
-            margin-top: 6px;
+            margin-top: 4px;
             background: var(--mt5-red);
             color: #fff;
             border: none;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             cursor: pointer;
             transition: 0.2s;
             width: 100%;
@@ -2107,8 +2174,8 @@
 
         .mt5-deposit-withdraw {
             display: flex;
-            gap: 6px;
-            margin-top: 10px;
+            gap: 4px;
+            margin-top: 8px;
             flex-wrap: wrap;
         }
         .mt5-deposit-withdraw input[type="number"] {
@@ -2116,11 +2183,11 @@
             background: var(--mt5-input);
             border: 1px solid var(--mt5-border);
             color: var(--mt5-text-bright);
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-family: var(--font);
-            min-width: 60px;
+            min-width: 50px;
             -moz-appearance: textfield;
             appearance: textfield;
         }
@@ -2138,10 +2205,10 @@
             background: var(--mt5-blue);
             color: #fff;
             border: none;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: var(--font);
@@ -2157,7 +2224,7 @@
         .history-item {
             background: var(--mt5-card);
             margin: 3px 0;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--mt5-border);
             display: flex;
@@ -2171,7 +2238,7 @@
         }
         .history-item .left .type {
             font-weight: 600;
-            font-size: 0.74rem;
+            font-size: 0.7rem;
         }
         .history-item .left .type.buy {
             color: var(--mt5-green);
@@ -2186,12 +2253,12 @@
             color: var(--mt5-red);
         }
         .history-item .left .detail {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: var(--mt5-text);
         }
         .history-item .right {
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-family: var(--font-mono);
         }
         .history-item .right.green {
@@ -2207,7 +2274,7 @@
             justify-content: center;
             height: 100%;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
         }
         .hidden {
@@ -2222,7 +2289,7 @@
             color: var(--text);
         }
         .admin-left {
-            width: 380px;
+            width: 340px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
@@ -2231,14 +2298,14 @@
             flex-shrink: 0;
         }
         .admin-header {
-            padding: 14px 18px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-family: 'Outfit', sans-serif;
             background: var(--surface-alt);
         }
@@ -2248,10 +2315,10 @@
         .admin-header .admin-theme-toggle {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: var(--radius-full);
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             color: var(--text-secondary);
             font-family: var(--font);
@@ -2261,30 +2328,30 @@
             color: var(--primary);
         }
         .admin-actions {
-            padding: 10px 14px;
+            padding: 6px 12px;
             border-bottom: 1px solid var(--border-light);
             display: flex;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
             background: var(--surface);
         }
         .admin-actions .btn {
-            font-size: 0.72rem;
-            padding: 5px 12px;
+            font-size: 0.65rem;
+            padding: 4px 10px;
         }
         #adminSubjectList {
             flex: 1;
             overflow-y: auto;
-            padding: 8px 6px;
+            padding: 6px 4px;
         }
         .admin-subject-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
+            gap: 5px;
+            padding: 6px 10px;
             border-radius: var(--radius);
             background: var(--bg-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             transition: all var(--transition);
             border: 1px solid transparent;
         }
@@ -2294,7 +2361,7 @@
         }
         .admin-subject-item .subj-label {
             font-weight: 500;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             flex: 1;
             cursor: pointer;
             color: var(--text);
@@ -2303,9 +2370,9 @@
             background: transparent;
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 3px 7px;
+            padding: 2px 6px;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             transition: all var(--transition);
             color: var(--text-secondary);
             font-family: var(--font);
@@ -2323,26 +2390,26 @@
         }
         .admin-right {
             flex: 1;
-            padding: 20px 24px;
+            padding: 16px 20px;
             overflow-y: auto;
         }
         .admin-right h3 {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
         .admin-lesson-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
+            padding: 8px 12px;
             background: var(--surface);
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             transition: all var(--transition);
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .admin-lesson-row:hover {
@@ -2351,19 +2418,19 @@
         }
         .admin-lesson-row>span {
             font-weight: 500;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
             color: var(--text);
         }
         .admin-lesson-row .admin-lesson-actions {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             flex-wrap: wrap;
         }
         .admin-lesson-row .btn {
-            font-size: 0.68rem;
-            padding: 4px 10px;
+            font-size: 0.6rem;
+            padding: 3px 8px;
         }
         .btn-info {
             background: #3b82f6;
@@ -2378,16 +2445,16 @@
         /* ─── DEBUG ────────────────────────────────────────────────────────── */
         #debugToggle {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 16px;
+            left: 16px;
             z-index: 9999;
             background: #1e293b;
             color: #fff;
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
@@ -2406,9 +2473,9 @@
             background: #ef4444;
             color: #fff;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.6rem;
+            width: 16px;
+            height: 16px;
+            font-size: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2416,19 +2483,19 @@
         }
         #debugPanel {
             position: fixed;
-            bottom: 80px;
-            left: 20px;
-            width: 380px;
-            max-height: 70vh;
+            bottom: 70px;
+            left: 16px;
+            width: 340px;
+            max-height: 65vh;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
             z-index: 10000;
-            padding: 16px 18px;
+            padding: 14px 16px;
             overflow-y: auto;
             display: none;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-family: var(--font-mono);
             transition: all 0.3s ease;
             color: var(--text);
@@ -2437,23 +2504,23 @@
             display: block;
         }
         #debugPanel h3 {
-            margin: 0 0 10px 0;
-            font-size: 0.9rem;
+            margin: 0 0 8px 0;
+            font-size: 0.85rem;
             font-weight: 700;
             font-family: 'Outfit', sans-serif;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
         #debugPanel h3 button {
             background: transparent;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.8rem;
-            padding: 2px 8px;
+            font-size: 0.7rem;
+            padding: 2px 6px;
             border-radius: 6px;
         }
         #debugPanel h3 button:hover {
@@ -2462,9 +2529,9 @@
         .debug-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 4px 0;
             border-bottom: 1px solid var(--border-light);
-            font-size: 0.74rem;
+            font-size: 0.68rem;
         }
         .debug-item .label {
             color: var(--text-secondary);
@@ -2488,84 +2555,33 @@
             color: #3b82f6;
         }
         .debug-timestamp {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: var(--text-muted);
             text-align: right;
-            margin-top: 6px;
+            margin-top: 4px;
             border-top: 1px solid var(--border-light);
-            padding-top: 4px;
+            padding-top: 3px;
         }
 
         .pending-orders-table {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             width: 100%;
             border-collapse: collapse;
         }
         .pending-orders-table th {
             text-align: left;
-            padding: 4px 6px;
+            padding: 3px 5px;
             border-bottom: 1px solid var(--border);
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             text-transform: uppercase;
         }
         .pending-orders-table td {
-            padding: 4px 6px;
+            padding: 3px 5px;
             border-bottom: 1px solid var(--border-light);
             font-family: var(--font-mono);
-            font-size: 0.68rem;
-        }
-
-        /* ─── QUOTES BAR ───────────────────────────────────────────────────── */
-        .quotes-bar {
-            display: flex;
-            gap: 16px;
-            padding: 4px 12px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-            overflow-x: auto;
-            font-size: 0.7rem;
-            align-items: center;
-            min-height: 28px;
-        }
-        .quotes-bar .quote-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            font-weight: 500;
-            padding: 2px 8px;
-            border-radius: 8px;
-            background: var(--bg-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .quotes-bar .quote-item:hover {
-            background: var(--surface-hover);
-        }
-        .quotes-bar .quote-item .sym {
-            font-weight: 700;
-            color: var(--text-secondary);
-        }
-        .quotes-bar .quote-item .price {
-            font-family: var(--font-mono);
-            font-weight: 600;
-        }
-        .quotes-bar .quote-item .change {
-            font-weight: 600;
-            font-size: 0.65rem;
-        }
-        .quotes-bar .quote-item .change.up {
-            color: var(--trade-buy);
-        }
-        .quotes-bar .quote-item .change.down {
-            color: var(--trade-sell);
-        }
-        .quotes-bar .quote-item.active {
-            border: 1px solid var(--primary);
-            background: var(--primary-light);
+            font-size: 0.62rem;
         }
 
         /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
@@ -2575,7 +2591,7 @@
                 top: 0;
                 left: 0;
                 bottom: 0;
-                width: 270px;
+                width: 250px;
                 transform: translateX(-100%);
                 box-shadow: var(--shadow-lg);
                 z-index: 50;
@@ -2587,22 +2603,33 @@
                 display: block;
             }
             .top-bar {
-                padding: 6px 10px;
-                gap: 5px;
+                padding: 4px 8px;
+                gap: 4px;
+                min-height: 32px;
             }
             .search-box {
-                max-width: 100px;
+                max-width: 80px;
+            }
+            .search-box input {
+                font-size: 0.65rem;
+                padding: 3px 8px 3px 24px;
+            }
+            .search-box i {
+                font-size: 0.6rem;
+                left: 8px;
             }
             .trade-panel {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 3px;
+                padding: 4px 6px;
             }
             .chart-container-wrap #simChartContainer {
-                height: 280px;
+                min-height: 200px;
             }
             .admin-left {
                 width: 100%;
-                max-height: 44vh;
+                max-height: 40vh;
                 flex-shrink: 0;
             }
             .admin-container {
@@ -2610,102 +2637,30 @@
             }
             .admin-right {
                 flex: 1;
-                padding: 16px;
+                padding: 12px;
             }
             .admin-lesson-row {
                 flex-direction: column;
                 align-items: flex-start;
             }
             .auth-box {
-                padding: 30px 20px;
+                padding: 24px 16px;
             }
-            .mt5-quick-trade-row {
-                gap: 3px;
-            }
-            .mt5-sell-btn,
-            .mt5-buy-btn {
-                font-size: 0.65rem;
-                padding: 5px 3px;
-                min-width: 40px;
-            }
-            .mt5-lot-selector {
-                min-width: 48px;
-                padding: 2px 6px;
-            }
-            .mt5-lot-value {
-                font-size: 0.75rem;
-                min-width: 22px;
-            }
-            .mt5-lot-presets button {
-                font-size: 0.45rem;
-                padding: 1px 3px;
-            }
-            .mt5-top-toolbar {
-                padding: 5px 8px;
-                min-height: 36px;
-            }
-            .mt5-symbol {
-                font-size: 0.85rem;
-            }
-            .mt5-tf-select {
-                font-size: 0.6rem;
-                padding: 2px 6px;
-            }
-            .mt5-instrument-info {
-                padding: 2px 8px;
-                min-height: 24px;
-            }
-            .mt5-pair {
-                font-size: 0.75rem;
-            }
-            .mt5-name {
-                font-size: 0.6rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.55rem;
-            }
-            .mt5-bottom-nav {
-                height: 40px;
-            }
-            .mt5-nav-item {
-                font-size: 0.5rem;
-            }
-            .mt5-nav-item i {
-                font-size: 0.9rem;
-            }
-            .mt5-sidebar-sheet {
-                width: 80%;
-                max-width: 280px;
-            }
-            .mobile-terminal .top-bar-pl {
-                display: none !important;
-            }
-            .quotes-bar {
-                font-size: 0.6rem;
-                gap: 8px;
-                padding: 2px 8px;
-                min-height: 24px;
-            }
-            .quotes-bar .quote-item {
-                padding: 1px 6px;
-            }
-        }
-        @media (max-width: 400px) {
             .mt5-quick-trade-row {
                 gap: 2px;
             }
             .mt5-sell-btn,
             .mt5-buy-btn {
-                font-size: 0.55rem;
+                font-size: 0.6rem;
                 padding: 4px 2px;
-                min-width: 34px;
+                min-width: 36px;
             }
             .mt5-lot-selector {
-                min-width: 40px;
+                min-width: 42px;
                 padding: 2px 4px;
             }
             .mt5-lot-value {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 min-width: 18px;
             }
             .mt5-lot-presets button {
@@ -2714,7 +2669,7 @@
             }
             .mt5-top-toolbar {
                 padding: 4px 6px;
-                min-height: 32px;
+                min-height: 30px;
             }
             .mt5-symbol {
                 font-size: 0.75rem;
@@ -2722,15 +2677,6 @@
             .mt5-tf-select {
                 font-size: 0.55rem;
                 padding: 2px 5px;
-            }
-            .mt5-bottom-nav {
-                height: 36px;
-            }
-            .mt5-nav-item {
-                font-size: 0.45rem;
-            }
-            .mt5-nav-item i {
-                font-size: 0.8rem;
             }
             .mt5-instrument-info {
                 padding: 2px 6px;
@@ -2744,14 +2690,140 @@
             }
             .mt5-tf-display {
                 font-size: 0.5rem;
-                padding: 1px 5px;
+            }
+            .mt5-bottom-nav {
+                height: 36px;
+            }
+            .mt5-nav-item {
+                font-size: 0.45rem;
+            }
+            .mt5-nav-item i {
+                font-size: 0.8rem;
+            }
+            .mt5-sidebar-sheet {
+                width: 80%;
+                max-width: 260px;
+            }
+            .mobile-terminal .top-bar-pl {
+                display: none !important;
+            }
+            .quotes-bar {
+                font-size: 0.55rem;
+                gap: 6px;
+                padding: 2px 6px;
+                min-height: 20px;
+            }
+            .quotes-bar .quote-item {
+                padding: 1px 4px;
+            }
+            .terminal-toolbar {
+                min-height: 24px;
+                padding: 2px 4px;
+            }
+            .tool-btn {
+                font-size: 0.5rem;
+                padding: 2px 4px;
+            }
+            .terminal-wrapper {
+                padding: 4px;
+                min-height: 300px;
             }
             #debugPanel {
-                left: 10px;
-                right: 10px;
+                left: 8px;
+                right: 8px;
                 width: auto;
-                bottom: 70px;
-                max-height: 60vh;
+                bottom: 60px;
+                max-height: 55vh;
+            }
+            #debugToggle {
+                bottom: 12px;
+                left: 12px;
+                width: 34px;
+                height: 34px;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .mt5-quick-trade-row {
+                gap: 1px;
+            }
+            .mt5-sell-btn,
+            .mt5-buy-btn {
+                font-size: 0.5rem;
+                padding: 3px 1px;
+                min-width: 30px;
+            }
+            .mt5-lot-selector {
+                min-width: 36px;
+                padding: 1px 3px;
+            }
+            .mt5-lot-value {
+                font-size: 0.6rem;
+                min-width: 16px;
+            }
+            .mt5-lot-presets button {
+                font-size: 0.35rem;
+                padding: 1px 2px;
+            }
+            .mt5-top-toolbar {
+                padding: 3px 5px;
+                min-height: 28px;
+            }
+            .mt5-symbol {
+                font-size: 0.7rem;
+            }
+            .mt5-tf-select {
+                font-size: 0.5rem;
+                padding: 1px 4px;
+            }
+            .mt5-bottom-nav {
+                height: 32px;
+            }
+            .mt5-nav-item {
+                font-size: 0.4rem;
+            }
+            .mt5-nav-item i {
+                font-size: 0.7rem;
+            }
+            .mt5-instrument-info {
+                padding: 1px 4px;
+                min-height: 18px;
+            }
+            .mt5-pair {
+                font-size: 0.6rem;
+            }
+            .mt5-name {
+                font-size: 0.45rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.45rem;
+            }
+            .top-bar {
+                min-height: 28px;
+                padding: 2px 6px;
+            }
+            .terminal-nav-btn {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+            .lang-select {
+                font-size: 0.6rem;
+                padding: 2px 18px 2px 6px;
+            }
+            .theme-toggle-btn {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
+            .user-menu .username {
+                font-size: 0.6rem;
+            }
+            .user-menu .logout-btn {
+                font-size: 0.55rem;
+                padding: 1px 6px;
+            }
+            .account-no {
+                font-size: 0.5rem;
+                padding: 1px 4px;
             }
         }
 
@@ -2815,7 +2887,7 @@
             const USER_KEY = 'auth_user_v9';
             const PORTFOLIO_KEY = 'sim_portfolio_v9';
 
-            // Only 3 symbols as requested
+            // ONLY 3 SYMBOLS
             const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
             const DEFAULT_TF = 300;
@@ -2891,6 +2963,7 @@
             let ttsTotalLength = 0;
             let ttsStartTime = 0;
             let isExitingTerminal = false;
+            let terminalExitConfirmShown = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache';
@@ -2982,6 +3055,7 @@
 
             // ─── NOTIFICATION SYSTEM ────────────────────────────────────────
             function sendNotification(title, body, type = 'info') {
+                // In-app banner
                 const existing = document.querySelector('.notification-banner');
                 if (existing) existing.remove();
                 const banner = document.createElement('div');
@@ -2996,6 +3070,7 @@
                 banner.querySelector('.notif-close').onclick = () => banner.remove();
                 setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
 
+                // Push notification (browser)
                 if ('Notification' in window && Notification.permission === 'granted') {
                     try { new Notification('📊 ATTS: ' + title, { body: body, icon: '📊' }); } catch (e) {}
                 } else if ('Notification' in window && Notification.permission === 'default') {
@@ -3040,10 +3115,10 @@
                         oscillator.type = 'sine'; } else if (type === 'sell') { oscillator.frequency.value = 600;
                         oscillator.type = 'triangle'; } else { oscillator.frequency.value = 1000;
                         oscillator.type = 'sawtooth'; }
-                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
                     oscillator.start(audioCtx.currentTime);
-                    oscillator.stop(audioCtx.currentTime + 0.3);
+                    oscillator.stop(audioCtx.currentTime + 0.25);
                 } catch (e) {}
             }
 
@@ -3321,11 +3396,9 @@
             window.selectChartSymbol = function(sym) {
                 if (sym === simCurrentSymbol) return;
                 simCurrentSymbol = sym;
-                // Update active state
                 document.querySelectorAll('.quote-item').forEach(el => {
                     el.classList.toggle('active', el.dataset.symbol === sym);
                 });
-                // Also update symbol selectors
                 document.querySelectorAll('#simSymbolSelect, #simSymbolSelect2, .mt5-symbol-selector').forEach(el => {
                     if (el.tagName === 'SELECT') { el.value = sym; } else { el.textContent = sym; }
                 });
@@ -3333,13 +3406,14 @@
                 showToast('📊 Switched to ' + sym);
             };
 
-            // ─── CHART INIT (FIXED: resilient, no disappearing) ────────────
+            // ─── CHART INIT (RESILIENT) ─────────────────────────────────────
             async function initChart() {
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
                 if (!chartDiv) return;
 
+                // Ensure container has size
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 10) {
                     await new Promise(r => setTimeout(r, 100));
@@ -3355,6 +3429,7 @@
                     return;
                 }
 
+                // Cleanup old chart
                 if (simChart) {
                     try { simChart.remove(); } catch (e) {}
                     simChart = null;
@@ -3365,7 +3440,7 @@
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
-                // ── STEP 1: Fetch REAL price from Binance ──
+                // ── STEP 1: Fetch REAL price ──
                 let realTimePrice = simLastPrices[simCurrentSymbol] || lastBinancePrice[simCurrentSymbol];
                 if (!realTimePrice || isNaN(realTimePrice)) {
                     const fetchedPrice = await fetchBinancePrice(simCurrentSymbol);
@@ -3379,31 +3454,28 @@
                     realTimePrice = simBasePrices[simCurrentSymbol] || 45000;
                 }
 
-                // ── STEP 2: PRIMARY SOURCE → Binance REST candles ──
+                // ── STEP 2: PRIMARY → Binance REST ──
                 let candles = null;
                 let sourceLabel = 'Simulation';
                 let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
                 if (binanceData && binanceData.length > 0) {
                     candles = sanitizeCandleData(binanceData);
                     sourceLabel = 'Binance REST';
-                    console.log('✅ Real candles from Binance REST:', candles.length);
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                 } else {
                     let dbCandles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
                     if (dbCandles && dbCandles.length > 0) {
                         candles = sanitizeCandleData(dbCandles);
                         sourceLabel = 'IndexedDB';
-                        console.log('✅ Candles from IndexedDB:', candles.length);
                     } else {
                         candles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
                             realTimePrice, currentTimeframe));
                         sourceLabel = 'Simulation (Fallback)';
-                        console.warn('⚠️ Using simulated candles as last resort');
                         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                     }
                 }
 
-                // ── STEP 3: Merge with latest Binance candle ──
+                // ── STEP 3: Merge latest ──
                 let latestCandle = await fetchBinanceLatest(simCurrentSymbol);
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
@@ -3423,18 +3495,16 @@
                     }
                 }
 
-                // ── STEP 4: Ensure last candle close matches real price ──
+                // ── STEP 4: Ensure last candle close matches price ──
                 if (candles.length > 0) {
                     const lastCandle = candles[candles.length - 1];
                     if (isValidNumber(realTimePrice) && Math.abs(lastCandle.close - realTimePrice) > 0.0001) {
                         lastCandle.close = realTimePrice;
                         if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
                         if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
-                        console.log('🔗 Gap closed: last candle close →', realTimePrice);
                     }
                 }
 
-                // ── STEP 5: Set simAllCandles ──
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
                     simAllCandles = sanitizeCandleData(generateSeamlessSimulatedCandles(simCurrentSymbol, 500,
@@ -3442,7 +3512,7 @@
                     sourceLabel = 'Simulation (Emergency)';
                 }
 
-                // ── STEP 6: Current candle ──
+                // ── STEP 5: Current candle ──
                 const now = Math.floor(Date.now() / 1000);
                 const currentMinute = now - (now % 60);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
@@ -3462,23 +3532,23 @@
                     simCurrentCandle.low = Math.min(lastClose, realTimePrice);
                 }
 
-                // ── STEP 7: Lazy load & Chart render ──
+                // ── STEP 6: Render ──
                 const visible = initLazy(simAllCandles);
                 const isMobile = window.innerWidth <= 768;
-                const chartHeight = isMobile ? Math.max(180, chartDiv.clientHeight) : 420;
+                const chartHeight = isMobile ? Math.max(180, chartDiv.clientHeight) : Math.max(300, chartDiv.clientHeight);
                 const isDark = appTheme === 'dark';
 
                 try {
-                    const barSpacing = isMobile ? 2 : 6;
+                    const barSpacing = isMobile ? 2 : 4;
                     simChart = LightweightCharts.createChart(chartDiv, {
                         width: chartDiv.clientWidth,
                         height: chartHeight,
                         timeScale: {
                             timeVisible: true,
                             secondsVisible: currentTimeframe < 300,
-                            rightOffset: isMobile ? 4 : 12,
+                            rightOffset: isMobile ? 4 : 10,
                             barSpacing: barSpacing,
-                            minBarSpacing: isMobile ? 1 : 3
+                            minBarSpacing: isMobile ? 1 : 2
                         },
                         layout: {
                             background: { type: 'solid', color: 'transparent' },
@@ -3531,7 +3601,7 @@
                         }
                     }
 
-                    // ── STEP 8: Restore saved state ──
+                    // ── STEP 7: Restore saved state ──
                     const savedInd = await loadIndicatorsFromDB();
                     if (savedInd && Object.keys(savedInd).length) {
                         activeIndicators = savedInd;
@@ -3549,7 +3619,7 @@
                         try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                     }
 
-                    // ── STEP 9: Drawing tools ──
+                    // ── STEP 8: Drawing tools ──
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -3657,7 +3727,7 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
-                    // ── STEP 10: Price update interval ──
+                    // ── STEP 9: Price update interval ──
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3687,7 +3757,7 @@
                         checkPendingOrders();
                     }, 1000);
 
-                    // ── STEP 11: Candle close interval ──
+                    // ── STEP 10: Candle close interval ──
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -3757,28 +3827,23 @@
                     document.getElementById('candleCount').textContent = simAllCandles.length;
                     updateDebugPanel();
 
-                    // ── STEP 12: Visibility change handler (FIX: prevent chart hiding) ──
+                    // ── STEP 11: Visibility change (FIX: chart disappearing) ──
                     const visibilityHandler = () => {
                         if (document.visibilityState === 'visible') {
-                            // Re-attach chart if it was hidden
                             if (simChart && chartDiv) {
-                                // Chart is visible, ensure it's rendered correctly
                                 setTimeout(() => {
                                     if (chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                                         try { simChart.applyOptions({ width: chartDiv.clientWidth,
                                                 height: chartDiv.clientHeight }); } catch (e) {}
                                         try { simChart.timeScale().fitContent(); } catch (e) {}
-                                        // Force redraw
                                         try { simChart.timeScale().setVisibleRange(simChart
                                             .timeScale().getVisibleRange()); } catch (e) {}
                                     } else {
-                                        // Container lost size, re-init
                                         console.warn('Chart container lost size, re-initializing...');
                                         resetChart();
                                     }
                                 }, 100);
                             } else {
-                                // Chart was destroyed, re-init
                                 resetChart();
                             }
                         }
@@ -3797,7 +3862,7 @@
                 }
             }
 
-            // ─── REDRAW LINES (with Entry, SL, TP) ─────────────────────────
+            // ─── REDRAW LINES (Entry, SL, TP) ──────────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
@@ -3867,7 +3932,7 @@
                 if (!el) return;
                 const lines = portfolio.drawnLines[simCurrentSymbol] || [];
                 if (lines.length === 0) { el.innerHTML =
-                        '<span style="color:var(--text-muted);font-size:0.68rem;">No drawn lines</span>'; return; }
+                        '<span style="color:var(--text-muted);font-size:0.6rem;">No drawn lines</span>'; return; }
                 el.innerHTML = lines.map((l, i) =>
                     `<div class="line-manager-row"><span class="line-dot" style="background:${l.color || '#3b82f6'};"></span><span style="flex:1;">${l.label || 'Line'} — $${l.price.toFixed(4)}</span><button class="line-delete-btn" onclick="deleteSingleLine(${i})" title="Delete">×</button></div>`
                 ).join('');
@@ -3961,26 +4026,19 @@
                                 continue;
                             }
                             portfolio.cash -= qty * execPrice + fee;
-                            const existing = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
-                                'long' && p.entryPrice === execPrice);
-                            if (existing) {
-                                existing.qty += qty;
-                                existing.entryPrice = (existing.entryPrice * (existing.qty - qty) + execPrice * qty) /
-                                    existing.qty;
-                            } else {
-                                portfolio.positions.push({
-                                    id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                                    symbol: order.symbol,
-                                    type: 'long',
-                                    qty,
-                                    entryPrice: execPrice,
-                                    currentPrice: execPrice,
-                                    slPrice: null,
-                                    tpPrice: null,
-                                    openTime: new Date().toISOString(),
-                                    fee
-                                });
-                            }
+                            // Hedging: allow multiple positions
+                            portfolio.positions.push({
+                                id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                symbol: order.symbol,
+                                type: 'long',
+                                qty,
+                                entryPrice: execPrice,
+                                currentPrice: execPrice,
+                                slPrice: null,
+                                tpPrice: null,
+                                openTime: new Date().toISOString(),
+                                fee
+                            });
                             portfolio.transactions.unshift({
                                 type: 'buy',
                                 symbol: order.symbol,
@@ -3995,69 +4053,41 @@
                                 'success');
                             playTradeSound('buy');
                         } else {
-                            const existingLong = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
-                                'long');
-                            const existingShort = portfolio.positions.find(p => p.symbol === order.symbol && p.type ===
-                                'short');
-                            if (existingLong && existingLong.qty >= qty) {
-                                const pnl = (execPrice - existingLong.entryPrice) * qty;
-                                portfolio.cash += qty * execPrice - fee;
-                                existingLong.qty -= qty;
-                                if (existingLong.qty === 0) {
-                                    const idx = portfolio.positions.indexOf(existingLong);
-                                    if (idx > -1) portfolio.positions.splice(idx, 1);
-                                }
-                                portfolio.transactions.unshift({
-                                    type: 'sell',
-                                    symbol: order.symbol,
-                                    qty,
-                                    price: execPrice,
-                                    time: new Date().toLocaleTimeString(),
-                                    reason: 'Limit Order (Close Long)',
-                                    id: order.id,
-                                    pnl,
-                                    fee
-                                });
-                                sendNotification('✅ Limit SELL Executed', order.symbol + ' @ $' + execPrice.toFixed(
-                                    4), 'success');
-                                playTradeSound('sell');
-                            } else {
-                                const margin = qty * execPrice * 0.5;
-                                if (portfolio.cash < margin + fee) {
-                                    sendNotification('⚠️ Insufficient margin', 'Short limit order ' + order.symbol +
-                                        ' canceled', 'warning');
-                                    order.status = 'canceled';
-                                    toRemove.push(i);
-                                    continue;
-                                }
-                                portfolio.cash -= fee;
-                                const newPos = {
-                                    id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                                    symbol: order.symbol,
-                                    type: 'short',
-                                    qty,
-                                    entryPrice: execPrice,
-                                    currentPrice: execPrice,
-                                    slPrice: null,
-                                    tpPrice: null,
-                                    openTime: new Date().toISOString(),
-                                    fee
-                                };
-                                portfolio.positions.push(newPos);
-                                portfolio.transactions.unshift({
-                                    type: 'sell',
-                                    symbol: order.symbol,
-                                    qty,
-                                    price: execPrice,
-                                    time: new Date().toLocaleTimeString(),
-                                    reason: 'Limit Order (Short)',
-                                    id: order.id,
-                                    fee
-                                });
-                                sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
-                                    4), 'success');
-                                playTradeSound('sell');
+                            const margin = qty * execPrice * 0.5;
+                            if (portfolio.cash < margin + fee) {
+                                sendNotification('⚠️ Insufficient margin', 'Short limit order ' + order.symbol +
+                                    ' canceled', 'warning');
+                                order.status = 'canceled';
+                                toRemove.push(i);
+                                continue;
                             }
+                            portfolio.cash -= fee;
+                            const newPos = {
+                                id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                                symbol: order.symbol,
+                                type: 'short',
+                                qty,
+                                entryPrice: execPrice,
+                                currentPrice: execPrice,
+                                slPrice: null,
+                                tpPrice: null,
+                                openTime: new Date().toISOString(),
+                                fee
+                            };
+                            portfolio.positions.push(newPos);
+                            portfolio.transactions.unshift({
+                                type: 'sell',
+                                symbol: order.symbol,
+                                qty,
+                                price: execPrice,
+                                time: new Date().toLocaleTimeString(),
+                                reason: 'Limit Order (Short)',
+                                id: order.id,
+                                fee
+                            });
+                            sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
+                                4), 'success');
+                            playTradeSound('sell');
                         }
                         order.status = 'filled';
                         toRemove.push(i);
@@ -4108,7 +4138,6 @@
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
                     portfolio.cash -= qty * price + fee;
-                    // Hedging: allow multiple positions
                     portfolio.positions.push({
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol,
@@ -4134,7 +4163,6 @@
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
                 } else {
-                    // SELL: hedge mode - allow short even if long exists
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
                     portfolio.cash -= fee;
@@ -4297,7 +4325,7 @@
                 if (!el) return;
                 const pending = pendingOrders.filter(o => o.status === 'pending');
                 if (pending.length === 0) { el.innerHTML =
-                        '<span style="color:var(--text-muted);font-size:0.68rem;">No pending orders</span>'; return; }
+                        '<span style="color:var(--text-muted);font-size:0.6rem;">No pending orders</span>'; return; }
                 el.innerHTML = pending.map(o =>
                     `<div class="line-manager-row">
                         <span style="flex:1;">${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
@@ -4428,7 +4456,7 @@
             function renderMobileTradeSummary() {
                 const panel = document.getElementById('tradePanel');
                 if (!panel) return;
-                let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Open Positions</h4>';
+                let html = '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.85rem;">Open Positions</h4>';
                 const positions = portfolio.positions || [];
                 if (positions.length === 0) {
                     html += '<div style="color:var(--mt5-text);padding:10px 0;">No open positions</div>';
@@ -4462,7 +4490,7 @@
                     <div class="row"><span class="label">Balance</span><span class="value">$${(portfolio.cash || 0).toFixed(2)}</span></div>
                     <div class="row"><span class="label">Equity</span><span class="value">$${totalEquity.toFixed(2)}</span></div>
                     <div class="row"><span class="label">Total P&L</span><span class="value ${totalPL>=0?'green':'red'}">${totalPL>=0?'+':''}$${totalPL.toFixed(2)}</span></div>
-                    <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.65rem;">${userAccountNo}</span></div>
+                    <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.6rem;">${userAccountNo}</span></div>
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
                     <input type="number" id="depositAmount" placeholder="Amount" step="0.01" value="">
@@ -4470,11 +4498,10 @@
                     <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw</button>
                 </div>`;
                 html +=
-                    '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.8rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
+                    '<div style="margin-top:10px;"><h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
                 html += '</div>';
                 panel.innerHTML = html;
 
-                // Fix: Ensure deposit/withdraw inputs work
                 const depInput = document.getElementById('depositAmount');
                 if (depInput) {
                     depInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9.]/g,
@@ -4487,10 +4514,10 @@
                 if (pendingEl) {
                     const pending = pendingOrders.filter(o => o.status === 'pending');
                     if (pending.length === 0) pendingEl.innerHTML =
-                        '<span style="color:var(--mt5-text);font-size:0.65rem;">No pending orders</span>';
+                        '<span style="color:var(--mt5-text);font-size:0.6rem;">No pending orders</span>';
                     else {
                         pendingEl.innerHTML = pending.map(o =>
-                            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--mt5-border);font-size:0.65rem;">
+                            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--mt5-border);font-size:0.6rem;">
                                 <span>${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
                                 <button class="btn btn-sm btn-danger" onclick="cancelLimitOrder('${o.id}');renderMobileTradeSummary();">Cancel</button>
                             </div>`
@@ -4591,7 +4618,6 @@
                         el.style.borderColor = 'var(--mt5-green)';
                     }
                 });
-                // Update quotes bar
                 document.querySelectorAll('.quote-item').forEach(el => {
                     el.classList.toggle('active', el.dataset.symbol === sym);
                 });
@@ -4603,7 +4629,7 @@
                 if (!panel) return;
                 const transactions = portfolio.transactions || [];
                 let html =
-                    '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.9rem;">Transaction History</h4>';
+                    '<div style="padding:4px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.85rem;">Transaction History</h4>';
                 if (transactions.length === 0) {
                     html += '<div style="color:var(--mt5-text);padding:10px 0;">No transactions</div>';
                 } else {
@@ -4746,20 +4772,20 @@
                     const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
                     const isShort = p.type === 'short';
                     return `<tr>
-                        <td><strong>${p.symbol}</strong> ${isShort ? '<span style="color:var(--danger);font-size:0.65rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.65rem;">LONG</span>'}</td>
+                        <td><strong>${p.symbol}</strong> ${isShort ? '<span style="color:var(--danger);font-size:0.6rem;">SHORT</span>' : '<span style="color:var(--success);font-size:0.6rem;">LONG</span>'}</td>
                         <td>${Math.abs(p.qty)}</td>
                         <td><span class="entry-badge">$${(p.entryPrice || 0).toFixed(4)}</span></td>
                         <td>$${cp.toFixed(4)}</td>
                         <td>${p.slPrice ? '<span class="sl-badge">$' + p.slPrice.toFixed(4) + '</span>' : '—'}</td>
                         <td>${p.tpPrice ? '<span class="tp-badge">$' + p.tpPrice.toFixed(4) + '</span>' : '—'}</td>
                         <td>$${val.toFixed(2)}</td>
-                        <td style="display:flex;gap:4px;flex-wrap:wrap;">
-                            <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i> Exit</button>
-                            <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i> Modify</button>
+                        <td style="display:flex;gap:3px;flex-wrap:wrap;">
+                            <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i></button>
+                            <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i></button>
                         </td>
                     </tr>`;
                 }).join('') ||
-                    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);">No open positions</td></tr>';
+                    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);font-size:0.7rem;">No open positions</td></tr>';
                 if (tbody) tbody.innerHTML = rowsHTML;
                 if (fsTbody) fsTbody.innerHTML = rowsHTML;
 
@@ -4768,13 +4794,13 @@
                     let histHtml = '<strong>Transaction History</strong><ul style="list-style:none;padding:0;">';
                     const allTx = portfolio.transactions || [];
                     if (allTx.length === 0) {
-                        histHtml += '<li style="color:var(--text-muted);padding:8px 0;">No transactions yet</li>';
+                        histHtml += '<li style="color:var(--text-muted);padding:6px 0;">No transactions yet</li>';
                     } else {
                         allTx.slice(0, 25).forEach(t => {
                             const pnlStr = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t
                                 .pnl.toFixed(2) : '';
                             histHtml +=
-                                `<li style="padding:4px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--trade-buy)' : t.type === 'sell' ? 'var(--trade-sell)' : t.type === 'deposit' ? 'var(--mt5-blue)' : 'var(--mt5-red)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}${pnlStr}</li>`;
+                                `<li style="padding:3px 0;border-bottom:1px solid var(--border-light);">${t.time} - <span style="color:${t.type === 'buy' ? 'var(--trade-buy)' : t.type === 'sell' ? 'var(--trade-sell)' : t.type === 'deposit' ? 'var(--mt5-blue)' : 'var(--mt5-red)'};">${t.type.toUpperCase()}</span> ${t.qty} × ${t.symbol || ''} @ $${(t.price || 1).toFixed(4)}${t.reason ? ' (' + t.reason + ')' : ''}${pnlStr}</li>`;
                         });
                     }
                     histHtml += '</ul>';
@@ -4807,29 +4833,27 @@
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
-                        <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;">
-                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <div id="terminalTopBar" style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;min-height:32px;">
+                            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                                 <button class="btn btn-outline btn-sm" id="terminalExitBtn"><i class="fas fa-arrow-left"></i> Exit</button>
-                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">📈 Trading Terminal</span>
+                                <span style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.85rem;">📈 Trading Terminal</span>
                                 <span class="account-no">${userAccountNo}</span>
                             </div>
-                            <div id="terminalTopBarPL" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.8rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
-                                <span id="simTotalValue" style="font-weight:600;font-size:0.8rem;">📊 $0</span>
-                                <span id="simPL" style="font-weight:600;font-size:0.8rem;">📈 $0</span>
+                            <div id="terminalTopBarPL" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+                                <span id="simCash" style="color:var(--success);font-weight:600;font-size:0.7rem;">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
+                                <span id="simTotalValue" style="font-weight:600;font-size:0.7rem;">📊 $0</span>
+                                <span id="simPL" style="font-weight:600;font-size:0.7rem;">📈 $0</span>
                             </div>
                         </div>
                         <div id="terminalContainer" style="flex:1;overflow:hidden;"></div>
                     </div>`;
 
-                // Exit confirmation
                 document.getElementById('terminalExitBtn').onclick = () => {
                     if (confirm('⚠️ Are you sure you want to exit the Trading Terminal? Your positions and SL/TP will continue to manage in the background.')) {
                         isExitingTerminal = true;
                         cleanupSimIntervals();
                         disconnectBinanceWS();
                         stopBackgroundEngine();
-                        // Save state
                         savePortfolioToStorage();
                         savePendingOrders();
                         window.history.replaceState({}, '', '?');
@@ -4838,7 +4862,6 @@
                     }
                 };
 
-                // Also handle page unload with confirmation
                 window._beforeUnloadHandler = function(e) {
                     if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         e.preventDefault();
@@ -4865,16 +4888,15 @@
                     renderMobileTerminal(container);
                 } else {
                     container.style.overflowY = 'auto';
-                    container.style.padding = '10px';
+                    container.style.padding = '6px';
                     renderDesktopTerminal(container);
                 }
                 startBackgroundEngine();
                 connectBinanceWS();
-                // Render quotes bar first
                 setTimeout(renderQuotesBar, 100);
             }
 
-            // ─── DESKTOP TERMINAL ──────────────────────────────────────────────
+            // ─── DESKTOP TERMINAL (COMPRESSED) ─────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
@@ -4884,71 +4906,71 @@
                                 <span id="fsCash" style="color:var(--success);">💰 $${(portfolio.cash || 0).toFixed(2)}</span>
                                 <span id="fsTotal">📊 $0</span>
                                 <span id="fsPL">📈 $0</span>
-                                <span style="font-size:0.6rem;color:var(--text-muted);">${userAccountNo}</span>
+                                <span style="font-size:0.55rem;color:var(--text-muted);">${userAccountNo}</span>
                             </div>
-                            <div style="display:flex;gap:6px;align-items:center;">
+                            <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="tool-btn" onclick="toggleFsBottomPanel()">📋</button>
-                                <button class="btn-exit" onclick="exitFullscreenTerminal()"><i class="fas fa-compress"></i> Exit</button>
+                                <button class="btn-exit" onclick="exitFullscreenTerminal()"><i class="fas fa-compress"></i></button>
                             </div>
                         </div>
                         <div class="terminal-inner">
                             <div id="terminalQuotesBar" class="quotes-bar"></div>
                             <div class="terminal-toolbar">
                                 <div class="tool-group">
-                                    <span style="font-size:0.7rem;color:var(--text-muted);font-weight:600;">Symbol:</span>
-                                    <select id="simSymbolSelect">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                    <span style="font-size:0.55rem;color:var(--text-muted);font-weight:600;">Sym:</span>
+                                    <select id="simSymbolSelect" style="font-size:0.6rem;padding:1px 4px;">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
                                 </div>
                                 <div class="tool-group">
-                                    <span style="font-size:0.65rem;color:var(--text-muted);font-weight:600;">TF:</span>
+                                    <span style="font-size:0.55rem;color:var(--text-muted);font-weight:600;">TF:</span>
                                     <select id="tfSelect" class="tf-select">${Object.entries(TIMEFRAMES).map(([k,v]) => `<option value="${v}" ${currentTimeframe===v?'selected':''}>${k}</option>`).join('')}</select>
                                 </div>
                                 <div class="tool-group">
                                     <div class="indicator-dropdown" id="indicatorDropdown">
-                                        <button class="indicator-dropdown-btn" id="indDropdownBtn">📊 Indicators ▾</button>
+                                        <button class="indicator-dropdown-btn" id="indDropdownBtn">📊 ▾</button>
                                         <div class="indicator-dropdown-menu" id="indDropdownMenu">
                                             ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label class="indicator-item"><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}><span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>`).join('')}
-                                            <hr style="border-color:var(--border);margin:4px 0;">
-                                            <label class="indicator-item"><input type="checkbox" id="volumeToggle" ${showVolume?'checked':''}><span>📊 Volume</span><span class="vol-toggle">Show/Hide</span></label>
+                                            <hr style="border-color:var(--border);margin:2px 0;">
+                                            <label class="indicator-item"><input type="checkbox" id="volumeToggle" ${showVolume?'checked':''}><span>📊 Vol</span></label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="tool-group">
-                                    <span style="font-size:0.65rem;color:var(--text-muted);font-weight:600;">Draw:</span>
-                                    <button class="tool-btn" id="drawSupportBtn" data-tool="support">📏 S</button>
-                                    <button class="tool-btn" id="drawResistanceBtn" data-tool="resistance">📐 R</button>
-                                    <button class="tool-btn" id="drawHLineBtn" data-tool="hline">➖ H</button>
-                                    <button class="tool-btn" id="clearLinesBtn" style="color:var(--danger);font-size:0.65rem;">🗑</button>
+                                    <span style="font-size:0.55rem;color:var(--text-muted);font-weight:600;">Draw:</span>
+                                    <button class="tool-btn" id="drawSupportBtn" data-tool="support" title="Support">📏 S</button>
+                                    <button class="tool-btn" id="drawResistanceBtn" data-tool="resistance" title="Resistance">📐 R</button>
+                                    <button class="tool-btn" id="drawHLineBtn" data-tool="hline" title="Horizontal">➖ H</button>
+                                    <button class="tool-btn" id="clearLinesBtn" style="color:var(--danger);font-size:0.55rem;" title="Clear lines">🗑</button>
                                 </div>
-                                <div class="tool-group" style="flex:1;min-width:100px;max-width:220px;overflow-y:auto;max-height:60px;" id="lineManagerList">
-                                    <span style="color:var(--text-muted);font-size:0.68rem;">No drawn lines</span>
+                                <div class="tool-group" style="flex:1;min-width:80px;max-width:180px;overflow-y:auto;max-height:48px;" id="lineManagerList">
+                                    <span style="color:var(--text-muted);font-size:0.55rem;">No lines</span>
                                 </div>
                             </div>
                             <div class="trade-panel">
-                                <select id="simSymbolSelect2">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
-                                <div style="display:flex;align-items:center;gap:4px;">
-                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(-0.01)">▼</button>
-                                    <input type="number" id="simQty" value="0.01" min="0.01" step="0.01" style="width:60px;text-align:center;">
-                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(0.01)">▲</button>
-                                    <div class="mt5-lot-presets" style="margin-left:4px;">
-                                        <button onclick="setDesktopLot(0.01)" style="padding:1px 4px;font-size:0.6rem;">0.01</button>
-                                        <button onclick="setDesktopLot(0.10)" style="padding:1px 4px;font-size:0.6rem;">0.10</button>
-                                        <button onclick="setDesktopLot(1.00)" style="padding:1px 4px;font-size:0.6rem;">1.00</button>
+                                <select id="simSymbolSelect2" style="font-size:0.65rem;">${SYMBOLS.map(s => `<option ${s===simCurrentSymbol?'selected':''}>${s}</option>`).join('')}</select>
+                                <div style="display:flex;align-items:center;gap:2px;">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(-0.01)" style="font-size:0.55rem;padding:1px 5px;">▼</button>
+                                    <input type="number" id="simQty" value="0.01" min="0.01" step="0.01" style="width:48px;text-align:center;font-size:0.65rem;padding:2px 4px;">
+                                    <button class="btn btn-outline btn-sm" onclick="changeDesktopLot(0.01)" style="font-size:0.55rem;padding:1px 5px;">▲</button>
+                                    <div class="mt5-lot-presets" style="margin-left:3px;">
+                                        <button onclick="setDesktopLot(0.01)" style="padding:1px 3px;font-size:0.5rem;">0.01</button>
+                                        <button onclick="setDesktopLot(0.10)" style="padding:1px 3px;font-size:0.5rem;">0.10</button>
+                                        <button onclick="setDesktopLot(1.00)" style="padding:1px 3px;font-size:0.5rem;">1.00</button>
                                     </div>
                                 </div>
-                                <button class="btn-buy" onclick="placeSimOrder('buy','market')"><i class="fas fa-shopping-cart"></i> Buy</button>
-                                <button class="btn-sell" onclick="placeSimOrder('sell','market')"><i class="fas fa-money-bill-wave"></i> Sell</button>
+                                <button class="btn-trade buy" onclick="placeSimOrder('buy','market')"><i class="fas fa-shopping-cart"></i> Buy</button>
+                                <button class="btn-trade sell" onclick="placeSimOrder('sell','market')"><i class="fas fa-money-bill-wave"></i> Sell</button>
                                 <div class="limit-order-input">
-                                    <span>Limit</span>
-                                    <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:80px;">
-                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))">Buy L</button>
-                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))">Sell L</button>
+                                    <span style="font-size:0.5rem;">Lmt</span>
+                                    <input type="number" id="limitPriceInput" placeholder="Price" step="0.0001" style="width:60px;font-size:0.6rem;">
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('buy','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.5rem;padding:1px 5px;">B</button>
+                                    <button class="btn btn-outline btn-sm" onclick="placeSimOrder('sell','limit',parseFloat(document.getElementById('limitPriceInput').value))" style="font-size:0.5rem;padding:1px 5px;">S</button>
                                 </div>
-                                <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()">🔄 Reset</button>
-                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()"><i class="fas fa-wallet"></i> TRADE</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()" style="font-size:0.55rem;">🔄</button>
+                                <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.55rem;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
-                            <div style="display:flex;gap:12px;padding:4px 8px;background:var(--bg-secondary);border-radius:10px;margin-bottom:4px;flex-wrap:wrap;align-items:center;">
-                                <span style="font-size:0.7rem;font-weight:600;">📌 Pending Limits:</span>
-                                <span id="pendingOrdersList" style="font-size:0.7rem;color:var(--text-muted);">No pending orders</span>
+                            <div style="display:flex;gap:6px;padding:2px 6px;background:var(--bg-secondary);border-radius:8px;margin-bottom:2px;flex-wrap:wrap;align-items:center;min-height:20px;">
+                                <span style="font-size:0.55rem;font-weight:600;">📌 Pending:</span>
+                                <span id="pendingOrdersList" style="font-size:0.6rem;color:var(--text-muted);">No pending orders</span>
                             </div>
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
@@ -5048,7 +5070,7 @@
                             <span class="mt5-pair">${simCurrentSymbol}</span>
                             <span class="mt5-name">${simCurrentSymbol} / USD</span>
                             <span class="mt5-tf-display" id="mobileTfDisplay">${Object.keys(TIMEFRAMES).find(k => TIMEFRAMES[k] === currentTimeframe)}</span>
-                            <span style="font-size:0.5rem;color:var(--mt5-text);">${userAccountNo}</span>
+                            <span style="font-size:0.45rem;color:var(--mt5-text);">${userAccountNo}</span>
                         </div>
                         <div class="mt5-quick-trade">
                             <div class="mt5-quick-trade-row">
@@ -5067,11 +5089,11 @@
                                 </div>
                                 <button class="mt5-buy-btn" id="mobileBuyBtn">BUY<br><span class="mt5-price-display" id="mobileBuyPrice">-</span></button>
                             </div>
-                            <div style="display:flex;gap:4px;margin-top:4px;align-items:center;">
-                                <span style="font-size:0.55rem;color:var(--mt5-text);">Limit:</span>
-                                <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:2px 6px;border-radius:4px;font-size:0.6rem;width:70px;">
-                                <button class="btn btn-outline btn-sm" style="font-size:0.5rem;padding:2px 6px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">Buy L</button>
-                                <button class="btn btn-outline btn-sm" style="font-size:0.5rem;padding:2px 6px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">Sell L</button>
+                            <div style="display:flex;gap:3px;margin-top:3px;align-items:center;">
+                                <span style="font-size:0.5rem;color:var(--mt5-text);">Limit:</span>
+                                <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:2px 5px;border-radius:4px;font-size:0.55rem;width:60px;">
+                                <button class="btn btn-outline btn-sm" style="font-size:0.45rem;padding:1px 5px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">B L</button>
+                                <button class="btn btn-outline btn-sm" style="font-size:0.45rem;padding:1px 5px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">S L</button>
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
@@ -5101,7 +5123,7 @@
                                 <div class="timeframe-grid">${Object.keys(TIMEFRAMES).map(k => `<button data-tf="${TIMEFRAMES[k]}">${k}</button>`).join('')}</div>
                                 <h4>🎨 Theme</h4>
                                 <div class="theme-row"><button id="sidebarLightTheme">☀️ Light</button><button id="sidebarDarkTheme">🌙 Dark</button></div>
-                                <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--mt5-border);"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button></div>
+                                <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--mt5-border);"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);" id="sidebarCloseBtn">Close</button></div>
                             </div>
                         </div>
                         <div class="mt5-indicator-overlay" id="mt5IndicatorOverlay">
@@ -5109,7 +5131,7 @@
                                 <h3>📊 Indicators</h3>
                                 ${Object.entries(INDICATOR_NAMES).map(([k,name]) => `<label><input type="checkbox" data-ind="${k}" ${activeIndicators[k]?'checked':''}> <span style="color:${INDICATOR_COLORS[k]||'#fff'};">${name}</span></label>`).join('')}
                                 <hr><label><input type="checkbox" id="mobileVolumeToggle" ${showVolume?'checked':''}> 📊 Volume</label>
-                                <div style="margin-top:16px;display:flex;gap:8px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button></div>
+                                <div style="margin-top:12px;display:flex;gap:6px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);">Close</button></div>
                             </div>
                         </div>
                     </div>`;
@@ -5197,7 +5219,6 @@
                                         .clientWidth, height: chartDiv2.clientHeight }); } catch (e) {} } } },
                             150); }; });
 
-                // Default: show chart, not quotes
                 document.querySelector('.mt5-nav-item[data-panel="chart"]')?.click();
 
                 setTimeout(() => { requestAnimationFrame(() => requestAnimationFrame(() => initChart())); }, 200);
@@ -5234,24 +5255,24 @@
                 modal.innerHTML = `
                     <div class="modal-content" id="${panelId}">
                         <h3><i class="fas fa-wallet"></i> TRADE — Summary</h3>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:1.1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:1.1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1.1rem;" id="tp_count">${portfolio.positions.length}</div></div>
-                            <div style="background:var(--bg-secondary);padding:12px;border-radius:10px;"><div style="font-size:0.7rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:1.1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;">
+                            <div style="background:var(--bg-secondary);padding:10px;border-radius:10px;"><div style="font-size:0.65rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:1rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:10px;border-radius:10px;"><div style="font-size:0.65rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:1rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:10px;border-radius:10px;"><div style="font-size:0.65rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:1rem;" id="tp_count">${portfolio.positions.length}</div></div>
+                            <div style="background:var(--bg-secondary);padding:10px;border-radius:10px;"><div style="font-size:0.65rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:1rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
-                        <div style="display:flex;gap:8px;margin-bottom:8px;"><span class="account-no">${userAccountNo}</span></div>
-                        <h4 style="margin-top:10px;">Open Positions</h4>
+                        <div style="display:flex;gap:6px;margin-bottom:6px;"><span class="account-no">${userAccountNo}</span></div>
+                        <h4 style="margin-top:8px;">Open Positions</h4>
                         <div id="tp_positions">
                             ${portfolio.positions.length === 0 ? '<p style="color:var(--text-muted);">No open positions</p>' :
                             portfolio.positions.map(p => {
                                 const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
                                 const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
-                                return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
-                                    <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
-                                    <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                                return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
+                                    <span style="font-size:0.75rem;"><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
+                                    <span style="font-size:0.75rem;color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                     <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                    <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
+                                    <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧</button>
                                 </div>`;
                             }).join('')}
                         </div>
@@ -5285,11 +5306,11 @@
                             const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
                             const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice -
                                 cp) * p.qty;
-                            html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
-                                <span><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
-                                <span style="color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
+                            html += `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-light);" data-id="${p.id}">
+                                <span style="font-size:0.75rem;"><strong>${p.symbol}</strong> ${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
+                                <span style="font-size:0.75rem;color:${pl>=0?'var(--success)':'var(--danger)'};">${pl>=0?'+':''}$${pl.toFixed(2)}</span>
                                 <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
-                                <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
+                                <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')">🔧</button>
                             </div>`;
                         });
                         posContainer.innerHTML = html;
@@ -5320,7 +5341,8 @@
                     if (bp) bp.classList.remove('show');
                     setTimeout(() => { if (simChart) { const chartDiv = document.getElementById(
                             'simChartContainer'); if (chartDiv) { try { simChart.applyOptions({ width: chartDiv
-                                .clientWidth, height: 420 }); } catch (e) {} } } }, 300);
+                                .clientWidth, height: Math.max(300, chartDiv.clientHeight) }); } catch (e) {} } } },
+                        300);
                 }
             }
 
@@ -5341,13 +5363,13 @@
                                 <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                                 <div class="search-box">
                                     <i class="fas fa-search"></i>
-                                    <input type="text" id="searchInput" placeholder="Search lessons...">
+                                    <input type="text" id="searchInput" placeholder="Search...">
                                 </div>
-                                <button class="terminal-nav-btn" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Trading Terminal</button>
+                                <button class="terminal-nav-btn" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
                                 <select class="lang-select" id="langSelect">
-                                    <option value="en">🇬🇧 English</option>
-                                    <option value="hi">🇮🇳 हिन्दी</option>
-                                    <option value="bn">🇧🇩 বাংলা</option>
+                                    <option value="en">🇬🇧 EN</option>
+                                    <option value="hi">🇮🇳 HI</option>
+                                    <option value="bn">🇧🇩 BN</option>
                                 </select>
                                 <button class="theme-toggle-btn" id="themeToggle">
                                     <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
@@ -5375,7 +5397,6 @@
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                     'open');
                 document.getElementById('topTerminalBtn').onclick = () => {
-                    // Confirm before opening terminal
                     if (confirm('🔓 Open Trading Terminal? Your positions will be managed in the background.')) {
                         window.open('?mode=trading', '_blank');
                     }
@@ -5423,7 +5444,7 @@
                 document.getElementById('contentArea').innerHTML = `
                     <div class="lesson-list">
                         <h2>📖 ${t(subj.names)} — Lessons</h2>
-                        ${allComplete ? `<div style="text-align:center;margin-bottom:18px;"><button class="certificate-btn" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        ${allComplete ? `<div style="text-align:center;margin-bottom:14px;"><button class="certificate-btn" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
                         ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:40px;">✨ No lessons found</p>' :
                         lessons.map(l => {
                             const prog = userProgress[l.id] || 0;
@@ -5465,22 +5486,22 @@
                 document.getElementById('contentArea').innerHTML = `
                     <div class="detail-view">
                         <div class="back-btn" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
-                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;">${t(les.titles)}</h2>
-                        <div class="lesson-meta" style="margin:6px 0 4px;">
+                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:1.1rem;">${t(les.titles)}</h2>
+                        <div class="lesson-meta" style="margin:4px 0 2px;">
                             <span><i class="far fa-clock"></i> ${les.duration || 15} min</span>
                             <span class="badge ${les.level === 'Beginner' ? 'badge-beginner' : les.level === 'Intermediate' ? 'badge-intermediate' : 'badge-advanced'}">${les.level || 'Beginner'}</span>
                             ${prog >= 100 ? '<span class="badge badge-completed">✓ Completed</span>' : ''}
                             ${qs?.passed ? '<span class="badge badge-passed">Quiz Passed</span>' : qs ? '<span class="badge badge-failed">Quiz Failed</span>' : ''}
                         </div>
                         <div class="progress-bar"><div class="progress-fill" style="width:${prog}%"></div></div>
-                        <p style="font-size:0.76rem;color:var(--text-muted);">${prog}% complete</p>
+                        <p style="font-size:0.7rem;color:var(--text-muted);">${prog}% complete</p>
                         <div class="tabs">
                             <div class="tab active" data-tab="summary">📝 Summary</div>
                             <div class="tab" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
                             <div class="tab" data-tab="resources">📂 Resources</div>
                         </div>
                         <div class="tab-content" id="tabContent"></div>
-                        ${allComplete ? `<div style="text-align:center;margin:14px 0;"><button class="certificate-btn" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        ${allComplete ? `<div style="text-align:center;margin:12px 0;"><button class="certificate-btn" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
                         <div class="tts-controls">
                             <button class="tts-btn" id="playTTS"><i class="fas fa-play"></i> Play</button>
                             <button class="tts-btn" id="pauseTTS"><i class="fas fa-pause"></i></button>
@@ -5491,7 +5512,7 @@
                             <button class="btn-outline" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
                             <button class="btn-outline" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
                         </div>
-                        <div style="display:flex;justify-content:space-between;margin-top:22px;gap:12px;">
+                        <div style="display:flex;justify-content:space-between;margin-top:16px;gap:10px;">
                             <button class="tts-btn" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
                             <button class="tts-btn" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
                         </div>
@@ -5507,7 +5528,7 @@
                         '<p style="color:var(--text-muted);">No content available.</p>';
                     else if (tn === 'quiz') renderQuizTab(tc, les, id);
                     else tc.innerHTML =
-                        '<div style="padding:22px;background:#eff6ff;border-radius:16px;border:2px solid #3b82f6;">📂 Additional Resources</div>';
+                        '<div style="padding:18px;background:#eff6ff;border-radius:16px;border:2px solid #3b82f6;">📂 Additional Resources</div>';
                 }
                 tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
                 showTab('summary');
@@ -5536,7 +5557,7 @@
 
             function renderQuizTab(container, lesson, lessonId) {
                 if (!lesson.quiz || lesson.quiz.length === 0) { container.innerHTML =
-                        '<div style="padding:20px;text-align:center;background:#fffbf0;border-radius:16px;">🧠 No quiz available.</div>';
+                        '<div style="padding:18px;text-align:center;background:#fffbf0;border-radius:16px;">🧠 No quiz available.</div>';
                     return; }
                 const qs = quizScores[lessonId];
                 if (qs) {
@@ -5544,9 +5565,9 @@
                     container.innerHTML = `
                         <div class="quiz-container">
                             <h3 style="text-align:center;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
-                            <div style="text-align:center;font-size:3rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
+                            <div style="text-align:center;font-size:2.5rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
                             <p style="text-align:center;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
-                            <div style="text-align:center;margin-top:14px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
+                            <div style="text-align:center;margin-top:12px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
                         </div>`;
                     document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
                             lessonId, { method: 'POST' });
@@ -5563,11 +5584,11 @@
                     const q = lesson.quiz[qIdx];
                     container.innerHTML = `
                         <div class="quiz-container">
-                            <p style="font-size:0.8rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
+                            <p style="font-size:0.75rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
                             <p class="quiz-question">${t(q.question)}</p>
                             <div id="quizOptions"></div>
-                            <div style="display:flex;justify-content:space-between;margin-top:16px;gap:8px;">
-                                <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Previous</button>
+                            <div style="display:flex;justify-content:space-between;margin-top:14px;gap:6px;">
+                                <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
                                 <button class="btn btn-primary btn-sm" id="nextQBtn" ${qIdx >= lesson.quiz.length-1 ? 'style="display:none;"' : ''}>Next →</button>
                                 <button class="btn btn-success btn-sm" id="submitQuizBtn" ${qIdx < lesson.quiz.length-1 ? 'style="display:none;"' : ''}>✅ Submit Quiz</button>
                             </div>
@@ -5680,7 +5701,7 @@
                 modal.innerHTML = `
                     <div class="modal-content">
                         <h3>📝 Lesson Note</h3>
-                        <textarea id="noteText" style="width:100%;height:140px;padding:12px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--font);background:var(--bg-secondary);color:var(--text);resize:vertical;">${existing}</textarea>
+                        <textarea id="noteText" style="width:100%;height:120px;padding:10px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--font);background:var(--bg-secondary);color:var(--text);resize:vertical;">${existing}</textarea>
                         <div class="modal-actions">
                             <button class="btn btn-outline" id="closeNote">Cancel</button>
                             <button class="btn btn-primary" id="saveNote">💾 Save Note</button>
@@ -5705,7 +5726,7 @@
                 modal.innerHTML = `
                     <div class="modal-content">
                         <h3>🌐 Translate To</h3>
-                        ${Object.entries(langs).map(([c,n]) => `<button class="btn btn-outline" style="display:block;width:100%;margin:6px 0;justify-content:center;padding:12px;" data-lang="${c}">${n}</button>`).join('')}
+                        ${Object.entries(langs).map(([c,n]) => `<button class="btn btn-outline" style="display:block;width:100%;margin:4px 0;justify-content:center;padding:10px;" data-lang="${c}">${n}</button>`).join('')}
                         <div class="modal-actions"><button class="btn btn-outline" id="closeTrans">Cancel</button></div>
                     </div>`;
                 document.body.appendChild(modal);
@@ -5724,14 +5745,14 @@
                 const div = document.createElement('div');
                 div.style.cssText = 'position:fixed;left:-9999px;top:0;width:780px;';
                 div.innerHTML = `
-                    <div id="certCap" style="background:#fffdf7;border:10px double #c9a84c;padding:60px 50px;text-align:center;font-family:'Playfair Display',serif;border-radius:12px;">
-                        <div style="font-size:3rem;">🏅</div>
+                    <div id="certCap" style="background:#fffdf7;border:10px double #c9a84c;padding:50px 40px;text-align:center;font-family:'Playfair Display',serif;border-radius:12px;">
+                        <div style="font-size:2.5rem;">🏅</div>
                         <h2>Certificate of Completion</h2>
                         <p>This certifies that</p>
-                        <p style="font-size:1.8rem;color:#5b4af5;font-weight:700;">${currentUser?.username || 'Student'}</p>
+                        <p style="font-size:1.6rem;color:#5b4af5;font-weight:700;">${currentUser?.username || 'Student'}</p>
                         <p>has completed</p>
-                        <p style="font-size:1.5rem;font-weight:700;">${t(subj.names)}</p>
-                        <p style="color:#777;margin-top:20px;">Date: ${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>
+                        <p style="font-size:1.3rem;font-weight:700;">${t(subj.names)}</p>
+                        <p style="color:#777;margin-top:16px;">Date: ${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>
                     </div>`;
                 document.body.appendChild(div);
                 await new Promise(r => setTimeout(r, 300));
@@ -5773,7 +5794,7 @@
                                 <button class="btn btn-ghost btn-sm" id="exportBtn"><i class="fas fa-download"></i> Export</button>
                                 <button class="btn btn-ghost btn-sm" id="importBtn"><i class="fas fa-upload"></i> Import</button>
                             </div>
-                            <div id="adminSubjectList" style="flex:1;overflow-y:auto;padding:8px;"></div>
+                            <div id="adminSubjectList" style="flex:1;overflow-y:auto;padding:6px;"></div>
                         </div>
                         <div class="admin-right" id="adminRight">
                             <div style="text-align:center;padding:80px;color:var(--text-muted);">📋 Select a subject to manage lessons</div>
@@ -5801,7 +5822,7 @@
                 c.innerHTML = subjects.map((s, i) => `
                     <div class="admin-subject-item" data-id="${s.id}">
                         <span class="subj-label" style="cursor:pointer;flex:1;" onclick="selectAdminSubject('${s.id}')">${s.icon || '📁'} ${t(s.names)}</span>
-                        <div style="display:flex;gap:4px;">
+                        <div style="display:flex;gap:3px;">
                             <button class="btn-icon" onclick="moveSubject(${i},-1)">▲</button>
                             <button class="btn-icon" onclick="moveSubject(${i},1)">▼</button>
                             <button class="btn-icon" onclick="openSubjectEditModal('${s.id}')">✏️</button>
@@ -5875,21 +5896,21 @@
                     return; }
                 const lessons = subj.lessons || [];
                 container.innerHTML = `
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-                        <h3 style="font-weight:700;font-family:Outfit,sans-serif;">📖 ${t(subj.names)} — Lessons</h3>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+                        <h3 style="font-weight:700;font-family:Outfit,sans-serif;font-size:1rem;">📖 ${t(subj.names)} — Lessons</h3>
                         <button class="btn btn-primary" id="addLessonBtn"><i class="fas fa-plus"></i> Add Lesson</button>
                     </div>
                     <div>
                         ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:40px;">No lessons yet.</p>' :
                         lessons.map((l,i) => `
                             <div class="admin-lesson-row">
-                                <span>📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.76rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span>
-                                <div class="admin-lesson-actions" style="display:flex;gap:4px;flex-wrap:wrap;">
+                                <span>📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.7rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span>
+                                <div class="admin-lesson-actions" style="display:flex;gap:3px;flex-wrap:wrap;">
                                     <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)">▲</button>
                                     <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)">▼</button>
-                                    <button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn btn-info btn-sm" onclick="openQuizManager('${l.id}')"><i class="fas fa-question-circle"></i> Quiz</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')"><i class="fas fa-trash"></i> Delete</button>
+                                    <button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-info btn-sm" onclick="openQuizManager('${l.id}')"><i class="fas fa-question-circle"></i></button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>`).join('')}
                     </div>`;
@@ -5924,14 +5945,14 @@
                         <label>Title (English) <input id="lEn" value="${ex?.titles?.en || ''}"></label>
                         <label>Title (हिन्दी) <input id="lHi" value="${ex?.titles?.hi || ''}"></label>
                         <label>Title (বাংলা) <input id="lBn" value="${ex?.titles?.bn || ''}"></label>
-                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                            <label style="flex:1;min-width:100px;">Duration (min) <input type="number" id="lDur" value="${ex?.duration || 15}" min="1"></label>
-                            <label style="flex:1;min-width:100px;">Level <select id="lLvl"><option ${ex?.level==='Beginner'?'selected':''}>Beginner</option><option ${ex?.level==='Intermediate'?'selected':''}>Intermediate</option><option ${ex?.level==='Advanced'?'selected':''}>Advanced</option></select></label>
-                            <label style="flex:1;min-width:100px;">Pass Score <input type="number" id="lPass" value="${ex?.quizPassScore || 80}" min="0"></label>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                            <label style="flex:1;min-width:80px;">Duration (min) <input type="number" id="lDur" value="${ex?.duration || 15}" min="1"></label>
+                            <label style="flex:1;min-width:80px;">Level <select id="lLvl"><option ${ex?.level==='Beginner'?'selected':''}>Beginner</option><option ${ex?.level==='Intermediate'?'selected':''}>Intermediate</option><option ${ex?.level==='Advanced'?'selected':''}>Advanced</option></select></label>
+                            <label style="flex:1;min-width:80px;">Pass Score <input type="number" id="lPass" value="${ex?.quizPassScore || 80}" min="0"></label>
                         </div>
-                        <label>Content (English) <div id="qlEn" style="height:110px;">${ex?.contents?.en || ''}</div></label>
-                        <label>Content (हिन्दी) <div id="qlHi" style="height:110px;">${ex?.contents?.hi || ''}</div></label>
-                        <label>Content (বাংলা) <div id="qlBn" style="height:110px;">${ex?.contents?.bn || ''}</div></label>
+                        <label>Content (English) <div id="qlEn" style="height:100px;">${ex?.contents?.en || ''}</div></label>
+                        <label>Content (हिन्दी) <div id="qlHi" style="height:100px;">${ex?.contents?.hi || ''}</div></label>
+                        <label>Content (বাংলা) <div id="qlBn" style="height:100px;">${ex?.contents?.bn || ''}</div></label>
                         <div class="modal-actions">
                             <button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button>
                             <button class="btn btn-primary" id="saveLes">💾 Save</button>
@@ -5996,7 +6017,7 @@
                             const el = document.getElementById(id);
                             if (el) { const ta = document.createElement('textarea');
                                 ta.style.cssText =
-                                    'width:100%;height:110px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
+                                    'width:100%;height:100px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);';
                                 ta.value = el.innerHTML;
                                 el.parentNode.replaceChild(ta, el);
                                 ta.id = id; }
@@ -6014,13 +6035,13 @@
                 modal.className = 'modal';
                 modal.innerHTML = `
                     <div class="modal-content">
-                        <h3>📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.8rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
-                        <div id="quizList" style="max-height:280px;overflow-y:auto;margin-bottom:12px;">
+                        <h3>📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.75rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
+                        <div id="quizList" style="max-height:260px;overflow-y:auto;margin-bottom:10px;">
                             ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;">No questions yet.</p>' :
                             les.quiz.map((q,i) => `
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg-secondary);border-radius:10px;margin-bottom:5px;gap:8px;">
-                                    <span style="font-weight:500;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,45)}... (${q.points || 5}pts)</span>
-                                    <div style="display:flex;gap:5px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--bg-secondary);border-radius:10px;margin-bottom:4px;gap:6px;">
+                                    <span style="font-weight:500;font-size:0.8rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,40)}... (${q.points || 5}pts)</span>
+                                    <div style="display:flex;gap:4px;">
                                         <button class="btn btn-outline btn-sm" onclick="openQuizQEdit('${lessonId}',${i})"><i class="fas fa-edit"></i></button>
                                         <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})"><i class="fas fa-trash"></i></button>
                                     </div>
@@ -6137,7 +6158,7 @@
                 document.getElementById('app').innerHTML = `
                     <div class="auth-container">
                         <div class="auth-box">
-                            <div style="font-size:3rem;">${mode === 'login' ? '🔐' : '📝'}</div>
+                            <div style="font-size:2.5rem;">${mode === 'login' ? '🔐' : '📝'}</div>
                             <h2>${mode === 'login' ? 'Welcome Back' : 'Create Account'}</h2>
                             <p class="subtitle">${mode === 'login' ? 'Sign in to continue learning' : 'Join the Alamquant community'}</p>
                             ${mode === 'login' ? `
@@ -6152,7 +6173,7 @@
                                 <button class="btn btn-primary" id="authBtn">📝 Register</button>
                                 <div class="auth-switch">Already have an account? <a id="authSwitchLink">Login</a></div>
                             `}
-                            <button class="btn btn-outline btn-sm" id="authThemeTog" style="width:100%;margin-top:12px;justify-content:center;">${appTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}</button>
+                            <button class="btn btn-outline btn-sm" id="authThemeTog" style="width:100%;margin-top:10px;justify-content:center;">${appTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}</button>
                         </div>
                     </div>`;
                 document.getElementById('authThemeTog').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
