@@ -3034,6 +3034,60 @@
             color: #8b5cf6;
             border: 1px solid #8b5cf6;
         }
+
+        /* ─── HISTORY PANEL ENHANCEMENTS ────────────────────────────────── */
+        .history-header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 0.55rem;
+            color: var(--mt5-text);
+        }
+        .history-header-actions span {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .history-header-actions span:hover {
+            background: var(--mt5-nav-active);
+            color: var(--mt5-text-bright);
+        }
+        .history-summary-row {
+            display: flex;
+            gap: 16px;
+            padding: 4px 0;
+            font-size: 0.55rem;
+            border-bottom: 1px solid var(--mt5-border);
+            margin-bottom: 6px;
+        }
+        .history-summary-row .label {
+            color: var(--mt5-text);
+        }
+        .history-summary-row .value {
+            font-weight: 700;
+        }
+        .history-summary-row .value.green {
+            color: var(--mt5-green);
+        }
+        .history-summary-row .value.red {
+            color: var(--mt5-red);
+        }
+        .history-summary-row .value.blue {
+            color: var(--mt5-blue);
+        }
+        .history-item .left .symbol-badge {
+            font-size: 0.4rem;
+            background: var(--mt5-input);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--mt5-text);
+            display: inline-block;
+        }
+        .history-item .left .time-stamp {
+            font-size: 0.4rem;
+            color: var(--mt5-text-muted);
+        }
     </style>
 </head>
 <body>
@@ -3146,7 +3200,7 @@
             let chartVisibilityHandler = null;
             let chartReinitCounter = 0;
             let serverWS = null;
-            let wsConnected = false; // ✅ নতুন ফ্ল্যাগ
+            let wsConnected = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -3237,6 +3291,40 @@
                 setTimeout(() => { el.style.opacity = '0';
                     el.style.transition = 'opacity 0.3s';
                     setTimeout(() => el.remove(), 300); }, 2800);
+            }
+
+            // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
+            function safeUpdateCandle(candle, source = '') {
+                if (!simCandleSeries) {
+                    console.warn('⚠️ safeUpdateCandle: simCandleSeries not ready', source);
+                    return false;
+                }
+                if (!candle || typeof candle !== 'object') {
+                    console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
+                    return false;
+                }
+                const required = ['time', 'open', 'high', 'low', 'close'];
+                for (const field of required) {
+                    if (candle[field] === undefined || candle[field] === null || isNaN(candle[field])) {
+                        console.warn('⚠️ safeUpdateCandle: ' + field + ' is invalid', candle[field], source);
+                        return false;
+                    }
+                }
+                if (candle.volume === undefined || candle.volume === null || isNaN(candle.volume)) {
+                    candle.volume = 0;
+                }
+                if (candle.high < candle.low) {
+                    const tmp = candle.high;
+                    candle.high = candle.low;
+                    candle.low = tmp;
+                }
+                try {
+                    simCandleSeries.update(candle);
+                    return true;
+                } catch (err) {
+                    console.warn('⚠️ safeUpdateCandle: update failed', err.message, source);
+                    return false;
+                }
             }
 
             // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
@@ -3508,14 +3596,12 @@
                                     close: +k.c,
                                     volume: +k.v
                                 };
-                                // ক্যান্ডেল স্যানিটাইজ করুন
                                 const safeCandle = sanitizeCandle(candle);
                                 if (!safeCandle) return;
                                 simLastPrices[symbol] = safeCandle.close;
                                 lastBinancePrice[symbol] = safeCandle.close;
                                 updateMobileTopBar();
                                 if (symbol === simCurrentSymbol && simCandleSeries && simCurrentCandle) {
-                                    // থ্রেশহোল্ড চেক
                                     const currentCandle = simCurrentCandle;
                                     const priceChange = Math.abs(safeCandle.close - currentCandle.close);
                                     const highChange = Math.abs(safeCandle.high - currentCandle.high);
@@ -3527,17 +3613,14 @@
                                         else { simAllCandles.push(safeCandle); if (simAllCandles.length > 10000)
                                                 simAllCandles = simAllCandles.slice(-10000); }
                                         simCurrentCandle = safeCandle;
-                                        try { simCandleSeries.update(safeCandle); } catch (e) { console.warn(
-                                                'Candle update error:', e); }
+                                        safeUpdateCandle(safeCandle, 'WebSocket full');
                                         updateAllIndicators();
                                         checkAndExecuteSLTP();
                                         updateSimUI();
                                     } else {
-                                        // সামান্য পরিবর্তন
                                         currentCandle.close = safeCandle.close;
                                         currentCandle.volume = safeCandle.volume;
-                                        try { simCandleSeries.update(currentCandle); } catch (e) { console.warn(
-                                                'Candle update error:', e); }
+                                        safeUpdateCandle(currentCandle, 'WebSocket partial');
                                         updateAllIndicators();
                                         updateSimUI();
                                     }
@@ -3982,7 +4065,6 @@
                     // ─── সিমুলেশন ইন্টারভাল ──────────────────────────────────
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
-                        // WebSocket সংযুক্ত থাকলে চার্ট আপডেট করি না
                         if (wsConnected && lastBinancePrice[simCurrentSymbol]) {
                             const price = lastBinancePrice[simCurrentSymbol];
                             if (isValidNumber(price) && price > 0) {
@@ -3992,8 +4074,6 @@
                             }
                             return;
                         }
-
-                        // WebSocket ডিসকানেক্ট → সিমুলেশন
                         if (!simCurrentCandle || !simCandleSeries) return;
                         let price = simLastPrices[simCurrentSymbol];
                         if (!isValidNumber(price)) {
@@ -4012,8 +4092,7 @@
                         simCurrentCandle.close = price;
                         simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
                         .random() * 3000);
-                        try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
-                                'Simulation update error:', e); }
+                        safeUpdateCandle(simCurrentCandle, 'simulation');
                         updateAllIndicators();
                         checkAndExecuteSLTP();
                         updateSimUI();
@@ -4046,8 +4125,7 @@
                             });
                             if (newCandle) {
                                 simCurrentCandle = newCandle;
-                                try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
-                                        'Candle close update error:', e); }
+                                safeUpdateCandle(simCurrentCandle, 'candle close');
                                 updateAllIndicators();
                             }
                         }
@@ -4935,10 +5013,10 @@
                     <div style="padding:3px 0;">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">History</h4>
-                            <div style="display:flex;gap:4px;">
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">⟳</span>
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">⇅</span>
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">📅</span>
+                            <div class="history-header-actions">
+                                <span title="Refresh">⟳</span>
+                                <span title="Sort">⇅</span>
+                                <span title="Calendar">📅</span>
                             </div>
                         </div>
                         <div style="font-size:0.5rem;color:var(--mt5-text);">All symbols</div>
@@ -4948,9 +5026,9 @@
                             <div class="htab" data-htab="deals" onclick="switchHistoryTab('deals')">DEALS</div>
                         </div>
                         <div id="historyContent">
-                            <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
-                                <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
-                                <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                            <div class="history-summary-row">
+                                <span><span class="label">Profit:</span> <span class="value ${profitTotal>=0?'green':'red'}">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                                <span><span class="label">Deposit:</span> <span class="value blue">${depositTotal.toFixed(2)}</span></span>
                             </div>
                             <div id="historyList">
                                 ${transactions.length === 0 ? '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No transactions</div>' :
@@ -4964,7 +5042,7 @@
                                     return `<div class="history-item">
                                         <div class="left">
                                             <span class="type ${typeCls}">${t.type.toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
-                                            <span class="detail">${detail} • ${timeStr}</span>
+                                            <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
                                         </div>
                                         <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
                                     </div>`;
@@ -5011,16 +5089,16 @@
                             listHtml += `<div class="history-item">
                                 <div class="left">
                                     <span class="type ${typeCls}">${(t.type||'').toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
-                                    <span class="detail">${detail} • ${timeStr}</span>
+                                    <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
                                 </div>
                                 <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
                             </div>`;
                         });
                     }
                     content.innerHTML = `
-                        <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
-                            <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
-                            <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                        <div class="history-summary-row">
+                            <span><span class="label">Profit:</span> <span class="value ${profitTotal>=0?'green':'red'}">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                            <span><span class="label">Deposit:</span> <span class="value blue">${depositTotal.toFixed(2)}</span></span>
                         </div>
                         <div id="historyList">${listHtml}</div>
                         ${filtered.length > 30 ? '<div style="text-align:center;color:var(--mt5-text);font-size:0.5rem;padding:4px 0;">No more history</div>' : ''}
@@ -5199,7 +5277,6 @@
                     histEl.innerHTML = histHtml;
                 }
 
-                // Status bar updates
                 const sp = document.getElementById('statusPrice');
                 if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
                 const st = document.getElementById('statusTime');
@@ -5244,7 +5321,6 @@
                 connectBinanceWS();
                 connectServerWS();
 
-                // ─── EXIT HANDLER ──────────────────────────────────────────
                 window._beforeUnloadHandler = function(e) {
                     if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         e.preventDefault();
@@ -5374,7 +5450,6 @@
                         </div>
                     </div>`;
 
-                // ─── EVENT BINDINGS ──────────────────────────────────────────
                 document.getElementById('terminalExitBtn').onclick = () => {
                     customConfirm('Exit Trading Terminal?', () => {
                         isExitingTerminal = true;
@@ -5573,7 +5648,6 @@
                                 <div style="margin-top:6px;display:flex;gap:4px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);font-size:0.5rem;">Close</button></div>
                             </div>
                         </div>
-                        <!-- Mobile Draw Overlay -->
                         <div class="mt5-indicator-overlay" id="mt5DrawOverlay">
                             <div class="mt5-indicator-sheet">
                                 <h3>📐 Draw Line</h3>
@@ -5588,7 +5662,6 @@
                         </div>
                     </div>`;
 
-                // ─── MOBILE EVENT BINDINGS ──────────────────────────────────
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
@@ -5683,7 +5756,6 @@
                 document.getElementById('mobileBuyBtn').onclick = () => { placeSimOrderMobile('buy',
                         currentMobileLot); };
 
-                // ─── MOBILE DRAW ─────────────────────────────────────────────
                 document.getElementById('mt5DrawBtn').onclick = () => {
                     const overlay = document.getElementById('mt5DrawOverlay');
                     overlay.classList.toggle('show');
@@ -6772,7 +6844,6 @@
                     if (currentUser?.username === 'admin') isAdmin = true;
                     if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
 
-                    // UI রিফ্রেশ
                     if (document.getElementById('subjectList')) {
                         renderSubjectList();
                         if (currentLessonId) showLessonDetail(currentLessonId);
@@ -7289,6 +7360,7 @@
             window.renderApp = renderApp;
             window.addLineMobile = addLineMobile;
             window.switchHistoryTab = switchHistoryTab;
+            window.safeUpdateCandle = safeUpdateCandle;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
