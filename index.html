@@ -6321,11 +6321,32 @@
                 document.body.removeChild(div);
             }
 
-             // ─── ADMIN PANEL ──────────────────────────────────────────────────
+            // ─── ADMIN PANEL ──────────────────────────────────────────────────
             function renderAdminPanel() {
-                document.getElementById('app').innerHTML =
-                    `<div class="admin-container"><div class="admin-left"><div class="admin-header"><span style="font-size:0.75rem;"><i class="fas fa-cogs"></i> Admin Panel</span><button class="admin-theme-toggle" id="adminThemeToggle" style="font-size:0.45rem;">${appTheme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button><button class="btn btn-ghost btn-sm" id="logoutBtn" style="font-size:0.45rem;"><i class="fas fa-sign-out-alt"></i> Logout</button></div><div class="admin-actions"><button class="btn btn-primary btn-sm" id="addSubjectBtn" style="font-size:0.45rem;"><i class="fas fa-plus"></i> Subject</button><button class="btn btn-ghost btn-sm" id="exportBtn" style="font-size:0.45rem;"><i class="fas fa-download"></i> Export</button><button class="btn btn-ghost btn-sm" id="importBtn" style="font-size:0.45rem;"><i class="fas fa-upload"></i> Import</button></div><div id="adminSubjectList" style="flex:1;overflow-y:auto;padding:3px;"></div></div><div class="admin-right" id="adminRight"><div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject to manage lessons</div></div></div>`;
-                document.getElementById('logoutBtn').onclick = () => { customConfirm('Exit App?', () => { logout(); }); };
+                document.getElementById('app').innerHTML = `
+                    <div class="admin-container">
+                        <div class="admin-left">
+                            <div class="admin-header">
+                                <span style="font-size:0.75rem;"><i class="fas fa-cogs"></i> Admin Panel</span>
+                                <button class="admin-theme-toggle" id="adminThemeToggle" style="font-size:0.45rem;">${appTheme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
+                                <button class="btn btn-ghost btn-sm" id="logoutBtn" style="font-size:0.45rem;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                            </div>
+                            <div class="admin-actions">
+                                <button class="btn btn-primary btn-sm" id="addSubjectBtn" style="font-size:0.45rem;"><i class="fas fa-plus"></i> Subject</button>
+                                <button class="btn btn-ghost btn-sm" id="exportBtn" style="font-size:0.45rem;"><i class="fas fa-download"></i> Export</button>
+                                <button class="btn btn-ghost btn-sm" id="importBtn" style="font-size:0.45rem;"><i class="fas fa-upload"></i> Import</button>
+                            </div>
+                            <div id="adminSubjectList" style="flex:1;overflow-y:auto;padding:3px;"></div>
+                        </div>
+                        <div class="admin-right" id="adminRight">
+                            <div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject to manage lessons</div>
+                        </div>
+                    </div>`;
+                document.getElementById('logoutBtn').onclick = () => {
+                    customConfirm('Exit App?', () => {
+                        logout();
+                    });
+                };
                 document.getElementById('adminThemeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
                     applyTheme();
@@ -6344,9 +6365,16 @@
             function renderAdminSubjectList() {
                 const c = document.getElementById('adminSubjectList');
                 if (!c) return;
-                c.innerHTML = subjects.map((s, i) =>
-                    `<div class="admin-subject-item" data-id="${s.id}"><span class="subj-label" style="cursor:pointer;flex:1;font-size:0.65rem;" onclick="selectAdminSubject('${s.id}')">${s.icon || '📁'} ${t(s.names)}</span><div style="display:flex;gap:2px;"><button class="btn-icon" onclick="moveSubject(${i},-1)" style="font-size:0.45rem;">▲</button><button class="btn-icon" onclick="moveSubject(${i},1)" style="font-size:0.45rem;">▼</button><button class="btn-icon" onclick="openSubjectEditModal('${s.id}')" style="font-size:0.45rem;">✏️</button><button class="btn-icon danger" onclick="deleteSubject('${s.id}')" style="font-size:0.45rem;">🗑</button></div></div>`
-                ).join('');
+                c.innerHTML = subjects.map((s, i) => `
+                    <div class="admin-subject-item" data-id="${s.id}">
+                        <span class="subj-label" style="cursor:pointer;flex:1;font-size:0.65rem;" onclick="selectAdminSubject('${s.id}')">${s.icon || '📁'} ${t(s.names)}</span>
+                        <div style="display:flex;gap:2px;">
+                            <button class="btn-icon" onclick="moveSubject(${i},-1)" style="font-size:0.45rem;">▲</button>
+                            <button class="btn-icon" onclick="moveSubject(${i},1)" style="font-size:0.45rem;">▼</button>
+                            <button class="btn-icon" onclick="openSubjectEditModal('${s.id}')" style="font-size:0.45rem;">✏️</button>
+                            <button class="btn-icon danger" onclick="deleteSubject('${s.id}')" style="font-size:0.45rem;">🗑</button>
+                        </div>
+                    </div>`).join('');
             }
 
             window.selectAdminSubject = function(id) { selectedSubjectId = id;
@@ -6369,8 +6397,18 @@
                 const ex = id ? subjects.find(s => s.id === id) : null;
                 const modal = document.createElement('div');
                 modal.className = 'modal';
-                modal.innerHTML =
-                    `<div class="modal-content"><h3>${ex ? '✏️ Edit' : '➕ Add'} Subject</h3><label style="font-size:0.65rem;">English Name <input id="snEn" value="${ex?.names?.en || ''}" placeholder="e.g., Trading Basics" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">हिन्दी Name <input id="snHi" value="${ex?.names?.hi || ''}" placeholder="हिन्दी में नाम" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">বাংলা Name <input id="snBn" value="${ex?.names?.bn || ''}" placeholder="বাংলায় নাম" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Icon <input id="snIcon" value="${ex?.icon || '📁'}" placeholder="📁" style="font-size:0.65rem;"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button><button class="btn btn-primary" id="saveSubj" style="font-size:0.6rem;">💾 Save</button></div></div>`;
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3>${ex ? '✏️ Edit' : '➕ Add'} Subject</h3>
+                        <label style="font-size:0.65rem;">English Name <input id="snEn" value="${ex?.names?.en || ''}" placeholder="e.g., Trading Basics" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">हिन्दी Name <input id="snHi" value="${ex?.names?.hi || ''}" placeholder="हिन्दी में नाम" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">বাংলা Name <input id="snBn" value="${ex?.names?.bn || ''}" placeholder="বাংলায় নাম" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Icon <input id="snIcon" value="${ex?.icon || '📁'}" placeholder="📁" style="font-size:0.65rem;"></label>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
+                            <button class="btn btn-primary" id="saveSubj" style="font-size:0.6rem;">💾 Save</button>
+                        </div>
+                    </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveSubj').onclick = async () => {
@@ -6403,8 +6441,25 @@
                         '<div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject</div>';
                     return; }
                 const lessons = subj.lessons || [];
-                container.innerHTML =
-                    `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px;"><h3 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.8rem;">📖 ${t(subj.names)} — Lessons</h3><button class="btn btn-primary" id="addLessonBtn" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Lesson</button></div><div>${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">No lessons yet.</p>' : lessons.map((l,i) => `<div class="admin-lesson-row"><span style="font-size:0.65rem;">📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.55rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span><div class="admin-lesson-actions" style="display:flex;gap:2px;flex-wrap:wrap;"><button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)" style="font-size:0.4rem;">▲</button><button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)" style="font-size:0.4rem;">▼</button><button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-edit"></i></button><button class="btn btn-info btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-question-circle"></i></button><button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-trash"></i></button></div></div>`).join('')}</div>`;
+                container.innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px;">
+                        <h3 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.8rem;">📖 ${t(subj.names)} — Lessons</h3>
+                        <button class="btn btn-primary" id="addLessonBtn" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Lesson</button>
+                    </div>
+                    <div>
+                        ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">No lessons yet.</p>' :
+                        lessons.map((l,i) => `
+                            <div class="admin-lesson-row">
+                                <span style="font-size:0.65rem;">📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.55rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span>
+                                <div class="admin-lesson-actions" style="display:flex;gap:2px;flex-wrap:wrap;">
+                                    <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)" style="font-size:0.4rem;">▲</button>
+                                    <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)" style="font-size:0.4rem;">▼</button>
+                                    <button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-info btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-question-circle"></i></button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>`).join('')}
+                    </div>`;
                 document.getElementById('addLessonBtn').onclick = () => openLessonEditModal(null);
             }
 
@@ -6430,8 +6485,25 @@
                 const ex = id ? (subj.lessons || []).find(l => l.id === id) : null;
                 const modal = document.createElement('div');
                 modal.className = 'modal';
-                modal.innerHTML =
-                    `<div class="modal-content"><h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Lesson</h3><label style="font-size:0.65rem;">Title (English) <input id="lEn" value="${ex?.titles?.en || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Title (हिन्दी) <input id="lHi" value="${ex?.titles?.hi || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Title (বাংলা) <input id="lBn" value="${ex?.titles?.bn || ''}" style="font-size:0.65rem;"></label><div style="display:flex;gap:4px;flex-wrap:wrap;"><label style="flex:1;min-width:50px;font-size:0.65rem;">Duration (min) <input type="number" id="lDur" value="${ex?.duration || 15}" min="1" style="font-size:0.65rem;"></label><label style="flex:1;min-width:50px;font-size:0.65rem;">Level <select id="lLvl" style="font-size:0.65rem;"><option ${ex?.level==='Beginner'?'selected':''}>Beginner</option><option ${ex?.level==='Intermediate'?'selected':''}>Intermediate</option><option ${ex?.level==='Advanced'?'selected':''}>Advanced</option></select></label><label style="flex:1;min-width:50px;font-size:0.65rem;">Pass Score <input type="number" id="lPass" value="${ex?.quizPassScore || 80}" min="0" style="font-size:0.65rem;"></label></div><label style="font-size:0.65rem;">Content (English) <div id="qlEn" style="height:70px;">${ex?.contents?.en || ''}</div></label><label style="font-size:0.65rem;">Content (हिन्दी) <div id="qlHi" style="height:70px;">${ex?.contents?.hi || ''}</div></label><label style="font-size:0.65rem;">Content (বাংলা) <div id="qlBn" style="height:70px;">${ex?.contents?.bn || ''}</div></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button><button class="btn btn-primary" id="saveLes" style="font-size:0.6rem;">💾 Save</button></div></div>`;
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Lesson</h3>
+                        <label style="font-size:0.65rem;">Title (English) <input id="lEn" value="${ex?.titles?.en || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Title (हिन्दी) <input id="lHi" value="${ex?.titles?.hi || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Title (বাংলা) <input id="lBn" value="${ex?.titles?.bn || ''}" style="font-size:0.65rem;"></label>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                            <label style="flex:1;min-width:50px;font-size:0.65rem;">Duration (min) <input type="number" id="lDur" value="${ex?.duration || 15}" min="1" style="font-size:0.65rem;"></label>
+                            <label style="flex:1;min-width:50px;font-size:0.65rem;">Level <select id="lLvl" style="font-size:0.65rem;"><option ${ex?.level==='Beginner'?'selected':''}>Beginner</option><option ${ex?.level==='Intermediate'?'selected':''}>Intermediate</option><option ${ex?.level==='Advanced'?'selected':''}>Advanced</option></select></label>
+                            <label style="flex:1;min-width:50px;font-size:0.65rem;">Pass Score <input type="number" id="lPass" value="${ex?.quizPassScore || 80}" min="0" style="font-size:0.65rem;"></label>
+                        </div>
+                        <label style="font-size:0.65rem;">Content (English) <div id="qlEn" style="height:70px;">${ex?.contents?.en || ''}</div></label>
+                        <label style="font-size:0.65rem;">Content (हिन्दी) <div id="qlHi" style="height:70px;">${ex?.contents?.hi || ''}</div></label>
+                        <label style="font-size:0.65rem;">Content (বাংলা) <div id="qlBn" style="height:70px;">${ex?.contents?.bn || ''}</div></label>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
+                            <button class="btn btn-primary" id="saveLes" style="font-size:0.6rem;">💾 Save</button>
+                        </div>
+                    </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 if (typeof Quill === 'undefined') {
@@ -6444,12 +6516,16 @@
                     link.href = 'https://cdn.quilljs.com/1.3.6/quill.snow.css';
                     document.head.appendChild(link);
                     setTimeout(initQuillEditors, 500);
-                } else initQuillEditors();
+                } else {
+                    initQuillEditors();
+                }
 
                 function initQuillEditors() {
-                    const tb = [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], [
-                        'clean'
-                    ]];
+                    const tb = [
+                        ['bold', 'italic', 'underline'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['clean']
+                    ];
                     if (typeof Quill === 'undefined') return;
                     const qlEn = new Quill(document.getElementById('qlEn'), { theme: 'snow', modules: { toolbar: tb } });
                     const qlHi = new Quill(document.getElementById('qlHi'), { theme: 'snow', modules: { toolbar: tb } });
@@ -6503,8 +6579,23 @@
                 if (!les.quiz) les.quiz = [];
                 const modal = document.createElement('div');
                 modal.className = 'modal';
-                modal.innerHTML =
-                    `<div class="modal-content"><h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3><div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' : les.quiz.map((q,i) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--bg-secondary);border-radius:6px;margin-bottom:2px;gap:4px;"><span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span><div style="display:flex;gap:2px;"><button class="btn btn-outline btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button></div></div>`).join('')}</div><button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div></div>`;
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
+                        <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
+                            ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
+                            les.quiz.map((q,i) => `
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--bg-secondary);border-radius:6px;margin-bottom:2px;gap:4px;">
+                                    <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
+                                    <div style="display:flex;gap:2px;">
+                                        <button class="btn btn-outline btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;">✏️</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button>
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div>
+                    </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove();
                         showAdminLessonManager(); } });
@@ -6531,24 +6622,46 @@
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.style.zIndex = '250';
-                modal.innerHTML =
-                    `<div class="modal-content"><h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3><label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>${['a','b','c','d'].map(o => `<label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>`).join('')}<label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label><label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Exp EN<input id="expEn" value="${ex?.explanation?.en || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Exp HI<input id="expHi" value="${ex?.explanation?.hi || ''}" style="font-size:0.65rem;"></label><label style="font-size:0.65rem;">Exp BN<input id="expBn" value="${ex?.explanation?.bn || ''}" style="font-size:0.65rem;"></label><div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button><button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button></div></div>`;
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3>
+                        <label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>
+                        ${['a','b','c','d'].map(o => `
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label>
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label>
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>
+                        `).join('')}
+                        <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
+                        <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Exp EN<input id="expEn" value="${ex?.explanation?.en || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Exp HI<input id="expHi" value="${ex?.explanation?.hi || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Exp BN<input id="expBn" value="${ex?.explanation?.bn || ''}" style="font-size:0.65rem;"></label>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
+                            <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
+                        </div>
+                    </div>`;
                 document.body.appendChild(modal);
                 if (ex) document.getElementById('qCor').value = ex.correct || 'a';
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
                 document.getElementById('saveQ').onclick = async () => {
-                    const qData = { id: ex?.id || ('q-' + Date.now()), question: { en: document.getElementById(
-                                'qqEn').value.trim(), hi: document.getElementById('qqHi').value.trim(),
-                            bn: document.getElementById('qqBn').value.trim() }, options: ['a', 'b',
-                            'c', 'd'
-                        ].map(o => ({ id: o, text: { en: document.getElementById('o' + o + 'En')
-                                    .value.trim(), hi: document.getElementById('o' + o + 'Hi')
-                                    .value.trim(), bn: document.getElementById('o' + o + 'Bn')
-                                    .value.trim() } })), correct: document.getElementById('qCor')
-                            .value, points: parseInt(document.getElementById('qPts').value) || 5,
+                    const qData = {
+                        id: ex?.id || ('q-' + Date.now()),
+                        question: { en: document.getElementById('qqEn').value.trim(), hi: document
+                                .getElementById('qqHi').value.trim(), bn: document.getElementById('qqBn')
+                                .value.trim() },
+                        options: ['a', 'b', 'c', 'd'].map(o => ({ id: o, text: { en: document.getElementById(
+                                    'o' + o + 'En').value.trim(), hi: document.getElementById('o' +
+                                    o + 'Hi').value.trim(), bn: document.getElementById('o' + o +
+                                    'Bn').value.trim() } })),
+                        correct: document.getElementById('qCor').value,
+                        points: parseInt(document.getElementById('qPts').value) || 5,
                         explanation: { en: document.getElementById('expEn').value.trim(), hi: document
                                 .getElementById('expHi').value.trim(), bn: document.getElementById(
-                                'expBn').value.trim() } };
+                                'expBn').value.trim() }
+                    };
                     if (!qData.question.en) return alert('⚠️ English question required');
                     try {
                         if (ex) { await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'PUT',
@@ -6588,8 +6701,27 @@
             // ─── AUTH ──────────────────────────────────────────────────────────
             function renderAuthPage() {
                 const mode = new URLSearchParams(window.location.search).get('auth') || 'login';
-                document.getElementById('app').innerHTML =
-                    `<div class="auth-container-glass"><div class="auth-box-glass"><div style="font-size:2.2rem;">${mode === 'login' ? '🔐' : '📝'}</div><h2>${mode === 'login' ? 'Welcome Back' : 'Create Account'}</h2><p class="subtitle">${mode === 'login' ? 'Sign in to continue learning' : 'Join the Alamquant community'}</p>${mode === 'login' ? `<input type="text" id="authUsername" placeholder="Username" value="admin"><input type="password" id="authPassword" placeholder="Password" value="admin123"><button class="btn btn-primary" id="authBtn" style="font-size:0.7rem;">🔓 Sign In</button><div class="auth-switch">Don't have an account? <a id="authSwitchLink">Register</a></div>` : `<input type="text" id="authUsername" placeholder="Username"><input type="password" id="authPassword" placeholder="Password (min 6 chars)"><input type="password" id="authConfirm" placeholder="Confirm Password"><button class="btn btn-primary" id="authBtn" style="font-size:0.7rem;">📝 Register</button><div class="auth-switch">Already have an account? <a id="authSwitchLink">Login</a></div>`}<button class="btn btn-outline btn-sm" id="authThemeTog" style="width:100%;margin-top:6px;justify-content:center;font-size:0.6rem;">${appTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}</button></div></div>`;
+                document.getElementById('app').innerHTML = `
+                    <div class="auth-container">
+                        <div class="auth-box">
+                            <div style="font-size:1.8rem;">${mode === 'login' ? '🔐' : '📝'}</div>
+                            <h2>${mode === 'login' ? 'Welcome Back' : 'Create Account'}</h2>
+                            <p class="subtitle">${mode === 'login' ? 'Sign in to continue learning' : 'Join the Alamquant community'}</p>
+                            ${mode === 'login' ? `
+                                <input type="text" id="authUsername" placeholder="Username" value="admin">
+                                <input type="password" id="authPassword" placeholder="Password" value="admin123">
+                                <button class="btn btn-primary" id="authBtn" style="font-size:0.7rem;">🔓 Sign In</button>
+                                <div class="auth-switch">Don't have an account? <a id="authSwitchLink">Register</a></div>
+                            ` : `
+                                <input type="text" id="authUsername" placeholder="Username">
+                                <input type="password" id="authPassword" placeholder="Password (min 6 chars)">
+                                <input type="password" id="authConfirm" placeholder="Confirm Password">
+                                <button class="btn btn-primary" id="authBtn" style="font-size:0.7rem;">📝 Register</button>
+                                <div class="auth-switch">Already have an account? <a id="authSwitchLink">Login</a></div>
+                            `}
+                            <button class="btn btn-outline btn-sm" id="authThemeTog" style="width:100%;margin-top:6px;justify-content:center;font-size:0.6rem;">${appTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}</button>
+                        </div>
+                    </div>`;
                 document.getElementById('authThemeTog').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
                     applyTheme();
@@ -6626,9 +6758,10 @@
                             currentUser = res.user;
                             localStorage.setItem(TOKEN_KEY, token);
                             localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-                            if (!userAccountNo || userAccountNo === 'ACC-000000') { userAccountNo = 'ACC-' +
-                                    String(Math.floor(Math.random() * 900000) + 100000);
-                                saveAccountNo(); }
+                            if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                                saveAccountNo();
+                            }
                             showToast('✅ Welcome back, ' + username + '!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
@@ -6643,9 +6776,10 @@
                 try {
                     loadPortfolioFromStorage();
                     loadPendingOrders();
-                    if (!userAccountNo || userAccountNo === 'ACC-000000') { userAccountNo = 'ACC-' + String(Math.floor(
-                            Math.random() * 900000) + 100000);
-                        saveAccountNo(); }
+                    if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                        userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                        saveAccountNo();
+                    }
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
                         apiFetch('/subjects').catch(() => []),
                         apiFetch('/progress').catch(() => ({})),
@@ -6661,9 +6795,9 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.positions = portRes.positions || portRes.holdings || [];
-                        portfolio.transactions = portRes.transactions || [];
-                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
+                        portfolio.positions = portRes.positions || [];
+                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
+                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
@@ -6672,24 +6806,32 @@
                     savePortfolioToStorage();
                     if (currentUser?.username === 'admin') isAdmin = true;
                     if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
-                    if (document.getElementById('subjectList')) { renderSubjectList(); if (currentLessonId)
-                            showLessonDetail(currentLessonId);
-                        else showLessonList(); } else if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
-                        updateSimUI(); }
+
+                    // UI রিফ্রেশ
+                    if (document.getElementById('subjectList')) {
+                        renderSubjectList();
+                        if (currentLessonId) showLessonDetail(currentLessonId);
+                        else showLessonList();
+                    } else if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
+                        updateSimUI();
+                    }
                     applyTheme();
                     connectBinanceWS();
                     connectServerWS();
-                } catch (e) { console.error('Background load error:', e); if (e.message?.includes('Session expired'))
-                    logout(); }
+                } catch (e) {
+                    console.error('Background load error:', e);
+                    if (e.message?.includes('Session expired')) logout();
+                }
             }
 
             async function loadAllData() {
                 if (!token || !currentUser) { renderAuthPage(); return; }
                 loadPortfolioFromStorage();
                 loadPendingOrders();
-                if (!userAccountNo || userAccountNo === 'ACC-000000') { userAccountNo = 'ACC-' + String(Math.floor(Math
-                        .random() * 900000) + 100000);
-                    saveAccountNo(); }
+                if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                    saveAccountNo();
+                }
                 try {
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
                         apiFetch('/subjects').catch(() => []),
@@ -6706,9 +6848,9 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.positions = portRes.positions || portRes.holdings || [];
-                        portfolio.transactions = portRes.transactions || [];
-                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
+                        portfolio.positions = portRes.positions || [];
+                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
+                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
@@ -6721,8 +6863,11 @@
                     renderApp();
                     connectBinanceWS();
                     connectServerWS();
-                } catch (e) { console.error('Load error:', e); if (e.message?.includes('Session expired')) logout();
-                    else renderApp(); }
+                } catch (e) {
+                    console.error('Load error:', e);
+                    if (e.message?.includes('Session expired')) logout();
+                    else renderApp();
+                }
             }
 
             function renderApp() {
@@ -6744,17 +6889,21 @@
                 for (let i = 0; i < period; i++) sum += data[i].close;
                 let prevEma = sum / period;
                 ema.push({ time: data[period - 1].time, value: +prevEma.toFixed(4) });
-                for (let i = period; i < data.length; i++) { prevEma = data[i].close * k + prevEma * (1 - k);
-                    ema.push({ time: data[i].time, value: +prevEma.toFixed(4) }); }
+                for (let i = period; i < data.length; i++) {
+                    prevEma = data[i].close * k + prevEma * (1 - k);
+                    ema.push({ time: data[i].time, value: +prevEma.toFixed(4) });
+                }
                 return ema;
             }
 
             function calculateSMA(data, period) {
                 if (data.length < period) return [];
                 const sma = [];
-                for (let i = period - 1; i < data.length; i++) { let sum = 0; for (let j = 0; j < period; j++) sum +=
-                        data[i - j].close;
-                    sma.push({ time: data[i].time, value: +(sum / period).toFixed(4) }); }
+                for (let i = period - 1; i < data.length; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < period; j++) sum += data[i - j].close;
+                    sma.push({ time: data[i].time, value: +(sum / period).toFixed(4) });
+                }
                 return sma;
             }
 
@@ -6780,9 +6929,11 @@
                 const rsi = [];
                 let avgGain = 0,
                     avgLoss = 0;
-                for (let i = 1; i <= period; i++) { const diff = data[i].close - data[i - 1].close; if (diff > 0)
-                        avgGain += diff;
-                    else avgLoss -= diff; }
+                for (let i = 1; i <= period; i++) {
+                    const diff = data[i].close - data[i - 1].close;
+                    if (diff > 0) avgGain += diff;
+                    else avgLoss -= diff;
+                }
                 avgGain /= period;
                 avgLoss /= period;
                 for (let i = period; i < data.length; i++) {
@@ -6802,15 +6953,19 @@
                 const emaFast = calculateEMA(data, fast);
                 const emaSlow = calculateEMA(data, slow);
                 const macdLine = [];
-                for (let i = 0; i < data.length; i++) { const f = emaFast.find(e => e.time === data[i].time); const s =
-                        emaSlow.find(e => e.time === data[i].time); if (f && s) macdLine.push({ time: data[i].time,
-                            value: +(f.value - s.value).toFixed(4) }); }
+                for (let i = 0; i < data.length; i++) {
+                    const f = emaFast.find(e => e.time === data[i].time);
+                    const s = emaSlow.find(e => e.time === data[i].time);
+                    if (f && s) macdLine.push({ time: data[i].time, value: +(f.value - s.value).toFixed(4) });
+                }
                 if (macdLine.length === 0) return { macd: [], signal: [], histogram: [] };
                 const signalLine = calculateEMAFromValues(macdLine, signal);
                 const histogram = [];
-                for (let i = 0; i < macdLine.length; i++) { const sig = signalLine.find(s => s.time === macdLine[i]
-                        .time); if (sig) histogram.push({ time: macdLine[i].time, value: +(macdLine[i].value - sig
-                            .value).toFixed(4) }); }
+                for (let i = 0; i < macdLine.length; i++) {
+                    const sig = signalLine.find(s => s.time === macdLine[i].time);
+                    if (sig) histogram.push({ time: macdLine[i].time, value: +(macdLine[i].value - sig.value)
+                            .toFixed(4) });
+                }
                 return { macd: macdLine, signal: signalLine, histogram };
             }
 
@@ -6823,8 +6978,10 @@
                 for (let i = 0; i < startIdx; i++) sum += data[i].value;
                 let prevEma = sum / startIdx;
                 ema.push({ time: data[startIdx - 1].time, value: +prevEma.toFixed(4) });
-                for (let i = startIdx; i < data.length; i++) { prevEma = data[i].value * k + prevEma * (1 - k);
-                    ema.push({ time: data[i].time, value: +prevEma.toFixed(4) }); }
+                for (let i = startIdx; i < data.length; i++) {
+                    prevEma = data[i].value * k + prevEma * (1 - k);
+                    ema.push({ time: data[i].time, value: +prevEma.toFixed(4) });
+                }
                 return ema;
             }
 
@@ -6834,8 +6991,10 @@
                 for (let i = period - 1; i < data.length; i++) {
                     let high = -Infinity,
                         low = Infinity;
-                    for (let j = i - period + 1; j <= i; j++) { if (data[j].high > high) high = data[j].high; if (data[
-                            j].low < low) low = data[j].low; }
+                    for (let j = i - period + 1; j <= i; j++) {
+                        if (data[j].high > high) high = data[j].high;
+                        if (data[j].low < low) low = data[j].low;
+                    }
                     const range = high - low;
                     const val = range === 0 ? 50 : ((data[i].close - low) / range) * 100;
                     kValues.push({ time: data[i].time, value: +val.toFixed(2) });
@@ -6848,9 +7007,11 @@
             function calculateSMAFromValues(data, period) {
                 if (data.length < period) return [];
                 const sma = [];
-                for (let i = period - 1; i < data.length; i++) { let sum = 0; for (let j = 0; j < period; j++) sum +=
-                        data[i - j].value;
-                    sma.push({ time: data[i].time, value: +(sum / period).toFixed(2) }); }
+                for (let i = period - 1; i < data.length; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < period; j++) sum += data[i - j].value;
+                    sma.push({ time: data[i].time, value: +(sum / period).toFixed(2) });
+                }
                 return sma;
             }
 
@@ -6879,8 +7040,10 @@
                 if (safeData.length === 0) return;
 
                 const removeSeries = (key) => {
-                    if (simIndicatorSeries[key]) { try { simChart.removeSeries(simIndicatorSeries[key]); } catch (e) {}
-                        delete simIndicatorSeries[key]; }
+                    if (simIndicatorSeries[key]) {
+                        try { simChart.removeSeries(simIndicatorSeries[key]); } catch (e) {}
+                        delete simIndicatorSeries[key];
+                    }
                 };
                 for (const [key, color] of Object.entries(INDICATOR_COLORS)) {
                     if (!key.startsWith('ema')) continue;
@@ -6888,14 +7051,18 @@
                     if (activeIndicators[key]) {
                         const emaData = calculateEMA(safeData, period);
                         if (emaData.length > 0) {
-                            if (simIndicatorSeries[key]) { try { simIndicatorSeries[key].setData(emaData); } catch (
-                                    e) { console.warn('EMA update error:', e); } } else { try { const ls = simChart
-                                        .addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
-                                            lastValueVisible: true, priceFormat: { type: 'price',
-                                                precision: 4, minMove: 0.0001 } });
+                            if (simIndicatorSeries[key]) {
+                                try { simIndicatorSeries[key].setData(emaData); } catch (e) { console.warn(
+                                        'EMA update error:', e); }
+                            } else {
+                                try {
+                                    const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
+                                        lastValueVisible: true, priceFormat: { type: 'price', precision: 4,
+                                            minMove: 0.0001 } });
                                     ls.setData(emaData);
-                                    simIndicatorSeries[key] = ls; } catch (e) { console.warn(
-                                    'EMA create error:', e); } }
+                                    simIndicatorSeries[key] = ls;
+                                } catch (e) { console.warn('EMA create error:', e); }
+                            }
                         }
                     } else { removeSeries(key); }
                 }
@@ -6904,114 +7071,142 @@
                     ['bb_sma', 'bb_upper', 'bb_lower'].forEach((k, i) => {
                         const data = [sma, upper, lower][i];
                         if (data && data.length > 0) {
-                            if (simIndicatorSeries[k]) { try { simIndicatorSeries[k].setData(data); } catch (
-                                    e) { console.warn('BB update error:', e); } } else { try { const ls =
-                                        simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
-                                            '#f59e0b', lineWidth: i === 0 ? 2 : 1,
-                                            priceScaleId: 'right', lastValueVisible: false,
-                                            priceFormat: { type: 'price', precision: 4,
-                                                minMove: 0.0001 } });
+                            if (simIndicatorSeries[k]) {
+                                try { simIndicatorSeries[k].setData(data); } catch (e) { console.warn(
+                                        'BB update error:', e); }
+                            } else {
+                                try {
+                                    const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
+                                            '#f59e0b',
+                                        lineWidth: i === 0 ? 2 : 1, priceScaleId: 'right',
+                                        lastValueVisible: false, priceFormat: { type: 'price',
+                                            precision: 4, minMove: 0.0001 } });
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
                                     ls.setData(data);
-                                    simIndicatorSeries[k] = ls; } catch (e) { console.warn(
-                                    'BB create error:', e); } }
+                                    simIndicatorSeries[k] = ls;
+                                } catch (e) { console.warn('BB create error:', e); }
+                            }
                         }
                     });
                 } else { ['bb_sma', 'bb_upper', 'bb_lower'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['rsi']) {
                     const rsiData = calculateRSI(safeData);
                     if (rsiData.length > 0) {
-                        if (simIndicatorSeries['rsi']) { try { simIndicatorSeries['rsi'].setData(rsiData); } catch (
-                                e) { console.warn('RSI update error:', e); } } else { try { const pane = simChart
-                                    .addLineSeries({ color: INDICATOR_COLORS['rsi'], lineWidth: 2,
-                                        priceScaleId: 'rsi', lastValueVisible: true,
-                                        priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                                const rsiScale = simChart.priceScale('rsi'); if (rsiScale) rsiScale
-                                    .applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
+                        if (simIndicatorSeries['rsi']) {
+                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) { console.warn(
+                                    'RSI update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
+                                    lineWidth: 2, priceScaleId: 'rsi', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                                simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85,
+                                        bottom: 0 } });
                                 pane.setData(rsiData);
-                                simIndicatorSeries['rsi'] = pane; } catch (e) { console.warn(
-                                'RSI create error:', e); } }
+                                simIndicatorSeries['rsi'] = pane;
+                            } catch (e) { console.warn('RSI create error:', e); }
+                        }
                     }
                 } else { removeSeries('rsi'); }
                 if (activeIndicators['macd']) {
                     const { macd, signal, histogram } = calculateMACD(safeData);
                     if (macd.length > 0) {
-                        if (simIndicatorSeries['macd']) { try { simIndicatorSeries['macd'].setData(macd); } catch (
-                                e) { console.warn('MACD update error:', e); } } else { try { const pane = simChart
-                                    .addLineSeries({ color: INDICATOR_COLORS['macd'], lineWidth: 2,
-                                        priceScaleId: 'macd', lastValueVisible: false,
+                        if (simIndicatorSeries['macd']) {
+                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) { console.warn(
+                                    'MACD update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
+                                    lineWidth: 2, priceScaleId: 'macd', lastValueVisible: false,
+                                    priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
+                                simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9,
+                                        bottom: 0.2 } });
+                                pane.setData(macd);
+                                simIndicatorSeries['macd'] = pane;
+                            } catch (e) { console.warn('MACD create error:', e); }
+                        }
+                        if (signal.length > 0) {
+                            if (simIndicatorSeries['macd_signal']) {
+                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) { console
+                                        .warn('MACD signal update error:', e); }
+                            } else {
+                                try {
+                                    const sigPane = simChart.addLineSeries({ color: '#34d399',
+                                        lineWidth: 1, priceScaleId: 'macd', lastValueVisible: false,
                                         priceFormat: { type: 'price', precision: 4,
                                         minMove: 0.0001 } });
-                                const macdScale = simChart.priceScale('macd'); if (macdScale) macdScale
-                                    .applyOptions({ scaleMargins: { top: 0.9, bottom: 0.2 } });
-                                pane.setData(macd);
-                                simIndicatorSeries['macd'] = pane; } catch (e) { console.warn(
-                                'MACD create error:', e); } }
-                        if (signal.length > 0) {
-                            if (simIndicatorSeries['macd_signal']) { try { simIndicatorSeries['macd_signal']
-                                    .setData(signal); } catch (e) { console.warn(
-                                    'MACD signal update error:', e); } } else { try { const sigPane =
-                                        simChart.addLineSeries({ color: '#34d399', lineWidth: 1,
-                                            priceScaleId: 'macd', lastValueVisible: false,
-                                            priceFormat: { type: 'price', precision: 4,
-                                                minMove: 0.0001 } });
                                     sigPane.setData(signal);
-                                    simIndicatorSeries['macd_signal'] = sigPane; } catch (e) { console
-                                        .warn('MACD signal create error:', e); } }
+                                    simIndicatorSeries['macd_signal'] = sigPane;
+                                } catch (e) { console.warn('MACD signal create error:', e); }
+                            }
                         }
                         if (histogram.length > 0) {
                             const histData = histogram.map(h => ({ time: h.time, value: h.value, color: h
                                     .value >= 0 ? 'rgba(16,185,129,0.5)' :
                                     'rgba(239,68,68,0.5)' }));
-                            if (simIndicatorSeries['macd_hist']) { try { simIndicatorSeries['macd_hist']
-                                    .setData(histData); } catch (e) { console.warn(
-                                    'MACD hist update error:', e); } } else { try { const histSeries =
-                                        simChart.addHistogramSeries({ priceScaleId: 'macd',
-                                            priceFormat: { type: 'price', precision: 4 } });
+                            if (simIndicatorSeries['macd_hist']) {
+                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) { console
+                                        .warn('MACD hist update error:', e); }
+                            } else {
+                                try {
+                                    const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
+                                        priceFormat: { type: 'price', precision: 4 } });
                                     histSeries.setData(histData);
-                                    simIndicatorSeries['macd_hist'] = histSeries; } catch (e) { console
-                                        .warn('MACD hist create error:', e); } }
+                                    simIndicatorSeries['macd_hist'] = histSeries;
+                                } catch (e) { console.warn('MACD hist create error:', e); }
+                            }
                         }
                     }
                 } else { ['macd', 'macd_signal', 'macd_hist'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['stoch']) {
                     const { k, d } = calculateStochastic(safeData);
                     if (k.length > 0) {
-                        if (simIndicatorSeries['stoch_k']) { try { simIndicatorSeries['stoch_k'].setData(k); } catch (
-                                e) { console.warn('Stoch K update error:', e); } } else { try { const kPane =
-                                    simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
-                                        priceScaleId: 'stoch', lastValueVisible: true,
-                                        priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                                const stochScale = simChart.priceScale('stoch'); if (stochScale) stochScale
-                                    .applyOptions({ scaleMargins: { top: 0.85, bottom: 0.15 } });
+                        if (simIndicatorSeries['stoch_k']) {
+                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) { console.warn(
+                                    'Stoch K update error:', e); }
+                        } else {
+                            try {
+                                const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
+                                    priceScaleId: 'stoch', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
+                                simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85,
+                                        bottom: 0.15 } });
                                 kPane.setData(k);
-                                simIndicatorSeries['stoch_k'] = kPane; } catch (e) { console.warn(
-                                'Stoch K create error:', e); } }
+                                simIndicatorSeries['stoch_k'] = kPane;
+                            } catch (e) { console.warn('Stoch K create error:', e); }
+                        }
                         if (d.length > 0) {
-                            if (simIndicatorSeries['stoch_d']) { try { simIndicatorSeries['stoch_d']
-                                    .setData(d); } catch (e) { console.warn('Stoch D update error:',
-                                    e); } } else { try { const dPane = simChart.addLineSeries({
-                                        color: '#f472b6', lineWidth: 1, priceScaleId: 'stoch',
-                                        lastValueVisible: true, priceFormat: { type: 'price',
-                                            precision: 2, minMove: 0.01 } });
+                            if (simIndicatorSeries['stoch_d']) {
+                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) { console.warn(
+                                        'Stoch D update error:', e); }
+                            } else {
+                                try {
+                                    const dPane = simChart.addLineSeries({ color: '#f472b6',
+                                        lineWidth: 1, priceScaleId: 'stoch', lastValueVisible: true,
+                                        priceFormat: { type: 'price', precision: 2,
+                                        minMove: 0.01 } });
                                     dPane.setData(d);
-                                    simIndicatorSeries['stoch_d'] = dPane; } catch (e) { console
-                                        .warn('Stoch D create error:', e); } }
+                                    simIndicatorSeries['stoch_d'] = dPane;
+                                } catch (e) { console.warn('Stoch D create error:', e); }
+                            }
                         }
                     }
                 } else { ['stoch_k', 'stoch_d'].forEach(k => removeSeries(k)); }
                 if (activeIndicators['vwap']) {
                     const vwapData = calculateVWAP(safeData);
                     if (vwapData.length > 0) {
-                        if (simIndicatorSeries['vwap']) { try { simIndicatorSeries['vwap'].setData(vwapData); } catch (
-                                e) { console.warn('VWAP update error:', e); } } else { try { const pane = simChart
-                                    .addLineSeries({ color: INDICATOR_COLORS['vwap'], lineWidth: 2,
-                                        priceScaleId: 'right', lastValueVisible: true,
-                                        priceFormat: { type: 'price', precision: 4,
-                                        minMove: 0.0001 } });
+                        if (simIndicatorSeries['vwap']) {
+                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) { console.warn(
+                                    'VWAP update error:', e); }
+                        } else {
+                            try {
+                                const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'],
+                                    lineWidth: 2, priceScaleId: 'right', lastValueVisible: true,
+                                    priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                                 pane.setData(vwapData);
-                                simIndicatorSeries['vwap'] = pane; } catch (e) { console.warn(
-                                'VWAP create error:', e); } }
+                                simIndicatorSeries['vwap'] = pane;
+                            } catch (e) { console.warn('VWAP create error:', e); }
+                        }
                     }
                 } else { removeSeries('vwap'); }
                 if (simVolumeSeries) {
@@ -7021,11 +7216,9 @@
                                 color: c.close >= c.open ? 'rgba(16,185,129,0.35)' :
                                 'rgba(239,68,68,0.35)' }));
                             simVolumeSeries.setData(volData);
-                            const volScale = simChart.priceScale(''); if (volScale) volScale.applyOptions({
-                                scaleMargins: { top: 0.88, bottom: 0 } });
+                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
                         } else { simVolumeSeries.setData([]);
-                            const volScale = simChart.priceScale(''); if (volScale) volScale.applyOptions({
-                                scaleMargins: { top: 0, bottom: 0 } }); }
+                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
                     } catch (e) { console.warn('Volume update error:', e); }
                 }
             }
@@ -7074,7 +7267,9 @@
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
-            function getVisibleCandles() { return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd); }
+            function getVisibleCandles() {
+                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
+            }
 
             // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
             window.updateSimUI = updateSimUI;
@@ -7092,6 +7287,8 @@
             window.resetSimPortfolio = resetSimPortfolio;
             window.initChart = initChart;
             window.resetChart = resetChart;
+            window.depositFunds = depositFunds;
+            window.withdrawFunds = withdrawFunds;
             window.selectMobileSymbol = selectMobileSymbol;
             window.updateMobileTopBar = updateMobileTopBar;
             window.renderMobileTradeSummary = renderMobileTradeSummary;
@@ -7128,11 +7325,6 @@
             window.addLineMobile = addLineMobile;
             window.switchHistoryTab = switchHistoryTab;
             window.safeUpdateCandle = safeUpdateCandle;
-            window.updateTradePanelData = updateTradePanelData;
-            window.updateMobileDrawnLines = updateMobileDrawnLines;
-            window.deleteMobileLine = deleteMobileLine;
-            window.handleMobileDeposit = handleMobileDeposit;
-            window.handleMobileWithdraw = handleMobileWithdraw;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
@@ -7146,6 +7338,7 @@
                 const lastPrice = document.getElementById('lastPrice');
                 const cronStatus = document.getElementById('cronStatus');
                 const ts = document.getElementById('debugTimestamp');
+
                 if (dbStatus) dbStatus.textContent = '✅ Online';
                 if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
                 if (apiStatus) apiStatus.textContent = '✅ Online';
@@ -7163,11 +7356,17 @@
             const debugPanel = document.getElementById('debugPanel');
             const debugClose = document.getElementById('debugClose');
 
-            debugToggle.onclick = function() { debugPanel.classList.toggle('open'); if (debugPanel.classList.contains(
-                    'open')) updateDebugPanel(); };
+            debugToggle.onclick = function() {
+                debugPanel.classList.toggle('open');
+                if (debugPanel.classList.contains('open')) updateDebugPanel();
+            };
             debugClose.onclick = function() { debugPanel.classList.remove('open'); };
-            document.addEventListener('click', function(e) { if (debugPanel.classList.contains('open') && !debugPanel
-                    .contains(e.target) && e.target !== debugToggle) { debugPanel.classList.remove('open'); } });
+            document.addEventListener('click', function(e) {
+                if (debugPanel.classList.contains('open') && !debugPanel.contains(e.target) && e.target !==
+                    debugToggle) {
+                    debugPanel.classList.remove('open');
+                }
+            });
 
             setInterval(updateDebugPanel, 3000);
             updateDebugPanel();
@@ -7195,22 +7394,29 @@
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
-            if (!userAccountNo || userAccountNo === 'ACC-000000') { userAccountNo = 'ACC-' + String(Math.floor(Math
-                    .random() * 900000) + 100000);
-                saveAccountNo(); }
-            openDB().then(() => { console.log('✅ IndexedDB ready'); if (token && currentUser) loadAllData(); else
-                    renderAuthPage(); }).catch(err => { console.warn('IndexedDB error:', err); if (token && currentUser)
-                    loadAllData();
-                else renderAuthPage(); });
+            if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                saveAccountNo();
+            }
+            openDB().then(() => {
+                console.log('✅ IndexedDB ready');
+                if (token && currentUser) loadAllData();
+                else renderAuthPage();
+            }).catch(err => {
+                console.warn('IndexedDB error:', err);
+                if (token && currentUser) loadAllData();
+                else renderAuthPage();
+            });
 
             window.addEventListener('orientationchange', () => {
                 setTimeout(() => {
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
-                        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) { try { simChart
-                                .applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                            try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight }); } catch (e) { console.warn(
-                                    'Orientation resize error:', e); } }
+                                    'Orientation resize error:', e); }
+                        }
                     }
                 }, 300);
             });
@@ -7220,47 +7426,21 @@
                 resizeTimer = setTimeout(() => {
                     if (simChart) {
                         const chartDiv = document.getElementById('simChartContainer');
-                        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) { try { simChart
-                                .applyOptions({ width: chartDiv.clientWidth, height: chartDiv
+                        if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
+                            try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight }); } catch (e) { console.warn(
-                                    'Resize error:', e); } }
+                                    'Resize error:', e); }
+                        }
                     }
                 }, 300);
             });
             window.addEventListener('popstate', () => {
                 document.querySelectorAll('.modal').forEach(el => el.remove());
-                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove('show'));
-                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
+                'show'));
+                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
+                'show'));
             });
-
-            // ─── Chart auto-recovery ──────────────────────────────────────────
-            (function() {
-                let nullErrorCount = 0;
-                let lastResetTime = 0;
-                const RESET_THRESHOLD = 3;
-                const RESET_COOLDOWN = 10000;
-                window.addEventListener('error', function(e) {
-                    const msg = e.message || '';
-                    const isLWChart = (e.filename || '').includes('lightweight-charts') ||
-                        (e.filename || '').includes('lightweight') || msg.includes('Value is null');
-                    if (isLWChart && msg.includes('Value is null')) {
-                        nullErrorCount++;
-                        console.warn('🔄 Chart null error #' + nullErrorCount + ' from', e.filename);
-                        if (nullErrorCount >= RESET_THRESHOLD && document.querySelector(
-                                '.terminal-wrapper, .mobile-terminal') && Date.now() - lastResetTime >
-                            RESET_COOLDOWN) {
-                            console.warn('🛠️ Auto-resetting chart due to consecutive errors...');
-                            nullErrorCount = 0;
-                            lastResetTime = Date.now();
-                            if (typeof resetChart === 'function') resetChart();
-                            else console.error('resetChart not available');
-                        }
-                    }
-                });
-                setInterval(() => { if (nullErrorCount > 0) nullErrorCount = Math.max(0, nullErrorCount - 1); },
-                30000);
-            })();
-
         })();
     </script>
 </body>
