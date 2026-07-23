@@ -3943,11 +3943,28 @@
                         bottom: 0 } });
                     else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
 
-                    const allCandles = [...visible];
-                    if (simCurrentCandle) allCandles.push(simCurrentCandle);
-                    const safeAll = sanitizeCandleData(allCandles);
+                                        const allCandles = [...visible];
+                    if (simCurrentCandle) {
+                        const sanitizedCurrent = sanitizeCandle(simCurrentCandle);
+                        if (sanitizedCurrent) allCandles.push(sanitizedCurrent);
+                    }
+                    // সম্পূর্ণ স্যানিটাইজ + null ফিল্টার + টাইম সর্ট
+                    let safeAll = sanitizeCandleData(allCandles).filter(c => c !== null);
+                    // টাইম অনুযায়ী সর্ট ও ডুপ্লিকেট রিমুভ
+                    safeAll.sort((a, b) => a.time - b.time);
+                    const unique = [];
+                    for (let i = 0; i < safeAll.length; i++) {
+                        if (i === 0 || safeAll[i].time > unique[unique.length-1].time) {
+                            unique.push(safeAll[i]);
+                        }
+                    }
+                    safeAll = unique;
                     if (safeAll.length > 0) {
-                        try { simCandleSeries.setData(safeAll); } catch (e) { console.warn('SetData error:', e); }
+                        try { simCandleSeries.setData(safeAll); } catch (e) {
+                            console.error('SetData error:', e);
+                            // fallback: empty data to avoid crash
+                            simCandleSeries.setData([]);
+                        }
                     }
                     updateAllIndicators();
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
@@ -7509,7 +7526,7 @@
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove('show'));
             });
 
-            // ─── চার্ট রিকভারি: "Value is null" ত্রুটি ধরলে অটো রিসেট ──────────
+                        // ─── চার্ট অটো-রিকভারি: "Value is null" ত্রুটি ধরলে পুনরায় তৈরি ──
             (function() {
                 let nullErrorCount = 0;
                 let lastResetTime = 0;
@@ -7518,9 +7535,14 @@
 
                 window.addEventListener('error', function(e) {
                     const msg = e.message || '';
-                    if (msg.includes('Value is null') && e.filename && e.filename.includes('lightweight-charts')) {
+                    // filename চেক আরও উদার (কিছু ব্রাউজারে null হতে পারে)
+                    const isLWChart = (e.filename || '').includes('lightweight-charts') ||
+                                      (e.filename || '').includes('lightweight') ||
+                                      msg.includes('Value is null');
+
+                    if (isLWChart && msg.includes('Value is null')) {
                         nullErrorCount++;
-                        console.warn('🔄 Chart null error #' + nullErrorCount);
+                        console.warn('🔄 Chart null error #' + nullErrorCount + ' from', e.filename);
 
                         if (nullErrorCount >= RESET_THRESHOLD &&
                             document.querySelector('.terminal-wrapper, .mobile-terminal') &&
@@ -7528,16 +7550,20 @@
                             console.warn('🛠️ Auto-resetting chart due to consecutive errors...');
                             nullErrorCount = 0;
                             lastResetTime = Date.now();
-                            resetChart();
+                            if (typeof resetChart === 'function') {
+                                resetChart();
+                            } else {
+                                console.error('resetChart not available');
+                            }
                         }
                     }
                 });
 
+                // প্রতি ৩০ সেকেন্ডে কাউন্টার কমিয়ে আনব
                 setInterval(() => {
                     if (nullErrorCount > 0) nullErrorCount = Math.max(0, nullErrorCount - 1);
                 }, 30000);
             })();
-
         })();    // ← মূল IIFE বন্ধ
     </script>
 </body>
