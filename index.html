@@ -1502,6 +1502,9 @@
             transition: 0.2s;
             background: transparent;
             border: none;
+            min-height: 40px;
+            min-width: 40px;
+            touch-action: manipulation;
         }
         .mt5-hamburger:active {
             opacity: 0.6;
@@ -1525,6 +1528,9 @@
             background: transparent;
             border: none;
             font-family: var(--font);
+            min-height: 40px;
+            min-width: 40px;
+            touch-action: manipulation;
         }
         .mt5-indicator-btn:active {
             opacity: 0.6;
@@ -1539,6 +1545,8 @@
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
+            min-height: 30px;
+            touch-action: manipulation;
         }
 
         .mt5-instrument-info {
@@ -1601,6 +1609,7 @@
             justify-content: center;
             min-width: 36px;
             touch-action: manipulation;
+            min-height: 44px;
         }
         .mt5-sell-btn {
             background: var(--mt5-red);
@@ -1651,6 +1660,8 @@
             padding: 2px 4px;
             transition: 0.2s;
             touch-action: manipulation;
+            min-height: 30px;
+            min-width: 30px;
         }
         .mt5-lot-selector button:active {
             opacity: 0.6;
@@ -1679,6 +1690,8 @@
             transition: 0.2s;
             font-family: var(--font-mono);
             touch-action: manipulation;
+            min-height: 28px;
+            min-width: 28px;
         }
         .mt5-lot-presets button:active {
             background: var(--mt5-green);
@@ -1733,6 +1746,8 @@
             padding: 0 3px;
             gap: 1px;
             touch-action: manipulation;
+            min-height: 44px;
+            min-width: 44px;
         }
         .mt5-nav-item.active {
             color: var(--mt5-green);
@@ -1895,6 +1910,8 @@
             font-family: var(--font-mono);
             transition: 0.2s;
             touch-action: manipulation;
+            min-height: 34px;
+            min-width: 34px;
         }
         .mt5-sidebar-sheet .timeframe-grid button:active {
             background: var(--mt5-green);
@@ -1916,6 +1933,8 @@
             font-family: var(--font);
             transition: 0.2s;
             touch-action: manipulation;
+            min-height: 34px;
+            min-width: 34px;
         }
         .mt5-sidebar-sheet .theme-row button:active {
             background: var(--mt5-green);
@@ -1988,6 +2007,7 @@
             cursor: pointer;
             transition: 0.2s;
             touch-action: manipulation;
+            min-height: 44px;
         }
         .watchlist-item:active {
             background: var(--mt5-nav-active);
@@ -2052,6 +2072,7 @@
             width: 100%;
             font-family: var(--font);
             touch-action: manipulation;
+            min-height: 34px;
         }
         .position-card .exit-btn:active {
             transform: scale(0.96);
@@ -2075,6 +2096,7 @@
             min-width: 60px;
             -moz-appearance: textfield;
             appearance: textfield;
+            min-height: 34px;
         }
         .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
         .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
@@ -2098,6 +2120,8 @@
             transition: 0.2s;
             font-family: var(--font);
             touch-action: manipulation;
+            min-height: 34px;
+            min-width: 40px;
         }
         .mt5-deposit-withdraw button:active {
             transform: scale(0.96);
@@ -2115,6 +2139,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-height: 44px;
         }
         .history-item .left {
             display: flex;
@@ -2470,294 +2495,76 @@
             font-size: 0.45rem;
         }
 
-        /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
+        /* ─── MOBILE TOUCH TARGETS ──────────────────────────────────────── */
         @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                width: 200px;
-                transform: translateX(-100%);
-                box-shadow: var(--shadow-lg);
-                z-index: 50;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .mobile-toggle {
-                display: block;
-            }
-            .top-bar {
-                padding: 2px 4px;
-                gap: 2px;
-                min-height: 24px;
-            }
-            .search-box {
-                max-width: 50px;
-            }
-            .search-box input {
-                font-size: 0.5rem;
-                padding: 2px 5px 2px 16px;
-            }
-            .search-box i {
-                font-size: 0.45rem;
-                left: 5px;
-            }
-            .terminal-bar-1 {
-                min-height: 24px;
-                padding: 2px 4px;
-                gap: 3px;
-            }
-            .terminal-bar-1 .bar-right .stat-item {
-                font-size: 0.45rem;
-                padding: 1px 4px;
-            }
-            .terminal-bar-2 {
-                min-height: 28px;
-                padding: 2px 4px;
-                gap: 2px;
-            }
-            .terminal-bar-2 select,
-            .terminal-bar-2 input {
-                font-size: 0.45rem;
-                padding: 2px 4px;
-            }
-            .terminal-bar-2 input[type="number"] {
-                width: 36px;
-            }
-            .terminal-bar-2 .btn {
-                padding: 3px 7px;
-                font-size: 0.45rem;
-            }
-            .terminal-bar-2 .btn-trade {
-                padding: 3px 8px;
-                font-size: 0.45rem;
-            }
-            .terminal-bar-2 .limit-input input {
-                width: 36px;
-                font-size: 0.4rem;
-            }
-            .terminal-dropdowns {
-                padding: 1px 4px;
-                min-height: 18px;
-            }
-            .terminal-dropdowns .dd-btn {
-                font-size: 0.4rem;
-                padding: 1px 5px;
-            }
-            .terminal-dropdown-panel {
-                padding: 3px 4px;
-                margin: 1px 4px 2px 4px;
-                max-height: 100px;
-            }
-            .terminal-dropdown-panel table {
-                font-size: 0.4rem;
-            }
-            .terminal-dropdown-panel table td {
-                font-size: 0.4rem;
-                padding: 1px 3px;
-            }
-            .chart-container-wrap #simChartContainer {
-                min-height: 120px;
-            }
-            .admin-left {
-                width: 100%;
-                max-height: 30vh;
-                flex-shrink: 0;
-            }
-            .admin-container {
-                flex-direction: column;
-            }
-            .admin-right {
-                flex: 1;
-                padding: 6px;
-            }
-            .admin-lesson-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .auth-box {
-                padding: 16px 12px;
-            }
-            .mt5-quick-trade-row {
-                gap: 2px;
-            }
             .mt5-sell-btn,
-            .mt5-buy-btn {
-                font-size: 0.5rem;
-                padding: 4px 2px;
-                min-width: 32px;
-            }
-            .mt5-lot-selector {
-                min-width: 34px;
-                padding: 2px 3px;
-            }
-            .mt5-lot-value {
-                font-size: 0.6rem;
-                min-width: 16px;
-            }
-            .mt5-lot-presets button {
-                font-size: 0.35rem;
-                padding: 2px 3px;
-            }
-            .mt5-top-toolbar {
-                padding: 2px 4px;
-                min-height: 26px;
-            }
-            .mt5-symbol {
-                font-size: 0.65rem;
-            }
-            .mt5-tf-select {
-                font-size: 0.45rem;
-                padding: 2px 4px;
-            }
-            .mt5-instrument-info {
-                padding: 1px 4px;
-                min-height: 16px;
-            }
-            .mt5-pair {
-                font-size: 0.55rem;
-            }
-            .mt5-name {
-                font-size: 0.45rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.4rem;
-            }
-            .mt5-bottom-nav {
-                height: 30px;
-            }
-            .mt5-nav-item {
-                font-size: 0.4rem;
+            .mt5-buy-btn,
+            .mt5-nav-item,
+            .watchlist-item,
+            .mt5-lot-presets button,
+            .position-card .exit-btn,
+            .btn-sm,
+            .mt5-hamburger,
+            .mt5-indicator-btn,
+            .mt5-tf-select,
+            .mt5-sidebar-sheet .timeframe-grid button,
+            .mt5-sidebar-sheet .theme-row button,
+            .mt5-deposit-withdraw input[type="number"],
+            .mt5-deposit-withdraw button,
+            .history-item,
+            .mt5-quick-trade-row button {
+                min-height: 40px;
+                min-width: 40px;
+                touch-action: manipulation;
             }
             .mt5-nav-item i {
+                font-size: 0.8rem;
+            }
+            .mt5-bottom-nav {
+                height: 44px;
+            }
+            .mt5-lot-selector {
+                padding: 4px 6px;
+            }
+            .mt5-lot-value {
                 font-size: 0.7rem;
+                min-width: 20px;
             }
-            .mt5-sidebar-sheet {
-                width: 74%;
-                max-width: 230px;
+            .position-card {
+                padding: 8px 10px;
             }
-            .mobile-terminal .top-bar-pl {
-                display: none !important;
+            .mt5-deposit-withdraw {
+                gap: 6px;
             }
-            #debugPanel {
-                left: 6px;
-                right: 6px;
-                width: auto;
-                bottom: 46px;
-                max-height: 45vh;
-            }
-            #debugToggle {
-                bottom: 10px;
-                left: 10px;
-                width: 28px;
-                height: 28px;
+            .mt5-deposit-withdraw input[type="number"] {
                 font-size: 0.7rem;
+                min-height: 38px;
             }
-            .status-bar {
-                font-size: 0.4rem;
-                min-height: 14px;
-                padding: 1px 4px;
+            .mt5-deposit-withdraw button {
+                font-size: 0.6rem;
+                min-height: 38px;
+                min-width: 44px;
             }
         }
-        @media (max-width: 400px) {
-            .mt5-quick-trade-row {
-                gap: 2px;
-            }
-            .mt5-sell-btn,
-            .mt5-buy-btn {
-                font-size: 0.45rem;
-                padding: 3px 2px;
-                min-width: 28px;
-            }
-            .mt5-lot-selector {
-                min-width: 30px;
-                padding: 1px 2px;
-            }
-            .mt5-lot-value {
-                font-size: 0.55rem;
-                min-width: 14px;
-            }
-            .mt5-lot-presets button {
-                font-size: 0.3rem;
-                padding: 1px 2px;
-            }
-            .mt5-top-toolbar {
-                padding: 2px 3px;
-                min-height: 24px;
-            }
-            .mt5-symbol {
-                font-size: 0.6rem;
-            }
-            .mt5-tf-select {
-                font-size: 0.4rem;
-                padding: 1px 3px;
-            }
-            .mt5-bottom-nav {
-                height: 28px;
-            }
-            .mt5-nav-item {
-                font-size: 0.35rem;
-            }
-            .mt5-nav-item i {
-                font-size: 0.65rem;
-            }
-            .mt5-instrument-info {
-                padding: 1px 3px;
-                min-height: 14px;
-            }
-            .mt5-pair {
-                font-size: 0.5rem;
-            }
-            .mt5-name {
-                font-size: 0.4rem;
-            }
-            .mt5-tf-display {
-                font-size: 0.35rem;
-            }
-            .top-bar {
-                min-height: 22px;
-                padding: 2px 3px;
-            }
-            .terminal-nav-btn {
-                font-size: 0.5rem;
-                padding: 2px 6px;
-            }
-            .lang-select {
-                font-size: 0.45rem;
-                padding: 1px 12px 1px 3px;
-            }
-            .theme-toggle-btn {
-                font-size: 0.45rem;
-                padding: 1px 4px;
-            }
-            .user-menu .username {
-                font-size: 0.45rem;
-            }
-            .user-menu .logout-btn {
-                font-size: 0.4rem;
-                padding: 1px 4px;
-            }
-            .account-no {
-                font-size: 0.35rem;
-                padding: 1px 3px;
-            }
-            .chart-container-wrap #simChartContainer {
-                min-height: 90px;
-            }
-            .terminal-bar-1 .bar-right .stat-item {
-                font-size: 0.4rem;
-                padding: 1px 3px;
-            }
-            .terminal-bar-2 .btn {
-                font-size: 0.4rem;
-                padding: 2px 5px;
-            }
-            .terminal-bar-2 .btn-trade {
-                font-size: 0.4rem;
-                padding: 2px 6px;
-            }
+
+        /* ─── MOBILE DRAW OVERLAY ───────────────────────────────────────── */
+        #mt5DrawOverlay .mt5-indicator-sheet label {
+            font-size: 0.7rem;
+        }
+        #mt5DrawOverlay .mt5-indicator-sheet input[type="number"] {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid var(--mt5-border);
+            border-radius: 4px;
+            background: var(--mt5-input);
+            color: var(--mt5-text-bright);
+            font-size: 0.6rem;
+            font-family: var(--font);
+            min-height: 38px;
+        }
+        #mt5DrawOverlay .mt5-indicator-sheet .btn {
+            min-height: 38px;
+            font-size: 0.55rem;
         }
 
         [data-theme="dark"] .ql-toolbar {
@@ -2825,6 +2632,27 @@
             color: #8b5cf6;
             border: 1px solid #8b5cf6;
         }
+
+        /* ─── CUSTOM CONFIRM MODAL OVERRIDE ─────────────────────────────── */
+        .modal.custom-confirm .modal-content {
+            max-width: 300px;
+            text-align: center;
+            padding: 24px;
+        }
+        .modal.custom-confirm .modal-content .icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+        .modal.custom-confirm .modal-content p {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .modal.custom-confirm .modal-actions {
+            justify-content: center;
+            gap: 16px;
+        }
     </style>
 </head>
 <body>
@@ -2842,6 +2670,7 @@
             <div class="debug-item"><span class="label">Portfolio</span><span class="value" id="portfolioStatus">Loading...</span></div>
             <div class="debug-item"><span class="label">Last Price</span><span class="value" id="lastPrice">-</span></div>
             <div class="debug-item"><span class="label">Candle Source</span><span class="value" id="cronStatus">Waiting...</span></div>
+            <div class="debug-item"><span class="label">Server WS</span><span class="value" id="serverWsStatus">Disconnected</span></div>
             <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
         </div>
     </div>
@@ -2936,6 +2765,10 @@
             let chartResizeTimer = null;
             let chartVisibilityHandler = null;
             let chartReinitCounter = 0;
+
+            // ─── SERVER WEBSOCKET ──────────────────────────────────────────
+            let serverWS = null;
+            let serverWSReconnectTimer = null;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -3239,43 +3072,89 @@
                 } catch (e) {}
             }
 
-            // ─── BINANCE WS + REST ──────────────────────────────────────────
+            // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
+            function customConfirm(message, onConfirm, onCancel) {
+                const modal = document.createElement('div');
+                modal.className = 'modal custom-confirm';
+                modal.style.zIndex = '10000';
+
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="icon">⚠️</div>
+                        <p>${message}</p>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" id="customCancelBtn">Cancel</button>
+                            <button class="btn btn-danger" id="customConfirmBtn">Exit</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                document.getElementById('customCancelBtn').onclick = () => {
+                    modal.remove();
+                    if (onCancel) onCancel();
+                };
+                document.getElementById('customConfirmBtn').onclick = () => {
+                    modal.remove();
+                    onConfirm();
+                };
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                        if (onCancel) onCancel();
+                    }
+                });
+            }
+
+            // ─── BINANCE WS (kline_1m) ──────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket.CONNECTING)) return;
                 if (binanceWS) { try { binanceWS.close(); } catch(e) {} }
-                const streams = SYMBOLS.map(s => s.toLowerCase() + '@trade').join('/');
+                const streams = SYMBOLS.map(s => s.toLowerCase() + '@kline_1m').join('/');
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket connected');
+                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket (kline) connected');
                         updateDebugPanel(); };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
-                            if (data.e === 'trade') {
-                                const symbol = data.s.toUpperCase();
-                                const price = parseFloat(data.p);
-                                const timestamp = Math.floor(data.T / 1000);
-                                if (!isNaN(price) && price > 0) {
-                                    simLastPrices[symbol] = price;
-                                    simBasePrices[symbol] = price;
-                                    lastBinancePrice[symbol] = price;
-                                    updateMobileTopBar();
-                                    if (symbol === simCurrentSymbol && simCurrentCandle && simCandleSeries) {
-                                        const currentMinute = timestamp - (timestamp % 60);
-                                        if (simCurrentCandle.time === currentMinute) {
-                                            simCurrentCandle.high = Math.max(simCurrentCandle.high, price);
-                                            simCurrentCandle.low = Math.min(simCurrentCandle.low, price);
-                                            simCurrentCandle.close = price;
-                                            simCurrentCandle.volume += Math.floor(data.q);
-                                            try { simCandleSeries.update(simCurrentCandle); } catch (e) { console
-                                                    .warn('Candle update error:', e); }
-                                            updateAllIndicators();
-                                            checkAndExecuteSLTP();
-                                            updateSimUI();
-                                        }
-                                    }
+                            if (data.e !== 'kline') return;
+                            const k = data.k;
+                            const symbol = data.s.toUpperCase();
+                            const candle = {
+                                time: Math.floor(k.t / 1000),
+                                open: +k.o,
+                                high: +k.h,
+                                low: +k.l,
+                                close: +k.c,
+                                volume: +k.v
+                            };
+                            if (!candle.open || candle.open <= 0) return;
+                            simLastPrices[symbol] = candle.close;
+                            lastBinancePrice[symbol] = candle.close;
+                            simBasePrices[symbol] = candle.close;
+                            updateMobileTopBar();
+                            if (symbol === simCurrentSymbol && simCandleSeries) {
+                                const idx = simAllCandles.findIndex(c => c.time === candle.time);
+                                if (idx >= 0) {
+                                    simAllCandles[idx] = candle;
+                                } else {
+                                    simAllCandles.push(candle);
+                                    if (simAllCandles.length > 10000) simAllCandles = simAllCandles.slice(-10000);
                                 }
+                                simCurrentCandle = candle;
+                                try { simCandleSeries.update(candle); } catch (e) { console.warn(
+                                        'Candle update error:', e); }
+                                updateAllIndicators();
+                                checkAndExecuteSLTP();
+                                updateSimUI();
+                            }
+                            if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                                try {
+                                    serverWS.send(JSON.stringify({ type: 'price_update', prices: { [symbol]: candle
+                                            .close } }));
+                                } catch (e) {}
                             }
                         } catch (e) { /* silent */ }
                     };
@@ -3294,6 +3173,51 @@
                 if (binanceWS) { try { binanceWS.close(); } catch (e) {} }
                 if (binanceReconnectTimer) { clearTimeout(binanceReconnectTimer);
                     binanceReconnectTimer = null; }
+            }
+
+            // ─── SERVER WEBSOCKET ────────────────────────────────────────────
+            function connectServerWS() {
+                if (serverWS && (serverWS.readyState === WebSocket.OPEN || serverWS.readyState === WebSocket.CONNECTING)) return;
+                if (serverWS) { try { serverWS.close(); } catch(e) {} }
+                const host = location.hostname === 'localhost' ? 'localhost:5000' : 'atts-project.onrender.com';
+                const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+                try {
+                    serverWS = new WebSocket(`${protocol}://${host}`);
+                    serverWS.onopen = () => { console.log('✅ Server WS connected');
+                        updateDebugPanel(); };
+                    serverWS.onmessage = (event) => {
+                        try {
+                            const d = JSON.parse(event.data);
+                            if (d.type === 'price_update' && d.prices) {
+                                Object.assign(simLastPrices, d.prices);
+                                Object.assign(simBasePrices, d.prices);
+                                updateMobileTopBar();
+                                updateSimUI();
+                            }
+                            if (d.type === 'trade_executed') {
+                                sendNotification('📊 Trade Executed', d.message || 'Trade executed', 'success');
+                            }
+                            if (d.type === 'sl_tp_trigger') {
+                                sendNotification('🎯 SL/TP Triggered', d.message || 'SL/TP executed', d.pnl >= 0 ?
+                                    'success' : 'error');
+                            }
+                        } catch (e) { /* silent */ }
+                    };
+                    serverWS.onclose = () => {
+                        console.log('⚠️ Server WS closed, reconnecting...');
+                        if (serverWSReconnectTimer) clearTimeout(serverWSReconnectTimer);
+                        serverWSReconnectTimer = setTimeout(connectServerWS, 5000);
+                        updateDebugPanel();
+                    };
+                    serverWS.onerror = (e) => { console.error('Server WS error:', e);
+                        serverWS.close(); };
+                } catch (e) { console.error('Server WS init error:', e); }
+            }
+
+            function disconnectServerWS() {
+                if (serverWS) { try { serverWS.close(); } catch (e) {} }
+                if (serverWSReconnectTimer) { clearTimeout(serverWSReconnectTimer);
+                    serverWSReconnectTimer = null; }
             }
 
             // ─── BINANCE REST ──────────────────────────────────────────────
@@ -3677,28 +3601,33 @@
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
                         let price = simLastPrices[simCurrentSymbol];
-                        if (!isValidNumber(price)) {
+                        if (!isValidNumber(price) || price <= 0) {
                             const vol = simVolatility[simCurrentSymbol] || 0.0015;
                             const change = (simCurrentCandle.close || 100) * vol * (Math.random() - 0.48) *
                                 0.8;
                             price = (simCurrentCandle.close || 100) + change;
                             price = +price.toFixed(4);
                             simLastPrices[simCurrentSymbol] = price;
+                            simBasePrices[simCurrentSymbol] = price;
                         }
-                        if (!isValidNumber(price)) {
+                        if (!isValidNumber(price) || price <= 0) {
                             price = simCurrentCandle.close || simBasePrices[simCurrentSymbol] || 100;
                         }
-                        simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
-                        simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
-                        simCurrentCandle.close = price;
-                        simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
-                        .random() * 3000);
-                        try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
-                                'Price update error:', e); }
-                        updateAllIndicators();
-                        checkAndExecuteSLTP();
-                        updateSimUI();
-                        updateMobileTopBar();
+                        const now2 = Math.floor(Date.now() / 1000);
+                        const currentMinute2 = now2 - (now2 % 60);
+                        if (simCurrentCandle.time === currentMinute2) {
+                            simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
+                            simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
+                            simCurrentCandle.close = price;
+                            simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
+                            .random() * 3000);
+                            try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
+                                    'Price update error:', e); }
+                            updateAllIndicators();
+                            checkAndExecuteSLTP();
+                            updateSimUI();
+                            updateMobileTopBar();
+                        }
                         checkPendingOrders();
                     }, 1000);
 
@@ -3825,7 +3754,6 @@
                         lineObj: line, index: idx });
                 });
 
-                // ─── ENTRY/SL/TP LINES ──────────────────────────────────────
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol && p.entryPrice) {
                         const line = simCandleSeries.createPriceLine({
@@ -3892,6 +3820,22 @@
                     'Resistance' : 'Horizontal line'));
             }
 
+            // ─── MOBILE DRAW TOOL ───────────────────────────────────────────
+            function addLineMobile(label, color) {
+                const priceInput = document.getElementById('drawPriceInput');
+                if (!priceInput) return;
+                const price = parseFloat(priceInput.value);
+                if (!price || price <= 0) return showToast('❌ Invalid price');
+                if (!portfolio.drawnLines) portfolio.drawnLines = {};
+                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color, label, style: 0 });
+                savePortfolioToStorage();
+                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
+                redrawAllLines();
+                document.getElementById('mt5DrawOverlay')?.classList.remove('show');
+                showToast('📐 ' + label + ' @ $' + price.toFixed(4));
+            }
+
             // ─── TRADING ENGINE ─────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
@@ -3932,9 +3876,15 @@
                             id: p.id
                         };
                         portfolio.transactions.unshift(tx);
-                        sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
-                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
+                        const msg = p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2);
+                        sendNotification('🛑 ' + reason, msg, pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
+                        if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                            try {
+                                serverWS.send(JSON.stringify({ type: 'sl_tp_trigger', symbol: p.symbol,
+                                    price, pnl: pnl - fee, reason }));
+                            } catch (e) {}
+                        }
                         toRemove.push(i);
                         changed = true;
                     }
@@ -4040,6 +3990,11 @@
                         updateSimUI();
                         redrawAllLines();
                         syncPortfolioToServer();
+                        if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                            try {
+                                serverWS.send(JSON.stringify({ type: 'trade_executed', order: order }));
+                            } catch (e) {}
+                        }
                     }
                 }
                 if (toRemove.length) {
@@ -4075,6 +4030,9 @@
                     sendNotification('📌 Limit Order Placed', type.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
                         limitPrice.toFixed(4), 'info');
                     showToast('📌 Limit ' + type.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
+                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                        try { serverWS.send(JSON.stringify({ type: 'limit_order', order })); } catch (e) {}
+                    }
                     return;
                 }
 
@@ -4139,6 +4097,11 @@
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try {
+                        serverWS.send(JSON.stringify({ type: 'trade_executed', symbol, qty, price, side: type }));
+                    } catch (e) {}
+                }
             }
 
             // ─── EXIT POSITION ──────────────────────────────────────────────
@@ -4166,10 +4129,14 @@
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
-                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
-                    .toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
+                const msg = p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2);
+                sendNotification('🚪 Position Closed', msg, pnl - fee >= 0 ? 'success' : 'error');
                 playTradeSound('sell');
                 showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try { serverWS.send(JSON.stringify({ type: 'position_closed', symbol: p.symbol, pnl: pnl - fee }));
+                    } catch (e) {}
+                }
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -4224,8 +4191,11 @@
                 redrawAllLines();
                 syncPortfolioToServer();
                 sendNotification('🚪 All Positions Closed', 'Total P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl
-                .toFixed(2), totalPnl >= 0 ? 'success' : 'error');
+                    .toFixed(2), totalPnl >= 0 ? 'success' : 'error');
                 showToast('🚪 All positions closed | P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(2));
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try { serverWS.send(JSON.stringify({ type: 'all_closed', totalPnl })); } catch (e) {}
+                }
             }
 
             function editSLTPById(posId) {
@@ -4253,6 +4223,10 @@
                     sendNotification('🔧 SL/TP Modified', p.symbol + ' SL: ' + (p.slPrice || 'None') + ' TP: ' + (p
                         .tpPrice || 'None'), 'info');
                     showToast('✅ SL/TP modified');
+                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                        try { serverWS.send(JSON.stringify({ type: 'sl_tp_modified', symbol: p.symbol, sl: p
+                                    .slPrice, tp: p.tpPrice })); } catch (e) {}
+                    }
                 };
             }
 
@@ -4298,6 +4272,16 @@
                 renderPendingOrdersUI();
                 sendNotification('🗑 Limit Order Canceled', 'Order ID: ' + id.slice(-6), 'warning');
                 showToast('🗑 Limit order canceled');
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try { serverWS.send(JSON.stringify({ type: 'order_canceled', id })); } catch (e) {}
+                }
+            }
+
+            // ─── SAFE EXIT ──────────────────────────────────────────────────
+            function exitTerminalSafely() {
+                savePortfolioToStorage();
+                savePendingOrders();
+                syncPortfolioToServer();
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -4345,6 +4329,9 @@
                     sendNotification('📌 Limit Order Placed', side.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
                         limitPrice.toFixed(4), 'info');
                     showToast('📌 Limit ' + side.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
+                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                        try { serverWS.send(JSON.stringify({ type: 'limit_order', order })); } catch (e) {}
+                    }
                     return;
                 }
 
@@ -4410,6 +4397,11 @@
                 updateMobileTopBar();
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try {
+                        serverWS.send(JSON.stringify({ type: 'trade_executed', symbol, qty, price, side }));
+                    } catch (e) {}
+                }
                 document.getElementById('mobileSellBtn')?.blur();
                 document.getElementById('mobileBuyBtn')?.blur();
             }
@@ -4433,8 +4425,8 @@
                             <div class="row"><span class="label">P&L</span><span class="value ${pl>=0?'green':'red'}">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
                             ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
                             ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
-                            <button class="exit-btn" onclick="exitPositionById('${p.id}')">Exit Position</button>
-                            <button class="btn btn-modify btn-sm" style="margin-top:3px;width:100%;font-size:0.5rem;" onclick="editSLTPById('${p.id}')">🔧 Modify</button>
+                            <button class="exit-btn" onclick="exitPositionById('${p.id}');renderMobileTradeSummary();">Exit Position</button>
+                            <button class="btn btn-modify btn-sm" style="margin-top:3px;width:100%;font-size:0.5rem;" onclick="editSLTPById('${p.id}');renderMobileTradeSummary();">🔧 Modify</button>
                         </div>`;
                     });
                 }
@@ -4455,8 +4447,8 @@
                 </div>`;
                 html += `<div class="mt5-deposit-withdraw">
                     <input type="number" id="depositAmount" placeholder="Amount" step="0.01" value="">
-                    <button onclick="depositFunds()">Deposit</button>
-                    <button class="withdraw-btn" onclick="withdrawFunds()">Withdraw</button>
+                    <button onclick="depositFunds();renderMobileTradeSummary();">Deposit</button>
+                    <button class="withdraw-btn" onclick="withdrawFunds();renderMobileTradeSummary();">Withdraw</button>
                 </div>`;
                 html +=
                     '<div style="margin-top:4px;"><h4 style="color:var(--mt5-text-bright);font-size:0.65rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
@@ -4472,6 +4464,13 @@
                     depInput.addEventListener('blur', function() { if (this.value && !isNaN(parseFloat(this
                             .value)) && parseFloat(this.value) > 0) { /* valid */ } else { this.value =
                             ''; } });
+                    depInput.setAttribute('type', 'number');
+                    depInput.setAttribute('step', '0.01');
+                    depInput.setAttribute('min', '0');
+                    depInput.style.mozAppearance = 'textfield';
+                    depInput.style.appearance = 'textfield';
+                    depInput.removeAttribute('readonly');
+                    depInput.removeAttribute('disabled');
                 }
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
@@ -4504,6 +4503,9 @@
                 sendNotification('💰 Deposit', '$' + amt.toFixed(2) + ' added to balance', 'success');
                 showToast('💰 Deposited $' + amt.toFixed(2));
                 amtInput.value = '';
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try { serverWS.send(JSON.stringify({ type: 'deposit', amount: amt })); } catch (e) {}
+                }
             }
 
             function withdrawFunds() {
@@ -4522,6 +4524,9 @@
                 sendNotification('💸 Withdrawal', '$' + amt.toFixed(2) + ' withdrawn from balance', 'info');
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
                 amtInput.value = '';
+                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
+                    try { serverWS.send(JSON.stringify({ type: 'withdraw', amount: amt })); } catch (e) {}
+                }
             }
 
             function renderMobileWatchlist() {
@@ -4635,7 +4640,6 @@
                 simResizeObserver = null;
                 chartInitRetryTimer = null;
                 if (window._chartCleanup) window._chartCleanup();
-                stopBackgroundEngine();
             }
 
             function resetChart() {
@@ -4665,7 +4669,8 @@
             let bgEngineInterval = null;
 
             function startBackgroundEngine() {
-                if (bgEngineInterval) clearInterval(bgEngineInterval);
+                if (bgEngineInterval) { clearInterval(bgEngineInterval);
+                    bgEngineInterval = null; }
                 bgEngineInterval = setInterval(() => {
                     checkAndExecuteSLTP();
                     checkPendingOrders();
@@ -4721,7 +4726,6 @@
                 const plStr = (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
                 const plColor = totalPL >= 0 ? 'green' : 'red';
 
-                // Update all stat items
                 document.querySelectorAll('.stat-cash').forEach(el => el.textContent = '💰 ' + cashStr);
                 document.querySelectorAll('.stat-equity').forEach(el => el.textContent = '📊 ' + equityStr);
                 document.querySelectorAll('.stat-pl').forEach(el => {
@@ -4730,7 +4734,15 @@
                 });
                 document.querySelectorAll('.stat-acct').forEach(el => el.textContent = userAccountNo);
 
-                // Update positions table
+                const sp = document.getElementById('statusPrice');
+                if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
+                const st = document.getElementById('statusTime');
+                if (st) st.textContent = new Date().toLocaleTimeString();
+                const ss = document.getElementById('statusSymbol');
+                if (ss) ss.textContent = simCurrentSymbol;
+                const pc = document.getElementById('posCount');
+                if (pc) pc.textContent = portfolio.positions.length;
+
                 const tbody = document.querySelector('#simHoldingsTable tbody');
                 if (tbody) {
                     const rowsHTML = portfolio.positions.map(p => {
@@ -4757,7 +4769,6 @@
                     tbody.innerHTML = rowsHTML;
                 }
 
-                // Update history
                 const histEl = document.getElementById('simHistoryList');
                 if (histEl) {
                     let histHtml = '<strong style="font-size:0.55rem;">Transaction History</strong><ul style="list-style:none;padding:0;">';
@@ -4780,13 +4791,13 @@
                 if (window.innerWidth <= 768) { renderMobileTradeSummary();
                     updateMobileTopBar(); }
                 renderPendingOrdersUI();
-
-                // Update line manager
                 updateLineManagerUI();
             }
 
             // ─── RENDER TRADING TERMINAL ─────────────────────────────────────
             function renderTradingTerminal() {
+                loadPortfolioFromStorage();
+                loadPendingOrders();
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;">
@@ -4803,8 +4814,8 @@
                 }
                 startBackgroundEngine();
                 connectBinanceWS();
+                connectServerWS();
 
-                // ─── EXIT HANDLER ──────────────────────────────────────────
                 window._beforeUnloadHandler = function(e) {
                     if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         e.preventDefault();
@@ -4815,36 +4826,32 @@
                 };
                 window.addEventListener('beforeunload', window._beforeUnloadHandler);
 
-                // Override back button behavior
                 window.history.pushState({ terminal: true }, '');
                 window.addEventListener('popstate', function handler(e) {
                     if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
-                        if (confirm(
-                                '⚠️ Exit trading terminal? Your positions will continue to manage in the background with SL/TP.'
-                                )) {
+                        customConfirm('Exit Trading Terminal?', () => {
+                            exitTerminalSafely();
                             isExitingTerminal = true;
                             cleanupSimIntervals();
                             disconnectBinanceWS();
-                            stopBackgroundEngine();
-                            savePortfolioToStorage();
-                            savePendingOrders();
+                            disconnectServerWS();
                             window.removeEventListener('popstate', handler);
                             window.history.replaceState({}, '', '?');
                             renderApp();
                             showToast('👋 Exited Trading Terminal');
-                        } else {
+                        }, () => {
                             window.history.pushState({ terminal: true }, '');
-                        }
+                        });
+                        window.history.pushState({ terminal: true }, '');
                     }
                 });
             }
 
-            // ─── DESKTOP TERMINAL (2-BAR LAYOUT) ─────────────────────────────
+            // ─── DESKTOP TERMINAL ─────────────────────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
                         <div class="terminal-inner" style="display:flex;flex-direction:column;height:100%;gap:1px;">
-                            <!-- BAR 1: Toolbar + Account Info -->
                             <div class="terminal-bar-1">
                                 <div class="bar-left">
                                     <button class="btn btn-outline btn-sm" id="terminalExitBtn" style="font-size:0.5rem;padding:2px 8px;"><i class="fas fa-arrow-left"></i> Exit</button>
@@ -4871,8 +4878,6 @@
                                     <button class="btn btn-sm btn-danger" style="font-size:0.45rem;padding:2px 6px;" onclick="closeAllPositions()">🚪 Close All</button>
                                 </div>
                             </div>
-
-                            <!-- BAR 2: Trade Panel -->
                             <div class="terminal-bar-2">
                                 <div class="trade-group">
                                     <span style="font-size:0.4rem;color:var(--text-muted);font-weight:600;">Qty:</span>
@@ -4896,20 +4901,14 @@
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()" style="font-size:0.45rem;padding:3px 8px;">🔄</button>
                                 <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;padding:3px 8px;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
-
-                            <!-- Pending Orders (compact) -->
                             <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--bg-secondary);border-bottom:1px solid var(--border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
                                 <span style="font-size:0.4rem;font-weight:600;">📌 Pending:</span>
                                 <span id="pendingOrdersList" style="font-size:0.45rem;color:var(--text-muted);">No pending orders</span>
                             </div>
-
-                            <!-- CHART -->
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
                                 <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen" style="font-size:0.55rem;padding:2px 6px;"><i class="fas fa-expand"></i></button>
                             </div>
-
-                            <!-- DROPDOWN PANELS -->
                             <div class="terminal-dropdowns">
                                 <button class="dd-btn" data-dd="positions">📋 Positions (<span id="posCount">${portfolio.positions.length}</span>)</button>
                                 <button class="dd-btn" data-dd="history">📜 History</button>
@@ -4927,8 +4926,6 @@
                             <div class="terminal-dropdown-panel" id="ddLines">
                                 <div id="lineManagerList" style="max-height:80px;overflow-y:auto;"></div>
                             </div>
-
-                            <!-- STATUS BAR -->
                             <div class="status-bar">
                                 <div class="status-left">
                                     <span class="status-dot on"></span>
@@ -4943,21 +4940,17 @@
                         </div>
                     </div>`;
 
-                // ─── EVENT BINDINGS ──────────────────────────────────────────
                 document.getElementById('terminalExitBtn').onclick = () => {
-                    if (confirm(
-                            '⚠️ Exit trading terminal? Your positions will continue to manage in the background with SL/TP.'
-                            )) {
+                    customConfirm('Exit Trading Terminal?', () => {
+                        exitTerminalSafely();
                         isExitingTerminal = true;
                         cleanupSimIntervals();
                         disconnectBinanceWS();
-                        stopBackgroundEngine();
-                        savePortfolioToStorage();
-                        savePendingOrders();
+                        disconnectServerWS();
                         window.history.replaceState({}, '', '?');
                         renderApp();
                         showToast('👋 Exited Trading Terminal');
-                    }
+                    });
                 };
 
                 document.getElementById('simSymbolSelect').onchange = function() {
@@ -5017,7 +5010,6 @@
                     }, 300);
                 };
 
-                // ─── DROPDOWN TOGGLES ──────────────────────────────────────
                 document.querySelectorAll('.dd-btn').forEach(btn => {
                     btn.onclick = function() {
                         const id = this.dataset.dd;
@@ -5035,7 +5027,6 @@
                     };
                 });
 
-                // ─── INIT CHART ──────────────────────────────────────────────
                 setTimeout(() => {
                     requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
                 }, 100);
@@ -5043,24 +5034,16 @@
                 updateSimUI();
                 renderPendingOrdersUI();
 
-                // ─── STATUS BAR UPDATES ─────────────────────────────────────
                 setInterval(() => {
-                    const price = simLastPrices[simCurrentSymbol] || 0;
-                    document.getElementById('statusPrice').textContent = '$' + price.toFixed(4);
-                    document.getElementById('statusTime').textContent = new Date().toLocaleTimeString();
-                    document.getElementById('statusSymbol').textContent = simCurrentSymbol;
-                    document.getElementById('posCount').textContent = portfolio.positions.length;
-                    // Update stat items
-                    document.querySelectorAll('.stat-cash').forEach(el => el.textContent = '💰 $' + (portfolio
-                        .cash || 0).toFixed(2));
-                    document.querySelectorAll('.stat-equity').forEach(el => el.textContent = '📊 $' + calcEquity()
-                        .toFixed(2));
-                    document.querySelectorAll('.stat-pl').forEach(el => {
-                        const pl = calcTotalPL();
-                        el.textContent = '📈 ' + (pl >= 0 ? '+' : '') + '$' + pl.toFixed(2);
-                        el.style.color = pl >= 0 ? 'var(--success)' : 'var(--danger)';
-                    });
-                }, 1000);
+                    const st = document.getElementById('statusTime');
+                    if (st) st.textContent = new Date().toLocaleTimeString();
+                }, 60000);
+
+                const priceUpdateInterval = setInterval(() => {
+                    updateSimUI();
+                    updateMobileTopBar();
+                }, 2000);
+                window._priceUpdateInterval = priceUpdateInterval;
 
                 window.changeDesktopLot = function(delta) {
                     const input = document.getElementById('simQty');
@@ -5076,6 +5059,8 @@
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             function renderMobileTerminal(container) {
                 if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
+                loadPortfolioFromStorage();
+                loadPendingOrders();
                 cleanupSimIntervals();
                 simAllCandles = [];
                 simCurrentCandle = null;
@@ -5091,6 +5076,7 @@
                             </div>
                             <div class="mt5-toolbar-right">
                                 <button class="mt5-indicator-btn" id="mt5IndicatorBtn"><i class="fas fa-chart-line"></i></button>
+                                <button class="mt5-indicator-btn" id="mt5DrawBtn"><i class="fas fa-pencil-ruler"></i></button>
                                 <select id="mt5TfSelect" class="mt5-tf-select">
                                     ${Object.keys(TIMEFRAMES).map(k => `<option value="${TIMEFRAMES[k]}" ${TIMEFRAMES[k]===currentTimeframe?'selected':''}>${k}</option>`).join('')}
                                 </select>
@@ -5165,9 +5151,20 @@
                                 <div style="margin-top:6px;display:flex;gap:4px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);font-size:0.5rem;">Close</button></div>
                             </div>
                         </div>
+                        <div class="mt5-indicator-overlay" id="mt5DrawOverlay">
+                            <div class="mt5-indicator-sheet">
+                                <h3>📐 Draw Line</h3>
+                                <label style="font-size:0.7rem;">Price <input type="number" id="drawPriceInput" step="0.0001" style="width:100%;padding:6px 8px;border:1px solid var(--mt5-border);border-radius:4px;background:var(--mt5-input);color:var(--mt5-text-bright);font-size:0.6rem;min-height:38px;"></label>
+                                <div style="display:flex;gap:4px;margin-top:6px;">
+                                    <button class="btn btn-sm" onclick="addLineMobile('Support','#10b981')" style="background:#10b981;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">Support</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('Resistance','#ef4444')" style="background:#ef4444;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">Resist</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('H-Line','#3b82f6')" style="background:#3b82f6;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">H-Line</button>
+                                </div>
+                                <button class="btn btn-outline btn-sm" id="closeDrawOverlay" style="width:100%;margin-top:6px;min-height:38px;font-size:0.55rem;">Close</button>
+                            </div>
+                        </div>
                     </div>`;
 
-                // ─── MOBILE EVENT BINDINGS ──────────────────────────────────
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
@@ -5178,19 +5175,16 @@
                 });
 
                 document.getElementById('mobileExitBtn').onclick = () => {
-                    if (confirm(
-                            '⚠️ Exit trading terminal? Your positions will continue to manage in the background with SL/TP.'
-                            )) {
+                    customConfirm('Exit Trading Terminal?', () => {
+                        exitTerminalSafely();
                         isExitingTerminal = true;
                         cleanupSimIntervals();
                         disconnectBinanceWS();
-                        stopBackgroundEngine();
-                        savePortfolioToStorage();
-                        savePendingOrders();
+                        disconnectServerWS();
                         window.history.replaceState({}, '', '?');
                         renderApp();
                         showToast('👋 Exited Trading Terminal');
-                    }
+                    });
                 };
 
                 document.querySelectorAll('#mt5SidebarOverlay input[data-ind]').forEach(cb => {
@@ -5255,6 +5249,17 @@
                         TIMEFRAMES[k] === currentTimeframe);
                     resetChart();
                 };
+
+                const drawOverlay = document.getElementById('mt5DrawOverlay');
+                document.getElementById('mt5DrawBtn').onclick = (e) => { e.stopPropagation();
+                    drawOverlay.classList.toggle('show');
+                    const priceInput = document.getElementById('drawPriceInput');
+                    if (priceInput) priceInput.value = (simLastPrices[simCurrentSymbol] || 0).toFixed(4); };
+                document.getElementById('closeDrawOverlay').onclick = () => drawOverlay.classList.remove('show');
+                drawOverlay.addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.remove('show');
+                });
+
                 document.getElementById('lotDownBtn').onclick = () => changeMobileLot(-1);
                 document.getElementById('lotUpBtn').onclick = () => changeMobileLot(1);
                 document.querySelectorAll('.mt5-lot-presets button').forEach(b => {
@@ -5340,6 +5345,13 @@
                 };
                 startBackgroundEngine();
                 connectBinanceWS();
+                connectServerWS();
+
+                const mobileUpdateInterval = setInterval(() => {
+                    updateSimUI();
+                    updateMobileTopBar();
+                }, 2000);
+                window._mobileUpdateInterval = mobileUpdateInterval;
             }
 
             // ─── DESKTOP TRADE PANEL ─────────────────────────────────────────
@@ -5372,6 +5384,7 @@
                             }).join('')}
                         </div>
                         <div style="margin-top:4px;"><button class="btn btn-sm btn-danger" style="width:100%;font-size:0.55rem;" onclick="closeAllPositions();this.closest('.modal').remove();">🚪 Close All Positions</button></div>
+                        <div style="margin-top:4px;"><button class="btn btn-sm btn-success" style="width:100%;font-size:0.55rem;" onclick="resetSimPortfolio();this.closest('.modal').remove();">🔄 Reset Portfolio</button></div>
                         <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Close</button></div>
                     </div>`;
                 document.body.appendChild(modal);
@@ -5422,6 +5435,7 @@
             function renderUserInterface() {
                 stopBackgroundEngine();
                 cleanupSimIntervals();
+                startBackgroundEngine();
                 document.getElementById('app').innerHTML = `
                     <div class="app">
                         <div class="sidebar" id="sidebar">
@@ -5473,7 +5487,11 @@
                         window.open('?mode=trading', '_blank');
                     }
                 };
-                document.getElementById('logoutBtn').onclick = logout;
+                document.getElementById('logoutBtn').onclick = () => {
+                    customConfirm('Exit App?', () => {
+                        logout();
+                    });
+                };
                 renderSubjectList();
                 if (!selectedSubjectId && subjects.length > 0) {
                     selectedSubjectId = subjects[0].id;
@@ -5704,7 +5722,6 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── TTS ──────────────────────────────────────────────────────────
             function setupTTS(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -5873,7 +5890,11 @@
                             <div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject to manage lessons</div>
                         </div>
                     </div>`;
-                document.getElementById('logoutBtn').onclick = logout;
+                document.getElementById('logoutBtn').onclick = () => {
+                    customConfirm('Exit App?', () => {
+                        logout();
+                    });
+                };
                 document.getElementById('adminThemeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
                     applyTheme();
@@ -6275,7 +6296,9 @@
                             saveAccountNo();
                             showToast('🎉 Registration successful!');
                             window.history.replaceState({}, '', '?');
-                            loadAllData(); } catch (e) { showToast('❌ ' + e.message); }
+                            renderApp();
+                            loadAllDataBackground();
+                        } catch (e) { showToast('❌ ' + e.message); }
                     } else {
                         try { const res = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({
                                     username, password }) });
@@ -6289,14 +6312,15 @@
                             }
                             showToast('✅ Welcome back, ' + username + '!');
                             window.history.replaceState({}, '', '?');
-                            loadAllData(); } catch (e) { showToast('❌ ' + e.message); }
+                            renderApp();
+                            loadAllDataBackground();
+                        } catch (e) { showToast('❌ ' + e.message); }
                     }
                 };
             }
 
-            // ─── LOAD ALL DATA ──────────────────────────────────────────────────
-            async function loadAllData() {
-                if (!token || !currentUser) { renderAuthPage(); return; }
+            // ─── LOAD ALL DATA (background) ──────────────────────────────────
+            async function loadAllDataBackground() {
                 try {
                     loadPortfolioFromStorage();
                     loadPendingOrders();
@@ -6328,15 +6352,24 @@
                     portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
                             .toString(36).slice(2, 6); });
                     savePortfolioToStorage();
-                    if (currentUser.username === 'admin') isAdmin = true;
-                    if (subjects.length > 0 && !selectedSubjectId) {
-                        selectedSubjectId = subjects[0].id;
+                    if (currentUser?.username === 'admin') isAdmin = true;
+                    if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
+
+                    if (document.getElementById('subjectList')) {
+                        renderSubjectList();
+                        if (currentLessonId) showLessonDetail(currentLessonId);
+                        else showLessonList();
+                    } else if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
+                        updateSimUI();
                     }
                     applyTheme();
-                    renderApp();
                     connectBinanceWS();
-                } catch (e) { console.error('Load error:', e); if (e.message.includes('Session expired')) logout();
-                    else renderApp(); }
+                    connectServerWS();
+                    startBackgroundEngine();
+                } catch (e) {
+                    console.error('Background load error:', e);
+                    if (e.message.includes('Session expired')) logout();
+                }
             }
 
             function renderApp() {
@@ -6499,7 +6532,6 @@
                 return vwap;
             }
 
-            // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
@@ -6778,6 +6810,8 @@
             window.sendNotification = sendNotification;
             window.connectBinanceWS = connectBinanceWS;
             window.disconnectBinanceWS = disconnectBinanceWS;
+            window.connectServerWS = connectServerWS;
+            window.disconnectServerWS = disconnectServerWS;
             window.openDB = openDB;
             window.dbPut = dbPut;
             window.dbGet = dbGet;
@@ -6785,6 +6819,9 @@
             window.dbDelete = dbDelete;
             window.syncPortfolioToServer = syncPortfolioToServer;
             window.checkPendingOrders = checkPendingOrders;
+            window.exitTerminalSafely = exitTerminalSafely;
+            window.addLineMobile = addLineMobile;
+            window.customConfirm = customConfirm;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
@@ -6797,12 +6834,15 @@
                 const portfolioStatus = document.getElementById('portfolioStatus');
                 const lastPrice = document.getElementById('lastPrice');
                 const cronStatus = document.getElementById('cronStatus');
+                const serverWsStatus = document.getElementById('serverWsStatus');
                 const ts = document.getElementById('debugTimestamp');
 
                 if (dbStatus) dbStatus.textContent = '✅ Online';
                 if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
                 if (apiStatus) apiStatus.textContent = '✅ Online';
                 if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
+                    '✅ Connected' : '⚠️ Disconnected';
+                if (serverWsStatus) serverWsStatus.textContent = (serverWS && serverWS.readyState === WebSocket.OPEN) ?
                     '✅ Connected' : '⚠️ Disconnected';
                 if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
                 if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
@@ -6842,9 +6882,14 @@
                         return e.returnValue;
                     }
                 }
-                cleanupSimIntervals();
-                disconnectBinanceWS();
-                stopBackgroundEngine();
+                savePortfolioToStorage();
+                savePendingOrders();
+                syncPortfolioToServer();
+                if (!isExitingTerminal) {
+                    cleanupSimIntervals();
+                    disconnectBinanceWS();
+                    disconnectServerWS();
+                }
                 if (window._chartCleanup) window._chartCleanup();
                 if (window._mobileCleanup) window._mobileCleanup();
                 document.querySelectorAll('.toast').forEach(el => el.remove());
@@ -6860,12 +6905,16 @@
             }
             openDB().then(() => {
                 console.log('✅ IndexedDB ready');
-                if (token && currentUser) loadAllData();
-                else renderAuthPage();
+                if (token && currentUser) {
+                    renderApp();
+                    loadAllDataBackground();
+                } else renderAuthPage();
             }).catch(err => {
                 console.warn('IndexedDB error:', err);
-                if (token && currentUser) loadAllData();
-                else renderAuthPage();
+                if (token && currentUser) {
+                    renderApp();
+                    loadAllDataBackground();
+                } else renderAuthPage();
             });
 
             window.addEventListener('orientationchange', () => {
