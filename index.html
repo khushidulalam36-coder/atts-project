@@ -3295,8 +3295,8 @@
 
             // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
   function safeUpdateCandle(candle, source = '') {
-    if (!simCandleSeries) {
-        console.warn('⚠️ safeUpdateCandle: simCandleSeries not ready', source);
+    if (!simCandleSeries || !simChart) {                     // ← simChart চেক যোগ করা হয়েছে
+        console.warn('⚠️ safeUpdateCandle: chart not ready', source);
         return false;
     }
     if (!candle || typeof candle !== 'object') {
@@ -3304,29 +3304,26 @@
         return false;
     }
 
-    // সময় মিলিসেকেন্ড হলে সেকেন্ডে কনভার্ট
     let time = candle.time;
-    if (time > 1e12) {
-        time = Math.floor(time / 1000);
-    }
+    if (time > 1e12) time = Math.floor(time / 1000);
     if (!Number.isFinite(time) || time <= 0) {
         console.warn('⚠️ safeUpdateCandle: invalid time', time, source);
         return false;
     }
 
-    const open = Number(candle.open);
-    const high = Number(candle.high);
-    const low = Number(candle.low);
-    const close = Number(candle.close);
+    const open   = Number(candle.open);
+    const high   = Number(candle.high);
+    const low    = Number(candle.low);
+    const close  = Number(candle.close);
     const volume = Number(candle.volume) || 0;
 
-    // কোনো প্রাইস ফিল্ড invalid হলে বাতিল
     if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
-        console.warn('⚠️ safeUpdateCandle: invalid price field', { open, high, low, close }, source);
+        console.warn('⚠️ safeUpdateCandle: invalid price', { open, high, low, close }, source);
         return false;
     }
 
-    const safeCandle = {
+    // 🛡️ সম্পূর্ণ নতুন ক্লোন তৈরি (লাইব্রেরিতে রেফারেন্স সমস্যা এড়াতে)
+    const safeClone = {                              // ← নাম safeClone, আলাদা অবজেক্ট
         time: time,
         open: open,
         high: Math.max(open, high, close),
@@ -3336,10 +3333,13 @@
     };
 
     try {
-        simCandleSeries.update(safeCandle);
+        simCandleSeries.update(safeClone);            // ← safeCandle-এর বদলে safeClone
+        // সফল আপডেট – ইরর কাউন্টার রিসেট
+        window._chartErrorCount = 0;                  // ← নতুন
         return true;
     } catch (err) {
-        console.error('❌ safeUpdateCandle exception:', err.message, safeCandle, source);
+        console.error('❌ safeUpdateCandle exception:', err.message, safeClone, source);
+        window._chartErrorCount = (window._chartErrorCount || 0) + 1;  // ← নতুন
         return false;
     }
 }
@@ -7503,14 +7503,42 @@
                     }
                 }, 300);
             });
-            window.addEventListener('popstate', () => {
+                        window.addEventListener('popstate', () => {
                 document.querySelectorAll('.modal').forEach(el => el.remove());
-                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
-                'show'));
-                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
-                'show'));
+                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove('show'));
             });
-        })();
+
+            // ─── চার্ট রিকভারি: "Value is null" ত্রুটি ধরলে অটো রিসেট ──────────
+            (function() {
+                let nullErrorCount = 0;
+                let lastResetTime = 0;
+                const RESET_THRESHOLD = 3;
+                const RESET_COOLDOWN = 10000;
+
+                window.addEventListener('error', function(e) {
+                    const msg = e.message || '';
+                    if (msg.includes('Value is null') && e.filename && e.filename.includes('lightweight-charts')) {
+                        nullErrorCount++;
+                        console.warn('🔄 Chart null error #' + nullErrorCount);
+
+                        if (nullErrorCount >= RESET_THRESHOLD &&
+                            document.querySelector('.terminal-wrapper, .mobile-terminal') &&
+                            Date.now() - lastResetTime > RESET_COOLDOWN) {
+                            console.warn('🛠️ Auto-resetting chart due to consecutive errors...');
+                            nullErrorCount = 0;
+                            lastResetTime = Date.now();
+                            resetChart();
+                        }
+                    }
+                });
+
+                setInterval(() => {
+                    if (nullErrorCount > 0) nullErrorCount = Math.max(0, nullErrorCount - 1);
+                }, 30000);
+            })();
+
+        })();    // ← মূল IIFE বন্ধ
     </script>
 </body>
 </html>
