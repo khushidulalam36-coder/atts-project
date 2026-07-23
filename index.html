@@ -393,6 +393,89 @@
             color: #fff;
         }
 
+        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
+        .custom-confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: modalFadeIn 0.2s ease;
+        }
+        .custom-confirm-box {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 28px 24px 22px;
+            max-width: 320px;
+            width: 92%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--border);
+        }
+        .custom-confirm-box .icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+        .custom-confirm-box .message {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .custom-confirm-box .actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+        .custom-confirm-box .actions .btn {
+            min-width: 80px;
+            padding: 8px 18px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .custom-confirm-box .actions .btn-cancel {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1.5px solid var(--border);
+        }
+        .custom-confirm-box .actions .btn-cancel:hover {
+            background: var(--surface-hover);
+            border-color: var(--text-muted);
+        }
+        .custom-confirm-box .actions .btn-confirm {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 3px 14px rgba(239, 68, 68, 0.25);
+        }
+        .custom-confirm-box .actions .btn-confirm:hover {
+            box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+        }
+        .custom-confirm-box .actions .btn-confirm-success {
+            background: var(--success);
+            color: #fff;
+            box-shadow: 0 3px 14px rgba(16, 185, 129, 0.25);
+        }
+        .custom-confirm-box .actions .btn-confirm-success:hover {
+            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+            transform: translateY(-1px);
+        }
+
         /* ─── LESSON LIST ────────────────────────────────────────────────── */
         .lesson-list {
             padding: 10px 14px;
@@ -1502,8 +1585,8 @@
             transition: 0.2s;
             background: transparent;
             border: none;
-            min-height: 40px;
-            min-width: 40px;
+            min-width: 36px;
+            min-height: 36px;
             touch-action: manipulation;
         }
         .mt5-hamburger:active {
@@ -1528,8 +1611,8 @@
             background: transparent;
             border: none;
             font-family: var(--font);
-            min-height: 40px;
-            min-width: 40px;
+            min-width: 36px;
+            min-height: 36px;
             touch-action: manipulation;
         }
         .mt5-indicator-btn:active {
@@ -1545,7 +1628,8 @@
             font-weight: 600;
             cursor: pointer;
             font-family: var(--font-mono);
-            min-height: 30px;
+            min-height: 32px;
+            min-width: 44px;
             touch-action: manipulation;
         }
 
@@ -1608,8 +1692,8 @@
             align-items: center;
             justify-content: center;
             min-width: 36px;
-            touch-action: manipulation;
             min-height: 44px;
+            touch-action: manipulation;
         }
         .mt5-sell-btn {
             background: var(--mt5-red);
@@ -1660,8 +1744,8 @@
             padding: 2px 4px;
             transition: 0.2s;
             touch-action: manipulation;
-            min-height: 30px;
-            min-width: 30px;
+            min-width: 28px;
+            min-height: 28px;
         }
         .mt5-lot-selector button:active {
             opacity: 0.6;
@@ -1690,8 +1774,8 @@
             transition: 0.2s;
             font-family: var(--font-mono);
             touch-action: manipulation;
-            min-height: 28px;
             min-width: 28px;
+            min-height: 28px;
         }
         .mt5-lot-presets button:active {
             background: var(--mt5-green);
@@ -1747,7 +1831,6 @@
             gap: 1px;
             touch-action: manipulation;
             min-height: 44px;
-            min-width: 44px;
         }
         .mt5-nav-item.active {
             color: var(--mt5-green);
@@ -1841,6 +1924,9 @@
             font-size: 0.9rem;
             cursor: pointer;
             padding: 2px 6px;
+            min-width: 36px;
+            min-height: 36px;
+            touch-action: manipulation;
         }
         .mt5-sidebar-sheet h4 {
             color: var(--mt5-text-bright);
@@ -1910,8 +1996,8 @@
             font-family: var(--font-mono);
             transition: 0.2s;
             touch-action: manipulation;
-            min-height: 34px;
-            min-width: 34px;
+            min-height: 32px;
+            min-width: 44px;
         }
         .mt5-sidebar-sheet .timeframe-grid button:active {
             background: var(--mt5-green);
@@ -1933,8 +2019,8 @@
             font-family: var(--font);
             transition: 0.2s;
             touch-action: manipulation;
-            min-height: 34px;
-            min-width: 34px;
+            min-height: 32px;
+            min-width: 60px;
         }
         .mt5-sidebar-sheet .theme-row button:active {
             background: var(--mt5-green);
@@ -2072,7 +2158,7 @@
             width: 100%;
             font-family: var(--font);
             touch-action: manipulation;
-            min-height: 34px;
+            min-height: 36px;
         }
         .position-card .exit-btn:active {
             transform: scale(0.96);
@@ -2096,7 +2182,7 @@
             min-width: 60px;
             -moz-appearance: textfield;
             appearance: textfield;
-            min-height: 34px;
+            min-height: 36px;
         }
         .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
         .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
@@ -2120,8 +2206,8 @@
             transition: 0.2s;
             font-family: var(--font);
             touch-action: manipulation;
-            min-height: 34px;
-            min-width: 40px;
+            min-height: 36px;
+            min-width: 60px;
         }
         .mt5-deposit-withdraw button:active {
             transform: scale(0.96);
@@ -2139,7 +2225,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            min-height: 44px;
         }
         .history-item .left {
             display: flex;
@@ -2191,6 +2276,64 @@
             display: none !important;
         }
 
+        /* ─── MOBILE TRADE PANEL ──────────────────────────────────────────── */
+        .mobile-trade-summary {
+            padding: 4px 0;
+        }
+        .mobile-trade-summary .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .mobile-trade-summary .summary-grid .item {
+            background: var(--mt5-card);
+            padding: 6px 4px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid var(--mt5-border);
+        }
+        .mobile-trade-summary .summary-grid .item .label {
+            font-size: 0.45rem;
+            color: var(--mt5-text);
+        }
+        .mobile-trade-summary .summary-grid .item .value {
+            font-weight: 700;
+            font-size: 0.65rem;
+            color: var(--mt5-text-bright);
+        }
+        .mobile-trade-summary .summary-grid .item .value.green {
+            color: var(--mt5-green);
+        }
+        .mobile-trade-summary .summary-grid .item .value.red {
+            color: var(--mt5-red);
+        }
+
+        /* ─── HISTORY TABS ────────────────────────────────────────────────── */
+        .history-tabs {
+            display: flex;
+            gap: 2px;
+            margin: 4px 0 8px;
+            border-bottom: 2px solid var(--mt5-border);
+        }
+        .history-tabs .htab {
+            padding: 4px 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.55rem;
+            color: var(--mt5-text);
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+            touch-action: manipulation;
+            min-height: 32px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .history-tabs .htab.active {
+            color: var(--mt5-green);
+            border-bottom-color: var(--mt5-green);
+        }
+
         /* ─── ADMIN ────────────────────────────────────────────────────────── */
         .admin-container {
             display: flex;
@@ -2233,6 +2376,7 @@
             font-weight: 600;
             color: var(--text-secondary);
             font-family: var(--font);
+            min-height: 28px;
         }
         .admin-header .admin-theme-toggle:hover {
             border-color: var(--primary);
@@ -2249,6 +2393,7 @@
         .admin-actions .btn {
             font-size: 0.5rem;
             padding: 2px 6px;
+            min-height: 28px;
         }
         #adminSubjectList {
             flex: 1;
@@ -2288,6 +2433,8 @@
             color: var(--text-secondary);
             font-family: var(--font);
             background: var(--surface);
+            min-height: 24px;
+            min-width: 24px;
         }
         .btn-icon:hover {
             border-color: var(--primary);
@@ -2342,6 +2489,7 @@
         .admin-lesson-row .btn {
             font-size: 0.45rem;
             padding: 2px 5px;
+            min-height: 26px;
         }
         .btn-info {
             background: #3b82f6;
@@ -2495,76 +2643,339 @@
             font-size: 0.45rem;
         }
 
-        /* ─── MOBILE TOUCH TARGETS ──────────────────────────────────────── */
+        /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .mt5-sell-btn,
-            .mt5-buy-btn,
-            .mt5-nav-item,
-            .watchlist-item,
-            .mt5-lot-presets button,
-            .position-card .exit-btn,
-            .btn-sm,
-            .mt5-hamburger,
-            .mt5-indicator-btn,
-            .mt5-tf-select,
-            .mt5-sidebar-sheet .timeframe-grid button,
-            .mt5-sidebar-sheet .theme-row button,
-            .mt5-deposit-withdraw input[type="number"],
-            .mt5-deposit-withdraw button,
-            .history-item,
-            .mt5-quick-trade-row button {
-                min-height: 40px;
-                min-width: 40px;
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 200px;
+                transform: translateX(-100%);
+                box-shadow: var(--shadow-lg);
+                z-index: 50;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .mobile-toggle {
+                display: block;
+                min-height: 32px;
+                min-width: 32px;
                 touch-action: manipulation;
             }
-            .mt5-nav-item i {
-                font-size: 0.8rem;
+            .top-bar {
+                padding: 2px 4px;
+                gap: 2px;
+                min-height: 24px;
             }
-            .mt5-bottom-nav {
-                height: 44px;
+            .search-box {
+                max-width: 50px;
+            }
+            .search-box input {
+                font-size: 0.5rem;
+                padding: 2px 5px 2px 16px;
+            }
+            .search-box i {
+                font-size: 0.45rem;
+                left: 5px;
+            }
+            .terminal-bar-1 {
+                min-height: 24px;
+                padding: 2px 4px;
+                gap: 3px;
+            }
+            .terminal-bar-1 .bar-right .stat-item {
+                font-size: 0.45rem;
+                padding: 1px 4px;
+            }
+            .terminal-bar-2 {
+                min-height: 28px;
+                padding: 2px 4px;
+                gap: 2px;
+            }
+            .terminal-bar-2 select,
+            .terminal-bar-2 input {
+                font-size: 0.45rem;
+                padding: 2px 4px;
+                min-height: 28px;
+            }
+            .terminal-bar-2 input[type="number"] {
+                width: 36px;
+            }
+            .terminal-bar-2 .btn {
+                padding: 3px 7px;
+                font-size: 0.45rem;
+                min-height: 28px;
+            }
+            .terminal-bar-2 .btn-trade {
+                padding: 3px 8px;
+                font-size: 0.45rem;
+                min-height: 28px;
+            }
+            .terminal-bar-2 .limit-input input {
+                width: 36px;
+                font-size: 0.4rem;
+                min-height: 24px;
+            }
+            .terminal-dropdowns {
+                padding: 1px 4px;
+                min-height: 18px;
+            }
+            .terminal-dropdowns .dd-btn {
+                font-size: 0.4rem;
+                padding: 1px 5px;
+                min-height: 24px;
+            }
+            .terminal-dropdown-panel {
+                padding: 3px 4px;
+                margin: 1px 4px 2px 4px;
+                max-height: 100px;
+            }
+            .terminal-dropdown-panel table {
+                font-size: 0.4rem;
+            }
+            .terminal-dropdown-panel table td {
+                font-size: 0.4rem;
+                padding: 1px 3px;
+            }
+            .chart-container-wrap #simChartContainer {
+                min-height: 120px;
+            }
+            .admin-left {
+                width: 100%;
+                max-height: 30vh;
+                flex-shrink: 0;
+            }
+            .admin-container {
+                flex-direction: column;
+            }
+            .admin-right {
+                flex: 1;
+                padding: 6px;
+            }
+            .admin-lesson-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .auth-box {
+                padding: 16px 12px;
+            }
+            .mt5-quick-trade-row {
+                gap: 2px;
+            }
+            .mt5-sell-btn,
+            .mt5-buy-btn {
+                font-size: 0.5rem;
+                padding: 4px 2px;
+                min-width: 32px;
+                min-height: 40px;
             }
             .mt5-lot-selector {
-                padding: 4px 6px;
+                min-width: 34px;
+                padding: 2px 3px;
             }
             .mt5-lot-value {
+                font-size: 0.6rem;
+                min-width: 16px;
+            }
+            .mt5-lot-presets button {
+                font-size: 0.35rem;
+                padding: 2px 3px;
+                min-width: 24px;
+                min-height: 24px;
+            }
+            .mt5-top-toolbar {
+                padding: 2px 4px;
+                min-height: 26px;
+            }
+            .mt5-symbol {
+                font-size: 0.65rem;
+            }
+            .mt5-tf-select {
+                font-size: 0.45rem;
+                padding: 2px 4px;
+                min-height: 30px;
+                min-width: 40px;
+            }
+            .mt5-instrument-info {
+                padding: 1px 4px;
+                min-height: 16px;
+            }
+            .mt5-pair {
+                font-size: 0.55rem;
+            }
+            .mt5-name {
+                font-size: 0.45rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.4rem;
+            }
+            .mt5-bottom-nav {
+                height: 30px;
+            }
+            .mt5-nav-item {
+                font-size: 0.4rem;
+                min-height: 40px;
+            }
+            .mt5-nav-item i {
                 font-size: 0.7rem;
-                min-width: 20px;
             }
-            .position-card {
-                padding: 8px 10px;
+            .mt5-sidebar-sheet {
+                width: 74%;
+                max-width: 230px;
             }
-            .mt5-deposit-withdraw {
-                gap: 6px;
+            .mobile-terminal .top-bar-pl {
+                display: none !important;
+            }
+            #debugPanel {
+                left: 6px;
+                right: 6px;
+                width: auto;
+                bottom: 46px;
+                max-height: 45vh;
+            }
+            #debugToggle {
+                bottom: 10px;
+                left: 10px;
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+            }
+            .status-bar {
+                font-size: 0.4rem;
+                min-height: 14px;
+                padding: 1px 4px;
+            }
+            .mt5-hamburger,
+            .mt5-indicator-btn {
+                min-width: 32px;
+                min-height: 32px;
+            }
+            .custom-confirm-box .actions .btn {
+                min-width: 60px;
+                padding: 6px 14px;
+            }
+            .mobile-trade-summary .summary-grid {
+                grid-template-columns: 1fr 1fr;
             }
             .mt5-deposit-withdraw input[type="number"] {
-                font-size: 0.7rem;
-                min-height: 38px;
+                min-height: 32px;
             }
             .mt5-deposit-withdraw button {
-                font-size: 0.6rem;
-                min-height: 38px;
-                min-width: 44px;
+                min-height: 32px;
+                min-width: 50px;
             }
         }
-
-        /* ─── MOBILE DRAW OVERLAY ───────────────────────────────────────── */
-        #mt5DrawOverlay .mt5-indicator-sheet label {
-            font-size: 0.7rem;
-        }
-        #mt5DrawOverlay .mt5-indicator-sheet input[type="number"] {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid var(--mt5-border);
-            border-radius: 4px;
-            background: var(--mt5-input);
-            color: var(--mt5-text-bright);
-            font-size: 0.6rem;
-            font-family: var(--font);
-            min-height: 38px;
-        }
-        #mt5DrawOverlay .mt5-indicator-sheet .btn {
-            min-height: 38px;
-            font-size: 0.55rem;
+        @media (max-width: 400px) {
+            .mt5-quick-trade-row {
+                gap: 2px;
+            }
+            .mt5-sell-btn,
+            .mt5-buy-btn {
+                font-size: 0.45rem;
+                padding: 3px 2px;
+                min-width: 28px;
+                min-height: 36px;
+            }
+            .mt5-lot-selector {
+                min-width: 30px;
+                padding: 1px 2px;
+            }
+            .mt5-lot-value {
+                font-size: 0.55rem;
+                min-width: 14px;
+            }
+            .mt5-lot-presets button {
+                font-size: 0.3rem;
+                padding: 1px 2px;
+                min-width: 20px;
+                min-height: 20px;
+            }
+            .mt5-top-toolbar {
+                padding: 2px 3px;
+                min-height: 24px;
+            }
+            .mt5-symbol {
+                font-size: 0.6rem;
+            }
+            .mt5-tf-select {
+                font-size: 0.4rem;
+                padding: 1px 3px;
+                min-height: 26px;
+                min-width: 34px;
+            }
+            .mt5-bottom-nav {
+                height: 28px;
+            }
+            .mt5-nav-item {
+                font-size: 0.35rem;
+                min-height: 36px;
+            }
+            .mt5-nav-item i {
+                font-size: 0.65rem;
+            }
+            .mt5-instrument-info {
+                padding: 1px 3px;
+                min-height: 14px;
+            }
+            .mt5-pair {
+                font-size: 0.5rem;
+            }
+            .mt5-name {
+                font-size: 0.4rem;
+            }
+            .mt5-tf-display {
+                font-size: 0.35rem;
+            }
+            .top-bar {
+                min-height: 22px;
+                padding: 2px 3px;
+            }
+            .terminal-nav-btn {
+                font-size: 0.5rem;
+                padding: 2px 6px;
+                min-height: 26px;
+            }
+            .lang-select {
+                font-size: 0.45rem;
+                padding: 1px 12px 1px 3px;
+                min-height: 26px;
+            }
+            .theme-toggle-btn {
+                font-size: 0.45rem;
+                padding: 1px 4px;
+                min-height: 26px;
+            }
+            .user-menu .username {
+                font-size: 0.45rem;
+            }
+            .user-menu .logout-btn {
+                font-size: 0.4rem;
+                padding: 1px 4px;
+                min-height: 24px;
+            }
+            .account-no {
+                font-size: 0.35rem;
+                padding: 1px 3px;
+            }
+            .chart-container-wrap #simChartContainer {
+                min-height: 90px;
+            }
+            .terminal-bar-1 .bar-right .stat-item {
+                font-size: 0.4rem;
+                padding: 1px 3px;
+            }
+            .terminal-bar-2 .btn {
+                font-size: 0.4rem;
+                padding: 2px 5px;
+                min-height: 24px;
+            }
+            .terminal-bar-2 .btn-trade {
+                font-size: 0.4rem;
+                padding: 2px 6px;
+                min-height: 24px;
+            }
         }
 
         [data-theme="dark"] .ql-toolbar {
@@ -2632,27 +3043,6 @@
             color: #8b5cf6;
             border: 1px solid #8b5cf6;
         }
-
-        /* ─── CUSTOM CONFIRM MODAL OVERRIDE ─────────────────────────────── */
-        .modal.custom-confirm .modal-content {
-            max-width: 300px;
-            text-align: center;
-            padding: 24px;
-        }
-        .modal.custom-confirm .modal-content .icon {
-            font-size: 2.2rem;
-            margin-bottom: 12px;
-            color: var(--accent);
-        }
-        .modal.custom-confirm .modal-content p {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-        .modal.custom-confirm .modal-actions {
-            justify-content: center;
-            gap: 16px;
-        }
     </style>
 </head>
 <body>
@@ -2670,7 +3060,6 @@
             <div class="debug-item"><span class="label">Portfolio</span><span class="value" id="portfolioStatus">Loading...</span></div>
             <div class="debug-item"><span class="label">Last Price</span><span class="value" id="lastPrice">-</span></div>
             <div class="debug-item"><span class="label">Candle Source</span><span class="value" id="cronStatus">Waiting...</span></div>
-            <div class="debug-item"><span class="label">Server WS</span><span class="value" id="serverWsStatus">Disconnected</span></div>
             <div class="debug-timestamp" id="debugTimestamp">Last updated: --</div>
         </div>
     </div>
@@ -2765,10 +3154,7 @@
             let chartResizeTimer = null;
             let chartVisibilityHandler = null;
             let chartReinitCounter = 0;
-
-            // ─── SERVER WEBSOCKET ──────────────────────────────────────────
             let serverWS = null;
-            let serverWSReconnectTimer = null;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -2861,6 +3247,32 @@
                     setTimeout(() => el.remove(), 300); }, 2800);
             }
 
+            // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
+            function customConfirm(message, onConfirm, onCancel) {
+                const overlay = document.createElement('div');
+                overlay.className = 'custom-confirm-overlay';
+                overlay.innerHTML = `
+                    <div class="custom-confirm-box">
+                        <div class="icon">⚠️</div>
+                        <div class="message">${message}</div>
+                        <div class="actions">
+                            <button class="btn btn-cancel" id="ccCancel">Cancel</button>
+                            <button class="btn btn-confirm" id="ccConfirm">Exit</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                const close = () => overlay.remove();
+                document.getElementById('ccCancel').onclick = () => { close(); if (onCancel) onCancel(); };
+                document.getElementById('ccConfirm').onclick = () => { close();
+                    onConfirm(); };
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) { close(); if (onCancel) onCancel(); }
+                });
+                return overlay;
+            }
+
+            // ─── NOTIFICATIONS ──────────────────────────────────────────────
             function sendNotification(title, body, type = 'info') {
                 const existing = document.querySelector('.notification-banner');
                 if (existing) existing.remove();
@@ -2902,12 +3314,16 @@
                 return res.json();
             }
 
-            function logout() { token = null;
-                currentUser = null;
-                localStorage.removeItem(TOKEN_KEY);
-                localStorage.removeItem(USER_KEY);
-                renderApp();
-                showToast('👋 Logged out'); }
+            function logout() {
+                customConfirm('Exit App?', () => {
+                    token = null;
+                    currentUser = null;
+                    localStorage.removeItem(TOKEN_KEY);
+                    localStorage.removeItem(USER_KEY);
+                    renderApp();
+                    showToast('👋 Logged out');
+                });
+            }
 
             function playTradeSound(type) {
                 try {
@@ -3072,43 +3488,10 @@
                 } catch (e) {}
             }
 
-            // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
-            function customConfirm(message, onConfirm, onCancel) {
-                const modal = document.createElement('div');
-                modal.className = 'modal custom-confirm';
-                modal.style.zIndex = '10000';
-
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <div class="icon">⚠️</div>
-                        <p>${message}</p>
-                        <div class="modal-actions">
-                            <button class="btn btn-outline" id="customCancelBtn">Cancel</button>
-                            <button class="btn btn-danger" id="customConfirmBtn">Exit</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-
-                document.getElementById('customCancelBtn').onclick = () => {
-                    modal.remove();
-                    if (onCancel) onCancel();
-                };
-                document.getElementById('customConfirmBtn').onclick = () => {
-                    modal.remove();
-                    onConfirm();
-                };
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.remove();
-                        if (onCancel) onCancel();
-                    }
-                });
-            }
-
-            // ─── BINANCE WS (kline_1m) ──────────────────────────────────────
+            // ─── BINANCE WS (KLINE) ──────────────────────────────────────────
             function connectBinanceWS() {
-                if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket.CONNECTING)) return;
+                if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
+                        .CONNECTING)) return;
                 if (binanceWS) { try { binanceWS.close(); } catch(e) {} }
                 const streams = SYMBOLS.map(s => s.toLowerCase() + '@kline_1m').join('/');
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
@@ -3119,42 +3502,32 @@
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
-                            if (data.e !== 'kline') return;
-                            const k = data.k;
-                            const symbol = data.s.toUpperCase();
-                            const candle = {
-                                time: Math.floor(k.t / 1000),
-                                open: +k.o,
-                                high: +k.h,
-                                low: +k.l,
-                                close: +k.c,
-                                volume: +k.v
-                            };
-                            if (!candle.open || candle.open <= 0) return;
-                            simLastPrices[symbol] = candle.close;
-                            lastBinancePrice[symbol] = candle.close;
-                            simBasePrices[symbol] = candle.close;
-                            updateMobileTopBar();
-                            if (symbol === simCurrentSymbol && simCandleSeries) {
-                                const idx = simAllCandles.findIndex(c => c.time === candle.time);
-                                if (idx >= 0) {
-                                    simAllCandles[idx] = candle;
-                                } else {
-                                    simAllCandles.push(candle);
-                                    if (simAllCandles.length > 10000) simAllCandles = simAllCandles.slice(-10000);
+                            if (data.e === 'kline') {
+                                const k = data.k;
+                                const symbol = data.s.toUpperCase();
+                                const candle = {
+                                    time: Math.floor(k.t / 1000),
+                                    open: +k.o,
+                                    high: +k.h,
+                                    low: +k.l,
+                                    close: +k.c,
+                                    volume: +k.v
+                                };
+                                simLastPrices[symbol] = candle.close;
+                                lastBinancePrice[symbol] = candle.close;
+                                updateMobileTopBar();
+                                if (symbol === simCurrentSymbol && simCandleSeries) {
+                                    const idx = simAllCandles.findIndex(c => c.time === candle.time);
+                                    if (idx >= 0) simAllCandles[idx] = candle;
+                                    else { simAllCandles.push(candle); if (simAllCandles.length > 10000)
+                                            simAllCandles = simAllCandles.slice(-10000); }
+                                    simCurrentCandle = candle;
+                                    try { simCandleSeries.update(candle); } catch (e) { console.warn(
+                                            'Candle update error:', e); }
+                                    updateAllIndicators();
+                                    checkAndExecuteSLTP();
+                                    updateSimUI();
                                 }
-                                simCurrentCandle = candle;
-                                try { simCandleSeries.update(candle); } catch (e) { console.warn(
-                                        'Candle update error:', e); }
-                                updateAllIndicators();
-                                checkAndExecuteSLTP();
-                                updateSimUI();
-                            }
-                            if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                                try {
-                                    serverWS.send(JSON.stringify({ type: 'price_update', prices: { [symbol]: candle
-                                            .close } }));
-                                } catch (e) {}
                             }
                         } catch (e) { /* silent */ }
                     };
@@ -3175,49 +3548,33 @@
                     binanceReconnectTimer = null; }
             }
 
-            // ─── SERVER WEBSOCKET ────────────────────────────────────────────
+            // ─── SERVER WS ──────────────────────────────────────────────────
             function connectServerWS() {
-                if (serverWS && (serverWS.readyState === WebSocket.OPEN || serverWS.readyState === WebSocket.CONNECTING)) return;
+                if (serverWS && (serverWS.readyState === WebSocket.OPEN || serverWS.readyState === WebSocket
+                        .CONNECTING)) return;
                 if (serverWS) { try { serverWS.close(); } catch(e) {} }
                 const host = location.hostname === 'localhost' ? 'localhost:5000' : 'atts-project.onrender.com';
-                const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
                 try {
-                    serverWS = new WebSocket(`${protocol}://${host}`);
-                    serverWS.onopen = () => { console.log('✅ Server WS connected');
-                        updateDebugPanel(); };
-                    serverWS.onmessage = (event) => {
+                    serverWS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + host);
+                    serverWS.onopen = () => { console.log('✅ Server WS connected'); };
+                    serverWS.onmessage = (e) => {
                         try {
-                            const d = JSON.parse(event.data);
+                            const d = JSON.parse(e.data);
                             if (d.type === 'price_update' && d.prices) {
                                 Object.assign(simLastPrices, d.prices);
-                                Object.assign(simBasePrices, d.prices);
                                 updateMobileTopBar();
-                                updateSimUI();
                             }
-                            if (d.type === 'trade_executed') {
-                                sendNotification('📊 Trade Executed', d.message || 'Trade executed', 'success');
-                            }
-                            if (d.type === 'sl_tp_trigger') {
-                                sendNotification('🎯 SL/TP Triggered', d.message || 'SL/TP executed', d.pnl >= 0 ?
-                                    'success' : 'error');
-                            }
-                        } catch (e) { /* silent */ }
+                        } catch (err) {}
                     };
-                    serverWS.onclose = () => {
-                        console.log('⚠️ Server WS closed, reconnecting...');
-                        if (serverWSReconnectTimer) clearTimeout(serverWSReconnectTimer);
-                        serverWSReconnectTimer = setTimeout(connectServerWS, 5000);
-                        updateDebugPanel();
-                    };
-                    serverWS.onerror = (e) => { console.error('Server WS error:', e);
-                        serverWS.close(); };
-                } catch (e) { console.error('Server WS init error:', e); }
+                    serverWS.onclose = () => { setTimeout(connectServerWS, 5000); };
+                    serverWS.onerror = () => { setTimeout(connectServerWS, 5000); };
+                } catch (e) { console.warn('Server WS init error:', e);
+                    setTimeout(connectServerWS, 5000); }
             }
 
             function disconnectServerWS() {
-                if (serverWS) { try { serverWS.close(); } catch (e) {} }
-                if (serverWSReconnectTimer) { clearTimeout(serverWSReconnectTimer);
-                    serverWSReconnectTimer = null; }
+                if (serverWS) { try { serverWS.close(); } catch(e) {}
+                    serverWS = null; }
             }
 
             // ─── BINANCE REST ──────────────────────────────────────────────
@@ -3279,6 +3636,14 @@
                     }
                 } catch (e) { console.warn('Binance REST price fetch failed:', e); }
                 return null;
+            }
+
+            // ─── EXIT TERMINAL SAFELY ──────────────────────────────────────
+            function exitTerminalSafely() {
+                savePortfolioToStorage();
+                savePendingOrders();
+                syncPortfolioToServer();
+                // ব্যাকগ্রাউন্ড ইঞ্জিন চালু রাখুন (থামাবেন না)
             }
 
             // ─── CHART INIT ──────────────────────────────────────────────────
@@ -3489,7 +3854,7 @@
                         try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
                     }
 
-                    // ─── CLICK TO DRAW ──────────────────────────────────────
+                    // CLICK TO DRAW
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -3516,7 +3881,7 @@
                         }
                     });
 
-                    // ─── DRAG LINES ──────────────────────────────────────────
+                    // DRAG LINES
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -3601,33 +3966,28 @@
                     simPriceIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
                         let price = simLastPrices[simCurrentSymbol];
-                        if (!isValidNumber(price) || price <= 0) {
+                        if (!isValidNumber(price)) {
                             const vol = simVolatility[simCurrentSymbol] || 0.0015;
                             const change = (simCurrentCandle.close || 100) * vol * (Math.random() - 0.48) *
                                 0.8;
                             price = (simCurrentCandle.close || 100) + change;
                             price = +price.toFixed(4);
                             simLastPrices[simCurrentSymbol] = price;
-                            simBasePrices[simCurrentSymbol] = price;
                         }
-                        if (!isValidNumber(price) || price <= 0) {
+                        if (!isValidNumber(price)) {
                             price = simCurrentCandle.close || simBasePrices[simCurrentSymbol] || 100;
                         }
-                        const now2 = Math.floor(Date.now() / 1000);
-                        const currentMinute2 = now2 - (now2 % 60);
-                        if (simCurrentCandle.time === currentMinute2) {
-                            simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
-                            simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
-                            simCurrentCandle.close = price;
-                            simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
-                            .random() * 3000);
-                            try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
-                                    'Price update error:', e); }
-                            updateAllIndicators();
-                            checkAndExecuteSLTP();
-                            updateSimUI();
-                            updateMobileTopBar();
-                        }
+                        simCurrentCandle.high = Math.max(simCurrentCandle.high || price, price);
+                        simCurrentCandle.low = Math.min(simCurrentCandle.low || price, price);
+                        simCurrentCandle.close = price;
+                        simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
+                        .random() * 3000);
+                        try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
+                                'Price update error:', e); }
+                        updateAllIndicators();
+                        checkAndExecuteSLTP();
+                        updateSimUI();
+                        updateMobileTopBar();
                         checkPendingOrders();
                     }, 1000);
 
@@ -3820,22 +4180,6 @@
                     'Resistance' : 'Horizontal line'));
             }
 
-            // ─── MOBILE DRAW TOOL ───────────────────────────────────────────
-            function addLineMobile(label, color) {
-                const priceInput = document.getElementById('drawPriceInput');
-                if (!priceInput) return;
-                const price = parseFloat(priceInput.value);
-                if (!price || price <= 0) return showToast('❌ Invalid price');
-                if (!portfolio.drawnLines) portfolio.drawnLines = {};
-                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color, label, style: 0 });
-                savePortfolioToStorage();
-                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
-                redrawAllLines();
-                document.getElementById('mt5DrawOverlay')?.classList.remove('show');
-                showToast('📐 ' + label + ' @ $' + price.toFixed(4));
-            }
-
             // ─── TRADING ENGINE ─────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
@@ -3876,15 +4220,9 @@
                             id: p.id
                         };
                         portfolio.transactions.unshift(tx);
-                        const msg = p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2);
-                        sendNotification('🛑 ' + reason, msg, pnl - fee >= 0 ? 'success' : 'error');
+                        sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
+                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
-                        if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                            try {
-                                serverWS.send(JSON.stringify({ type: 'sl_tp_trigger', symbol: p.symbol,
-                                    price, pnl: pnl - fee, reason }));
-                            } catch (e) {}
-                        }
                         toRemove.push(i);
                         changed = true;
                     }
@@ -3990,11 +4328,6 @@
                         updateSimUI();
                         redrawAllLines();
                         syncPortfolioToServer();
-                        if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                            try {
-                                serverWS.send(JSON.stringify({ type: 'trade_executed', order: order }));
-                            } catch (e) {}
-                        }
                     }
                 }
                 if (toRemove.length) {
@@ -4030,9 +4363,6 @@
                     sendNotification('📌 Limit Order Placed', type.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
                         limitPrice.toFixed(4), 'info');
                     showToast('📌 Limit ' + type.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
-                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                        try { serverWS.send(JSON.stringify({ type: 'limit_order', order })); } catch (e) {}
-                    }
                     return;
                 }
 
@@ -4097,11 +4427,6 @@
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try {
-                        serverWS.send(JSON.stringify({ type: 'trade_executed', symbol, qty, price, side: type }));
-                    } catch (e) {}
-                }
             }
 
             // ─── EXIT POSITION ──────────────────────────────────────────────
@@ -4129,14 +4454,10 @@
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
-                const msg = p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2);
-                sendNotification('🚪 Position Closed', msg, pnl - fee >= 0 ? 'success' : 'error');
+                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
+                    .toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                 playTradeSound('sell');
                 showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try { serverWS.send(JSON.stringify({ type: 'position_closed', symbol: p.symbol, pnl: pnl - fee }));
-                    } catch (e) {}
-                }
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -4164,38 +4485,38 @@
 
             function closeAllPositions() {
                 if (portfolio.positions.length === 0) return showToast('⚠️ No open positions');
-                if (!confirm('Close ALL positions?')) return;
-                const toClose = [...portfolio.positions];
-                let totalPnl = 0;
-                toClose.forEach(p => {
-                    const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
-                    const isShort = p.type === 'short';
-                    const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
-                    const fee = Math.abs(p.qty * price * 0.0005);
-                    portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
-                    totalPnl += (pnl - fee);
-                    portfolio.transactions.unshift({
-                        type: 'close',
-                        symbol: p.symbol,
-                        qty: p.qty,
-                        price,
-                        time: new Date().toLocaleTimeString(),
-                        reason: 'Close All',
-                        pnl: pnl - fee,
-                        id: p.id
+                customConfirm('Close ALL positions?', () => {
+                    const toClose = [...portfolio.positions];
+                    let totalPnl = 0;
+                    toClose.forEach(p => {
+                        const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                        const isShort = p.type === 'short';
+                        const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p
+                            .qty;
+                        const fee = Math.abs(p.qty * price * 0.0005);
+                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                        totalPnl += (pnl - fee);
+                        portfolio.transactions.unshift({
+                            type: 'close',
+                            symbol: p.symbol,
+                            qty: p.qty,
+                            price,
+                            time: new Date().toLocaleTimeString(),
+                            reason: 'Close All',
+                            pnl: pnl - fee,
+                            id: p.id
+                        });
                     });
+                    portfolio.positions = [];
+                    savePortfolioToStorage();
+                    updateSimUI();
+                    redrawAllLines();
+                    syncPortfolioToServer();
+                    sendNotification('🚪 All Positions Closed', 'Total P&L: ' + (totalPnl >= 0 ? '+' : '') +
+                        totalPnl.toFixed(2), totalPnl >= 0 ? 'success' : 'error');
+                    showToast('🚪 All positions closed | P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(
+                    2));
                 });
-                portfolio.positions = [];
-                savePortfolioToStorage();
-                updateSimUI();
-                redrawAllLines();
-                syncPortfolioToServer();
-                sendNotification('🚪 All Positions Closed', 'Total P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl
-                    .toFixed(2), totalPnl >= 0 ? 'success' : 'error');
-                showToast('🚪 All positions closed | P&L: ' + (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(2));
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try { serverWS.send(JSON.stringify({ type: 'all_closed', totalPnl })); } catch (e) {}
-                }
             }
 
             function editSLTPById(posId) {
@@ -4223,15 +4544,11 @@
                     sendNotification('🔧 SL/TP Modified', p.symbol + ' SL: ' + (p.slPrice || 'None') + ' TP: ' + (p
                         .tpPrice || 'None'), 'info');
                     showToast('✅ SL/TP modified');
-                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                        try { serverWS.send(JSON.stringify({ type: 'sl_tp_modified', symbol: p.symbol, sl: p
-                                    .slPrice, tp: p.tpPrice })); } catch (e) {}
-                    }
                 };
             }
 
             function resetSimPortfolio() {
-                if (confirm('Reset portfolio? All trades cleared.')) {
+                customConfirm('Reset portfolio? All trades cleared.', () => {
                     portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
                     pendingOrders = [];
                     simLastPrices = {};
@@ -4245,7 +4562,7 @@
                     renderPendingOrdersUI();
                     sendNotification('🔄 Portfolio Reset', 'Balance $100,000', 'info');
                     showToast('🔄 Portfolio reset ($100,000)');
-                }
+                });
             }
 
             // ─── RENDER PENDING ORDERS UI ──────────────────────────────────
@@ -4272,16 +4589,6 @@
                 renderPendingOrdersUI();
                 sendNotification('🗑 Limit Order Canceled', 'Order ID: ' + id.slice(-6), 'warning');
                 showToast('🗑 Limit order canceled');
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try { serverWS.send(JSON.stringify({ type: 'order_canceled', id })); } catch (e) {}
-                }
-            }
-
-            // ─── SAFE EXIT ──────────────────────────────────────────────────
-            function exitTerminalSafely() {
-                savePortfolioToStorage();
-                savePendingOrders();
-                syncPortfolioToServer();
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -4329,9 +4636,6 @@
                     sendNotification('📌 Limit Order Placed', side.toUpperCase() + ' ' + qty + ' ' + symbol + ' @ $' +
                         limitPrice.toFixed(4), 'info');
                     showToast('📌 Limit ' + side.toUpperCase() + ' placed @ $' + limitPrice.toFixed(4));
-                    if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                        try { serverWS.send(JSON.stringify({ type: 'limit_order', order })); } catch (e) {}
-                    }
                     return;
                 }
 
@@ -4397,19 +4701,26 @@
                 updateMobileTopBar();
                 renderMobileTradeSummary();
                 syncPortfolioToServer();
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try {
-                        serverWS.send(JSON.stringify({ type: 'trade_executed', symbol, qty, price, side }));
-                    } catch (e) {}
-                }
                 document.getElementById('mobileSellBtn')?.blur();
                 document.getElementById('mobileBuyBtn')?.blur();
             }
 
+            // ─── MOBILE TRADE SUMMARY ──────────────────────────────────────
             function renderMobileTradeSummary() {
                 const panel = document.getElementById('tradePanel');
                 if (!panel) return;
-                let html = '<div style="padding:3px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">Open Positions</h4>';
+                const totalEquity = calcEquity();
+                const totalPL = calcTotalPL();
+                const freeMargin = portfolio.cash || 0;
+                let html = `
+                    <div class="mobile-trade-summary">
+                        <div class="summary-grid">
+                            <div class="item"><div class="label">Balance</div><div class="value">$${(portfolio.cash || 0).toFixed(2)}</div></div>
+                            <div class="item"><div class="label">Equity</div><div class="value">$${totalEquity.toFixed(2)}</div></div>
+                            <div class="item"><div class="label">Free Margin</div><div class="value">$${freeMargin.toFixed(2)}</div></div>
+                        </div>
+                        <h4 style="color:var(--mt5-text-bright);font-size:0.7rem;margin:4px 0 2px;">Positions</h4>
+                        <div id="mobilePositionsList">`;
                 const positions = portfolio.positions || [];
                 if (positions.length === 0) {
                     html += '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No open positions</div>';
@@ -4418,43 +4729,38 @@
                         const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
                         const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) *
                         p.qty;
+                        const plStr = (pl >= 0 ? '+' : '') + pl.toFixed(2);
+                        const plCls = pl >= 0 ? 'green' : 'red';
                         html += `<div class="position-card">
-                            <div class="row"><span class="label">${p.symbol} (${p.type})</span><span class="value">${Math.abs(p.qty)} Qty</span></div>
+                            <div class="row"><span class="label">${p.symbol} <span style="color:${p.type==='long'?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${p.type.toUpperCase()}</span></span><span class="value">${Math.abs(p.qty)} Qty</span></div>
                             <div class="row"><span class="label">Entry</span><span class="value">$${(p.entryPrice || 0).toFixed(4)}</span></div>
                             <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(4)}</span></div>
-                            <div class="row"><span class="label">P&L</span><span class="value ${pl>=0?'green':'red'}">${pl>=0?'+':''}$${pl.toFixed(2)}</span></div>
+                            <div class="row"><span class="label">P&L</span><span class="value ${plCls}">${plStr}</span></div>
                             ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
                             ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
-                            <button class="exit-btn" onclick="exitPositionById('${p.id}');renderMobileTradeSummary();">Exit Position</button>
-                            <button class="btn btn-modify btn-sm" style="margin-top:3px;width:100%;font-size:0.5rem;" onclick="editSLTPById('${p.id}');renderMobileTradeSummary();">🔧 Modify</button>
+                            <div style="display:flex;gap:4px;margin-top:4px;">
+                                <button class="exit-btn" style="flex:1;" onclick="exitPositionById('${p.id}');renderMobileTradeSummary();">Exit</button>
+                                <button class="btn btn-modify btn-sm" style="flex:1;font-size:0.5rem;padding:4px 8px;" onclick="editSLTPById('${p.id}');renderMobileTradeSummary();">🔧 Modify</button>
+                            </div>
                         </div>`;
                     });
                 }
-                const totalEquity = portfolio.cash + portfolio.positions.reduce((sum, p) => {
-                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
-                    return sum + Math.abs(p.qty) * cp;
-                }, 0);
-                const totalPL = portfolio.positions.reduce((sum, p) => {
-                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
-                    return sum + (p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p
-                        .qty);
-                }, 0);
-                html += `<div style="margin-top:4px;padding:6px;background:var(--mt5-card);border-radius:6px;">
-                    <div class="row"><span class="label">Balance</span><span class="value">$${(portfolio.cash || 0).toFixed(2)}</span></div>
-                    <div class="row"><span class="label">Equity</span><span class="value">$${totalEquity.toFixed(2)}</span></div>
-                    <div class="row"><span class="label">Total P&L</span><span class="value ${totalPL>=0?'green':'red'}">${totalPL>=0?'+':''}$${totalPL.toFixed(2)}</span></div>
-                    <div class="row"><span class="label">Account</span><span class="value" style="font-size:0.5rem;">${userAccountNo}</span></div>
-                </div>`;
-                html += `<div class="mt5-deposit-withdraw">
-                    <input type="number" id="depositAmount" placeholder="Amount" step="0.01" value="">
-                    <button onclick="depositFunds();renderMobileTradeSummary();">Deposit</button>
-                    <button class="withdraw-btn" onclick="withdrawFunds();renderMobileTradeSummary();">Withdraw</button>
-                </div>`;
-                html +=
-                    '<div style="margin-top:4px;"><h4 style="color:var(--mt5-text-bright);font-size:0.65rem;">Pending Limit Orders</h4><div id="mobilePendingOrders"></div></div>';
-                html +=
-                    `<div style="margin-top:4px;"><button class="btn btn-danger btn-sm" style="width:100%;font-size:0.55rem;" onclick="closeAllPositions();renderMobileTradeSummary();">🚪 Close All Positions</button></div>`;
-                html += '</div>';
+                html += `</div>
+                        <div style="margin-top:4px;display:flex;gap:4px;">
+                            <button class="btn btn-danger btn-sm" style="flex:1;font-size:0.55rem;padding:6px;" onclick="closeAllPositions();renderMobileTradeSummary();">🚪 All Positions Exit</button>
+                        </div>
+                        <div style="margin-top:6px;padding:6px;background:var(--mt5-card);border-radius:6px;border:1px solid var(--mt5-border);">
+                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                <input type="number" id="depositAmount" placeholder="Amount" step="0.01" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:4px 8px;border-radius:4px;font-size:0.6rem;min-height:36px;">
+                                <button class="btn btn-success btn-sm" onclick="depositFunds();renderMobileTradeSummary();" style="font-size:0.55rem;">Deposit</button>
+                                <button class="btn btn-danger btn-sm" onclick="withdrawFunds();renderMobileTradeSummary();" style="font-size:0.55rem;">Withdraw</button>
+                            </div>
+                        </div>
+                        <div style="margin-top:4px;">
+                            <h4 style="color:var(--mt5-text-bright);font-size:0.65rem;">Pending Limit Orders</h4>
+                            <div id="mobilePendingOrders"></div>
+                        </div>
+                    </div>`;
                 panel.innerHTML = html;
 
                 const depInput = document.getElementById('depositAmount');
@@ -4464,13 +4770,6 @@
                     depInput.addEventListener('blur', function() { if (this.value && !isNaN(parseFloat(this
                             .value)) && parseFloat(this.value) > 0) { /* valid */ } else { this.value =
                             ''; } });
-                    depInput.setAttribute('type', 'number');
-                    depInput.setAttribute('step', '0.01');
-                    depInput.setAttribute('min', '0');
-                    depInput.style.mozAppearance = 'textfield';
-                    depInput.style.appearance = 'textfield';
-                    depInput.removeAttribute('readonly');
-                    depInput.removeAttribute('disabled');
                 }
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
@@ -4503,9 +4802,6 @@
                 sendNotification('💰 Deposit', '$' + amt.toFixed(2) + ' added to balance', 'success');
                 showToast('💰 Deposited $' + amt.toFixed(2));
                 amtInput.value = '';
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try { serverWS.send(JSON.stringify({ type: 'deposit', amount: amt })); } catch (e) {}
-                }
             }
 
             function withdrawFunds() {
@@ -4524,16 +4820,14 @@
                 sendNotification('💸 Withdrawal', '$' + amt.toFixed(2) + ' withdrawn from balance', 'info');
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
                 amtInput.value = '';
-                if (serverWS && serverWS.readyState === WebSocket.OPEN) {
-                    try { serverWS.send(JSON.stringify({ type: 'withdraw', amount: amt })); } catch (e) {}
-                }
             }
 
+            // ─── MOBILE WATCHLIST ──────────────────────────────────────────
             function renderMobileWatchlist() {
                 const panel = document.getElementById('quotesPanel');
                 if (!panel) return;
                 let html =
-                    `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;" oninput="window.watchlistSearch(this.value)"></div>`;
+                    `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;min-height:36px;" oninput="window.watchlistSearch(this.value)"></div>`;
                 const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
                 html += list.map(sym => {
                     const price = simLastPrices[sym] || simBasePrices[sym] || '-';
@@ -4554,7 +4848,7 @@
                 const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
                 const filtered = query ? list.filter(s => s.toLowerCase().includes(query.toLowerCase())) : list;
                 panel.innerHTML =
-                    `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;" value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
+                    `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;min-height:36px;" value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
                     filtered.map(sym => {
                         const price = simLastPrices[sym] || simBasePrices[sym] || '-';
                         const change = (Math.random() * 4 - 2);
@@ -4590,37 +4884,134 @@
                 showToast('📊 Switched to ' + sym);
             }
 
+            // ─── MOBILE HISTORY ─────────────────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
                 const transactions = portfolio.transactions || [];
-                let html =
-                    '<div style="padding:3px 0;"><h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">Transaction History</h4>';
-                if (transactions.length === 0) {
-                    html += '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No transactions</div>';
-                } else {
-                    transactions.slice(0, 30).forEach(t => {
-                        const typeCls = t.type === 'buy' ? 'buy' : t.type === 'sell' ? 'sell' : t.type ===
-                            'deposit' ? 'deposit' : 'withdraw';
-                        const isDeposit = t.type === 'deposit';
-                        const isWithdraw = t.type === 'withdraw';
-                        const sign = (isDeposit || t.type === 'buy' || t.type === 'deposit') ? '+' : '-';
-                        const color = isDeposit ? 'green' : isWithdraw ? 'red' : t.type === 'buy' ? 'green' :
-                            'red';
-                        const pnlText = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl
-                            .toFixed(2) : '';
-                        html += `<div class="history-item">
-                            <div class="left">
-                                <span class="type ${typeCls}">${t.type.toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
-                                <span class="detail">${t.symbol || 'USD'} • ${t.time || ''}</span>
+                let profitTotal = 0,
+                    depositTotal = 0;
+                transactions.forEach(t => {
+                    if (t.type === 'deposit') depositTotal += t.qty;
+                    if (t.type === 'close' && t.pnl !== undefined) profitTotal += t.pnl;
+                    if (t.type === 'buy' || t.type === 'sell') {
+                        const val = t.qty * (t.price || 1);
+                        if (t.type === 'buy') profitTotal -= val;
+                        else profitTotal += val;
+                    }
+                });
+                let html = `
+                    <div style="padding:3px 0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">History</h4>
+                            <div style="display:flex;gap:4px;">
+                                <span style="font-size:0.45rem;color:var(--mt5-text);">⟳</span>
+                                <span style="font-size:0.45rem;color:var(--mt5-text);">⇅</span>
+                                <span style="font-size:0.45rem;color:var(--mt5-text);">📅</span>
                             </div>
-                            <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
-                        </div>`;
-                    });
-                }
-                html += '</div>';
+                        </div>
+                        <div style="font-size:0.5rem;color:var(--mt5-text);">All symbols</div>
+                        <div class="history-tabs">
+                            <div class="htab active" data-htab="positions" onclick="switchHistoryTab('positions')">POSITIONS</div>
+                            <div class="htab" data-htab="orders" onclick="switchHistoryTab('orders')">ORDERS</div>
+                            <div class="htab" data-htab="deals" onclick="switchHistoryTab('deals')">DEALS</div>
+                        </div>
+                        <div id="historyContent">
+                            <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
+                                <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                                <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                            </div>
+                            <div id="historyList">
+                                ${transactions.length === 0 ? '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No transactions</div>' :
+                                transactions.slice(0, 30).map(t => {
+                                    const typeCls = t.type === 'buy' ? 'buy' : t.type === 'sell' ? 'sell' : t.type === 'deposit' ? 'deposit' : 'withdraw';
+                                    const sign = (t.type === 'deposit' || t.type === 'buy') ? '+' : '-';
+                                    const color = t.type === 'deposit' ? 'green' : t.type === 'withdraw' ? 'red' : t.type === 'buy' ? 'green' : 'red';
+                                    const pnlText = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' : '') + t.pnl.toFixed(2) : '';
+                                    const detail = t.symbol || 'USD';
+                                    const timeStr = t.time || '';
+                                    return `<div class="history-item">
+                                        <div class="left">
+                                            <span class="type ${typeCls}">${t.type.toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
+                                            <span class="detail">${detail} • ${timeStr}</span>
+                                        </div>
+                                        <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                            ${transactions.length > 30 ? '<div style="text-align:center;color:var(--mt5-text);font-size:0.5rem;padding:4px 0;">No more history</div>' : ''}
+                        </div>
+                    </div>`;
                 panel.innerHTML = html;
             }
+
+            window.switchHistoryTab = function(tab) {
+                document.querySelectorAll('.htab').forEach(h => h.classList.remove('active'));
+                const el = document.querySelector(`.htab[data-htab="${tab}"]`);
+                if (el) el.classList.add('active');
+                const content = document.getElementById('historyContent');
+                if (content) {
+                    const transactions = portfolio.transactions || [];
+                    let filtered = [];
+                    if (tab === 'positions') filtered = transactions.filter(t => t.type === 'buy' || t.type ===
+                        'sell' || t.type === 'close');
+                    else if (tab === 'orders') filtered = pendingOrders.filter(o => o.status !== 'canceled');
+                    else filtered = transactions.filter(t => t.type === 'deposit' || t.type === 'withdraw');
+                    let profitTotal = 0,
+                        depositTotal = 0;
+                    transactions.forEach(t => {
+                        if (t.type === 'deposit') depositTotal += t.qty;
+                        if (t.type === 'close' && t.pnl !== undefined) profitTotal += t.pnl;
+                    });
+                    let listHtml = '';
+                    if (filtered.length === 0) listHtml =
+                        '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No items</div>';
+                    else {
+                        filtered.slice(0, 30).forEach(t => {
+                            const typeCls = t.type === 'buy' ? 'buy' : t.type === 'sell' ? 'sell' : t
+                                .type === 'deposit' ? 'deposit' : 'withdraw';
+                            const sign = (t.type === 'deposit' || t.type === 'buy') ? '+' : '-';
+                            const color = t.type === 'deposit' ? 'green' : t.type === 'withdraw' ?
+                                'red' : t.type === 'buy' ? 'green' : 'red';
+                            const pnlText = t.pnl !== undefined ? ' | P&L: ' + (t.pnl >= 0 ? '+' :
+                                '') + t.pnl.toFixed(2) : '';
+                            const detail = t.symbol || 'USD';
+                            const timeStr = t.time || '';
+                            listHtml += `<div class="history-item">
+                                <div class="left">
+                                    <span class="type ${typeCls}">${(t.type||'').toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
+                                    <span class="detail">${detail} • ${timeStr}</span>
+                                </div>
+                                <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
+                            </div>`;
+                        });
+                    }
+                    content.innerHTML = `
+                        <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
+                            <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                            <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                        </div>
+                        <div id="historyList">${listHtml}</div>
+                        ${filtered.length > 30 ? '<div style="text-align:center;color:var(--mt5-text);font-size:0.5rem;padding:4px 0;">No more history</div>' : ''}
+                    `;
+                }
+            };
+
+            // ─── MOBILE DRAWING TOOLS ──────────────────────────────────────
+            window.addLineMobile = function(label, color) {
+                const priceInput = document.getElementById('drawPriceInput');
+                if (!priceInput) return showToast('❌ Price input not found');
+                const price = +priceInput.value;
+                if (!price || price <= 0) return showToast('❌ Invalid price');
+                if (!portfolio.drawnLines) portfolio.drawnLines = {};
+                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color, label, style: 0 });
+                savePortfolioToStorage();
+                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
+                redrawAllLines();
+                document.getElementById('mt5DrawOverlay')?.classList.remove('show');
+                showToast('📐 ' + label + ' @ $' + price.toFixed(4));
+            };
 
             // ─── CLEANUP ──────────────────────────────────────────────────────
             function cleanupSimIntervals() {
@@ -4640,6 +5031,7 @@
                 simResizeObserver = null;
                 chartInitRetryTimer = null;
                 if (window._chartCleanup) window._chartCleanup();
+                // ব্যাকগ্রাউন্ড ইঞ্জিন থামাবেন না - SL/TP চলতে থাকবে
             }
 
             function resetChart() {
@@ -4669,8 +5061,7 @@
             let bgEngineInterval = null;
 
             function startBackgroundEngine() {
-                if (bgEngineInterval) { clearInterval(bgEngineInterval);
-                    bgEngineInterval = null; }
+                if (bgEngineInterval) clearInterval(bgEngineInterval);
                 bgEngineInterval = setInterval(() => {
                     checkAndExecuteSLTP();
                     checkPendingOrders();
@@ -4734,15 +5125,6 @@
                 });
                 document.querySelectorAll('.stat-acct').forEach(el => el.textContent = userAccountNo);
 
-                const sp = document.getElementById('statusPrice');
-                if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
-                const st = document.getElementById('statusTime');
-                if (st) st.textContent = new Date().toLocaleTimeString();
-                const ss = document.getElementById('statusSymbol');
-                if (ss) ss.textContent = simCurrentSymbol;
-                const pc = document.getElementById('posCount');
-                if (pc) pc.textContent = portfolio.positions.length;
-
                 const tbody = document.querySelector('#simHoldingsTable tbody');
                 if (tbody) {
                     const rowsHTML = portfolio.positions.map(p => {
@@ -4787,12 +5169,28 @@
                     histEl.innerHTML = histHtml;
                 }
 
+                // Status bar updates
+                const sp = document.getElementById('statusPrice');
+                if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
+                const st = document.getElementById('statusTime');
+                if (st) st.textContent = new Date().toLocaleTimeString();
+                const ss = document.getElementById('statusSymbol');
+                if (ss) ss.textContent = simCurrentSymbol;
+                const pc = document.getElementById('posCount');
+                if (pc) pc.textContent = portfolio.positions.length;
+
                 savePortfolioToStorage();
                 if (window.innerWidth <= 768) { renderMobileTradeSummary();
                     updateMobileTopBar(); }
                 renderPendingOrdersUI();
                 updateLineManagerUI();
             }
+
+            // ─── TIME UPDATE (lightweight) ──────────────────────────────────
+            setInterval(() => {
+                const el = document.getElementById('statusTime');
+                if (el) el.textContent = new Date().toLocaleTimeString();
+            }, 60000);
 
             // ─── RENDER TRADING TERMINAL ─────────────────────────────────────
             function renderTradingTerminal() {
@@ -4816,6 +5214,7 @@
                 connectBinanceWS();
                 connectServerWS();
 
+                // ─── EXIT HANDLER ──────────────────────────────────────────
                 window._beforeUnloadHandler = function(e) {
                     if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         e.preventDefault();
@@ -4830,8 +5229,8 @@
                 window.addEventListener('popstate', function handler(e) {
                     if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         customConfirm('Exit Trading Terminal?', () => {
-                            exitTerminalSafely();
                             isExitingTerminal = true;
+                            exitTerminalSafely();
                             cleanupSimIntervals();
                             disconnectBinanceWS();
                             disconnectServerWS();
@@ -4847,7 +5246,7 @@
                 });
             }
 
-            // ─── DESKTOP TERMINAL ─────────────────────────────────────────────
+            // ─── DESKTOP TERMINAL (2-BAR LAYOUT) ─────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
@@ -4878,6 +5277,7 @@
                                     <button class="btn btn-sm btn-danger" style="font-size:0.45rem;padding:2px 6px;" onclick="closeAllPositions()">🚪 Close All</button>
                                 </div>
                             </div>
+
                             <div class="terminal-bar-2">
                                 <div class="trade-group">
                                     <span style="font-size:0.4rem;color:var(--text-muted);font-weight:600;">Qty:</span>
@@ -4901,14 +5301,17 @@
                                 <button class="btn btn-outline btn-sm" onclick="resetSimPortfolio()" style="font-size:0.45rem;padding:3px 8px;">🔄</button>
                                 <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;padding:3px 8px;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
+
                             <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--bg-secondary);border-bottom:1px solid var(--border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
                                 <span style="font-size:0.4rem;font-weight:600;">📌 Pending:</span>
                                 <span id="pendingOrdersList" style="font-size:0.45rem;color:var(--text-muted);">No pending orders</span>
                             </div>
+
                             <div class="chart-container-wrap">
                                 <div id="simChartContainer"><div class="chart-loading" id="chartLoading">Loading chart...</div></div>
                                 <button class="chart-fullscreen-btn" id="chartFullscreenBtn" title="Fullscreen" style="font-size:0.55rem;padding:2px 6px;"><i class="fas fa-expand"></i></button>
                             </div>
+
                             <div class="terminal-dropdowns">
                                 <button class="dd-btn" data-dd="positions">📋 Positions (<span id="posCount">${portfolio.positions.length}</span>)</button>
                                 <button class="dd-btn" data-dd="history">📜 History</button>
@@ -4926,6 +5329,7 @@
                             <div class="terminal-dropdown-panel" id="ddLines">
                                 <div id="lineManagerList" style="max-height:80px;overflow-y:auto;"></div>
                             </div>
+
                             <div class="status-bar">
                                 <div class="status-left">
                                     <span class="status-dot on"></span>
@@ -4940,10 +5344,11 @@
                         </div>
                     </div>`;
 
+                // ─── EVENT BINDINGS ──────────────────────────────────────────
                 document.getElementById('terminalExitBtn').onclick = () => {
                     customConfirm('Exit Trading Terminal?', () => {
-                        exitTerminalSafely();
                         isExitingTerminal = true;
+                        exitTerminalSafely();
                         cleanupSimIntervals();
                         disconnectBinanceWS();
                         disconnectServerWS();
@@ -4986,13 +5391,13 @@
                     'drawResistanceBtn');
                 document.getElementById('drawHLineBtn').onclick = () => setDrawingTool('hline', 'drawHLineBtn');
                 document.getElementById('clearLinesBtn').onclick = () => {
-                    if (confirm('Clear all drawn lines for ' + simCurrentSymbol + '?')) {
+                    customConfirm('Clear all drawn lines for ' + simCurrentSymbol + '?', () => {
                         portfolio.drawnLines[simCurrentSymbol] = [];
                         savePortfolioToStorage();
                         saveDrawingsToDB(simCurrentSymbol, []);
                         redrawAllLines();
                         showToast('🗑 Lines cleared');
-                    }
+                    });
                 };
 
                 document.getElementById('chartFullscreenBtn').onclick = () => {
@@ -5034,17 +5439,6 @@
                 updateSimUI();
                 renderPendingOrdersUI();
 
-                setInterval(() => {
-                    const st = document.getElementById('statusTime');
-                    if (st) st.textContent = new Date().toLocaleTimeString();
-                }, 60000);
-
-                const priceUpdateInterval = setInterval(() => {
-                    updateSimUI();
-                    updateMobileTopBar();
-                }, 2000);
-                window._priceUpdateInterval = priceUpdateInterval;
-
                 window.changeDesktopLot = function(delta) {
                     const input = document.getElementById('simQty');
                     let val = parseFloat(input.value) || 0.01;
@@ -5059,8 +5453,6 @@
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             function renderMobileTerminal(container) {
                 if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
-                loadPortfolioFromStorage();
-                loadPendingOrders();
                 cleanupSimIntervals();
                 simAllCandles = [];
                 simCurrentCandle = null;
@@ -5108,9 +5500,9 @@
                             </div>
                             <div style="display:flex;gap:3px;margin-top:2px;align-items:center;flex-wrap:wrap;">
                                 <span style="font-size:0.45rem;color:var(--mt5-text);">Limit:</span>
-                                <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.45rem;min-width:50px;">
-                                <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:2px 8px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">B L</button>
-                                <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:2px 8px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">S L</button>
+                                <input type="number" id="mobileLimitPrice" placeholder="Price" step="0.0001" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.45rem;min-width:50px;min-height:32px;">
+                                <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:2px 8px;min-height:28px;" onclick="placeSimOrderMobile('buy',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">B L</button>
+                                <button class="btn btn-outline btn-sm" style="font-size:0.4rem;padding:2px 8px;min-height:28px;" onclick="placeSimOrderMobile('sell',currentMobileLot,'limit',parseFloat(document.getElementById('mobileLimitPrice').value))">S L</button>
                             </div>
                         </div>
                         <div class="mobile-chart-container" id="mobileChartContainer">
@@ -5151,20 +5543,22 @@
                                 <div style="margin-top:6px;display:flex;gap:4px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);font-size:0.5rem;">Close</button></div>
                             </div>
                         </div>
+                        <!-- Mobile Draw Overlay -->
                         <div class="mt5-indicator-overlay" id="mt5DrawOverlay">
                             <div class="mt5-indicator-sheet">
                                 <h3>📐 Draw Line</h3>
-                                <label style="font-size:0.7rem;">Price <input type="number" id="drawPriceInput" step="0.0001" style="width:100%;padding:6px 8px;border:1px solid var(--mt5-border);border-radius:4px;background:var(--mt5-input);color:var(--mt5-text-bright);font-size:0.6rem;min-height:38px;"></label>
+                                <label>Price <input type="number" id="drawPriceInput" step="0.0001" style="width:100%;min-height:32px;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:4px 8px;border-radius:4px;font-size:0.6rem;"></label>
                                 <div style="display:flex;gap:4px;margin-top:6px;">
-                                    <button class="btn btn-sm" onclick="addLineMobile('Support','#10b981')" style="background:#10b981;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">Support</button>
-                                    <button class="btn btn-sm" onclick="addLineMobile('Resistance','#ef4444')" style="background:#ef4444;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">Resist</button>
-                                    <button class="btn btn-sm" onclick="addLineMobile('H-Line','#3b82f6')" style="background:#3b82f6;color:#fff;flex:1;min-height:38px;font-size:0.55rem;">H-Line</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('Support','#10b981')" style="background:#10b981;color:#fff;flex:1;min-height:32px;">Support</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('Resistance','#ef4444')" style="background:#ef4444;color:#fff;flex:1;min-height:32px;">Resist</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('H-Line','#3b82f6')" style="background:#3b82f6;color:#fff;flex:1;min-height:32px;">H-Line</button>
                                 </div>
-                                <button class="btn btn-outline btn-sm" id="closeDrawOverlay" style="width:100%;margin-top:6px;min-height:38px;font-size:0.55rem;">Close</button>
+                                <button class="btn btn-outline btn-sm" id="closeDrawOverlay" style="width:100%;margin-top:6px;min-height:32px;">Close</button>
                             </div>
                         </div>
                     </div>`;
 
+                // ─── MOBILE EVENT BINDINGS ──────────────────────────────────
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
@@ -5176,8 +5570,8 @@
 
                 document.getElementById('mobileExitBtn').onclick = () => {
                     customConfirm('Exit Trading Terminal?', () => {
-                        exitTerminalSafely();
                         isExitingTerminal = true;
+                        exitTerminalSafely();
                         cleanupSimIntervals();
                         disconnectBinanceWS();
                         disconnectServerWS();
@@ -5249,17 +5643,6 @@
                         TIMEFRAMES[k] === currentTimeframe);
                     resetChart();
                 };
-
-                const drawOverlay = document.getElementById('mt5DrawOverlay');
-                document.getElementById('mt5DrawBtn').onclick = (e) => { e.stopPropagation();
-                    drawOverlay.classList.toggle('show');
-                    const priceInput = document.getElementById('drawPriceInput');
-                    if (priceInput) priceInput.value = (simLastPrices[simCurrentSymbol] || 0).toFixed(4); };
-                document.getElementById('closeDrawOverlay').onclick = () => drawOverlay.classList.remove('show');
-                drawOverlay.addEventListener('click', function(e) {
-                    if (e.target === this) this.classList.remove('show');
-                });
-
                 document.getElementById('lotDownBtn').onclick = () => changeMobileLot(-1);
                 document.getElementById('lotUpBtn').onclick = () => changeMobileLot(1);
                 document.querySelectorAll('.mt5-lot-presets button').forEach(b => {
@@ -5269,6 +5652,16 @@
                         currentMobileLot); };
                 document.getElementById('mobileBuyBtn').onclick = () => { placeSimOrderMobile('buy',
                         currentMobileLot); };
+
+                // ─── MOBILE DRAW ─────────────────────────────────────────────
+                document.getElementById('mt5DrawBtn').onclick = () => {
+                    const overlay = document.getElementById('mt5DrawOverlay');
+                    overlay.classList.toggle('show');
+                    const priceInput = document.getElementById('drawPriceInput');
+                    if (priceInput) priceInput.value = (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
+                };
+                document.getElementById('closeDrawOverlay').onclick = () => document.getElementById('mt5DrawOverlay')
+                    .classList.remove('show');
 
                 const navItems = document.querySelectorAll('.mt5-nav-item');
                 const panelsDiv = document.getElementById('mobilePanels');
@@ -5346,12 +5739,6 @@
                 startBackgroundEngine();
                 connectBinanceWS();
                 connectServerWS();
-
-                const mobileUpdateInterval = setInterval(() => {
-                    updateSimUI();
-                    updateMobileTopBar();
-                }, 2000);
-                window._mobileUpdateInterval = mobileUpdateInterval;
             }
 
             // ─── DESKTOP TRADE PANEL ─────────────────────────────────────────
@@ -5362,11 +5749,12 @@
                 modal.innerHTML = `
                     <div class="modal-content" id="${panelId}">
                         <h3 style="font-size:0.85rem;"><i class="fas fa-wallet"></i> TRADE — Summary</h3>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:6px 0;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:6px 0;">
                             <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;"><div style="font-size:0.5rem;color:var(--text-muted);">Balance</div><div style="font-weight:700;font-size:0.85rem;color:var(--success);" id="tp_balance">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                             <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;"><div style="font-size:0.5rem;color:var(--text-muted);">Equity</div><div style="font-weight:700;font-size:0.85rem;" id="tp_equity">$${calcEquity().toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;"><div style="font-size:0.5rem;color:var(--text-muted);">Free Margin</div><div style="font-weight:700;font-size:0.85rem;" id="tp_margin">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                             <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;"><div style="font-size:0.5rem;color:var(--text-muted);">Open Positions</div><div style="font-weight:700;font-size:0.85rem;" id="tp_count">${portfolio.positions.length}</div></div>
-                            <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;"><div style="font-size:0.5rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:0.85rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
+                            <div style="background:var(--bg-secondary);padding:6px;border-radius:6px;grid-column:span 2;"><div style="font-size:0.5rem;color:var(--text-muted);">Total P&L</div><div style="font-weight:700;font-size:0.85rem;color:${calcTotalPL()>=0?'var(--success)':'var(--danger)'};" id="tp_pl">${calcTotalPL()>=0?'+':''}$${calcTotalPL().toFixed(2)}</div></div>
                         </div>
                         <div style="display:flex;gap:4px;margin-bottom:4px;"><span class="account-no" style="font-size:0.5rem;">${userAccountNo}</span></div>
                         <h4 style="margin-top:4px;font-size:0.75rem;">Open Positions</h4>
@@ -5384,7 +5772,6 @@
                             }).join('')}
                         </div>
                         <div style="margin-top:4px;"><button class="btn btn-sm btn-danger" style="width:100%;font-size:0.55rem;" onclick="closeAllPositions();this.closest('.modal').remove();">🚪 Close All Positions</button></div>
-                        <div style="margin-top:4px;"><button class="btn btn-sm btn-success" style="width:100%;font-size:0.55rem;" onclick="resetSimPortfolio();this.closest('.modal').remove();">🔄 Reset Portfolio</button></div>
                         <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Close</button></div>
                     </div>`;
                 document.body.appendChild(modal);
@@ -5401,6 +5788,8 @@
                     if (balEl) balEl.textContent = '$' + balance.toFixed(2);
                     const eqEl = document.getElementById('tp_equity');
                     if (eqEl) eqEl.textContent = '$' + equity.toFixed(2);
+                    const mgEl = document.getElementById('tp_margin');
+                    if (mgEl) mgEl.textContent = '$' + balance.toFixed(2);
                     const cntEl = document.getElementById('tp_count');
                     if (cntEl) cntEl.textContent = count;
                     const plEl = document.getElementById('tp_pl');
@@ -5435,7 +5824,6 @@
             function renderUserInterface() {
                 stopBackgroundEngine();
                 cleanupSimIntervals();
-                startBackgroundEngine();
                 document.getElementById('app').innerHTML = `
                     <div class="app">
                         <div class="sidebar" id="sidebar">
@@ -5483,9 +5871,7 @@
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                     'open');
                 document.getElementById('topTerminalBtn').onclick = () => {
-                    if (confirm('🔓 Open Trading Terminal? Your positions will be managed in the background.')) {
-                        window.open('?mode=trading', '_blank');
-                    }
+                    window.open('?mode=trading', '_blank');
                 };
                 document.getElementById('logoutBtn').onclick = () => {
                     customConfirm('Exit App?', () => {
@@ -5722,6 +6108,7 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
+            // ─── TTS ──────────────────────────────────────────────────────────
             function setupTTS(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -6319,7 +6706,7 @@
                 };
             }
 
-            // ─── LOAD ALL DATA (background) ──────────────────────────────────
+            // ─── BACKGROUND DATA LOAD ──────────────────────────────────────
             async function loadAllDataBackground() {
                 try {
                     loadPortfolioFromStorage();
@@ -6355,6 +6742,7 @@
                     if (currentUser?.username === 'admin') isAdmin = true;
                     if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
 
+                    // UI রিফ্রেশ
                     if (document.getElementById('subjectList')) {
                         renderSubjectList();
                         if (currentLessonId) showLessonDetail(currentLessonId);
@@ -6365,10 +6753,55 @@
                     applyTheme();
                     connectBinanceWS();
                     connectServerWS();
-                    startBackgroundEngine();
                 } catch (e) {
                     console.error('Background load error:', e);
-                    if (e.message.includes('Session expired')) logout();
+                    if (e.message?.includes('Session expired')) logout();
+                }
+            }
+
+            async function loadAllData() {
+                if (!token || !currentUser) { renderAuthPage(); return; }
+                loadPortfolioFromStorage();
+                loadPendingOrders();
+                if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                    saveAccountNo();
+                }
+                try {
+                    const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
+                        apiFetch('/subjects').catch(() => []),
+                        apiFetch('/progress').catch(() => ({})),
+                        apiFetch('/bookmarks').catch(() => ({})),
+                        apiFetch('/quiz/scores').catch(() => ({})),
+                        apiFetch('/notes/all').catch(() => ({})),
+                        apiFetch('/portfolio').catch(() => ({})),
+                    ]);
+                    subjects = subjRes || [];
+                    userProgress = progRes || {};
+                    bookmarks = new Set(bmRes || []);
+                    quizScores = quizRes || {};
+                    userNotes = notesRes || {};
+                    if (portRes && portRes.cash !== undefined) {
+                        portfolio.cash = parseFloat(portRes.cash) || 100000;
+                        portfolio.positions = portRes.positions || [];
+                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
+                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
+                    }
+                    if (!portfolio.drawnLines) portfolio.drawnLines = {};
+                    if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                    portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
+                            .toString(36).slice(2, 6); });
+                    savePortfolioToStorage();
+                    if (currentUser?.username === 'admin') isAdmin = true;
+                    if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
+                    applyTheme();
+                    renderApp();
+                    connectBinanceWS();
+                    connectServerWS();
+                } catch (e) {
+                    console.error('Load error:', e);
+                    if (e.message?.includes('Session expired')) logout();
+                    else renderApp();
                 }
             }
 
@@ -6532,6 +6965,7 @@
                 return vwap;
             }
 
+            // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
@@ -6819,9 +7253,12 @@
             window.dbDelete = dbDelete;
             window.syncPortfolioToServer = syncPortfolioToServer;
             window.checkPendingOrders = checkPendingOrders;
-            window.exitTerminalSafely = exitTerminalSafely;
-            window.addLineMobile = addLineMobile;
             window.customConfirm = customConfirm;
+            window.exitTerminalSafely = exitTerminalSafely;
+            window.loadAllDataBackground = loadAllDataBackground;
+            window.renderApp = renderApp;
+            window.addLineMobile = addLineMobile;
+            window.switchHistoryTab = switchHistoryTab;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
@@ -6834,15 +7271,12 @@
                 const portfolioStatus = document.getElementById('portfolioStatus');
                 const lastPrice = document.getElementById('lastPrice');
                 const cronStatus = document.getElementById('cronStatus');
-                const serverWsStatus = document.getElementById('serverWsStatus');
                 const ts = document.getElementById('debugTimestamp');
 
                 if (dbStatus) dbStatus.textContent = '✅ Online';
                 if (blobStatus) blobStatus.textContent = '⚠️ Suspended (fallback active)';
                 if (apiStatus) apiStatus.textContent = '✅ Online';
                 if (wsStatus) wsStatus.textContent = (binanceWS && binanceWS.readyState === WebSocket.OPEN) ?
-                    '✅ Connected' : '⚠️ Disconnected';
-                if (serverWsStatus) serverWsStatus.textContent = (serverWS && serverWS.readyState === WebSocket.OPEN) ?
                     '✅ Connected' : '⚠️ Disconnected';
                 if (idbStatus) idbStatus.textContent = db ? '✅ Ready' : '⏳ Opening...';
                 if (candleCount) candleCount.textContent = simAllCandles ? simAllCandles.length : 0;
@@ -6882,14 +7316,10 @@
                         return e.returnValue;
                     }
                 }
-                savePortfolioToStorage();
-                savePendingOrders();
-                syncPortfolioToServer();
-                if (!isExitingTerminal) {
-                    cleanupSimIntervals();
-                    disconnectBinanceWS();
-                    disconnectServerWS();
-                }
+                cleanupSimIntervals();
+                disconnectBinanceWS();
+                disconnectServerWS();
+                // ব্যাকগ্রাউন্ড ইঞ্জিন থামাবেন না
                 if (window._chartCleanup) window._chartCleanup();
                 if (window._mobileCleanup) window._mobileCleanup();
                 document.querySelectorAll('.toast').forEach(el => el.remove());
@@ -6905,16 +7335,12 @@
             }
             openDB().then(() => {
                 console.log('✅ IndexedDB ready');
-                if (token && currentUser) {
-                    renderApp();
-                    loadAllDataBackground();
-                } else renderAuthPage();
+                if (token && currentUser) loadAllData();
+                else renderAuthPage();
             }).catch(err => {
                 console.warn('IndexedDB error:', err);
-                if (token && currentUser) {
-                    renderApp();
-                    loadAllDataBackground();
-                } else renderAuthPage();
+                if (token && currentUser) loadAllData();
+                else renderAuthPage();
             });
 
             window.addEventListener('orientationchange', () => {
