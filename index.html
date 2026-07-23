@@ -64,6 +64,9 @@
             --terminal-header-h: 28px;
             --transition: 0.2s ease;
             --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --glass-bg: rgba(20, 24, 40, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
         }
 
         [data-theme="light"] {
@@ -106,6 +109,9 @@
             --trade-buy: #10b981;
             --trade-sell: #ef4444;
             --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(0, 0, 0, 0.06);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
         /* ─── RESET ────────────────────────────────────────────────────────── */
@@ -144,253 +150,660 @@
             z-index: 1;
         }
 
-        /* ─── SIDEBAR ────────────────────────────────────────────────────── */
-        .sidebar {
-            width: 200px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
+        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
+        .app-glass {
+            display: flex;
+            height: 100vh;
+            background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.08), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.06), transparent 50%),
+                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
+            font-family: var(--font);
+            overflow: hidden;
+            width: 100%;
+        }
+        [data-theme="light"] .app-glass {
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.06), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04), transparent 50%),
+                linear-gradient(135deg, #f0f2f5 0%, #e4e7ed 100%);
+        }
+
+        .sidebar-glass {
+            width: 260px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            padding: 20px 14px 14px 14px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+            z-index: 20;
             flex-shrink: 0;
             transition: transform var(--transition), background var(--transition);
-            z-index: 30;
-            box-shadow: var(--shadow);
+            overflow-y: auto;
         }
-        .sidebar.hidden {
+        .sidebar-glass.hidden {
             transform: translateX(-100%);
         }
-        .sidebar-header {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border-light);
+        [data-theme="light"] .sidebar-glass {
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-header-glass {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo-icon-glass {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            box-shadow: 0 4px 14px var(--primary-glow);
+            flex-shrink: 0;
+        }
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+        [data-theme="light"] .logo-text {
+            color: #1e293b;
+        }
+
+        .subject-list-glass {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 2px;
+        }
+        .subject-item-glass {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 3px;
+            cursor: pointer;
+            transition: all var(--transition-bounce);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .subject-item-glass:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+            transform: translateX(3px);
+        }
+        .subject-item-glass.active {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--primary-glow);
+            font-weight: 600;
+        }
+        .subject-item-glass.active .subject-icon-glass {
+            color: #fff;
+        }
+        .subject-icon-glass {
+            font-size: 1.1rem;
+            width: 26px;
+            text-align: center;
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .sidebar-footer-glass {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .terminal-nav-btn-glass {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
             font-weight: 700;
             font-size: 0.7rem;
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: var(--text);
-            font-family: 'Outfit', sans-serif;
-        }
-        .sidebar-header .logo-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            background: var(--primary-gradient);
-            color: #fff;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
-            box-shadow: 0 3px 12px var(--primary-glow);
-        }
-        .subject-list {
-            flex: 1;
-            padding: 4px 3px;
-        }
-        .subject-item {
-            padding: 5px 8px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
             gap: 6px;
-            margin-bottom: 1px;
-            transition: all var(--transition);
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.7rem;
-        }
-        .subject-item .subject-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            background: var(--surface-alt);
-            transition: all var(--transition-bounce);
-            flex-shrink: 0;
-        }
-        .subject-item.active {
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 600;
-            box-shadow: inset 3px 0 0 var(--primary);
-        }
-        .subject-item.active .subject-icon {
-            background: var(--primary);
-            color: #fff;
             box-shadow: 0 3px 14px var(--primary-glow);
-            transform: scale(1.04);
+            transition: all var(--transition);
+            font-family: var(--font);
+            width: 100%;
         }
-        .subject-item:hover:not(.active) {
-            background: var(--surface-hover);
-            color: var(--text);
-            transform: translateX(2px);
+        .terminal-nav-btn-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px var(--primary-glow);
+        }
+        .sidebar-logout-btn-glass {
+            background: transparent;
+            border: 1.5px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.6rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            width: 100%;
+            text-align: center;
+        }
+        .sidebar-logout-btn-glass:hover {
+            background: var(--danger);
+            color: #fff;
         }
 
-        /* ─── MAIN ────────────────────────────────────────────────────────── */
-        .main-area {
+        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
+        .main-glass {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            background: var(--bg);
-            transition: background var(--transition);
+            padding: 0 16px 16px 16px;
             min-width: 0;
         }
 
-        /* ─── TOP BAR ────────────────────────────────────────────────────── */
-        .top-bar {
-            padding: 2px 8px;
+        .top-bar-glass {
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            gap: 8px;
+            padding: 10px 0 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+            flex-wrap: wrap;
             position: sticky;
             top: 0;
-            z-index: 20;
-            flex-wrap: wrap;
-            min-height: 28px;
-            transition: background var(--transition);
+            z-index: 15;
+            background: var(--bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
-        .mobile-toggle {
+        [data-theme="light"] .top-bar-glass {
+            background: rgba(240, 242, 245, 0.85);
+        }
+        .mobile-toggle-glass {
             display: none;
-            background: var(--surface-alt);
-            border: 1.5px solid var(--border);
-            font-size: 0.7rem;
+            background: var(--glass-bg);
+            border: 1.5px solid var(--glass-border);
+            font-size: 0.8rem;
             cursor: pointer;
             color: var(--text-secondary);
-            padding: 2px 6px;
-            border-radius: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
             transition: all var(--transition);
             flex-shrink: 0;
+            min-height: 36px;
+            min-width: 36px;
         }
-        .search-box {
+        .search-box-glass {
             flex: 1;
             position: relative;
-            max-width: 120px;
-            min-width: 50px;
+            max-width: 220px;
+            min-width: 80px;
         }
-        .search-box input {
+        .search-box-glass input {
             width: 100%;
-            padding: 2px 6px 2px 18px;
-            border: 1.5px solid var(--border);
+            padding: 6px 10px 6px 32px;
+            border: 1.5px solid var(--glass-border);
             border-radius: var(--radius-full);
             outline: none;
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             transition: all var(--transition);
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             font-family: var(--font);
             font-weight: 500;
             color: var(--text);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            min-height: 36px;
         }
-        .search-box input:focus {
+        .search-box-glass input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-glow);
         }
-        .search-box i {
+        .search-icon-glass {
             position: absolute;
-            left: 6px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
             pointer-events: none;
-            font-size: 0.5rem;
-        }
-        .terminal-nav-btn {
-            background: var(--primary-gradient);
-            color: #fff;
-            border: none;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 700;
             font-size: 0.65rem;
+        }
+
+        .top-actions-glass {
             display: flex;
             align-items: center;
             gap: 4px;
-            box-shadow: 0 2px 10px var(--primary-glow);
-            transition: all var(--transition);
-            font-family: var(--font);
-            white-space: nowrap;
+            margin-left: auto;
+            flex-shrink: 0;
+            flex-wrap: wrap;
         }
-        .terminal-nav-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px var(--primary-glow);
-        }
-        .lang-select {
-            padding: 2px 16px 2px 6px;
+        .lang-select-glass {
+            padding: 4px 20px 4px 8px;
             border-radius: var(--radius-full);
-            border: 1.5px solid var(--border);
+            border: 1.5px solid var(--glass-border);
             font-weight: 600;
             cursor: pointer;
             font-size: 0.55rem;
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             font-family: var(--font);
             color: var(--text);
             appearance: none;
             -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 4px center;
-            flex-shrink: 0;
+            background-position: right 6px center;
+            min-height: 32px;
         }
-        .lang-select:hover {
+        .lang-select-glass:hover {
             border-color: var(--primary);
             box-shadow: 0 3px 14px var(--primary-glow);
         }
-        .theme-toggle-btn {
-            padding: 2px 8px;
+
+        .theme-toggle-btn-glass {
+            padding: 4px 10px;
             border-radius: var(--radius-full);
-            border: 1.5px solid var(--border);
-            background: var(--bg-secondary);
+            border: 1.5px solid var(--glass-border);
+            background: var(--glass-bg);
             cursor: pointer;
             font-size: 0.55rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             transition: all var(--transition);
             color: var(--text-secondary);
             font-family: var(--font);
             white-space: nowrap;
-            flex-shrink: 0;
+            min-height: 32px;
         }
-        .theme-toggle-btn:hover {
+        .theme-toggle-btn-glass:hover {
             border-color: var(--primary);
             color: var(--primary);
             box-shadow: 0 3px 16px var(--primary-glow);
         }
-        .user-menu {
+
+        .user-menu-glass {
             display: flex;
             align-items: center;
             gap: 4px;
-            margin-left: auto;
             flex-shrink: 0;
         }
-        .user-menu .username {
+        .user-menu-glass .username {
             font-weight: 600;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
         }
-        .user-menu .logout-btn {
-            background: transparent;
-            border: 1.5px solid var(--danger);
-            color: var(--danger);
+        .user-menu-glass .account-no {
+            font-size: 0.5rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            background: var(--glass-bg);
             padding: 2px 8px;
             border-radius: var(--radius-full);
-            cursor: pointer;
-            font-size: 0.5rem;
-            font-weight: 600;
-            transition: all var(--transition);
-            font-family: var(--font);
+            border: 1px solid var(--glass-border);
         }
-        .user-menu .logout-btn:hover {
-            background: var(--danger);
+
+        .content-glass {
+            flex: 1;
+            padding: 14px 0 10px 0;
+            overflow-y: auto;
+        }
+
+        /* ─── GLASS LESSON LIST ───────────────────────────────────────────── */
+        .lesson-list-glass {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .lesson-list-glass h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text);
+        }
+        .lesson-card-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all var(--transition-bounce);
+            box-shadow: var(--glass-shadow);
+            gap: 10px;
+        }
+        .lesson-card-glass:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25), 0 0 20px var(--primary-glow);
+        }
+        [data-theme="light"] .lesson-card-glass:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08), 0 0 20px var(--primary-glow);
+        }
+        .lesson-info-glass {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            min-width: 0;
+        }
+        .lesson-title-glass {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+        .lesson-meta-glass {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .badge-glass {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: var(--radius-full);
+            font-size: 0.45rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .badge-beginner-glass {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .badge-intermediate-glass {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .badge-advanced-glass {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+        .badge-completed-glass {
+            background: var(--success-light);
+            color: #059669;
+        }
+        .badge-passed-glass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-failed-glass {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .chevron-icon-glass {
+            color: var(--text-muted);
+            transition: all var(--transition-bounce);
+            font-size: 0.7rem;
+        }
+        .lesson-card-glass:hover .chevron-icon-glass {
+            transform: translateX(4px);
+            color: var(--primary);
+        }
+
+        /* ─── GLASS DETAIL VIEW ───────────────────────────────────────────── */
+        .detail-view-glass {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .back-btn-glass {
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            background: var(--glass-bg);
+            border: 1.5px solid var(--glass-border);
+            transition: all var(--transition);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .back-btn-glass:hover {
+            border-color: var(--primary);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 18px var(--primary-glow);
+        }
+        .progress-bar-glass {
+            height: 4px;
+            background: var(--glass-border);
+            border-radius: var(--radius-full);
+            margin: 6px 0;
+            overflow: hidden;
+        }
+        .progress-fill-glass {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: var(--radius-full);
+            box-shadow: 0 2px 10px var(--primary-glow);
+        }
+
+        .tabs-glass {
+            display: flex;
+            gap: 2px;
+            margin: 10px 0;
+            border-bottom: 2px solid var(--glass-border);
+            flex-wrap: wrap;
+        }
+        .tab-glass {
+            padding: 5px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all var(--transition);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            font-family: var(--font);
+            background: transparent;
+        }
+        .tab-glass.active {
+            color: var(--primary);
+            background: var(--glass-bg);
+            border-bottom-color: var(--primary);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .tab-glass:hover:not(.active) {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-content-glass {
+            padding: 12px 0;
+            line-height: 1.7;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        /* ─── GLASS TTS CONTROLS ─────────────────────────────────────────── */
+        .tts-controls-glass {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            background: var(--glass-bg);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .tts-btn-glass {
+            background: var(--primary-gradient);
             color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.6rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 3px 16px var(--primary-glow);
+            font-family: var(--font);
+            min-height: 32px;
+        }
+        .tts-btn-glass:hover {
+            box-shadow: 0 0 28px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+        .btn-outline-glass {
+            background: transparent;
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.6rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font);
+            white-space: nowrap;
+            min-height: 32px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .btn-outline-glass:hover {
+            border-color: var(--primary);
+            color: var(--text);
+            background: var(--primary-light);
+            box-shadow: 0 4px 18px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+        .btn-outline-glass.bookmarked {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .speed-slider-glass {
+            width: 50px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .speed-label-glass {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .certificate-btn-glass {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 7px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.7rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 16px var(--shadow-glow-success);
+            font-family: var(--font);
+            animation: certGlowGlass 2.2s ease-in-out infinite;
+        }
+        @keyframes certGlowGlass {
+            0%,
+            100% {
+                box-shadow: 0 3px 16px rgba(16, 185, 129, 0.25);
+            }
+            50% {
+                box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+            }
+        }
+        .certificate-btn-glass:hover {
+            transform: translateY(-2px);
+        }
+
+        .quiz-container-glass {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1.5px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .quiz-question-glass {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        .quiz-option-glass {
+            display: block;
+            width: 100%;
+            padding: 8px 14px;
+            margin-bottom: 4px;
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius);
+            background: var(--glass-bg);
+            cursor: pointer;
+            text-align: left;
+            font-family: var(--font);
+            font-size: 0.75rem;
+            transition: all var(--transition);
+            color: var(--text);
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .quiz-option-glass:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        .quiz-option-glass.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
         }
 
         /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
@@ -405,30 +818,32 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            animation: modalFadeIn 0.2s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            animation: modalFadeInGlass 0.2s ease;
         }
         .custom-confirm-box {
-            background: var(--surface);
-            border-radius: 18px;
-            padding: 28px 24px 22px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 20px;
+            padding: 30px 26px 24px;
             max-width: 320px;
             width: 92%;
             text-align: center;
-            box-shadow: var(--shadow-lg);
-            animation: modalSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid var(--border);
+            box-shadow: var(--glass-shadow);
+            animation: modalSlideUpGlass 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--glass-border);
         }
         .custom-confirm-box .icon {
-            font-size: 2.2rem;
-            margin-bottom: 12px;
+            font-size: 2.4rem;
+            margin-bottom: 14px;
             color: var(--accent);
         }
         .custom-confirm-box .message {
             font-weight: 600;
             font-size: 0.95rem;
-            margin-bottom: 22px;
+            margin-bottom: 24px;
             color: var(--text);
             line-height: 1.5;
         }
@@ -439,7 +854,7 @@
         }
         .custom-confirm-box .actions .btn {
             min-width: 80px;
-            padding: 8px 18px;
+            padding: 8px 20px;
             font-size: 0.7rem;
             font-weight: 600;
             border-radius: var(--radius-full);
@@ -449,9 +864,9 @@
             font-family: var(--font);
         }
         .custom-confirm-box .actions .btn-cancel {
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             color: var(--text-secondary);
-            border: 1.5px solid var(--border);
+            border: 1.5px solid var(--glass-border);
         }
         .custom-confirm-box .actions .btn-cancel:hover {
             background: var(--surface-hover);
@@ -467,312 +882,26 @@
             transform: translateY(-1px);
         }
 
-        /* ─── LESSON LIST ────────────────────────────────────────────────── */
-        .lesson-list {
-            padding: 10px 14px;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
+        @keyframes modalFadeInGlass {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
-        .lesson-list h2 {
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            font-family: 'Outfit', sans-serif;
-        }
-        .lesson-card {
-            background: var(--surface);
-            border: 1.5px solid transparent;
-            border-radius: var(--radius-lg);
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all var(--transition);
-            box-shadow: var(--shadow);
-            gap: 8px;
-        }
-        .lesson-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-1px);
-            border-color: var(--primary);
-        }
-        .lesson-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex: 1;
-            min-width: 0;
-        }
-        .lesson-title {
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-        .lesson-meta {
-            font-size: 0.55rem;
-            color: var(--text-secondary);
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .badge {
-            display: inline-block;
-            padding: 1px 5px;
-            border-radius: var(--radius-full);
-            font-size: 0.45rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .badge-beginner {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-        .badge-intermediate {
-            background: #fef3c7;
-            color: #b45309;
-        }
-        .badge-advanced {
-            background: #fce7f3;
-            color: #9d174d;
-        }
-        .badge-completed {
-            background: var(--success-light);
-            color: #059669;
-        }
-        .badge-passed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .badge-failed {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .chevron-icon {
-            color: var(--text-muted);
-            transition: all var(--transition-bounce);
-            font-size: 0.6rem;
-        }
-        .lesson-card:hover .chevron-icon {
-            transform: translateX(4px);
-            color: var(--primary);
+        @keyframes modalSlideUpGlass {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        /* ─── DETAIL VIEW ────────────────────────────────────────────────── */
-        .detail-view {
-            padding: 12px 16px;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .back-btn {
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--primary);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.65rem;
-            background: var(--primary-light);
-            border: 1.5px solid transparent;
-            transition: all var(--transition);
-        }
-        .back-btn:hover {
-            background: #e0e7ff;
-            border-color: var(--primary);
-            transform: translateX(-3px);
-            box-shadow: 0 4px 18px var(--primary-glow);
-        }
-        .progress-bar {
-            height: 3px;
-            background: var(--border);
-            border-radius: var(--radius-full);
-            margin: 4px 0;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-gradient);
-            width: 0%;
-            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: var(--radius-full);
-            box-shadow: 0 2px 10px var(--primary-glow);
-        }
-        .tabs {
-            display: flex;
-            gap: 2px;
-            margin: 10px 0;
-            border-bottom: 2px solid var(--border);
-            flex-wrap: wrap;
-        }
-        .tab {
-            padding: 4px 10px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-secondary);
-            border-bottom: 3px solid transparent;
-            transition: all var(--transition);
-            border-radius: 8px 8px 0 0;
-            margin-bottom: -2px;
-            font-size: 0.65rem;
-            white-space: nowrap;
-        }
-        .tab.active {
-            color: var(--primary);
-            background: var(--primary-light);
-            border-bottom-color: var(--primary);
-        }
-        .tab:hover:not(.active) {
-            color: var(--text);
-            background: var(--surface-hover);
-        }
-        .tab-content {
-            padding: 10px 0;
-            line-height: 1.6;
-            font-size: 0.75rem;
-        }
-        .tts-controls {
-            display: flex;
-            gap: 3px;
-            align-items: center;
-            margin: 10px 0;
-            flex-wrap: wrap;
-        }
-        .tts-btn {
-            background: var(--primary-gradient);
-            color: #fff;
-            border: none;
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.6rem;
-            transition: all var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            box-shadow: 0 3px 16px var(--primary-glow);
-            font-family: var(--font);
-        }
-        .tts-btn:hover {
-            box-shadow: 0 0 28px var(--primary-glow);
-            transform: translateY(-1px);
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            color: var(--text-secondary);
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.6rem;
-            transition: all var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-family: var(--font);
-            white-space: nowrap;
-        }
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: #fff;
-            background: var(--primary);
-            box-shadow: 0 4px 18px var(--primary-glow);
-            transform: translateY(-1px);
-        }
-        .btn-outline.bookmarked {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: #fffbf0;
-        }
-        .speed-slider {
-            width: 50px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-        .speed-label {
-            font-size: 0.55rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-            white-space: nowrap;
-            min-width: 20px;
-            text-align: center;
-        }
-        .certificate-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.65rem;
-            transition: all var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 3px 16px var(--shadow-glow-success);
-            font-family: var(--font);
-            animation: certGlow 2.2s ease-in-out infinite;
-        }
-        @keyframes certGlow {
-            0%,
-            100% {
-                box-shadow: 0 3px 16px rgba(16, 185, 129, 0.25);
-            }
-            50% {
-                box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
-            }
-        }
-        .certificate-btn:hover {
-            transform: translateY(-2px);
-        }
-        .quiz-container {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-            border: 1.5px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-        .quiz-question {
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .quiz-option {
-            display: block;
-            width: 100%;
-            padding: 6px 10px;
-            margin-bottom: 3px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--bg-secondary);
-            cursor: pointer;
-            text-align: left;
-            font-family: var(--font);
-            font-size: 0.7rem;
-            transition: all var(--transition);
-            color: var(--text);
-            font-weight: 500;
-        }
-        .quiz-option:hover {
-            background: var(--surface-hover);
-            border-color: var(--primary);
-            transform: translateX(3px);
-        }
-        .quiz-option.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 600;
-        }
+        /* ─── MODAL GLASS ──────────────────────────────────────────────────── */
         .modal {
             position: fixed;
             top: 0;
@@ -784,65 +913,53 @@
             align-items: center;
             justify-content: center;
             z-index: 600;
-            animation: modalFadeIn 0.2s ease;
+            animation: modalFadeInGlass 0.2s ease;
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
         }
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
         .modal-content {
-            background: var(--surface);
-            border-radius: 18px;
-            padding: 18px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 20px;
+            padding: 20px 22px;
             max-width: 620px;
             width: 93%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-            animation: modalSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            box-shadow: var(--glass-shadow);
+            animation: modalSlideUpGlass 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--glass-border);
         }
         .modal-content h3 {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
             font-weight: 700;
             font-family: 'Outfit', sans-serif;
+            color: var(--text);
         }
         .modal-content label {
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             font-weight: 500;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
         }
         .modal-content input,
         .modal-content select,
         .modal-content textarea {
             width: 100%;
-            padding: 5px 8px;
-            border: 1.5px solid var(--border);
+            padding: 6px 10px;
+            border: 1.5px solid var(--glass-border);
             border-radius: var(--radius);
             font-family: var(--font);
             font-size: 0.7rem;
             transition: all var(--transition);
             margin-top: 2px;
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             color: var(--text);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
         .modal-content input:focus {
             border-color: var(--primary);
@@ -851,13 +968,13 @@
         }
         .modal-actions {
             display: flex;
-            gap: 5px;
-            margin-top: 10px;
+            gap: 6px;
+            margin-top: 12px;
             justify-content: flex-end;
             flex-wrap: wrap;
         }
         .btn {
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: var(--radius-full);
             border: none;
             cursor: pointer;
@@ -869,6 +986,7 @@
             gap: 4px;
             font-family: var(--font);
             white-space: nowrap;
+            min-height: 32px;
         }
         .btn-primary {
             background: var(--primary-gradient);
@@ -880,8 +998,9 @@
             transform: translateY(-1px);
         }
         .btn-sm {
-            padding: 3px 8px;
+            padding: 3px 10px;
             font-size: 0.5rem;
+            min-height: 26px;
         }
         .btn-danger {
             background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -901,6 +1020,32 @@
             box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
             transform: translateY(-1px);
         }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.6rem;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font);
+            white-space: nowrap;
+            min-height: 32px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--text);
+            background: var(--primary-light);
+            box-shadow: 0 4px 18px var(--primary-glow);
+            transform: translateY(-1px);
+        }
         .btn-ghost {
             background: rgba(255, 255, 255, 0.06);
             color: #cbd5e1;
@@ -912,6 +1057,46 @@
             border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+        }
+        .btn-modify {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            border: none;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.5rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            min-height: 26px;
+        }
+        .btn-modify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+        }
+        .btn-exit {
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.5rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            min-height: 26px;
+        }
+        .btn-exit:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
         }
         .btn-trade {
             color: #fff;
@@ -928,49 +1113,12 @@
             gap: 4px;
             background: var(--primary-gradient);
             box-shadow: 0 3px 14px var(--primary-glow);
+            min-height: 32px;
         }
         .btn-trade:hover {
             filter: brightness(1.12);
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
-        }
-        .btn-exit {
-            background: var(--danger);
-            color: #fff;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 3px 8px;
-            border-radius: var(--radius-full);
-            font-size: 0.5rem;
-            transition: all var(--transition);
-            font-family: var(--font);
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .btn-exit:hover {
-            filter: brightness(1.2);
-            transform: scale(1.05);
-        }
-        .btn-modify {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            border: none;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.5rem;
-            transition: all var(--transition);
-            font-family: var(--font);
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .btn-modify:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
         }
 
         /* ─── TOAST ────────────────────────────────────────────────────────── */
@@ -978,19 +1126,21 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--surface);
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             color: var(--text);
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: var(--radius-full);
             z-index: 700;
-            animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: toastInGlass 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             font-weight: 600;
             font-size: 0.7rem;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
+            box-shadow: var(--glass-shadow);
+            border: 1px solid var(--glass-border);
             max-width: 90vw;
         }
-        @keyframes toastIn {
+        @keyframes toastInGlass {
             from {
                 opacity: 0;
                 transform: translateY(20px) scale(0.85);
@@ -1008,17 +1158,20 @@
             z-index: 800;
             max-width: 360px;
             width: 90%;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: var(--radius);
-            background: var(--surface);
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow-lg);
-            animation: slideDown 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--glass-shadow);
+            animation: slideDownGlass 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
             gap: 6px;
             font-family: var(--font);
             color: var(--text);
+            border: 1px solid var(--glass-border);
         }
         .notification-banner.success {
             border-left-color: var(--success);
@@ -1050,7 +1203,7 @@
         .notification-banner .notif-close:hover {
             color: var(--text);
         }
-        @keyframes slideDown {
+        @keyframes slideDownGlass {
             from {
                 opacity: 0;
                 transform: translateY(-15px) scale(0.95);
@@ -1061,53 +1214,64 @@
             }
         }
 
-        /* ─── AUTH ────────────────────────────────────────────────────────── */
+        /* ─── AUTH GLASS ───────────────────────────────────────────────────── */
         .auth-container {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: var(--bg);
+            background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.10), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.08), transparent 50%),
+                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
             padding: 20px;
         }
+        [data-theme="light"] .auth-container {
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.06), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04), transparent 50%),
+                linear-gradient(135deg, #f0f2f5 0%, #e4e7ed 100%);
+        }
         .auth-box {
-            background: var(--surface);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            padding: 24px 20px;
-            border-radius: 18px;
-            box-shadow: var(--shadow-lg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 28px 24px;
+            border-radius: 24px;
+            box-shadow: var(--glass-shadow);
             width: 360px;
             max-width: 100%;
             text-align: center;
             z-index: 1;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             transition: all var(--transition);
         }
         .auth-box h2 {
             font-weight: 700;
             margin-bottom: 2px;
             letter-spacing: -0.03em;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-family: 'Outfit', sans-serif;
+            color: var(--text);
         }
         .auth-box .subtitle {
             color: var(--text-secondary);
-            margin-bottom: 12px;
-            font-size: 0.7rem;
+            margin-bottom: 14px;
+            font-size: 0.75rem;
         }
         .auth-box input {
             width: 100%;
-            padding: 6px 10px;
-            margin: 3px 0;
-            border: 1.5px solid var(--border);
+            padding: 8px 12px;
+            margin: 4px 0;
+            border: 1.5px solid var(--glass-border);
             border-radius: var(--radius);
             font-size: 0.7rem;
             font-family: var(--font);
             transition: all var(--transition);
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             font-weight: 500;
             color: var(--text);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            min-height: 38px;
         }
         .auth-box input:focus {
             border-color: var(--primary);
@@ -1117,13 +1281,14 @@
         .auth-box .btn {
             width: 100%;
             margin-top: 6px;
-            padding: 6px;
+            padding: 8px;
             font-size: 0.7rem;
             justify-content: center;
+            min-height: 38px;
         }
         .auth-box .auth-switch {
-            margin-top: 8px;
-            font-size: 0.65rem;
+            margin-top: 10px;
+            font-size: 0.7rem;
             color: var(--text-secondary);
         }
         .auth-box .auth-switch a {
@@ -1134,6 +1299,10 @@
         }
         .auth-box .auth-switch a:hover {
             text-decoration: underline;
+        }
+        .auth-box .auth-icon {
+            font-size: 2rem;
+            margin-bottom: 6px;
         }
 
         /* ─── TERMINAL ────────────────────────────────────────────────────── */
@@ -1247,6 +1416,7 @@
             color: var(--text);
             font-family: var(--font);
             font-size: 0.55rem;
+            min-height: 28px;
         }
         .terminal-bar-2 input[type="number"] {
             width: 44px;
@@ -1255,14 +1425,17 @@
         .terminal-bar-2 .btn {
             padding: 4px 10px;
             font-size: 0.55rem;
+            min-height: 28px;
         }
         .terminal-bar-2 .btn-trade {
             padding: 4px 12px;
             font-size: 0.55rem;
+            min-height: 28px;
         }
         .terminal-bar-2 .btn-sm {
             padding: 3px 8px;
             font-size: 0.45rem;
+            min-height: 24px;
         }
         .terminal-bar-2 .limit-input {
             display: flex;
@@ -1282,6 +1455,7 @@
             font-family: var(--font-mono);
             color: var(--text);
             outline: none;
+            min-height: 24px;
         }
         .terminal-bar-2 .limit-input span {
             font-size: 0.4rem;
@@ -1314,6 +1488,7 @@
             display: flex;
             align-items: center;
             gap: 3px;
+            min-height: 24px;
         }
         .terminal-dropdowns .dd-btn:hover {
             border-color: var(--primary);
@@ -1455,6 +1630,7 @@
             display: flex;
             align-items: center;
             gap: 3px;
+            min-height: 26px;
         }
         .indicator-dropdown-btn.active {
             background: var(--primary);
@@ -2268,9 +2444,6 @@
         }
 
         /* ─── MOBILE TRADE PANEL ──────────────────────────────────────────── */
-        .mobile-trade-summary {
-            padding: 4px 0;
-        }
         .mobile-trade-summary .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -2334,8 +2507,10 @@
         }
         .admin-left {
             width: 260px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -2343,7 +2518,7 @@
         }
         .admin-header {
             padding: 5px 10px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -2351,15 +2526,15 @@
             font-weight: 700;
             font-size: 0.75rem;
             font-family: 'Outfit', sans-serif;
-            background: var(--surface-alt);
+            background: var(--glass-bg);
             min-height: 30px;
         }
         .admin-header span {
             flex: 1;
         }
         .admin-header .admin-theme-toggle {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             padding: 2px 6px;
             border-radius: var(--radius-full);
             cursor: pointer;
@@ -2379,7 +2554,7 @@
             display: flex;
             gap: 3px;
             flex-wrap: wrap;
-            background: var(--surface);
+            background: var(--glass-bg);
         }
         .admin-actions .btn {
             font-size: 0.5rem;
@@ -2397,7 +2572,7 @@
             gap: 4px;
             padding: 3px 6px;
             border-radius: var(--radius);
-            background: var(--bg-secondary);
+            background: var(--glass-bg);
             margin-bottom: 2px;
             transition: all var(--transition);
             border: 1px solid transparent;
@@ -2453,7 +2628,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 4px 8px;
-            background: var(--surface);
+            background: var(--glass-bg);
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
             margin-bottom: 3px;
@@ -2537,10 +2712,12 @@
             left: 12px;
             width: 280px;
             max-height: 50vh;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--glass-shadow);
             z-index: 10000;
             padding: 10px 12px;
             overflow-y: auto;
@@ -2561,8 +2738,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--glass-border);
             padding-bottom: 3px;
+            color: var(--text);
         }
         #debugPanel h3 button {
             background: transparent;
@@ -2636,41 +2814,72 @@
 
         /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .sidebar {
+            .sidebar-glass {
                 position: fixed;
                 top: 0;
                 left: 0;
                 bottom: 0;
-                width: 200px;
+                width: 240px;
                 transform: translateX(-100%);
-                box-shadow: var(--shadow-lg);
+                box-shadow: var(--glass-shadow);
                 z-index: 50;
+                border-radius: 0 16px 16px 0;
             }
-            .sidebar.open {
+            .sidebar-glass.open {
                 transform: translateX(0);
             }
-            .mobile-toggle {
+            .mobile-toggle-glass {
                 display: block;
-                min-height: 32px;
-                min-width: 32px;
+                min-height: 36px;
+                min-width: 36px;
                 touch-action: manipulation;
             }
-            .top-bar {
-                padding: 2px 4px;
-                gap: 2px;
-                min-height: 24px;
+            .top-bar-glass {
+                padding: 8px 0 10px 0;
+                gap: 4px;
             }
-            .search-box {
-                max-width: 50px;
+            .search-box-glass {
+                max-width: 120px;
+                min-width: 60px;
             }
-            .search-box input {
+            .search-box-glass input {
+                font-size: 0.6rem;
+                padding: 5px 8px 5px 28px;
+                min-height: 32px;
+            }
+            .search-icon-glass {
+                font-size: 0.55rem;
+                left: 8px;
+            }
+            .top-actions-glass {
+                gap: 3px;
+            }
+            .lang-select-glass {
                 font-size: 0.5rem;
-                padding: 2px 5px 2px 16px;
+                padding: 3px 16px 3px 6px;
+                min-height: 28px;
             }
-            .search-box i {
+            .theme-toggle-btn-glass {
+                font-size: 0.5rem;
+                padding: 3px 6px;
+                min-height: 28px;
+            }
+            .user-menu-glass .username {
+                font-size: 0.55rem;
+            }
+            .user-menu-glass .account-no {
                 font-size: 0.45rem;
-                left: 5px;
             }
+            .lesson-card-glass {
+                padding: 10px 12px;
+            }
+            .lesson-title-glass {
+                font-size: 0.7rem;
+            }
+            .lesson-meta-glass {
+                font-size: 0.5rem;
+            }
+
             .terminal-bar-1 {
                 min-height: 24px;
                 padding: 2px 4px;
@@ -2750,7 +2959,7 @@
                 align-items: flex-start;
             }
             .auth-box {
-                padding: 16px 12px;
+                padding: 18px 14px;
             }
             .mt5-quick-trade-row {
                 gap: 2px;
@@ -2857,6 +3066,28 @@
                 min-height: 32px;
                 min-width: 50px;
             }
+            .tts-controls-glass {
+                padding: 6px 10px;
+            }
+            .tts-btn-glass {
+                font-size: 0.5rem;
+                padding: 4px 10px;
+                min-height: 28px;
+            }
+            .btn-outline-glass {
+                font-size: 0.5rem;
+                padding: 3px 8px;
+                min-height: 28px;
+            }
+            .modal-content {
+                padding: 16px;
+            }
+            .modal-content h3 {
+                font-size: 0.85rem;
+            }
+            .detail-view-glass {
+                padding: 0 4px;
+            }
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
@@ -2919,36 +3150,31 @@
             .mt5-tf-display {
                 font-size: 0.35rem;
             }
-            .top-bar {
-                min-height: 22px;
-                padding: 2px 3px;
+            .top-bar-glass {
+                min-height: 20px;
+                padding: 4px 0 6px 0;
             }
-            .terminal-nav-btn {
+            .terminal-nav-btn-glass {
                 font-size: 0.5rem;
-                padding: 2px 6px;
-                min-height: 26px;
+                padding: 4px 8px;
+                min-height: 28px;
             }
-            .lang-select {
+            .lang-select-glass {
                 font-size: 0.45rem;
-                padding: 1px 12px 1px 3px;
-                min-height: 26px;
-            }
-            .theme-toggle-btn {
-                font-size: 0.45rem;
-                padding: 1px 4px;
-                min-height: 26px;
-            }
-            .user-menu .username {
-                font-size: 0.45rem;
-            }
-            .user-menu .logout-btn {
-                font-size: 0.4rem;
-                padding: 1px 4px;
+                padding: 2px 12px 2px 4px;
                 min-height: 24px;
             }
-            .account-no {
-                font-size: 0.35rem;
-                padding: 1px 3px;
+            .theme-toggle-btn-glass {
+                font-size: 0.45rem;
+                padding: 2px 5px;
+                min-height: 24px;
+            }
+            .user-menu-glass .username {
+                font-size: 0.45rem;
+            }
+            .user-menu-glass .account-no {
+                font-size: 0.4rem;
+                padding: 1px 4px;
             }
             .chart-container-wrap #simChartContainer {
                 min-height: 90px;
@@ -2967,8 +3193,38 @@
                 padding: 2px 6px;
                 min-height: 24px;
             }
+            .search-box-glass {
+                max-width: 80px;
+                min-width: 40px;
+            }
+            .search-box-glass input {
+                font-size: 0.5rem;
+                padding: 4px 4px 4px 22px;
+                min-height: 28px;
+            }
+            .search-icon-glass {
+                font-size: 0.45rem;
+                left: 6px;
+            }
+            .sidebar-glass {
+                width: 200px;
+            }
+            .logo-text {
+                font-size: 0.9rem;
+            }
+            .subject-item-glass {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+            .lesson-title-glass {
+                font-size: 0.65rem;
+            }
+            .lesson-meta-glass {
+                font-size: 0.45rem;
+            }
         }
 
+        /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
         [data-theme="dark"] .ql-toolbar {
             background: #1e293b !important;
             border-color: #334155 !important;
@@ -3033,6 +3289,97 @@
             background: rgba(139, 92, 246, 0.2);
             color: #8b5cf6;
             border: 1px solid #8b5cf6;
+        }
+
+        /* ─── HISTORY PANEL ENHANCEMENTS ────────────────────────────────── */
+        .history-header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 0.55rem;
+            color: var(--mt5-text);
+        }
+        .history-header-actions span {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .history-header-actions span:hover {
+            background: var(--mt5-nav-active);
+            color: var(--mt5-text-bright);
+        }
+        .history-summary-row {
+            display: flex;
+            gap: 16px;
+            padding: 4px 0;
+            font-size: 0.55rem;
+            border-bottom: 1px solid var(--mt5-border);
+            margin-bottom: 6px;
+        }
+        .history-summary-row .label {
+            color: var(--mt5-text);
+        }
+        .history-summary-row .value {
+            font-weight: 700;
+        }
+        .history-summary-row .value.green {
+            color: var(--mt5-green);
+        }
+        .history-summary-row .value.red {
+            color: var(--mt5-red);
+        }
+        .history-summary-row .value.blue {
+            color: var(--mt5-blue);
+        }
+        .history-item .left .symbol-badge {
+            font-size: 0.4rem;
+            background: var(--mt5-input);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--mt5-text);
+            display: inline-block;
+        }
+        .history-item .left .time-stamp {
+            font-size: 0.4rem;
+            color: var(--mt5-text-muted);
+        }
+
+        /* ─── MOBILE DRAW OVERLAY LINE LIST ────────────────────────────── */
+        .mobile-drawn-line-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 4px;
+            background: var(--mt5-input);
+            border-radius: 4px;
+            margin: 2px 0;
+            font-size: 0.45rem;
+            font-family: var(--font-mono);
+        }
+        .mobile-drawn-line-row .line-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .mobile-drawn-line-row .line-delete-btn {
+            background: var(--mt5-red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            font-size: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .mobile-drawn-line-row .line-delete-btn:active {
+            transform: scale(0.9);
         }
     </style>
 </head>
@@ -3146,7 +3493,7 @@
             let chartVisibilityHandler = null;
             let chartReinitCounter = 0;
             let serverWS = null;
-            let wsConnected = false; // ✅ WebSocket সংযুক্ত কিনা
+            let wsConnected = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -3239,6 +3586,50 @@
                     setTimeout(() => el.remove(), 300); }, 2800);
             }
 
+            // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
+            function safeUpdateCandle(candle, source) {
+                if (!simCandleSeries || !simChart) {
+                    console.warn('⚠️ safeUpdateCandle: chart not ready', source);
+                    return false;
+                }
+                if (!candle || typeof candle !== 'object') {
+                    console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
+                    return false;
+                }
+                let time = candle.time;
+                if (time > 1e12) time = Math.floor(time / 1000);
+                if (!Number.isFinite(time) || time <= 0) {
+                    console.warn('⚠️ safeUpdateCandle: invalid time', time, source);
+                    return false;
+                }
+                const open = Number(candle.open);
+                const high = Number(candle.high);
+                const low = Number(candle.low);
+                const close = Number(candle.close);
+                const volume = Number(candle.volume) || 0;
+                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
+                    console.warn('⚠️ safeUpdateCandle: invalid price', { open, high, low, close }, source);
+                    return false;
+                }
+                const safeClone = {
+                    time: time,
+                    open: open,
+                    high: Math.max(open, high, close),
+                    low: Math.min(open, low, close),
+                    close: close,
+                    volume: volume
+                };
+                try {
+                    simCandleSeries.update(safeClone);
+                    window._chartErrorCount = 0;
+                    return true;
+                } catch (err) {
+                    console.error('❌ safeUpdateCandle exception:', err.message, safeClone, source);
+                    window._chartErrorCount = (window._chartErrorCount || 0) + 1;
+                    return false;
+                }
+            }
+
             // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
             function customConfirm(message, onConfirm, onCancel) {
                 const overlay = document.createElement('div');
@@ -3264,48 +3655,9 @@
                 return overlay;
             }
 
-            // ─── SAFE UPDATE CANDLE ────────────────────────────────────────
-            /**
-             * নিরাপদে ক্যান্ডেল আপডেট করুন - ভ্যালিডেশন সহ
-             * @param {object} candle - ক্যান্ডেল অবজেক্ট {time, open, high, low, close, volume}
-             * @param {string} source - ডিবাগের জন্য সোর্স নাম (ঐচ্ছিক)
-             * @returns {boolean} - সফল হলে true, না হলে false
-             */
-            function safeUpdateCandle(candle, source = '') {
-                if (!simCandleSeries) {
-                    console.warn('⚠️ safeUpdateCandle: simCandleSeries not ready', source);
-                    return false;
-                }
-                if (!candle || typeof candle !== 'object') {
-                    console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
-                    return false;
-                }
-                const required = ['time', 'open', 'high', 'low', 'close'];
-                for (const field of required) {
-                    if (candle[field] === undefined || candle[field] === null || isNaN(candle[field])) {
-                        console.warn(`⚠️ safeUpdateCandle: ${field} is invalid`, candle[field], source);
-                        return false;
-                    }
-                }
-                if (candle.volume === undefined || candle.volume === null || isNaN(candle.volume)) {
-                    candle.volume = 0;
-                }
-                if (candle.high < candle.low) {
-                    const tmp = candle.high;
-                    candle.high = candle.low;
-                    candle.low = tmp;
-                }
-                try {
-                    simCandleSeries.update(candle);
-                    return true;
-                } catch (err) {
-                    console.warn('⚠️ safeUpdateCandle: update failed', err.message, source);
-                    return false;
-                }
-            }
-
             // ─── NOTIFICATIONS ──────────────────────────────────────────────
-            function sendNotification(title, body, type = 'info') {
+            function sendNotification(title, body, type) {
+                type = type || 'info';
                 const existing = document.querySelector('.notification-banner');
                 if (existing) existing.remove();
                 const banner = document.createElement('div');
@@ -3337,7 +3689,8 @@
 
             function getAuthHeaders() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
 
-            async function apiFetch(endpoint, opts = {}) {
+            async function apiFetch(endpoint, opts) {
+                opts = opts || {};
                 const url = API_BASE + endpoint;
                 const res = await fetch(url, { ...opts, headers: { 'Content-Type': 'application/json',
                         ...getAuthHeaders(), ...(opts.headers || {}) } });
@@ -3382,22 +3735,31 @@
 
             function sanitizeCandle(c) {
                 if (!c) return null;
-                const result = {
-                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
-                    open: isValidNumber(c.open) ? c.open : 1,
-                    high: isValidNumber(c.high) ? c.high : 1,
-                    low: isValidNumber(c.low) ? c.low : 1,
-                    close: isValidNumber(c.close) ? c.close : 1,
-                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
+                let time = c.time;
+                if (time > 1e12) {
+                    time = Math.floor(time / 1000);
+                }
+                if (!Number.isFinite(time) || time <= 0) {
+                    console.warn('sanitizeCandle: invalid time', c.time);
+                    return null;
+                }
+                const open = Number(c.open);
+                const high = Number(c.high);
+                const low = Number(c.low);
+                const close = Number(c.close);
+                const volume = Number(c.volume) || 0;
+                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
+                    console.warn('sanitizeCandle: invalid price', { open, high, low, close });
+                    return null;
+                }
+                return {
+                    time: time,
+                    open: open,
+                    high: Math.max(open, high, close),
+                    low: Math.min(open, low, close),
+                    close: close,
+                    volume: volume
                 };
-                if (result.high < result.low) { const tmp = result.high;
-                    result.high = result.low;
-                    result.low = tmp; }
-                if (result.high < result.open) result.high = result.open;
-                if (result.high < result.close) result.high = result.close;
-                if (result.low > result.open) result.low = result.open;
-                if (result.low > result.close) result.low = result.close;
-                return result;
             }
 
             function sanitizeCandleData(candles) {
@@ -3554,7 +3916,6 @@
                                 lastBinancePrice[symbol] = safeCandle.close;
                                 updateMobileTopBar();
                                 if (symbol === simCurrentSymbol && simCandleSeries && simCurrentCandle) {
-                                    // থ্রেশহোল্ড চেক
                                     const currentCandle = simCurrentCandle;
                                     const priceChange = Math.abs(safeCandle.close - currentCandle.close);
                                     const highChange = Math.abs(safeCandle.high - currentCandle.high);
@@ -3571,7 +3932,6 @@
                                         checkAndExecuteSLTP();
                                         updateSimUI();
                                     } else {
-                                        // সামান্য পরিবর্তন
                                         currentCandle.close = safeCandle.close;
                                         currentCandle.volume = safeCandle.volume;
                                         safeUpdateCandle(currentCandle, 'WebSocket partial');
@@ -3631,7 +3991,8 @@
             }
 
             // ─── BINANCE REST ──────────────────────────────────────────────
-            async function fetchBinanceCandles(symbol, interval, limit = 500) {
+            async function fetchBinanceCandles(symbol, interval, limit) {
+                limit = limit || 500;
                 try {
                     const url =
                         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -3865,10 +4226,24 @@
                     else simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } });
 
                     const allCandles = [...visible];
-                    if (simCurrentCandle) allCandles.push(simCurrentCandle);
-                    const safeAll = sanitizeCandleData(allCandles);
+                    if (simCurrentCandle) {
+                        const sanitizedCurrent = sanitizeCandle(simCurrentCandle);
+                        if (sanitizedCurrent) allCandles.push(sanitizedCurrent);
+                    }
+                    let safeAll = sanitizeCandleData(allCandles).filter(c => c !== null);
+                    safeAll.sort((a, b) => a.time - b.time);
+                    const unique = [];
+                    for (let i = 0; i < safeAll.length; i++) {
+                        if (i === 0 || safeAll[i].time > unique[unique.length - 1].time) {
+                            unique.push(safeAll[i]);
+                        }
+                    }
+                    safeAll = unique;
                     if (safeAll.length > 0) {
-                        try { simCandleSeries.setData(safeAll); } catch (e) { console.warn('SetData error:', e); }
+                        try { simCandleSeries.setData(safeAll); } catch (e) {
+                            console.error('SetData error:', e);
+                            simCandleSeries.setData([]);
+                        }
                     }
                     updateAllIndicators();
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
@@ -4019,7 +4394,6 @@
                     // ─── সিমুলেশন ইন্টারভাল ──────────────────────────────────
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
-                        // WebSocket সংযুক্ত থাকলে চার্ট আপডেট করি না
                         if (wsConnected && lastBinancePrice[simCurrentSymbol]) {
                             const price = lastBinancePrice[simCurrentSymbol];
                             if (isValidNumber(price) && price > 0) {
@@ -4029,8 +4403,6 @@
                             }
                             return;
                         }
-
-                        // WebSocket ডিসকানেক্ট → সিমুলেশন
                         if (!simCurrentCandle || !simCandleSeries) return;
                         let price = simLastPrices[simCurrentSymbol];
                         if (!isValidNumber(price)) {
@@ -4216,6 +4588,7 @@
                     }
                 });
                 updateLineManagerUI();
+                updateMobileDrawnLines();
             }
 
             function deleteSingleLine(idx) {
@@ -4244,6 +4617,34 @@
                 if (btnId) document.getElementById(btnId)?.classList.add('active');
                 showToast('📐 Click chart to draw ' + (tool === 'support' ? 'Support' : tool === 'resistance' ?
                     'Resistance' : 'Horizontal line'));
+            }
+
+            // ─── MOBILE DRAWN LINES ─────────────────────────────────────────
+            function updateMobileDrawnLines() {
+                const el = document.getElementById('mobileDrawnLinesList');
+                if (!el) return;
+                const lines = portfolio.drawnLines[simCurrentSymbol] || [];
+                if (lines.length === 0) {
+                    el.innerHTML = '<span style="color:var(--mt5-text);font-size:0.5rem;">No lines drawn</span>';
+                    return;
+                }
+                el.innerHTML = lines.map((l, i) =>
+                    `<div class="mobile-drawn-line-row">
+                        <span class="line-dot" style="background:${l.color || '#3b82f6'};"></span>
+                        <span style="flex:1;">${l.label || 'Line'} $${l.price.toFixed(4)}</span>
+                        <button class="line-delete-btn" onclick="deleteMobileLine(${i})" title="Delete">×</button>
+                    </div>`
+                ).join('');
+            }
+
+            function deleteMobileLine(idx) {
+                if (!portfolio.drawnLines[simCurrentSymbol]) return;
+                portfolio.drawnLines[simCurrentSymbol].splice(idx, 1);
+                savePortfolioToStorage();
+                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
+                redrawAllLines();
+                updateMobileDrawnLines();
+                showToast('🗑️ Line deleted');
             }
 
             // ─── TRADING ENGINE ─────────────────────────────────────────────
@@ -4279,9 +4680,9 @@
                             type: 'close',
                             symbol: p.symbol,
                             qty: p.qty,
-                            price,
+                            price: price,
                             time: new Date().toLocaleTimeString(),
-                            reason,
+                            reason: reason,
                             pnl: pnl - fee,
                             id: p.id
                         };
@@ -4330,23 +4731,23 @@
                                 id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                                 symbol: order.symbol,
                                 type: 'long',
-                                qty,
+                                qty: qty,
                                 entryPrice: execPrice,
                                 currentPrice: execPrice,
                                 slPrice: null,
                                 tpPrice: null,
                                 openTime: new Date().toISOString(),
-                                fee
+                                fee: fee
                             });
                             portfolio.transactions.unshift({
                                 type: 'buy',
                                 symbol: order.symbol,
-                                qty,
+                                qty: qty,
                                 price: execPrice,
                                 time: new Date().toLocaleTimeString(),
                                 reason: 'Limit Order',
                                 id: order.id,
-                                fee
+                                fee: fee
                             });
                             sendNotification('✅ Limit BUY Executed', order.symbol + ' @ $' + execPrice.toFixed(4),
                                 'success');
@@ -4365,24 +4766,24 @@
                                 id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                                 symbol: order.symbol,
                                 type: 'short',
-                                qty,
+                                qty: qty,
                                 entryPrice: execPrice,
                                 currentPrice: execPrice,
                                 slPrice: null,
                                 tpPrice: null,
                                 openTime: new Date().toISOString(),
-                                fee
+                                fee: fee
                             };
                             portfolio.positions.push(newPos);
                             portfolio.transactions.unshift({
                                 type: 'sell',
                                 symbol: order.symbol,
-                                qty,
+                                qty: qty,
                                 price: execPrice,
                                 time: new Date().toLocaleTimeString(),
                                 reason: 'Limit Order (Short)',
                                 id: order.id,
-                                fee
+                                fee: fee
                             });
                             sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
                                 4), 'success');
@@ -4404,7 +4805,8 @@
             }
 
             // ─── PLACE ORDER ────────────────────────────────────────────────
-            function placeSimOrder(type, orderType = 'market', limitPrice = null) {
+            function placeSimOrder(type, orderType, limitPrice) {
+                orderType = orderType || 'market';
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
                 const qty = parseFloat(document.getElementById('simQty')?.value) || 0.01;
                 if (!qty || qty <= 0) return showToast('❌ Invalid quantity');
@@ -4415,11 +4817,11 @@
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
                     const order = {
                         id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
+                        symbol: symbol,
                         side: type,
                         type: 'limit',
                         price: limitPrice,
-                        qty,
+                        qty: qty,
                         status: 'pending',
                         createdAt: Date.now()
                     };
@@ -4438,24 +4840,24 @@
                     portfolio.cash -= qty * price + fee;
                     portfolio.positions.push({
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
+                        symbol: symbol,
                         type: 'long',
-                        qty,
+                        qty: qty,
                         entryPrice: price,
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee
+                        fee: fee
                     });
                     portfolio.transactions.unshift({
                         type: 'buy',
-                        symbol,
-                        qty,
-                        price,
+                        symbol: symbol,
+                        qty: qty,
+                        price: price,
                         time: new Date().toLocaleTimeString(),
                         reason: 'Market Order',
-                        fee
+                        fee: fee
                     });
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
@@ -4466,24 +4868,24 @@
                     portfolio.cash -= fee;
                     portfolio.positions.push({
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
+                        symbol: symbol,
                         type: 'short',
-                        qty,
+                        qty: qty,
                         entryPrice: price,
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee
+                        fee: fee
                     });
                     portfolio.transactions.unshift({
                         type: 'sell',
-                        symbol,
-                        qty,
-                        price,
+                        symbol: symbol,
+                        qty: qty,
+                        price: price,
                         time: new Date().toLocaleTimeString(),
                         reason: 'Market Order (Short)',
-                        fee
+                        fee: fee
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
@@ -4509,7 +4911,7 @@
                     type: 'close',
                     symbol: p.symbol,
                     qty: p.qty,
-                    price,
+                    price: price,
                     time: new Date().toLocaleTimeString(),
                     reason: 'Manual Exit',
                     pnl: pnl - fee,
@@ -4566,7 +4968,7 @@
                             type: 'close',
                             symbol: p.symbol,
                             qty: p.qty,
-                            price,
+                            price: price,
                             time: new Date().toLocaleTimeString(),
                             reason: 'Close All',
                             pnl: pnl - fee,
@@ -4678,7 +5080,8 @@
                 if (nameEl) nameEl.textContent = simCurrentSymbol + ' / USD';
             }
 
-            function placeSimOrderMobile(side, qty, orderType = 'market', limitPrice = null) {
+            function placeSimOrderMobile(side, qty, orderType, limitPrice) {
+                orderType = orderType || 'market';
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
                 if (!isValidNumber(price)) price = 150;
@@ -4688,11 +5091,11 @@
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
                     const order = {
                         id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
-                        side,
+                        symbol: symbol,
+                        side: side,
                         type: 'limit',
                         price: limitPrice,
-                        qty,
+                        qty: qty,
                         status: 'pending',
                         createdAt: Date.now()
                     };
@@ -4711,24 +5114,24 @@
                     portfolio.cash -= qty * price + fee;
                     portfolio.positions.push({
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
+                        symbol: symbol,
                         type: 'long',
-                        qty,
+                        qty: qty,
                         entryPrice: price,
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee
+                        fee: fee
                     });
                     portfolio.transactions.unshift({
                         type: 'buy',
-                        symbol,
-                        qty,
-                        price,
+                        symbol: symbol,
+                        qty: qty,
+                        price: price,
                         time: new Date().toLocaleTimeString(),
                         reason: 'Market Order',
-                        fee
+                        fee: fee
                     });
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
@@ -4739,24 +5142,24 @@
                     portfolio.cash -= fee;
                     portfolio.positions.push({
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        symbol,
+                        symbol: symbol,
                         type: 'short',
-                        qty,
+                        qty: qty,
                         entryPrice: price,
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee
+                        fee: fee
                     });
                     portfolio.transactions.unshift({
                         type: 'sell',
-                        symbol,
-                        qty,
-                        price,
+                        symbol: symbol,
+                        qty: qty,
+                        price: price,
                         time: new Date().toLocaleTimeString(),
                         reason: 'Market Order (Short)',
-                        fee
+                        fee: fee
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
@@ -4771,72 +5174,52 @@
                 document.getElementById('mobileBuyBtn')?.blur();
             }
 
-            // ─── MOBILE TRADE SUMMARY ──────────────────────────────────────
-            function renderMobileTradeSummary() {
-                const panel = document.getElementById('tradePanel');
-                if (!panel) return;
+            // ─── UPDATE TRADE PANEL DATA (NO FULL RE-RENDER) ──────────────
+            function updateTradePanelData() {
+                // Update summary
                 const totalEquity = calcEquity();
                 const totalPL = calcTotalPL();
-                const freeMargin = portfolio.cash || 0;
-                let html = `
-                    <div class="mobile-trade-summary">
+                const summaryEl = document.getElementById('tradeSummaryContent');
+                if (summaryEl) {
+                    summaryEl.innerHTML = `
                         <div class="summary-grid">
                             <div class="item"><div class="label">Balance</div><div class="value">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                             <div class="item"><div class="label">Equity</div><div class="value">$${totalEquity.toFixed(2)}</div></div>
-                            <div class="item"><div class="label">Free Margin</div><div class="value">$${freeMargin.toFixed(2)}</div></div>
-                        </div>
-                        <h4 style="color:var(--mt5-text-bright);font-size:0.7rem;margin:4px 0 2px;">Positions</h4>
-                        <div id="mobilePositionsList">`;
-                const positions = portfolio.positions || [];
-                if (positions.length === 0) {
-                    html += '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No open positions</div>';
-                } else {
-                    positions.forEach(p => {
-                        const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
-                        const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) *
-                        p.qty;
-                        const plStr = (pl >= 0 ? '+' : '') + pl.toFixed(2);
-                        const plCls = pl >= 0 ? 'green' : 'red';
-                        html += `<div class="position-card">
-                            <div class="row"><span class="label">${p.symbol} <span style="color:${p.type==='long'?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${p.type.toUpperCase()}</span></span><span class="value">${Math.abs(p.qty)} Qty</span></div>
-                            <div class="row"><span class="label">Entry</span><span class="value">$${(p.entryPrice || 0).toFixed(4)}</span></div>
-                            <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(4)}</span></div>
-                            <div class="row"><span class="label">P&L</span><span class="value ${plCls}">${plStr}</span></div>
-                            ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
-                            ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
-                            <div style="display:flex;gap:4px;margin-top:4px;">
-                                <button class="exit-btn" style="flex:1;" onclick="exitPositionById('${p.id}');renderMobileTradeSummary();">Exit</button>
-                                <button class="btn btn-modify btn-sm" style="flex:1;font-size:0.5rem;padding:4px 8px;" onclick="editSLTPById('${p.id}');renderMobileTradeSummary();">🔧 Modify</button>
-                            </div>
+                            <div class="item"><div class="label">Free Margin</div><div class="value">$${(portfolio.cash || 0).toFixed(2)}</div></div>
                         </div>`;
-                    });
                 }
-                html += `</div>
-                        <div style="margin-top:4px;display:flex;gap:4px;">
-                            <button class="btn btn-danger btn-sm" style="flex:1;font-size:0.55rem;padding:6px;" onclick="closeAllPositions();renderMobileTradeSummary();">🚪 All Positions Exit</button>
-                        </div>
-                        <div style="margin-top:6px;padding:6px;background:var(--mt5-card);border-radius:6px;border:1px solid var(--mt5-border);">
-                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <input type="number" id="depositAmount" placeholder="Amount" step="0.01" style="flex:1;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:4px 8px;border-radius:4px;font-size:0.6rem;min-height:36px;">
-                                <button class="btn btn-success btn-sm" onclick="depositFunds();renderMobileTradeSummary();" style="font-size:0.55rem;">Deposit</button>
-                                <button class="btn btn-danger btn-sm" onclick="withdrawFunds();renderMobileTradeSummary();" style="font-size:0.55rem;">Withdraw</button>
-                            </div>
-                        </div>
-                        <div style="margin-top:4px;">
-                            <h4 style="color:var(--mt5-text-bright);font-size:0.65rem;">Pending Limit Orders</h4>
-                            <div id="mobilePendingOrders"></div>
-                        </div>
-                    </div>`;
-                panel.innerHTML = html;
 
-                const depInput = document.getElementById('depositAmount');
-                if (depInput) {
-                    depInput.addEventListener('input', function() { this.value = this.value.replace(/[^0-9.]/g,
-                        ''); });
-                    depInput.addEventListener('blur', function() { if (this.value && !isNaN(parseFloat(this
-                            .value)) && parseFloat(this.value) > 0) { /* valid */ } else { this.value =
-                            ''; } });
+                // Update positions
+                const posContainer = document.getElementById('mobilePositionsList');
+                if (posContainer) {
+                    const positions = portfolio.positions || [];
+                    if (positions.length === 0) {
+                        posContainer.innerHTML =
+                            '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No open positions</div>';
+                    } else {
+                        posContainer.innerHTML = positions.map(p => {
+                            const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                            const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) *
+                            p.qty;
+                            const plStr = (pl >= 0 ? '+' : '') + pl.toFixed(2);
+                            const plCls = pl >= 0 ? 'green' : 'red';
+                            return `<div class="position-card">
+                                <div class="row"><span class="label">${p.symbol} <span style="color:${p.type==='long'?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${p.type.toUpperCase()}</span></span><span class="value">${Math.abs(p.qty)} Qty</span></div>
+                                <div class="row"><span class="label">Entry</span><span class="value">$${(p.entryPrice || 0).toFixed(4)}</span></div>
+                                <div class="row"><span class="label">Current</span><span class="value">$${cp.toFixed(4)}</span></div>
+                                <div class="row"><span class="label">P&L</span><span class="value ${plCls}">${plStr}</span></div>
+                                ${p.slPrice ? `<div class="row"><span class="label">SL</span><span class="value">$${p.slPrice.toFixed(4)}</span></div>` : ''}
+                                ${p.tpPrice ? `<div class="row"><span class="label">TP</span><span class="value">$${p.tpPrice.toFixed(4)}</span></div>` : ''}
+                                <div style="display:flex;gap:4px;margin-top:4px;">
+                                    <button class="exit-btn" style="flex:1;" onclick="exitPositionById('${p.id}');updateTradePanelData();">Exit</button>
+                                    <button class="btn btn-modify btn-sm" style="flex:1;font-size:0.5rem;padding:4px 8px;" onclick="editSLTPById('${p.id}');updateTradePanelData();">🔧 Modify</button>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    }
                 }
+
+                // Update pending orders
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
                     const pending = pendingOrders.filter(o => o.status === 'pending');
@@ -4846,46 +5229,78 @@
                         pendingEl.innerHTML = pending.map(o =>
                             `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--mt5-border);font-size:0.5rem;">
                                 <span>${o.symbol} ${o.side.toUpperCase()} ${o.qty} @ $${o.price.toFixed(4)}</span>
-                                <button class="btn btn-sm btn-danger" style="font-size:0.4rem;padding:2px 6px;" onclick="cancelLimitOrder('${o.id}');renderMobileTradeSummary();">Cancel</button>
+                                <button class="btn btn-sm btn-danger" style="font-size:0.4rem;padding:2px 6px;" onclick="cancelLimitOrder('${o.id}');updateTradePanelData();">Cancel</button>
                             </div>`
                         ).join('');
                     }
                 }
             }
 
-            function depositFunds() {
-                const amtInput = document.getElementById('depositAmount');
-                if (!amtInput) return;
-                const amt = parseFloat(amtInput.value);
-                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
-                portfolio.cash = (portfolio.cash || 0) + amt;
-                portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
-                    time: new Date().toLocaleTimeString() });
-                savePortfolioToStorage();
-                updateSimUI();
-                renderMobileTradeSummary();
-                syncPortfolioToServer();
-                sendNotification('💰 Deposit', '$' + amt.toFixed(2) + ' added to balance', 'success');
-                showToast('💰 Deposited $' + amt.toFixed(2));
-                amtInput.value = '';
-            }
+            // ─── MOBILE TRADE SUMMARY (FULL RENDER FOR INIT) ──────────────
+            function renderMobileTradeSummary() {
+                const panel = document.getElementById('tradePanel');
+                if (!panel) return;
 
-            function withdrawFunds() {
-                const amtInput = document.getElementById('depositAmount');
-                if (!amtInput) return;
-                const amt = parseFloat(amtInput.value);
-                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
-                if ((portfolio.cash || 0) < amt) { showToast('❌ Insufficient balance'); return; }
-                portfolio.cash = (portfolio.cash || 0) - amt;
-                portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
-                    time: new Date().toLocaleTimeString() });
-                savePortfolioToStorage();
-                updateSimUI();
-                renderMobileTradeSummary();
-                syncPortfolioToServer();
-                sendNotification('💸 Withdrawal', '$' + amt.toFixed(2) + ' withdrawn from balance', 'info');
-                showToast('💸 Withdrawn $' + amt.toFixed(2));
-                amtInput.value = '';
+                // Only set up the HTML structure once
+                if (!panel.dataset.initialized) {
+                    panel.dataset.initialized = 'true';
+                    panel.innerHTML = `
+                        <div id="tradeDepositSection" style="position:sticky; top:0; z-index:5; background:var(--mt5-bg); padding:4px 0 6px 0; border-bottom:1px solid var(--mt5-border);">
+                            <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+                                <input type="number" id="mobileDepositAmount" placeholder="Amount" step="0.01" inputmode="decimal" style="flex:1; background:var(--mt5-input); border:1px solid var(--mt5-border); color:var(--mt5-text-bright); padding:8px 12px; border-radius:8px; font-size:0.65rem; min-height:38px;" />
+                                <button class="btn btn-success btn-sm" id="mobileDepositBtn" style="font-size:0.6rem; padding:8px 12px;">Deposit</button>
+                                <button class="btn btn-danger btn-sm" id="mobileWithdrawBtn" style="font-size:0.6rem; padding:8px 12px;">Withdraw</button>
+                            </div>
+                        </div>
+                        <div id="tradeScrollContent" style="overflow-y:auto; flex:1; padding-top:4px;">
+                            <div class="mobile-trade-summary" id="tradeSummaryContent"></div>
+                            <div id="mobilePositionsList"></div>
+                            <div id="mobilePendingOrders"></div>
+                            <div style="margin-top:6px;">
+                                <button class="btn btn-danger btn-sm" id="closeAllMobileBtn" style="width:100%; font-size:0.6rem;">🚪 All Positions Exit</button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Event listeners
+                    document.getElementById('mobileDepositBtn').addEventListener('click', () => {
+                        const amt = parseFloat(document.getElementById('mobileDepositAmount').value);
+                        if (!amt || amt <= 0) return showToast('❌ Enter valid amount');
+                        portfolio.cash = (portfolio.cash || 0) + amt;
+                        portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
+                            time: new Date().toLocaleTimeString() });
+                        savePortfolioToStorage();
+                        syncPortfolioToServer();
+                        updateTradePanelData();
+                        document.getElementById('mobileDepositAmount').value = '';
+                        showToast('💰 Deposited $' + amt.toFixed(2));
+                    });
+
+                    document.getElementById('mobileWithdrawBtn').addEventListener('click', () => {
+                        const amt = parseFloat(document.getElementById('mobileDepositAmount').value);
+                        if (!amt || amt <= 0) return showToast('❌ Enter valid amount');
+                        if ((portfolio.cash || 0) < amt) return showToast('❌ Insufficient balance');
+                        portfolio.cash = (portfolio.cash || 0) - amt;
+                        portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
+                            time: new Date().toLocaleTimeString() });
+                        savePortfolioToStorage();
+                        syncPortfolioToServer();
+                        updateTradePanelData();
+                        document.getElementById('mobileDepositAmount').value = '';
+                        showToast('💸 Withdrawn $' + amt.toFixed(2));
+                    });
+
+                    document.getElementById('closeAllMobileBtn').addEventListener('click', () => {
+                        closeAllPositions();
+                        setTimeout(updateTradePanelData, 200);
+                    });
+                }
+
+                // Update data
+                updateTradePanelData();
+
+                // Also update top bar
+                updateMobileTopBar();
             }
 
             // ─── MOBILE WATCHLIST ──────────────────────────────────────────
@@ -4970,10 +5385,10 @@
                     <div style="padding:3px 0;">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">History</h4>
-                            <div style="display:flex;gap:4px;">
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">⟳</span>
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">⇅</span>
-                                <span style="font-size:0.45rem;color:var(--mt5-text);">📅</span>
+                            <div class="history-header-actions">
+                                <span title="Refresh" onclick="renderMobileHistory()">⟳</span>
+                                <span title="Sort">⇅</span>
+                                <span title="Calendar">📅</span>
                             </div>
                         </div>
                         <div style="font-size:0.5rem;color:var(--mt5-text);">All symbols</div>
@@ -4983,9 +5398,9 @@
                             <div class="htab" data-htab="deals" onclick="switchHistoryTab('deals')">DEALS</div>
                         </div>
                         <div id="historyContent">
-                            <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
-                                <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
-                                <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                            <div class="history-summary-row">
+                                <span><span class="label">Profit:</span> <span class="value ${profitTotal>=0?'green':'red'}">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                                <span><span class="label">Deposit:</span> <span class="value blue">${depositTotal.toFixed(2)}</span></span>
                             </div>
                             <div id="historyList">
                                 ${transactions.length === 0 ? '<div style="color:var(--mt5-text);padding:6px 0;font-size:0.6rem;">No transactions</div>' :
@@ -4999,7 +5414,7 @@
                                     return `<div class="history-item">
                                         <div class="left">
                                             <span class="type ${typeCls}">${t.type.toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
-                                            <span class="detail">${detail} • ${timeStr}</span>
+                                            <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
                                         </div>
                                         <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
                                     </div>`;
@@ -5046,16 +5461,16 @@
                             listHtml += `<div class="history-item">
                                 <div class="left">
                                     <span class="type ${typeCls}">${(t.type||'').toUpperCase()} ${t.reason ? '('+t.reason+')' : ''}</span>
-                                    <span class="detail">${detail} • ${timeStr}</span>
+                                    <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
                                 </div>
                                 <div class="right ${color}">${sign}$${(t.qty * (t.price || 1)).toFixed(2)}${pnlText}</div>
                             </div>`;
                         });
                     }
                     content.innerHTML = `
-                        <div style="display:flex;gap:12px;padding:2px 0;font-size:0.55rem;">
-                            <span>Profit: <span style="color:${profitTotal>=0?'var(--mt5-green)':'var(--mt5-red)'};font-weight:700;">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
-                            <span>Deposit: <span style="color:var(--mt5-blue);font-weight:700;">${depositTotal.toFixed(2)}</span></span>
+                        <div class="history-summary-row">
+                            <span><span class="label">Profit:</span> <span class="value ${profitTotal>=0?'green':'red'}">${profitTotal>=0?'+':''}${profitTotal.toFixed(2)}</span></span>
+                            <span><span class="label">Deposit:</span> <span class="value blue">${depositTotal.toFixed(2)}</span></span>
                         </div>
                         <div id="historyList">${listHtml}</div>
                         ${filtered.length > 30 ? '<div style="text-align:center;color:var(--mt5-text);font-size:0.5rem;padding:4px 0;">No more history</div>' : ''}
@@ -5071,11 +5486,13 @@
                 if (!price || price <= 0) return showToast('❌ Invalid price');
                 if (!portfolio.drawnLines) portfolio.drawnLines = {};
                 if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color, label, style: 0 });
+                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color: color, label: label,
+                    style: 0 });
                 savePortfolioToStorage();
                 saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
                 redrawAllLines();
                 document.getElementById('mt5DrawOverlay')?.classList.remove('show');
+                updateMobileDrawnLines();
                 showToast('📐 ' + label + ' @ $' + price.toFixed(4));
             };
 
@@ -5142,12 +5559,12 @@
             async function syncPortfolioToServer() {
                 if (!token) return;
                 try {
-                    await apiFetch('/portfolio', {
+                    await apiFetch('/portfolio/sync', {
                         method: 'PUT',
                         body: JSON.stringify({
                             cash: portfolio.cash,
-                            positions: portfolio.positions.slice(-50),
-                            transactions: portfolio.transactions.slice(-50),
+                            positions: portfolio.positions,
+                            transactions: portfolio.transactions.slice(0, 500),
                             drawnLines: portfolio.drawnLines
                         })
                     });
@@ -5234,7 +5651,6 @@
                     histEl.innerHTML = histHtml;
                 }
 
-                // Status bar updates
                 const sp = document.getElementById('statusPrice');
                 if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
                 const st = document.getElementById('statusTime');
@@ -5245,8 +5661,11 @@
                 if (pc) pc.textContent = portfolio.positions.length;
 
                 savePortfolioToStorage();
-                if (window.innerWidth <= 768) { renderMobileTradeSummary();
-                    updateMobileTopBar(); }
+                if (window.innerWidth <= 768) {
+                    updateTradePanelData();
+                    updateMobileTopBar();
+                    updateMobileDrawnLines();
+                }
                 renderPendingOrdersUI();
                 updateLineManagerUI();
             }
@@ -5279,7 +5698,6 @@
                 connectBinanceWS();
                 connectServerWS();
 
-                // ─── EXIT HANDLER ──────────────────────────────────────────
                 window._beforeUnloadHandler = function(e) {
                     if (!isExitingTerminal && document.querySelector('.terminal-wrapper, .mobile-terminal')) {
                         e.preventDefault();
@@ -5409,7 +5827,6 @@
                         </div>
                     </div>`;
 
-                // ─── EVENT BINDINGS ──────────────────────────────────────────
                 document.getElementById('terminalExitBtn').onclick = () => {
                     customConfirm('Exit Trading Terminal?', () => {
                         isExitingTerminal = true;
@@ -5608,7 +6025,6 @@
                                 <div style="margin-top:6px;display:flex;gap:4px;"><button class="btn btn-outline btn-sm" id="closeIndicatorSheet" style="flex:1;color:var(--mt5-text);border-color:var(--mt5-border);font-size:0.5rem;">Close</button></div>
                             </div>
                         </div>
-                        <!-- Mobile Draw Overlay -->
                         <div class="mt5-indicator-overlay" id="mt5DrawOverlay">
                             <div class="mt5-indicator-sheet">
                                 <h3>📐 Draw Line</h3>
@@ -5618,12 +6034,15 @@
                                     <button class="btn btn-sm" onclick="addLineMobile('Resistance','#ef4444')" style="background:#ef4444;color:#fff;flex:1;min-height:32px;">Resist</button>
                                     <button class="btn btn-sm" onclick="addLineMobile('H-Line','#3b82f6')" style="background:#3b82f6;color:#fff;flex:1;min-height:32px;">H-Line</button>
                                 </div>
+                                <h4 style="margin-top:10px;color:var(--mt5-text-bright);font-size:0.65rem;">📌 Drawn Lines</h4>
+                                <div id="mobileDrawnLinesList" style="max-height:120px;overflow-y:auto;margin-bottom:6px;"></div>
                                 <button class="btn btn-outline btn-sm" id="closeDrawOverlay" style="width:100%;margin-top:6px;min-height:32px;">Close</button>
                             </div>
                         </div>
                     </div>`;
 
-                // ─── MOBILE EVENT BINDINGS ──────────────────────────────────
+                // ─── EVENT LISTENERS ──────────────────────────────────────────
+
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
                     sidebarOverlay.classList.toggle('show'); };
@@ -5718,15 +6137,14 @@
                 document.getElementById('mobileBuyBtn').onclick = () => { placeSimOrderMobile('buy',
                         currentMobileLot); };
 
-                // ─── MOBILE DRAW ─────────────────────────────────────────────
+                const drawOverlay = document.getElementById('mt5DrawOverlay');
                 document.getElementById('mt5DrawBtn').onclick = () => {
-                    const overlay = document.getElementById('mt5DrawOverlay');
-                    overlay.classList.toggle('show');
+                    drawOverlay.classList.toggle('show');
                     const priceInput = document.getElementById('drawPriceInput');
                     if (priceInput) priceInput.value = (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
+                    updateMobileDrawnLines();
                 };
-                document.getElementById('closeDrawOverlay').onclick = () => document.getElementById('mt5DrawOverlay')
-                    .classList.remove('show');
+                document.getElementById('closeDrawOverlay').onclick = () => drawOverlay.classList.remove('show');
 
                 const navItems = document.querySelectorAll('.mt5-nav-item');
                 const panelsDiv = document.getElementById('mobilePanels');
@@ -5768,6 +6186,7 @@
                 }, 200);
                 updateMobileTopBar();
                 updateSimUI();
+                updateMobileDrawnLines();
 
                 const ro = new ResizeObserver(() => {
                     if (simChart) {
@@ -5885,41 +6304,47 @@
                     origRemove.call(modal); };
             }
 
-            // ─── USER INTERFACE ──────────────────────────────────────────────
+            // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
             function renderUserInterface() {
                 stopBackgroundEngine();
                 cleanupSimIntervals();
                 document.getElementById('app').innerHTML = `
-                    <div class="app">
-                        <div class="sidebar" id="sidebar">
-                            <div class="sidebar-header">
-                                <span class="logo-icon"><i class="fas fa-graduation-cap"></i></span> Training Hub
+                    <div class="app-glass">
+                        <div class="sidebar-glass" id="sidebar">
+                            <div class="sidebar-header-glass">
+                                <span class="logo-icon-glass"><i class="fas fa-graduation-cap"></i></span>
+                                <span class="logo-text">Training Hub</span>
                             </div>
-                            <div class="subject-list" id="subjectList"></div>
+                            <div class="subject-list-glass" id="subjectList"></div>
+                            <div class="sidebar-footer-glass">
+                                <button class="terminal-nav-btn-glass" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
+                                <button class="sidebar-logout-btn-glass" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                            </div>
                         </div>
-                        <div class="main-area">
-                            <div class="top-bar">
-                                <button class="mobile-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input type="text" id="searchInput" placeholder="Search...">
+                        <div class="main-glass">
+                            <div class="top-bar-glass">
+                                <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
+                                <div class="search-box-glass">
+                                    <i class="fas fa-search search-icon-glass"></i>
+                                    <input type="text" id="searchInput" placeholder="Search lessons...">
                                 </div>
-                                <button class="terminal-nav-btn" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
-                                <select class="lang-select" id="langSelect">
-                                    <option value="en">🇬🇧 EN</option>
-                                    <option value="hi">🇮🇳 HI</option>
-                                    <option value="bn">🇧🇩 BN</option>
-                                </select>
-                                <button class="theme-toggle-btn" id="themeToggle">
-                                    <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
-                                </button>
-                                <div class="user-menu">
-                                    <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
-                                    <span class="account-no">${userAccountNo}</span>
-                                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                                <div class="top-actions-glass">
+                                    <button class="terminal-nav-btn-glass" id="topTerminalBtn2" style="padding:4px 12px;font-size:0.6rem;width:auto;min-height:32px;"><i class="fas fa-chart-line"></i> Terminal</button>
+                                    <select class="lang-select-glass" id="langSelect">
+                                        <option value="en">🇬🇧 EN</option>
+                                        <option value="hi">🇮🇳 HI</option>
+                                        <option value="bn">🇧🇩 BN</option>
+                                    </select>
+                                    <button class="theme-toggle-btn-glass" id="themeToggle">
+                                        <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
+                                    </button>
+                                    <div class="user-menu-glass">
+                                        <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
+                                        <span class="account-no">${userAccountNo}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div id="contentArea"></div>
+                            <div class="content-glass" id="contentArea"></div>
                         </div>
                     </div>`;
                 document.getElementById('langSelect').value = currentLang;
@@ -5935,9 +6360,12 @@
                         `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
                 document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
                     'open');
-                document.getElementById('topTerminalBtn').onclick = () => {
-                    window.open('?mode=trading', '_blank');
-                };
+                const terminalBtns = document.querySelectorAll('#topTerminalBtn, #topTerminalBtn2');
+                terminalBtns.forEach(btn => {
+                    btn.onclick = () => {
+                        window.open('?mode=trading', '_blank');
+                    };
+                });
                 document.getElementById('logoutBtn').onclick = () => {
                     customConfirm('Exit App?', () => {
                         logout();
@@ -5955,10 +6383,10 @@
                 const c = document.getElementById('subjectList');
                 if (!c) return;
                 c.innerHTML = subjects.map(s => `
-                    <div class="subject-item ${s.id === selectedSubjectId ? 'active' : ''}" data-id="${s.id}">
-                        <span class="subject-icon">${s.icon || '📁'}</span><span>${t(s.names)}</span>
+                    <div class="subject-item-glass ${s.id === selectedSubjectId ? 'active' : ''}" data-id="${s.id}">
+                        <span class="subject-icon-glass">${s.icon || '📁'}</span><span>${t(s.names)}</span>
                     </div>`).join('');
-                c.querySelectorAll('.subject-item').forEach(el => { el.onclick = () => { selectedSubjectId = el
+                c.querySelectorAll('.subject-item-glass').forEach(el => { el.onclick = () => { selectedSubjectId = el
                             .dataset.id;
                         currentLessonId = null;
                         renderSubjectList();
@@ -5983,34 +6411,35 @@
                 if (q) lessons = lessons.filter(l => t(l.titles).toLowerCase().includes(q));
                 const allComplete = lessons.length > 0 && lessons.every(l => (userProgress[l.id] || 0) >= 100);
                 document.getElementById('contentArea').innerHTML = `
-                    <div class="lesson-list">
+                    <div class="lesson-list-glass">
                         <h2>📖 ${t(subj.names)} — Lessons</h2>
-                        ${allComplete ? `<div style="text-align:center;margin-bottom:8px;"><button class="certificate-btn" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        ${allComplete ? `<div style="text-align:center;margin-bottom:8px;"><button class="certificate-btn-glass" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
                         ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">✨ No lessons found</p>' :
                         lessons.map(l => {
                             const prog = userProgress[l.id] || 0;
                             const qs = quizScores[l.id];
                             let quizBadge = '';
                             if (l.quiz && l.quiz.length) {
-                                if (qs?.passed) quizBadge = '<span class="badge badge-passed">Quiz ✓</span>';
-                                else if (qs) quizBadge = '<span class="badge badge-failed">Quiz ✗</span>';
+                                if (qs?.passed) quizBadge = '<span class="badge-glass badge-passed-glass">Quiz ✓</span>';
+                                else if (qs) quizBadge = '<span class="badge-glass badge-failed-glass">Quiz ✗</span>';
                             }
-                            return `<div class="lesson-card" data-id="${l.id}">
-                                <div class="lesson-info">
-                                    <span class="lesson-title">📄 ${t(l.titles)}</span>
-                                    <div class="lesson-meta">
+                            return `<div class="lesson-card-glass" data-id="${l.id}">
+                                <div class="lesson-info-glass">
+                                    <span class="lesson-title-glass">📄 ${t(l.titles)}</span>
+                                    <div class="lesson-meta-glass">
                                         <span><i class="far fa-clock"></i> ${l.duration || 15}m</span>
-                                        <span class="badge ${l.level === 'Beginner' ? 'badge-beginner' : l.level === 'Intermediate' ? 'badge-intermediate' : 'badge-advanced'}">${l.level || 'Beginner'}</span>
-                                        ${prog >= 100 ? '<span class="badge badge-completed">✓ Done</span>' : ''}
+                                        <span class="badge-glass ${l.level === 'Beginner' ? 'badge-beginner-glass' : l.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${l.level || 'Beginner'}</span>
+                                        ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Done</span>' : ''}
                                         ${quizBadge}
                                         ${bookmarks.has(l.id) ? '<span style="color:var(--accent);">⭐</span>' : ''}
                                     </div>
                                 </div>
-                                <i class="fas fa-chevron-right chevron-icon"></i>
+                                <i class="fas fa-chevron-right chevron-icon-glass"></i>
                             </div>`;
                         }).join('')}
                     </div>`;
-                document.querySelectorAll('.lesson-card').forEach(el => el.onclick = () => showLessonDetail(el.dataset.id));
+                document.querySelectorAll('.lesson-card-glass').forEach(el => el.onclick = () => showLessonDetail(el
+                    .dataset.id));
                 if (allComplete && document.getElementById('certBtnList')) document.getElementById('certBtnList').onclick =
                     () => generateCertificate(subj);
             }
@@ -6025,51 +6454,51 @@
                 const bm = bookmarks.has(id);
                 const allComplete = subj.lessons.every(l => (userProgress[l.id] || 0) >= 100);
                 document.getElementById('contentArea').innerHTML = `
-                    <div class="detail-view">
-                        <div class="back-btn" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
-                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.9rem;">${t(les.titles)}</h2>
-                        <div class="lesson-meta" style="margin:3px 0 1px;">
+                    <div class="detail-view-glass">
+                        <div class="back-btn-glass" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
+                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">${t(les.titles)}</h2>
+                        <div class="lesson-meta-glass" style="margin:3px 0 1px;">
                             <span><i class="far fa-clock"></i> ${les.duration || 15} min</span>
-                            <span class="badge ${les.level === 'Beginner' ? 'badge-beginner' : les.level === 'Intermediate' ? 'badge-intermediate' : 'badge-advanced'}">${les.level || 'Beginner'}</span>
-                            ${prog >= 100 ? '<span class="badge badge-completed">✓ Completed</span>' : ''}
-                            ${qs?.passed ? '<span class="badge badge-passed">Quiz Passed</span>' : qs ? '<span class="badge badge-failed">Quiz Failed</span>' : ''}
+                            <span class="badge-glass ${les.level === 'Beginner' ? 'badge-beginner-glass' : les.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${les.level || 'Beginner'}</span>
+                            ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Completed</span>' : ''}
+                            ${qs?.passed ? '<span class="badge-glass badge-passed-glass">Quiz Passed</span>' : qs ? '<span class="badge-glass badge-failed-glass">Quiz Failed</span>' : ''}
                         </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width:${prog}%"></div></div>
+                        <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog}%"></div></div>
                         <p style="font-size:0.55rem;color:var(--text-muted);">${prog}% complete</p>
-                        <div class="tabs">
-                            <div class="tab active" data-tab="summary">📝 Summary</div>
-                            <div class="tab" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
-                            <div class="tab" data-tab="resources">📂 Resources</div>
+                        <div class="tabs-glass">
+                            <div class="tab-glass active" data-tab="summary">📝 Summary</div>
+                            <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
+                            <div class="tab-glass" data-tab="resources">📂 Resources</div>
                         </div>
-                        <div class="tab-content" id="tabContent"></div>
-                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
-                        <div class="tts-controls">
-                            <button class="tts-btn" id="playTTS"><i class="fas fa-play"></i> Play</button>
-                            <button class="tts-btn" id="pauseTTS"><i class="fas fa-pause"></i></button>
-                            <button class="tts-btn" id="stopTTS"><i class="fas fa-stop"></i></button>
-                            <span class="speed-label">Speed:</span><input type="range" class="speed-slider" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label" id="speedDisplay">1.0x</span>
-                            <button class="btn-outline ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
-                            <button class="btn-outline" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
-                            <button class="btn-outline" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
-                            <button class="btn-outline" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
+                        <div class="tab-content-glass" id="tabContent"></div>
+                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        <div class="tts-controls-glass">
+                            <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
+                            <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
+                            <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
+                            <span class="speed-label-glass">Speed:</span><input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label-glass" id="speedDisplay">1.0x</span>
+                            <button class="btn-outline-glass ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
+                            <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
+                            <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
+                            <button class="btn-outline-glass" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
                         </div>
                         <div style="display:flex;justify-content:space-between;margin-top:10px;gap:6px;">
-                            <button class="tts-btn" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
-                            <button class="tts-btn" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
+                            <button class="tts-btn-glass" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
+                            <button class="tts-btn-glass" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>`;
-                const tabs = document.querySelectorAll('.tab');
+                const tabs = document.querySelectorAll('.tab-glass');
                 const tc = document.getElementById('tabContent');
 
                 function showTab(tn) {
                     tabs.forEach(t => t.classList.remove('active'));
-                    const tabEl = document.querySelector(`.tab[data-tab="${tn}"]`);
+                    const tabEl = document.querySelector(`.tab-glass[data-tab="${tn}"]`);
                     if (tabEl) tabEl.classList.add('active');
                     if (tn === 'summary') tc.innerHTML = les.contents ? t(les.contents) :
                         '<p style="color:var(--text-muted);font-size:0.75rem;">No content available.</p>';
-                    else if (tn === 'quiz') renderQuizTab(tc, les, id);
+                    else if (tn === 'quiz') renderQuizTabGlass(tc, les, id);
                     else tc.innerHTML =
-                        '<div style="padding:12px;background:#eff6ff;border-radius:12px;border:1.5px solid #3b82f6;font-size:0.75rem;">📂 Additional Resources</div>';
+                        '<div style="padding:12px;background:rgba(59,130,246,0.08);border-radius:12px;border:1.5px solid rgba(59,130,246,0.2);font-size:0.75rem;">📂 Additional Resources</div>';
                 }
                 tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
                 showTab('summary');
@@ -6077,8 +6506,8 @@
                                 '/bookmarks/' + id, { method: 'DELETE' });
                             bookmarks.delete(id); } else { await apiFetch('/bookmarks/' + id, { method: 'POST' });
                             bookmarks.add(id); } showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); } };
-                document.getElementById('noteBtn').onclick = () => openNoteModal(id);
-                document.getElementById('translateBtn').onclick = () => openTranslateOptions();
+                document.getElementById('noteBtn').onclick = () => openNoteModalGlass(id);
+                document.getElementById('translateBtn').onclick = () => openTranslateOptionsGlass();
                 document.getElementById('markCompleteBtn').onclick = async () => { try { await apiFetch('/progress', {
                             method: 'PUT',
                             body: JSON.stringify({ lessonId: id, progress: 100 })
@@ -6090,21 +6519,21 @@
                 document.getElementById('speedSlider').oninput = function() { const speed = parseFloat(this.value);
                     document.getElementById('speedDisplay').textContent = speed.toFixed(1) + 'x';
                     window._ttsSpeed = speed; };
-                setupTTS(id);
-                setupPrevNext(subj, id);
+                setupTTSGlass(id);
+                setupPrevNextGlass(subj, id);
                 if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
                     .onclick = () => generateCertificate(subj);
             }
 
-            function renderQuizTab(container, lesson, lessonId) {
+            function renderQuizTabGlass(container, lesson, lessonId) {
                 if (!lesson.quiz || lesson.quiz.length === 0) { container.innerHTML =
-                        '<div style="padding:12px;text-align:center;background:#fffbf0;border-radius:12px;font-size:0.75rem;">🧠 No quiz available.</div>';
+                        '<div style="padding:12px;text-align:center;background:rgba(245,158,11,0.08);border-radius:12px;font-size:0.75rem;border:1px solid rgba(245,158,11,0.15);">🧠 No quiz available.</div>';
                     return; }
                 const qs = quizScores[lessonId];
                 if (qs) {
                     const total = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
                     container.innerHTML = `
-                        <div class="quiz-container">
+                        <div class="quiz-container-glass">
                             <h3 style="text-align:center;font-size:0.85rem;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
                             <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
                             <p style="text-align:center;font-size:0.75rem;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
@@ -6114,8 +6543,8 @@
                             lessonId, { method: 'POST' });
                             delete quizScores[lessonId];
                             showLessonDetail(lessonId);
-                            setTimeout(() => { const qt = document.querySelector('.tab[data-tab="quiz"]'); if (qt) qt
-                                    .click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
+                            setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt)
+                                    qt.click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
                     return;
                 }
                 let answers = new Array(lesson.quiz.length).fill(null);
@@ -6124,24 +6553,24 @@
                 function renderQuestion() {
                     const q = lesson.quiz[qIdx];
                     container.innerHTML = `
-                        <div class="quiz-container">
+                        <div class="quiz-container-glass">
                             <p style="font-size:0.6rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
-                            <p class="quiz-question">${t(q.question)}</p>
-                            <div id="quizOptions"></div>
+                            <p class="quiz-question-glass">${t(q.question)}</p>
+                            <div id="quizOptionsGlass"></div>
                             <div style="display:flex;justify-content:space-between;margin-top:8px;gap:4px;">
                                 <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
                                 <button class="btn btn-primary btn-sm" id="nextQBtn" ${qIdx >= lesson.quiz.length-1 ? 'style="display:none;"' : ''}>Next →</button>
                                 <button class="btn btn-success btn-sm" id="submitQuizBtn" ${qIdx < lesson.quiz.length-1 ? 'style="display:none;"' : ''}>✅ Submit Quiz</button>
                             </div>
                         </div>`;
-                    const optsDiv = document.getElementById('quizOptions');
+                    const optsDiv = document.getElementById('quizOptionsGlass');
                     q.options.forEach(opt => {
                         const btn = document.createElement('button');
-                        btn.className = 'quiz-option' + (answers[qIdx] === opt.id ? ' selected' : '');
+                        btn.className = 'quiz-option-glass' + (answers[qIdx] === opt.id ? ' selected' : '');
                         btn.textContent = t(opt.text);
                         btn.style.fontSize = '0.7rem';
                         btn.onclick = () => { answers[qIdx] = opt.id;
-                            optsDiv.querySelectorAll('.quiz-option').forEach(b => b.classList.remove(
+                            optsDiv.querySelectorAll('.quiz-option-glass').forEach(b => b.classList.remove(
                                 'selected'));
                             btn.classList.add('selected'); };
                         optsDiv.appendChild(btn);
@@ -6150,13 +6579,13 @@
                             renderQuestion(); } };
                     document.getElementById('nextQBtn').onclick = () => { if (qIdx < lesson.quiz.length - 1) { qIdx++;
                             renderQuestion(); } };
-                    document.getElementById('submitQuizBtn').onclick = () => submitQuiz(container, lesson, lessonId,
+                    document.getElementById('submitQuizBtn').onclick = () => submitQuizGlass(container, lesson, lessonId,
                         answers);
                 }
                 renderQuestion();
             }
 
-            async function submitQuiz(container, lesson, lessonId, answers) {
+            async function submitQuizGlass(container, lesson, lessonId, answers) {
                 const unanswered = answers.findIndex(a => a === null);
                 if (unanswered !== -1) { showToast('⚠️ Please answer question ' + (unanswered + 1)); return; }
                 let earned = 0;
@@ -6168,13 +6597,13 @@
                     quizScores[lessonId] = { score: earned, passed };
                     showToast('📝 Score: ' + earned + ' — ' + (passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
                     showLessonDetail(lessonId);
-                    setTimeout(() => { const qt = document.querySelector('.tab[data-tab="quiz"]'); if (qt) qt.click(); },
-                        100);
+                    setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
+                            .click(); }, 100);
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── TTS ──────────────────────────────────────────────────────────
-            function setupTTS(lessonId) {
+            // ─── TTS GLASS ──────────────────────────────────────────────────
+            function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
                 if (!les) return;
@@ -6225,7 +6654,7 @@
                         showToast('⏹️ Stopped'); } };
             }
 
-            function setupPrevNext(subj, curId) {
+            function setupPrevNextGlass(subj, curId) {
                 const lessons = subj?.lessons || [];
                 const idx = lessons.findIndex(l => l.id === curId);
                 document.getElementById('prevLesson').onclick = () => { if (idx > 0) showLessonDetail(lessons[idx - 1]
@@ -6236,14 +6665,14 @@
                     else showToast('📌 Last lesson'); };
             }
 
-            function openNoteModal(lessonId) {
+            function openNoteModalGlass(lessonId) {
                 const existing = userNotes[lessonId] || '';
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.innerHTML = `
                     <div class="modal-content">
                         <h3>📝 Lesson Note</h3>
-                        <textarea id="noteText" style="width:100%;height:80px;padding:6px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);background:var(--bg-secondary);color:var(--text);resize:vertical;font-size:0.7rem;">${existing}</textarea>
+                        <textarea id="noteText" style="width:100%;height:80px;padding:6px;border:1.5px solid var(--glass-border);border-radius:var(--radius);font-family:var(--font);background:var(--glass-bg);color:var(--text);resize:vertical;font-size:0.7rem;backdrop-filter:blur(4px);">${existing}</textarea>
                         <div class="modal-actions">
                             <button class="btn btn-outline" id="closeNote">Cancel</button>
                             <button class="btn btn-primary" id="saveNote">💾 Save Note</button>
@@ -6261,7 +6690,7 @@
                 };
             }
 
-            function openTranslateOptions() {
+            function openTranslateOptionsGlass() {
                 const langs = { en: '🇬🇧 English', hi: '🇮🇳 हिन्दी', bn: '🇧🇩 বাংলা' };
                 const modal = document.createElement('div');
                 modal.className = 'modal';
@@ -6585,7 +7014,7 @@
                         <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
                             ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
                             les.quiz.map((q,i) => `
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--bg-secondary);border-radius:6px;margin-bottom:2px;gap:4px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
                                     <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
                                     <div style="display:flex;gap:2px;">
                                         <button class="btn btn-outline btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;">✏️</button>
@@ -6704,7 +7133,7 @@
                 document.getElementById('app').innerHTML = `
                     <div class="auth-container">
                         <div class="auth-box">
-                            <div style="font-size:1.8rem;">${mode === 'login' ? '🔐' : '📝'}</div>
+                            <div class="auth-icon">${mode === 'login' ? '🔐' : '📝'}</div>
                             <h2>${mode === 'login' ? 'Welcome Back' : 'Create Account'}</h2>
                             <p class="subtitle">${mode === 'login' ? 'Sign in to continue learning' : 'Join the Alamquant community'}</p>
                             ${mode === 'login' ? `
@@ -6795,9 +7224,9 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.positions = portRes.positions || [];
-                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
-                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
+                        portfolio.positions = portRes.positions || portRes.holdings || [];
+                        portfolio.transactions = portRes.transactions || [];
+                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
@@ -6807,7 +7236,6 @@
                     if (currentUser?.username === 'admin') isAdmin = true;
                     if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
 
-                    // UI রিফ্রেশ
                     if (document.getElementById('subjectList')) {
                         renderSubjectList();
                         if (currentLessonId) showLessonDetail(currentLessonId);
@@ -6848,9 +7276,9 @@
                     userNotes = notesRes || {};
                     if (portRes && portRes.cash !== undefined) {
                         portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.positions = portRes.positions || [];
-                        if (portRes.transactions) portfolio.transactions = portRes.transactions;
-                        if (portRes.drawnLines) portfolio.drawnLines = portRes.drawnLines;
+                        portfolio.positions = portRes.positions || portRes.holdings || [];
+                        portfolio.transactions = portRes.transactions || [];
+                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
                     }
                     if (!portfolio.drawnLines) portfolio.drawnLines = {};
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
@@ -6907,7 +7335,9 @@
                 return sma;
             }
 
-            function calculateBB(data, period = 20, stdDev = 2) {
+            function calculateBB(data, period, stdDev) {
+                period = period || 20;
+                stdDev = stdDev || 2;
                 const sma = calculateSMA(data, period);
                 const upper = [],
                     lower = [];
@@ -6924,7 +7354,8 @@
                 return { sma, upper, lower };
             }
 
-            function calculateRSI(data, period = 14) {
+            function calculateRSI(data, period) {
+                period = period || 14;
                 if (data.length < period + 1) return [];
                 const rsi = [];
                 let avgGain = 0,
@@ -6949,7 +7380,10 @@
                 return rsi;
             }
 
-            function calculateMACD(data, fast = 12, slow = 26, signal = 9) {
+            function calculateMACD(data, fast, slow, signal) {
+                fast = fast || 12;
+                slow = slow || 26;
+                signal = signal || 9;
                 const emaFast = calculateEMA(data, fast);
                 const emaSlow = calculateEMA(data, slow);
                 const macdLine = [];
@@ -6985,7 +7419,10 @@
                 return ema;
             }
 
-            function calculateStochastic(data, period = 14, kPeriod = 3, dPeriod = 3) {
+            function calculateStochastic(data, period, kPeriod, dPeriod) {
+                period = period || 14;
+                kPeriod = kPeriod || 3;
+                dPeriod = dPeriod || 3;
                 if (data.length < period) return { k: [], d: [] };
                 const kValues = [];
                 for (let i = period - 1; i < data.length; i++) {
@@ -7056,7 +7493,8 @@
                                         'EMA update error:', e); }
                             } else {
                                 try {
-                                    const ls = simChart.addLineSeries({ color, lineWidth: 2, priceScaleId: 'right',
+                                    const ls = simChart.addLineSeries({ color: color, lineWidth: 2,
+                                        priceScaleId: 'right',
                                         lastValueVisible: true, priceFormat: { type: 'price', precision: 4,
                                             minMove: 0.0001 } });
                                     ls.setData(emaData);
@@ -7100,7 +7538,8 @@
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
                                     lineWidth: 2, priceScaleId: 'rsi', lastValueVisible: true,
                                     priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                                simChart.priceScale('rsi').applyOptions({ scaleMargins: { top: 0.85,
+                                const rsiScale = simChart.priceScale('rsi');
+                                if (rsiScale) rsiScale.applyOptions({ scaleMargins: { top: 0.85,
                                         bottom: 0 } });
                                 pane.setData(rsiData);
                                 simIndicatorSeries['rsi'] = pane;
@@ -7119,7 +7558,8 @@
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
                                     lineWidth: 2, priceScaleId: 'macd', lastValueVisible: false,
                                     priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
-                                simChart.priceScale('macd').applyOptions({ scaleMargins: { top: 0.9,
+                                const macdScale = simChart.priceScale('macd');
+                                if (macdScale) macdScale.applyOptions({ scaleMargins: { top: 0.9,
                                         bottom: 0.2 } });
                                 pane.setData(macd);
                                 simIndicatorSeries['macd'] = pane;
@@ -7169,7 +7609,8 @@
                                 const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
                                     priceScaleId: 'stoch', lastValueVisible: true,
                                     priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
-                                simChart.priceScale('stoch').applyOptions({ scaleMargins: { top: 0.85,
+                                const stochScale = simChart.priceScale('stoch');
+                                if (stochScale) stochScale.applyOptions({ scaleMargins: { top: 0.85,
                                         bottom: 0.15 } });
                                 kPane.setData(k);
                                 simIndicatorSeries['stoch_k'] = kPane;
@@ -7216,9 +7657,11 @@
                                 color: c.close >= c.open ? 'rgba(16,185,129,0.35)' :
                                 'rgba(239,68,68,0.35)' }));
                             simVolumeSeries.setData(volData);
-                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
+                            const volScale = simChart.priceScale('');
+                            if (volScale) volScale.applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
                         } else { simVolumeSeries.setData([]);
-                            simChart.priceScale('').applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
+                            const volScale = simChart.priceScale('');
+                            if (volScale) volScale.applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
                     } catch (e) { console.warn('Volume update error:', e); }
                 }
             }
@@ -7244,8 +7687,8 @@
                     const high = Math.max(open, close) + Math.abs(change) * 0.2;
                     const low = Math.min(open, close) - Math.abs(change) * 0.2;
                     const volume = Math.floor(50000 + Math.random() * 200000);
-                    candles.push({ time, open: +open.toFixed(4), high: +high.toFixed(4), low: +low.toFixed(4),
-                        close: +close.toFixed(4), volume });
+                    candles.push({ time: time, open: +open.toFixed(4), high: +high.toFixed(4), low: +low.toFixed(4),
+                        close: +close.toFixed(4), volume: volume });
                     price = close;
                 }
                 candles.sort((a, b) => a.time - b.time);
@@ -7325,6 +7768,9 @@
             window.addLineMobile = addLineMobile;
             window.switchHistoryTab = switchHistoryTab;
             window.safeUpdateCandle = safeUpdateCandle;
+            window.updateTradePanelData = updateTradePanelData;
+            window.updateMobileDrawnLines = updateMobileDrawnLines;
+            window.deleteMobileLine = deleteMobileLine;
 
             // ─── DEBUG PANEL ──────────────────────────────────────────────────
             function updateDebugPanel() {
@@ -7436,11 +7882,47 @@
             });
             window.addEventListener('popstate', () => {
                 document.querySelectorAll('.modal').forEach(el => el.remove());
-                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove(
-                'show'));
-                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove(
-                'show'));
+                document.querySelectorAll('.mt5-sidebar-overlay.show').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove('show'));
             });
+
+            // ─── চার্ট অটো-রিকভারি ──────────────────────────────────────────
+            (function() {
+                let nullErrorCount = 0;
+                let lastResetTime = 0;
+                const RESET_THRESHOLD = 3;
+                const RESET_COOLDOWN = 10000;
+
+                window.addEventListener('error', function(e) {
+                    const msg = e.message || '';
+                    const isLWChart = (e.filename || '').includes('lightweight-charts') ||
+                        (e.filename || '').includes('lightweight') ||
+                        msg.includes('Value is null');
+
+                    if (isLWChart && msg.includes('Value is null')) {
+                        nullErrorCount++;
+                        console.warn('🔄 Chart null error #' + nullErrorCount + ' from', e.filename);
+
+                        if (nullErrorCount >= RESET_THRESHOLD &&
+                            document.querySelector('.terminal-wrapper, .mobile-terminal') &&
+                            Date.now() - lastResetTime > RESET_COOLDOWN) {
+                            console.warn('🛠️ Auto-resetting chart due to consecutive errors...');
+                            nullErrorCount = 0;
+                            lastResetTime = Date.now();
+                            if (typeof resetChart === 'function') {
+                                resetChart();
+                            } else {
+                                console.error('resetChart not available');
+                            }
+                        }
+                    }
+                });
+
+                setInterval(() => {
+                    if (nullErrorCount > 0) nullErrorCount = Math.max(0, nullErrorCount - 1);
+                }, 30000);
+            })();
+
         })();
     </script>
 </body>
