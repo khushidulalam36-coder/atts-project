@@ -5263,33 +5263,8 @@
                     `;
 
                     // Event listeners
-                    document.getElementById('mobileDepositBtn').addEventListener('click', () => {
-                        const amt = parseFloat(document.getElementById('mobileDepositAmount').value);
-                        if (!amt || amt <= 0) return showToast('❌ Enter valid amount');
-                        portfolio.cash = (portfolio.cash || 0) + amt;
-                        portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
-                            time: new Date().toLocaleTimeString() });
-                        savePortfolioToStorage();
-                        syncPortfolioToServer();
-                        updateTradePanelData();
-                        document.getElementById('mobileDepositAmount').value = '';
-                        showToast('💰 Deposited $' + amt.toFixed(2));
-                    });
-
-                    document.getElementById('mobileWithdrawBtn').addEventListener('click', () => {
-                        const amt = parseFloat(document.getElementById('mobileDepositAmount').value);
-                        if (!amt || amt <= 0) return showToast('❌ Enter valid amount');
-                        if ((portfolio.cash || 0) < amt) return showToast('❌ Insufficient balance');
-                        portfolio.cash = (portfolio.cash || 0) - amt;
-                        portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
-                            time: new Date().toLocaleTimeString() });
-                        savePortfolioToStorage();
-                        syncPortfolioToServer();
-                        updateTradePanelData();
-                        document.getElementById('mobileDepositAmount').value = '';
-                        showToast('💸 Withdrawn $' + amt.toFixed(2));
-                    });
-
+                    document.getElementById('mobileDepositBtn').addEventListener('click', window.depositFunds);
+                    document.getElementById('mobileWithdrawBtn').addEventListener('click', window.withdrawFunds);
                     document.getElementById('closeAllMobileBtn').addEventListener('click', () => {
                         closeAllPositions();
                         setTimeout(updateTradePanelData, 200);
@@ -5302,6 +5277,38 @@
                 // Also update top bar
                 updateMobileTopBar();
             }
+
+            // ─── GLOBAL DEPOSIT/WITHDRAW FUNCTIONS ──────────────────────────
+            window.depositFunds = function() {
+                const amtInput = document.getElementById('mobileDepositAmount');
+                if (!amtInput) return;
+                const amt = parseFloat(amtInput.value);
+                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
+                portfolio.cash = (portfolio.cash || 0) + amt;
+                portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
+                    time: new Date().toLocaleTimeString() });
+                savePortfolioToStorage();
+                syncPortfolioToServer();
+                updateTradePanelData();
+                amtInput.value = '';
+                showToast('💰 Deposited $' + amt.toFixed(2));
+            };
+
+            window.withdrawFunds = function() {
+                const amtInput = document.getElementById('mobileDepositAmount');
+                if (!amtInput) return;
+                const amt = parseFloat(amtInput.value);
+                if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
+                if ((portfolio.cash || 0) < amt) { showToast('❌ Insufficient balance'); return; }
+                portfolio.cash = (portfolio.cash || 0) - amt;
+                portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
+                    time: new Date().toLocaleTimeString() });
+                savePortfolioToStorage();
+                syncPortfolioToServer();
+                updateTradePanelData();
+                amtInput.value = '';
+                showToast('💸 Withdrawn $' + amt.toFixed(2));
+            };
 
             // ─── MOBILE WATCHLIST ──────────────────────────────────────────
             function renderMobileWatchlist() {
@@ -6306,77 +6313,103 @@
 
             // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
             function renderUserInterface() {
-                stopBackgroundEngine();
-                cleanupSimIntervals();
-                document.getElementById('app').innerHTML = `
-                    <div class="app-glass">
-                        <div class="sidebar-glass" id="sidebar">
-                            <div class="sidebar-header-glass">
-                                <span class="logo-icon-glass"><i class="fas fa-graduation-cap"></i></span>
-                                <span class="logo-text">Training Hub</span>
-                            </div>
-                            <div class="subject-list-glass" id="subjectList"></div>
-                            <div class="sidebar-footer-glass">
-                                <button class="terminal-nav-btn-glass" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
-                                <button class="sidebar-logout-btn-glass" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                            </div>
-                        </div>
-                        <div class="main-glass">
-                            <div class="top-bar-glass">
-                                <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
-                                <div class="search-box-glass">
-                                    <i class="fas fa-search search-icon-glass"></i>
-                                    <input type="text" id="searchInput" placeholder="Search lessons...">
+                try {
+                    stopBackgroundEngine();
+                    cleanupSimIntervals();
+                    document.getElementById('app').innerHTML = `
+                        <div class="app-glass">
+                            <div class="sidebar-glass" id="sidebar">
+                                <div class="sidebar-header-glass">
+                                    <span class="logo-icon-glass"><i class="fas fa-graduation-cap"></i></span>
+                                    <span class="logo-text">Training Hub</span>
                                 </div>
-                                <div class="top-actions-glass">
-                                    <button class="terminal-nav-btn-glass" id="topTerminalBtn2" style="padding:4px 12px;font-size:0.6rem;width:auto;min-height:32px;"><i class="fas fa-chart-line"></i> Terminal</button>
-                                    <select class="lang-select-glass" id="langSelect">
-                                        <option value="en">🇬🇧 EN</option>
-                                        <option value="hi">🇮🇳 HI</option>
-                                        <option value="bn">🇧🇩 BN</option>
-                                    </select>
-                                    <button class="theme-toggle-btn-glass" id="themeToggle">
-                                        <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
-                                    </button>
-                                    <div class="user-menu-glass">
-                                        <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
-                                        <span class="account-no">${userAccountNo}</span>
+                                <div class="subject-list-glass" id="subjectList"></div>
+                                <div class="sidebar-footer-glass">
+                                    <button class="terminal-nav-btn-glass" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
+                                    <button class="sidebar-logout-btn-glass" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                </div>
+                            </div>
+                            <div class="main-glass">
+                                <div class="top-bar-glass">
+                                    <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
+                                    <div class="search-box-glass">
+                                        <i class="fas fa-search search-icon-glass"></i>
+                                        <input type="text" id="searchInput" placeholder="Search lessons...">
+                                    </div>
+                                    <div class="top-actions-glass">
+                                        <button class="terminal-nav-btn-glass" id="topTerminalBtn2" style="padding:4px 12px;font-size:0.6rem;width:auto;min-height:32px;"><i class="fas fa-chart-line"></i> Terminal</button>
+                                        <select class="lang-select-glass" id="langSelect">
+                                            <option value="en">🇬🇧 EN</option>
+                                            <option value="hi">🇮🇳 HI</option>
+                                            <option value="bn">🇧🇩 BN</option>
+                                        </select>
+                                        <button class="theme-toggle-btn-glass" id="themeToggle">
+                                            <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
+                                        </button>
+                                        <div class="user-menu-glass">
+                                            <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
+                                            <span class="account-no">${userAccountNo}</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="content-glass" id="contentArea"></div>
                             </div>
-                            <div class="content-glass" id="contentArea"></div>
-                        </div>
-                    </div>`;
-                document.getElementById('langSelect').value = currentLang;
-                document.getElementById('langSelect').onchange = e => { currentLang = e.target.value;
-                    localStorage.setItem(LANG_KEY, currentLang);
-                    renderSubjectList(); if (currentLessonId) showLessonDetail(currentLessonId); else
-                        showLessonList(); };
-                document.getElementById('searchInput').oninput = () => showLessonList();
-                document.getElementById('themeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
-                        'dark';
-                    applyTheme();
-                    document.getElementById('themeToggle').innerHTML =
-                        `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`; };
-                document.getElementById('menuToggle').onclick = () => document.getElementById('sidebar').classList.toggle(
-                    'open');
-                const terminalBtns = document.querySelectorAll('#topTerminalBtn, #topTerminalBtn2');
-                terminalBtns.forEach(btn => {
-                    btn.onclick = () => {
-                        window.open('?mode=trading', '_blank');
-                    };
-                });
-                document.getElementById('logoutBtn').onclick = () => {
-                    customConfirm('Exit App?', () => {
-                        logout();
+                        </div>`;
+
+                    const langSelect = document.getElementById('langSelect');
+                    if (langSelect) {
+                        langSelect.value = currentLang;
+                        langSelect.onchange = function(e) {
+                            currentLang = e.target.value;
+                            localStorage.setItem(LANG_KEY, currentLang);
+                            renderSubjectList();
+                            if (currentLessonId) showLessonDetail(currentLessonId);
+                            else showLessonList();
+                        };
+                    }
+
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) searchInput.oninput = () => showLessonList();
+
+                    const themeToggle = document.getElementById('themeToggle');
+                    if (themeToggle) {
+                        themeToggle.onclick = function() {
+                            appTheme = appTheme === 'dark' ? 'light' : 'dark';
+                            applyTheme();
+                            this.innerHTML = `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
+                        };
+                    }
+
+                    const menuToggle = document.getElementById('menuToggle');
+                    if (menuToggle) {
+                        menuToggle.onclick = function() {
+                            document.getElementById('sidebar').classList.toggle('open');
+                        };
+                    }
+
+                    const terminalBtns = document.querySelectorAll('#topTerminalBtn, #topTerminalBtn2');
+                    terminalBtns.forEach(btn => {
+                        btn.onclick = () => window.open('?mode=trading', '_blank');
                     });
-                };
-                renderSubjectList();
-                if (!selectedSubjectId && subjects.length > 0) {
-                    selectedSubjectId = subjects[0].id;
+
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.onclick = () => {
+                            customConfirm('Exit App?', () => logout());
+                        };
+                    }
+
+                    renderSubjectList();
+                    if (!selectedSubjectId && subjects.length > 0) {
+                        selectedSubjectId = subjects[0].id;
+                    }
+                    if (currentLessonId) showLessonDetail(currentLessonId);
+                    else showLessonList();
+
+                } catch (error) {
+                    console.error('❌ renderUserInterface error:', error);
+                    document.getElementById('app').innerHTML = `<div style="padding:20px;color:red;">⚠️ UI রেন্ডার করতে সমস্যা: ${error.message}</div>`;
                 }
-                if (currentLessonId) showLessonDetail(currentLessonId);
-                else showLessonList();
             }
 
             function renderSubjectList() {
@@ -7730,8 +7763,8 @@
             window.resetSimPortfolio = resetSimPortfolio;
             window.initChart = initChart;
             window.resetChart = resetChart;
-            window.depositFunds = depositFunds;
-            window.withdrawFunds = withdrawFunds;
+            window.depositFunds = window.depositFunds || function() {};
+            window.withdrawFunds = window.withdrawFunds || function() {};
             window.selectMobileSymbol = selectMobileSymbol;
             window.updateMobileTopBar = updateMobileTopBar;
             window.renderMobileTradeSummary = renderMobileTradeSummary;
