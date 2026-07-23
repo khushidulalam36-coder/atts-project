@@ -466,15 +466,6 @@
             box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
             transform: translateY(-1px);
         }
-        .custom-confirm-box .actions .btn-confirm-success {
-            background: var(--success);
-            color: #fff;
-            box-shadow: 0 3px 14px rgba(16, 185, 129, 0.25);
-        }
-        .custom-confirm-box .actions .btn-confirm-success:hover {
-            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
-            transform: translateY(-1px);
-        }
 
         /* ─── LESSON LIST ────────────────────────────────────────────────── */
         .lesson-list {
@@ -3155,6 +3146,7 @@
             let chartVisibilityHandler = null;
             let chartReinitCounter = 0;
             let serverWS = null;
+            let wsConnected = false; // ✅ নতুন ফ্ল্যাগ
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -3497,8 +3489,11 @@
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { console.log('✅ Binance WebSocket (kline) connected');
-                        updateDebugPanel(); };
+                    binanceWS.onopen = () => {
+                        console.log('✅ Binance WebSocket (kline) connected');
+                        wsConnected = true;
+                        updateDebugPanel();
+                    };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -3513,26 +3508,46 @@
                                     close: +k.c,
                                     volume: +k.v
                                 };
-                                simLastPrices[symbol] = candle.close;
-                                lastBinancePrice[symbol] = candle.close;
+                                // ক্যান্ডেল স্যানিটাইজ করুন
+                                const safeCandle = sanitizeCandle(candle);
+                                if (!safeCandle) return;
+                                simLastPrices[symbol] = safeCandle.close;
+                                lastBinancePrice[symbol] = safeCandle.close;
                                 updateMobileTopBar();
-                                if (symbol === simCurrentSymbol && simCandleSeries) {
-                                    const idx = simAllCandles.findIndex(c => c.time === candle.time);
-                                    if (idx >= 0) simAllCandles[idx] = candle;
-                                    else { simAllCandles.push(candle); if (simAllCandles.length > 10000)
-                                            simAllCandles = simAllCandles.slice(-10000); }
-                                    simCurrentCandle = candle;
-                                    try { simCandleSeries.update(candle); } catch (e) { console.warn(
-                                            'Candle update error:', e); }
-                                    updateAllIndicators();
-                                    checkAndExecuteSLTP();
-                                    updateSimUI();
+                                if (symbol === simCurrentSymbol && simCandleSeries && simCurrentCandle) {
+                                    // থ্রেশহোল্ড চেক
+                                    const currentCandle = simCurrentCandle;
+                                    const priceChange = Math.abs(safeCandle.close - currentCandle.close);
+                                    const highChange = Math.abs(safeCandle.high - currentCandle.high);
+                                    const lowChange = Math.abs(safeCandle.low - currentCandle.low);
+                                    const threshold = (currentCandle.close || 1) * 0.001;
+                                    if (priceChange > threshold || highChange > threshold || lowChange > threshold) {
+                                        const idx = simAllCandles.findIndex(c => c.time === safeCandle.time);
+                                        if (idx >= 0) simAllCandles[idx] = safeCandle;
+                                        else { simAllCandles.push(safeCandle); if (simAllCandles.length > 10000)
+                                                simAllCandles = simAllCandles.slice(-10000); }
+                                        simCurrentCandle = safeCandle;
+                                        try { simCandleSeries.update(safeCandle); } catch (e) { console.warn(
+                                                'Candle update error:', e); }
+                                        updateAllIndicators();
+                                        checkAndExecuteSLTP();
+                                        updateSimUI();
+                                    } else {
+                                        // সামান্য পরিবর্তন
+                                        currentCandle.close = safeCandle.close;
+                                        currentCandle.volume = safeCandle.volume;
+                                        try { simCandleSeries.update(currentCandle); } catch (e) { console.warn(
+                                                'Candle update error:', e); }
+                                        updateAllIndicators();
+                                        updateSimUI();
+                                    }
                                 }
                             }
                         } catch (e) { /* silent */ }
                     };
                     binanceWS.onclose = () => {
                         console.log('⚠️ Binance WebSocket closed, reconnecting...');
+                        wsConnected = false;
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
                         binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
                         updateDebugPanel();
@@ -3546,6 +3561,7 @@
                 if (binanceWS) { try { binanceWS.close(); } catch (e) {} }
                 if (binanceReconnectTimer) { clearTimeout(binanceReconnectTimer);
                     binanceReconnectTimer = null; }
+                wsConnected = false;
             }
 
             // ─── SERVER WS ──────────────────────────────────────────────────
@@ -3643,7 +3659,6 @@
                 savePortfolioToStorage();
                 savePendingOrders();
                 syncPortfolioToServer();
-                // ব্যাকগ্রাউন্ড ইঞ্জিন চালু রাখুন (থামাবেন না)
             }
 
             // ─── CHART INIT ──────────────────────────────────────────────────
@@ -3815,7 +3830,9 @@
                     const allCandles = [...visible];
                     if (simCurrentCandle) allCandles.push(simCurrentCandle);
                     const safeAll = sanitizeCandleData(allCandles);
-                    simCandleSeries.setData(safeAll);
+                    if (safeAll.length > 0) {
+                        try { simCandleSeries.setData(safeAll); } catch (e) { console.warn('SetData error:', e); }
+                    }
                     updateAllIndicators();
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
@@ -3962,8 +3979,21 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
+                    // ─── সিমুলেশন ইন্টারভাল ──────────────────────────────────
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
+                        // WebSocket সংযুক্ত থাকলে চার্ট আপডেট করি না
+                        if (wsConnected && lastBinancePrice[simCurrentSymbol]) {
+                            const price = lastBinancePrice[simCurrentSymbol];
+                            if (isValidNumber(price) && price > 0) {
+                                simLastPrices[simCurrentSymbol] = price;
+                                updateSimUI();
+                                updateMobileTopBar();
+                            }
+                            return;
+                        }
+
+                        // WebSocket ডিসকানেক্ট → সিমুলেশন
                         if (!simCurrentCandle || !simCandleSeries) return;
                         let price = simLastPrices[simCurrentSymbol];
                         if (!isValidNumber(price)) {
@@ -3983,7 +4013,7 @@
                         simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
                         .random() * 3000);
                         try { simCandleSeries.update(simCurrentCandle); } catch (e) { console.warn(
-                                'Price update error:', e); }
+                                'Simulation update error:', e); }
                         updateAllIndicators();
                         checkAndExecuteSLTP();
                         updateSimUI();
@@ -3991,6 +4021,7 @@
                         checkPendingOrders();
                     }, 1000);
 
+                    // ─── ক্যান্ডেল ক্লোজ ইন্টারভাল ──────────────────────────
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -5031,7 +5062,6 @@
                 simResizeObserver = null;
                 chartInitRetryTimer = null;
                 if (window._chartCleanup) window._chartCleanup();
-                // ব্যাকগ্রাউন্ড ইঞ্জিন থামাবেন না - SL/TP চলতে থাকবে
             }
 
             function resetChart() {
@@ -5186,7 +5216,7 @@
                 updateLineManagerUI();
             }
 
-            // ─── TIME UPDATE (lightweight) ──────────────────────────────────
+            // ─── TIME UPDATE ──────────────────────────────────────────────────
             setInterval(() => {
                 const el = document.getElementById('statusTime');
                 if (el) el.textContent = new Date().toLocaleTimeString();
@@ -7319,7 +7349,6 @@
                 cleanupSimIntervals();
                 disconnectBinanceWS();
                 disconnectServerWS();
-                // ব্যাকগ্রাউন্ড ইঞ্জিন থামাবেন না
                 if (window._chartCleanup) window._chartCleanup();
                 if (window._mobileCleanup) window._mobileCleanup();
                 document.querySelectorAll('.toast').forEach(el => el.remove());
