@@ -3294,38 +3294,55 @@
             }
 
             // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
-            function safeUpdateCandle(candle, source = '') {
-                if (!simCandleSeries) {
-                    console.warn('⚠️ safeUpdateCandle: simCandleSeries not ready', source);
-                    return false;
-                }
-                if (!candle || typeof candle !== 'object') {
-                    console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
-                    return false;
-                }
-                const required = ['time', 'open', 'high', 'low', 'close'];
-                for (const field of required) {
-                    if (candle[field] === undefined || candle[field] === null || isNaN(candle[field])) {
-                        console.warn('⚠️ safeUpdateCandle: ' + field + ' is invalid', candle[field], source);
-                        return false;
-                    }
-                }
-                if (candle.volume === undefined || candle.volume === null || isNaN(candle.volume)) {
-                    candle.volume = 0;
-                }
-                if (candle.high < candle.low) {
-                    const tmp = candle.high;
-                    candle.high = candle.low;
-                    candle.low = tmp;
-                }
-                try {
-                    simCandleSeries.update(candle);
-                    return true;
-                } catch (err) {
-                    console.warn('⚠️ safeUpdateCandle: update failed', err.message, source);
-                    return false;
-                }
-            }
+  function safeUpdateCandle(candle, source = '') {
+    if (!simCandleSeries) {
+        console.warn('⚠️ safeUpdateCandle: simCandleSeries not ready', source);
+        return false;
+    }
+    if (!candle || typeof candle !== 'object') {
+        console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
+        return false;
+    }
+
+    // সময় মিলিসেকেন্ড হলে সেকেন্ডে কনভার্ট
+    let time = candle.time;
+    if (time > 1e12) {
+        time = Math.floor(time / 1000);
+    }
+    if (!Number.isFinite(time) || time <= 0) {
+        console.warn('⚠️ safeUpdateCandle: invalid time', time, source);
+        return false;
+    }
+
+    const open = Number(candle.open);
+    const high = Number(candle.high);
+    const low = Number(candle.low);
+    const close = Number(candle.close);
+    const volume = Number(candle.volume) || 0;
+
+    // কোনো প্রাইস ফিল্ড invalid হলে বাতিল
+    if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
+        console.warn('⚠️ safeUpdateCandle: invalid price field', { open, high, low, close }, source);
+        return false;
+    }
+
+    const safeCandle = {
+        time: time,
+        open: open,
+        high: Math.max(open, high, close),
+        low: Math.min(open, low, close),
+        close: close,
+        volume: volume
+    };
+
+    try {
+        simCandleSeries.update(safeCandle);
+        return true;
+    } catch (err) {
+        console.error('❌ safeUpdateCandle exception:', err.message, safeCandle, source);
+        return false;
+    }
+}
 
             // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
             function customConfirm(message, onConfirm, onCancel) {
@@ -3429,24 +3446,40 @@
             function isValidNumber(v) { return typeof v === 'number' && !isNaN(v) && isFinite(v); }
 
             function sanitizeCandle(c) {
-                if (!c) return null;
-                const result = {
-                    time: isValidNumber(c.time) ? c.time : Math.floor(Date.now() / 1000),
-                    open: isValidNumber(c.open) ? c.open : 1,
-                    high: isValidNumber(c.high) ? c.high : 1,
-                    low: isValidNumber(c.low) ? c.low : 1,
-                    close: isValidNumber(c.close) ? c.close : 1,
-                    volume: isValidNumber(c.volume) ? Math.max(0, c.volume) : 0
-                };
-                if (result.high < result.low) { const tmp = result.high;
-                    result.high = result.low;
-                    result.low = tmp; }
-                if (result.high < result.open) result.high = result.open;
-                if (result.high < result.close) result.high = result.close;
-                if (result.low > result.open) result.low = result.open;
-                if (result.low > result.close) result.low = result.close;
-                return result;
-            }
+    if (!c) return null;
+
+    // সময় মিলিসেকেন্ডে (১৩ ডিজিট) হলে সেকেন্ডে কনভার্ট
+    let time = c.time;
+    if (time > 1e12) {
+        time = Math.floor(time / 1000);
+    }
+    if (!Number.isFinite(time) || time <= 0) {
+        console.warn('sanitizeCandle: invalid time', c.time);
+        return null;
+    }
+
+    const open = Number(c.open);
+    const high = Number(c.high);
+    const low = Number(c.low);
+    const close = Number(c.close);
+    const volume = Number(c.volume) || 0;
+
+    // কোনো ফিল্ড NaN বা শূন্য/নেগেটিভ হলে বাতিল (দাম কখনোই <=0 হবে না)
+    if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
+        console.warn('sanitizeCandle: invalid price', { open, high, low, close });
+        return null;
+    }
+
+    const result = {
+        time: time,
+        open: open,
+        high: Math.max(open, high, close),
+        low: Math.min(open, low, close),
+        close: close,
+        volume: volume
+    };
+    return result;
+}
 
             function sanitizeCandleData(candles) {
                 if (!candles || !Array.isArray(candles)) return [];
