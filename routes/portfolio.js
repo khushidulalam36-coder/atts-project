@@ -4,13 +4,36 @@ const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
 const { fetchPrice } = require('../lib/binance');
 
+// GET – returns portfolio with frontend-compatible field names
 router.get('/', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);
-    res.json(p);
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+    
+    // Convert holdings object to frontend positions array
+    let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
+    const positions = Object.entries(holdings).map(([symbol, data]) => ({
+      symbol,
+      qty: data.qty || 0,
+      entryPrice: data.avgPrice || 0,
+      type: (data.qty || 0) > 0 ? 'long' : 'short',
+      slPrice: data.slPrice || null,
+      tpPrice: data.tpPrice || null,
+      currentPrice: data.avgPrice || 0
+    }));
+
+    res.json({
+      cash: p.cash,
+      positions: positions,
+      transactions: p.transactions,
+      drawnLines: p.drawn_lines
+    });
+  } catch (e) { 
+    console.error('GET /portfolio error:', e); 
+    res.status(500).json({ error: 'Server error' }); 
+  }
 });
 
+// PUT – execute a trade (buy/sell) – KEPT AS IS (works with holdings object)
 router.put('/', authenticate, async (req, res) => {
   try {
     const { symbol, qty, type, slPrice, tpPrice } = req.body;
@@ -49,6 +72,51 @@ router.put('/', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
+// NEW: PUT /sync – full portfolio sync from frontend (converts positions array → holdings object)
+router.put('/sync', authenticate, async (req, res) => {
+  try {
+    const { cash, positions, transactions, drawnLines } = req.body;
+    if (cash === undefined || isNaN(parseFloat(cash))) {
+      return res.status(400).json({ error: 'Valid cash field required' });
+    }
+
+    // Convert frontend positions (array) to backend holdings (object)
+    const holdings = {};
+    (positions || []).forEach(pos => {
+      if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
+        holdings[pos.symbol] = {
+          qty: pos.qty,
+          avgPrice: pos.entryPrice,
+          slPrice: pos.slPrice || null,
+          tpPrice: pos.tpPrice || null
+        };
+      }
+    });
+
+    await query(
+      `UPDATE portfolios 
+       SET cash = $1, 
+           holdings = $2, 
+           transactions = $3, 
+           drawn_lines = $4 
+       WHERE user_id = $5`,
+      [
+        parseFloat(cash),
+        JSON.stringify(holdings),
+        JSON.stringify(transactions || []),
+        JSON.stringify(drawnLines || {}),
+        req.user.userId
+      ]
+    );
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Portfolio sync error:', e.message);
+    res.status(500).json({ error: 'Sync failed' });
+  }
+});
+
+// DELETE /holding/:symbol – manual exit a position
 router.delete('/holding/:symbol', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);
