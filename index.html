@@ -114,7 +114,6 @@
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
-        /* ─── RESET ────────────────────────────────────────────────────────── */
         * {
             margin: 0;
             padding: 0;
@@ -320,11 +319,12 @@
             min-width: 0;
         }
 
+        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 0 12px 0;
+            padding: 8px 0 10px 0;
             border-bottom: 1px solid var(--glass-border);
             flex-wrap: wrap;
             position: sticky;
@@ -337,6 +337,7 @@
         [data-theme="light"] .top-bar-glass {
             background: rgba(240, 242, 245, 0.85);
         }
+
         .mobile-toggle-glass {
             display: none;
             background: var(--glass-bg);
@@ -390,11 +391,107 @@
         .top-actions-glass {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             margin-left: auto;
             flex-shrink: 0;
             flex-wrap: wrap;
         }
+
+        .header-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .header-nav-links .nav-link {
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            transition: all var(--transition);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.7rem;
+        }
+        .header-nav-links .nav-link:hover {
+            color: var(--text);
+            background: var(--glass-bg);
+        }
+        .header-nav-links .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .header-nav-links .nav-divider {
+            color: var(--border);
+            font-weight: 300;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .header-icons .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 50%;
+            transition: all var(--transition);
+            font-size: 0.85rem;
+            min-width: 32px;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icons .icon-btn:hover {
+            color: var(--text);
+            background: var(--glass-bg);
+        }
+        .header-icons .icon-btn.has-notif {
+            color: var(--accent);
+        }
+
+        .user-profile-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            transition: all var(--transition);
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font);
+            min-height: 32px;
+        }
+        .user-profile-btn:hover {
+            color: var(--text);
+            background: var(--glass-bg);
+        }
+        .user-profile-btn .avatar-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
         .lang-select-glass {
             padding: 4px 20px 4px 8px;
             border-radius: var(--radius-full);
@@ -440,34 +537,122 @@
             box-shadow: 0 3px 16px var(--primary-glow);
         }
 
-        .user-menu-glass {
+        /* ─── PROFILE DROPDOWN ───────────────────────────────────────────── */
+        .profile-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-shadow);
+            min-width: 200px;
+            padding: 8px 4px;
+            z-index: 100;
+            margin-top: 4px;
+        }
+        .profile-dropdown-menu.show {
+            display: block;
+        }
+        .profile-dropdown-menu .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .user-menu-glass .username {
-            font-weight: 600;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition);
             font-size: 0.65rem;
-            color: var(--text-secondary);
+            color: var(--text);
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: var(--font);
+            text-align: left;
         }
-        .user-menu-glass .account-no {
+        .profile-dropdown-menu .dropdown-item:hover {
+            background: var(--surface-hover);
+        }
+        .profile-dropdown-menu .dropdown-item .dd-icon {
+            width: 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .profile-dropdown-menu .dropdown-divider {
+            border-top: 1px solid var(--glass-border);
+            margin: 4px 8px;
+        }
+        .profile-dropdown-menu .account-no-display {
+            padding: 4px 12px;
             font-size: 0.5rem;
             color: var(--text-muted);
             font-family: var(--font-mono);
             background: var(--glass-bg);
-            padding: 2px 8px;
             border-radius: var(--radius-full);
-            border: 1px solid var(--glass-border);
+            margin: 2px 8px;
+            text-align: center;
         }
 
+        /* ─── CONTENT ──────────────────────────────────────────────────────── */
         .content-glass {
             flex: 1;
             padding: 14px 0 10px 0;
             overflow-y: auto;
         }
 
-        /* ─── GLASS LESSON LIST ───────────────────────────────────────────── */
+        /* ─── PROGRESS CARDS ──────────────────────────────────────────────── */
+        .progress-card-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--glass-shadow);
+        }
+        .progress-card-glass .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .progress-card-glass .progress-stats strong {
+            color: var(--text);
+        }
+        .progress-card-glass .progress-bar-glass {
+            height: 6px;
+            background: var(--glass-border);
+            border-radius: var(--radius-full);
+            margin: 4px 0;
+            overflow: hidden;
+        }
+        .progress-card-glass .progress-fill-glass {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: var(--radius-full);
+            box-shadow: 0 2px 10px var(--primary-glow);
+        }
+        .progress-card-glass .progress-title-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ─── LESSON LIST ──────────────────────────────────────────────────── */
         .lesson-list-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -476,7 +661,7 @@
         .lesson-list-glass h2 {
             font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin: 12px 0 10px 0;
             font-family: 'Outfit', sans-serif;
             color: var(--text);
         }
@@ -567,7 +752,7 @@
             color: var(--primary);
         }
 
-        /* ─── GLASS DETAIL VIEW ───────────────────────────────────────────── */
+        /* ─── DETAIL VIEW ──────────────────────────────────────────────────── */
         .detail-view-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -594,21 +779,6 @@
             border-color: var(--primary);
             transform: translateX(-3px);
             box-shadow: 0 4px 18px var(--primary-glow);
-        }
-        .progress-bar-glass {
-            height: 4px;
-            background: var(--glass-border);
-            border-radius: var(--radius-full);
-            margin: 6px 0;
-            overflow: hidden;
-        }
-        .progress-fill-glass {
-            height: 100%;
-            background: var(--primary-gradient);
-            width: 0%;
-            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: var(--radius-full);
-            box-shadow: 0 2px 10px var(--primary-glow);
         }
 
         .tabs-glass {
@@ -651,7 +821,7 @@
             color: var(--text);
         }
 
-        /* ─── GLASS TTS CONTROLS ─────────────────────────────────────────── */
+        /* ─── TTS CONTROLS ─────────────────────────────────────────────────── */
         .tts-controls-glass {
             display: flex;
             gap: 4px;
@@ -901,7 +1071,7 @@
             }
         }
 
-        /* ─── MODAL GLASS ──────────────────────────────────────────────────── */
+        /* ─── MODAL ────────────────────────────────────────────────────────── */
         .modal {
             position: fixed;
             top: 0;
@@ -973,6 +1143,8 @@
             justify-content: flex-end;
             flex-wrap: wrap;
         }
+
+        /* ─── BUTTONS ──────────────────────────────────────────────────────── */
         .btn {
             padding: 6px 16px;
             border-radius: var(--radius-full);
@@ -1214,7 +1386,7 @@
             }
         }
 
-        /* ─── AUTH GLASS ───────────────────────────────────────────────────── */
+        /* ─── AUTH ──────────────────────────────────────────────────────────── */
         .auth-container {
             display: flex;
             align-items: center;
@@ -1343,7 +1515,6 @@
             gap: 1px;
         }
 
-        /* ─── 2-BAR DESKTOP TERMINAL ────────────────────────────────────── */
         .terminal-bar-1 {
             display: flex;
             align-items: center;
@@ -1463,7 +1634,6 @@
             font-weight: 600;
         }
 
-        /* ─── DROPDOWN PANELS ───────────────────────────────────────────── */
         .terminal-dropdowns {
             display: flex;
             gap: 2px;
@@ -1570,7 +1740,6 @@
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
         }
 
-        /* ─── CHART ───────────────────────────────────────────────────────── */
         .chart-container-wrap {
             position: relative;
             margin: 0 2px 1px 2px;
@@ -1611,7 +1780,6 @@
             background: rgba(0, 0, 0, 0.7);
         }
 
-        /* ─── INDICATOR DROPDOWN ────────────────────────────────────────── */
         .indicator-dropdown {
             position: relative;
             display: inline-block;
@@ -1675,7 +1843,6 @@
             color: var(--text-muted);
         }
 
-        /* ─── STATUS BAR ──────────────────────────────────────────────────── */
         .status-bar {
             display: flex;
             align-items: center;
@@ -1877,11 +2044,13 @@
             transform: scale(0.96);
         }
         .mt5-price-display {
-            font-size: 0.55rem;
-            font-weight: 700;
+            font-size: 0.6rem;
+            font-weight: 800;
             margin-top: 1px;
             opacity: 0.95;
             letter-spacing: 0.02em;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .mt5-lot-selector {
@@ -2391,44 +2560,154 @@
             border-radius: 6px;
             border: 1px solid var(--mt5-border);
             display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .history-item .h-row {
+            display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .history-item .left {
+        .history-item .h-left {
             display: flex;
             flex-direction: column;
             gap: 1px;
         }
-        .history-item .left .type {
+        .history-item .h-left .type {
             font-weight: 600;
             font-size: 0.6rem;
         }
-        .history-item .left .type.buy {
+        .history-item .h-left .type.buy {
             color: var(--mt5-green);
         }
-        .history-item .left .type.sell {
+        .history-item .h-left .type.sell {
             color: var(--mt5-red);
         }
-        .history-item .left .type.deposit {
+        .history-item .h-left .type.close {
             color: var(--mt5-blue);
         }
-        .history-item .left .type.withdraw {
+        .history-item .h-left .type.deposit {
+            color: var(--mt5-blue);
+        }
+        .history-item .h-left .type.withdraw {
             color: var(--mt5-red);
         }
-        .history-item .left .detail {
+        .history-item .h-left .detail {
             font-size: 0.45rem;
             color: var(--mt5-text);
         }
-        .history-item .right {
-            font-weight: 600;
+        .history-item .h-left .detail .symbol-badge {
+            font-size: 0.4rem;
+            background: var(--mt5-input);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--mt5-text);
+            display: inline-block;
+        }
+        .history-item .h-left .time-stamp {
+            font-size: 0.4rem;
+            color: var(--mt5-text-muted);
+        }
+        .history-item .h-right {
+            font-weight: 700;
             font-size: 0.6rem;
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
-        .history-item .right.green {
+        .history-item .h-right.green {
             color: var(--mt5-green);
         }
-        .history-item .right.red {
+        .history-item .h-right.red {
             color: var(--mt5-red);
+        }
+        .history-item .h-right .pnl-label {
+            font-size: 0.45rem;
+            font-weight: 400;
+            color: var(--mt5-text);
+        }
+
+        .history-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 0;
+        }
+        .history-header-row .h-title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--mt5-text-bright);
+        }
+        .history-header-row .h-actions {
+            display: flex;
+            gap: 6px;
+            font-size: 0.6rem;
+            color: var(--mt5-text);
+        }
+        .history-header-row .h-actions span {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .history-header-row .h-actions span:hover {
+            background: var(--mt5-nav-active);
+            color: var(--mt5-text-bright);
+        }
+        .history-all-symbols {
+            font-size: 0.5rem;
+            color: var(--mt5-text);
+            padding: 2px 0;
+        }
+
+        .history-tabs {
+            display: flex;
+            gap: 2px;
+            margin: 4px 0 8px;
+            border-bottom: 2px solid var(--mt5-border);
+        }
+        .history-tabs .htab {
+            padding: 4px 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.55rem;
+            color: var(--mt5-text);
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+            touch-action: manipulation;
+            min-height: 32px;
+            min-width: 60px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
+        }
+        .history-tabs .htab.active {
+            color: var(--mt5-green);
+            border-bottom-color: var(--mt5-green);
+        }
+
+        .history-summary-row {
+            display: flex;
+            gap: 16px;
+            padding: 4px 0;
+            font-size: 0.55rem;
+            border-bottom: 1px solid var(--mt5-border);
+            margin-bottom: 6px;
+        }
+        .history-summary-row .label {
+            color: var(--mt5-text);
+        }
+        .history-summary-row .value {
+            font-weight: 700;
+        }
+        .history-summary-row .value.green {
+            color: var(--mt5-green);
+        }
+        .history-summary-row .value.red {
+            color: var(--mt5-red);
+        }
+        .history-summary-row .value.blue {
+            color: var(--mt5-blue);
         }
 
         .chart-loading {
@@ -2444,7 +2723,6 @@
             display: none !important;
         }
 
-        /* ─── MOBILE TRADE PANEL ──────────────────────────────────────────── */
         .mobile-trade-summary .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -2474,29 +2752,40 @@
             color: var(--mt5-red);
         }
 
-        /* ─── HISTORY TABS ────────────────────────────────────────────────── */
-        .history-tabs {
+        .mobile-drawn-line-row {
             display: flex;
-            gap: 2px;
-            margin: 4px 0 8px;
-            border-bottom: 2px solid var(--mt5-border);
+            align-items: center;
+            gap: 4px;
+            padding: 2px 4px;
+            background: var(--mt5-input);
+            border-radius: 4px;
+            margin: 2px 0;
+            font-size: 0.45rem;
+            font-family: var(--font-mono);
         }
-        .history-tabs .htab {
-            padding: 4px 10px;
+        .mobile-drawn-line-row .line-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .mobile-drawn-line-row .line-delete-btn {
+            background: var(--mt5-red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.55rem;
-            color: var(--mt5-text);
-            border-bottom: 2px solid transparent;
-            transition: 0.2s;
-            touch-action: manipulation;
-            min-height: 32px;
-            min-width: 60px;
-            text-align: center;
+            font-size: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
-        .history-tabs .htab.active {
-            color: var(--mt5-green);
-            border-bottom-color: var(--mt5-green);
+        .mobile-drawn-line-row .line-delete-btn:active {
+            transform: scale(0.9);
         }
 
         /* ─── ADMIN ────────────────────────────────────────────────────────── */
@@ -2668,138 +2957,120 @@
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* ─── MOBILE DRAW OVERLAY LINE LIST ────────────────────────────── */
-        .mobile-drawn-line-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 4px;
-            background: var(--mt5-input);
-            border-radius: 4px;
-            margin: 2px 0;
-            font-size: 0.45rem;
-            font-family: var(--font-mono);
-        }
-        .mobile-drawn-line-row .line-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .mobile-drawn-line-row .line-delete-btn {
-            background: var(--mt5-red);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            font-size: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .mobile-drawn-line-row .line-delete-btn:active {
-            transform: scale(0.9);
-        }
-
-        /* ─── PROGRESS CARDS ──────────────────────────────────────────────── */
-        .progress-card-glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--glass-shadow);
-        }
-        .progress-card-glass .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        .progress-card-glass .progress-stats strong {
-            color: var(--text);
-        }
-        .progress-card-glass .progress-bar-glass {
-            height: 6px;
-            background: var(--glass-border);
-            border-radius: var(--radius-full);
-            margin: 4px 0;
-            overflow: hidden;
-        }
-        .progress-card-glass .progress-fill-glass {
-            height: 100%;
-            background: var(--primary-gradient);
-            width: 0%;
-            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: var(--radius-full);
-            box-shadow: 0 2px 10px var(--primary-glow);
-        }
-
-        /* ─── HEADER ENHANCEMENTS ─────────────────────────────────────────── */
-        .header-nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
+        /* ─── ENTRY LINE STYLES ───────────────────────────────────────────── */
+        .entry-line-label {
+            font-size: 0.4rem;
             font-weight: 600;
-            color: var(--text-secondary);
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
         }
-        .header-nav-links .nav-link {
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            transition: all var(--transition);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
+        .sl-line-label {
+            font-size: 0.4rem;
+            font-weight: 600;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
         }
-        .header-nav-links .nav-link:hover {
-            color: var(--text);
-            background: var(--glass-bg);
+        .tp-line-label {
+            font-size: 0.4rem;
+            font-weight: 600;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
         }
-        .header-nav-links .nav-link.active {
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-        .header-nav-links .nav-divider {
-            color: var(--border);
-            font-weight: 300;
-        }
-        .header-icons {
+
+        /* ─── MOBILE HEADER ────────────────────────────────────────────────── */
+        .mobile-header-glass {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            padding: 4px 8px 6px 8px;
+            border-bottom: 1px solid var(--glass-border);
+            flex-wrap: wrap;
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 15;
         }
-        .header-icons .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 50%;
-            transition: all var(--transition);
-            font-size: 0.85rem;
-            min-width: 32px;
-            min-height: 32px;
+        [data-theme="light"] .mobile-header-glass {
+            background: rgba(240, 242, 245, 0.85);
+        }
+        .mobile-header-glass .mh-left {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 4px;
         }
-        .header-icons .icon-btn:hover {
+        .mobile-header-glass .mh-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+        .mobile-header-glass .mh-search {
+            flex: 1;
+            min-width: 60px;
+            position: relative;
+        }
+        .mobile-header-glass .mh-search input {
+            width: 100%;
+            padding: 4px 8px 4px 26px;
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            outline: none;
+            font-size: 0.6rem;
+            background: var(--glass-bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 30px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .mobile-header-glass .mh-search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+        .mobile-header-glass .mh-search .mh-search-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.55rem;
+        }
+        .mobile-header-glass .mh-nav-links {
+            display: flex;
+            gap: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .mobile-header-glass .mh-nav-links .mh-link {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            transition: all var(--transition);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.6rem;
+        }
+        .mobile-header-glass .mh-nav-links .mh-link:hover {
             color: var(--text);
             background: var(--glass-bg);
         }
-        .header-icons .icon-btn.has-notif {
-            color: var(--accent);
+        .mobile-header-glass .mh-nav-links .mh-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .mobile-header-glass .mh-nav-links .mh-divider {
+            color: var(--border);
+            font-weight: 300;
         }
 
         /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
@@ -2825,7 +3096,7 @@
                 touch-action: manipulation;
             }
             .top-bar-glass {
-                padding: 6px 0 8px 0;
+                padding: 4px 0 6px 0;
                 gap: 4px;
             }
             .search-box-glass {
@@ -2962,8 +3233,8 @@
                 min-height: 40px;
             }
             .mt5-price-display {
-                font-size: 0.5rem;
-                font-weight: 700;
+                font-size: 0.55rem;
+                font-weight: 800;
             }
             .mt5-lot-selector {
                 min-width: 34px;
@@ -3076,6 +3347,7 @@
             }
             .header-nav-links .nav-link {
                 padding: 2px 6px;
+                font-size: 0.6rem;
             }
             .header-icons {
                 font-size: 0.7rem;
@@ -3092,6 +3364,13 @@
             .progress-card-glass .progress-stats {
                 font-size: 0.55rem;
             }
+            .top-bar-glass .top-actions-glass .user-profile-btn .username-text {
+                display: none;
+            }
+            .mobile-header-glass .mh-nav-links .mh-link {
+                font-size: 0.55rem;
+                padding: 2px 5px;
+            }
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
@@ -3105,7 +3384,7 @@
                 min-height: 36px;
             }
             .mt5-price-display {
-                font-size: 0.45rem;
+                font-size: 0.5rem;
             }
             .mt5-lot-selector {
                 min-width: 30px;
@@ -3253,6 +3532,19 @@
                 padding: 4px 8px;
                 font-size: 0.5rem;
             }
+            .mobile-header-glass .mh-nav-links .mh-link {
+                font-size: 0.5rem;
+                padding: 2px 4px;
+            }
+            .mobile-header-glass .mh-search input {
+                font-size: 0.5rem;
+                padding: 3px 6px 3px 22px;
+                min-height: 26px;
+            }
+            .mobile-header-glass .mh-search .mh-search-icon {
+                font-size: 0.5rem;
+                left: 6px;
+            }
         }
 
         /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
@@ -3291,126 +3583,6 @@
         }
         .hide-scrollbar {
             scrollbar-width: thin;
-        }
-
-        /* ─── ENTRY/SL/TP LINE STYLES ────────────────────────────────────── */
-        .entry-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border: 1px solid #3b82f6;
-        }
-        .sl-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
-        }
-        .tp-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-            border: 1px solid #8b5cf6;
-        }
-
-        /* ─── HISTORY PANEL ENHANCEMENTS ────────────────────────────────── */
-        .history-header-actions {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            font-size: 0.55rem;
-            color: var(--mt5-text);
-        }
-        .history-header-actions span {
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-        .history-header-actions span:hover {
-            background: var(--mt5-nav-active);
-            color: var(--mt5-text-bright);
-        }
-        .history-summary-row {
-            display: flex;
-            gap: 16px;
-            padding: 4px 0;
-            font-size: 0.55rem;
-            border-bottom: 1px solid var(--mt5-border);
-            margin-bottom: 6px;
-        }
-        .history-summary-row .label {
-            color: var(--mt5-text);
-        }
-        .history-summary-row .value {
-            font-weight: 700;
-        }
-        .history-summary-row .value.green {
-            color: var(--mt5-green);
-        }
-        .history-summary-row .value.red {
-            color: var(--mt5-red);
-        }
-        .history-summary-row .value.blue {
-            color: var(--mt5-blue);
-        }
-        .history-item .left .symbol-badge {
-            font-size: 0.4rem;
-            background: var(--mt5-input);
-            padding: 1px 5px;
-            border-radius: 3px;
-            color: var(--mt5-text);
-            display: inline-block;
-        }
-        .history-item .left .time-stamp {
-            font-size: 0.4rem;
-            color: var(--mt5-text-muted);
-        }
-
-        /* ─── MOBILE DRAW OVERLAY LINE LIST ────────────────────────────── */
-        .mobile-drawn-line-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 4px;
-            background: var(--mt5-input);
-            border-radius: 4px;
-            margin: 2px 0;
-            font-size: 0.45rem;
-            font-family: var(--font-mono);
-        }
-        .mobile-drawn-line-row .line-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .mobile-drawn-line-row .line-delete-btn {
-            background: var(--mt5-red);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            font-size: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .mobile-drawn-line-row .line-delete-btn:active {
-            transform: scale(0.9);
         }
     </style>
 </head>
@@ -3607,29 +3779,17 @@
 
             // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
             function safeUpdateCandle(candle, source) {
-                if (!simCandleSeries || !simChart) {
-                    console.warn('⚠️ safeUpdateCandle: chart not ready', source);
-                    return false;
-                }
-                if (!candle || typeof candle !== 'object') {
-                    console.warn('⚠️ safeUpdateCandle: invalid candle object', source);
-                    return false;
-                }
+                if (!simCandleSeries || !simChart) return false;
+                if (!candle || typeof candle !== 'object') return false;
                 let time = candle.time;
                 if (time > 1e12) time = Math.floor(time / 1000);
-                if (!Number.isFinite(time) || time <= 0) {
-                    console.warn('⚠️ safeUpdateCandle: invalid time', time, source);
-                    return false;
-                }
+                if (!Number.isFinite(time) || time <= 0) return false;
                 const open = Number(candle.open);
                 const high = Number(candle.high);
                 const low = Number(candle.low);
                 const close = Number(candle.close);
                 const volume = Number(candle.volume) || 0;
-                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
-                    console.warn('⚠️ safeUpdateCandle: invalid price', { open, high, low, close }, source);
-                    return false;
-                }
+                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) return false;
                 const safeClone = {
                     time: time,
                     open: open,
@@ -3640,13 +3800,8 @@
                 };
                 try {
                     simCandleSeries.update(safeClone);
-                    window._chartErrorCount = 0;
                     return true;
-                } catch (err) {
-                    console.error('❌ safeUpdateCandle exception:', err.message, safeClone, source);
-                    window._chartErrorCount = (window._chartErrorCount || 0) + 1;
-                    return false;
-                }
+                } catch (err) { return false; }
             }
 
             // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
@@ -3690,7 +3845,6 @@
                 document.body.appendChild(banner);
                 banner.querySelector('.notif-close').onclick = () => banner.remove();
                 setTimeout(() => { if (banner.parentNode) banner.remove(); }, 7000);
-
                 if ('Notification' in window && Notification.permission === 'granted') {
                     try { new Notification('📊 ATTS: ' + title, { body: body, icon: '📊' }); } catch (e) {}
                 } else if ('Notification' in window && Notification.permission === 'default') {
@@ -3755,22 +3909,14 @@
             function sanitizeCandle(c) {
                 if (!c) return null;
                 let time = c.time;
-                if (time > 1e12) {
-                    time = Math.floor(time / 1000);
-                }
-                if (!Number.isFinite(time) || time <= 0) {
-                    console.warn('sanitizeCandle: invalid time', c.time);
-                    return null;
-                }
+                if (time > 1e12) { time = Math.floor(time / 1000); }
+                if (!Number.isFinite(time) || time <= 0) return null;
                 const open = Number(c.open);
                 const high = Number(c.high);
                 const low = Number(c.low);
                 const close = Number(c.close);
                 const volume = Number(c.volume) || 0;
-                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) {
-                    console.warn('sanitizeCandle: invalid price', { open, high, low, close });
-                    return null;
-                }
+                if ([open, high, low, close].some(v => !Number.isFinite(v) || v <= 0)) return null;
                 return {
                     time: time,
                     open: open,
@@ -3799,7 +3945,6 @@
                         if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                         portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
                                 .toString(36).slice(2, 6); });
-                        // Reset history older than 24 hours
                         const now = Date.now();
                         const cutoff = now - 86400000;
                         portfolio.transactions = portfolio.transactions.filter(t => {
@@ -3811,7 +3956,7 @@
                         });
                         return true;
                     }
-                } catch (e) { console.warn('Portfolio load error:', e); }
+                } catch (e) { /* silent */ }
                 return false;
             }
 
@@ -3824,7 +3969,7 @@
                         drawnLines: portfolio.drawnLines
                     }));
                     dbPut('portfolio', { id: 'main', ...portfolio, updated: Date.now() }).catch(() => {});
-                } catch (e) { console.warn('Portfolio save error:', e); }
+                } catch (e) { /* silent */ }
             }
 
             function loadPendingOrders() {
@@ -3853,11 +3998,9 @@
                     if (data && data.candles && data.candles.length > 0) {
                         const last = data.candles[data.candles.length - 1];
                         const now = Math.floor(Date.now() / 1000);
-                        if (now - last.time < 86400 * 2) {
-                            return data.candles;
-                        }
+                        if (now - last.time < 86400 * 2) return data.candles;
                     }
-                } catch (e) { console.warn('DB load error:', e); }
+                } catch (e) {}
                 return null;
             }
 
@@ -3866,52 +4009,36 @@
                     const key = getCandleKey(symbol, tf);
                     const toSave = candles.slice(-10000);
                     await dbPut('candles', { id: key, symbol, tf, candles: toSave, updated: Date.now() });
-                } catch (e) { console.warn('DB save error:', e); }
+                } catch (e) {}
             }
 
             async function loadChartStateFromDB(symbol) {
-                try {
-                    const data = await dbGet('chartState', symbol);
-                    if (data) return data;
-                } catch (e) {}
-                return null;
+                try { return await dbGet('chartState', symbol); } catch (e) { return null; }
             }
 
             async function saveChartStateToDB(symbol, state) {
-                try {
-                    await dbPut('chartState', { id: symbol, ...state, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('chartState', { id: symbol, ...state, updated: Date.now() }); } catch (e) {}
             }
 
             async function loadIndicatorsFromDB() {
-                try {
-                    const data = await dbGet('indicators', 'active');
-                    if (data) return data.indicators || {};
-                } catch (e) {}
-                return {};
+                try { const data = await dbGet('indicators', 'active'); return data ? data.indicators || {} : {}; } catch (
+                e) { return {}; }
             }
 
             async function saveIndicatorsToDB(indicators) {
-                try {
-                    await dbPut('indicators', { id: 'active', indicators, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('indicators', { id: 'active', indicators, updated: Date.now() }); } catch (e) {}
             }
 
             async function loadDrawingsFromDB(symbol) {
-                try {
-                    const data = await dbGet('drawings', symbol);
-                    if (data) return data.lines || [];
-                } catch (e) {}
-                return [];
+                try { const data = await dbGet('drawings', symbol); return data ? data.lines || [] : []; } catch (e) { return [
+                    ]; }
             }
 
             async function saveDrawingsToDB(symbol, lines) {
-                try {
-                    await dbPut('drawings', { id: symbol, lines, updated: Date.now() });
-                } catch (e) {}
+                try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
             }
 
-            // ─── BINANCE WS (KLINE) ──────────────────────────────────────────
+            // ─── BINANCE WS ──────────────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
                         .CONNECTING)) return;
@@ -3920,10 +4047,7 @@
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => {
-                        console.log('✅ Binance WebSocket (kline) connected');
-                        wsConnected = true;
-                    };
+                    binanceWS.onopen = () => { wsConnected = true; };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -3956,30 +4080,28 @@
                                         else { simAllCandles.push(safeCandle); if (simAllCandles.length > 10000)
                                                 simAllCandles = simAllCandles.slice(-10000); }
                                         simCurrentCandle = safeCandle;
-                                        safeUpdateCandle(safeCandle, 'WebSocket full');
+                                        safeUpdateCandle(safeCandle, 'WS full');
                                         updateAllIndicators();
                                         checkAndExecuteSLTP();
                                         updateSimUI();
                                     } else {
                                         currentCandle.close = safeCandle.close;
                                         currentCandle.volume = safeCandle.volume;
-                                        safeUpdateCandle(currentCandle, 'WebSocket partial');
+                                        safeUpdateCandle(currentCandle, 'WS partial');
                                         updateAllIndicators();
                                         updateSimUI();
                                     }
                                 }
                             }
-                        } catch (e) { /* silent */ }
+                        } catch (e) {}
                     };
                     binanceWS.onclose = () => {
-                        console.log('⚠️ Binance WebSocket closed, reconnecting...');
                         wsConnected = false;
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
                         binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
                     };
-                    binanceWS.onerror = (e) => { console.error('Binance WS error:', e);
-                        binanceWS.close(); };
-                } catch (e) { console.error('Binance WS init error:', e); }
+                    binanceWS.onerror = () => { if (binanceWS) binanceWS.close(); };
+                } catch (e) {}
             }
 
             function disconnectBinanceWS() {
@@ -3997,8 +4119,7 @@
                 const host = location.hostname === 'localhost' ? 'localhost:5000' : 'atts-project.onrender.com';
                 try {
                     serverWS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + host);
-                    serverWS.onopen = () => { console.log('✅ Server WS connected');
-                        wsConnectedServer = true; };
+                    serverWS.onopen = () => { wsConnectedServer = true; };
                     serverWS.onmessage = (e) => {
                         try {
                             const d = JSON.parse(e.data);
@@ -4013,8 +4134,7 @@
                         setTimeout(connectServerWS, 5000); };
                     serverWS.onerror = () => { wsConnectedServer = false;
                         setTimeout(connectServerWS, 5000); };
-                } catch (e) { console.warn('Server WS init error:', e);
-                    setTimeout(connectServerWS, 5000); }
+                } catch (e) { setTimeout(connectServerWS, 5000); }
             }
 
             function disconnectServerWS() {
@@ -4041,10 +4161,7 @@
                         close: parseFloat(k[4]),
                         volume: parseFloat(k[5])
                     }));
-                } catch (e) {
-                    console.warn('Binance REST candles fetch failed:', e);
-                    return null;
-                }
+                } catch (e) { return null; }
             }
 
             async function fetchBinanceLatest(symbol) {
@@ -4064,7 +4181,7 @@
                             volume: parseFloat(k[5])
                         };
                     }
-                } catch (e) { console.warn('Binance latest fetch failed:', e); }
+                } catch (e) {}
                 return null;
             }
 
@@ -4081,7 +4198,7 @@
                         lastBinancePrice[symbol] = price;
                         return price;
                     }
-                } catch (e) { console.warn('Binance REST price fetch failed:', e); }
+                } catch (e) {}
                 return null;
             }
 
@@ -4097,11 +4214,7 @@
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
-                if (!chartDiv) {
-                    console.warn('Chart container not found, retrying...');
-                    setTimeout(initChart, 300);
-                    return;
-                }
+                if (!chartDiv) { setTimeout(initChart, 300); return; }
 
                 let attempts = 0;
                 while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 20) {
@@ -4109,7 +4222,6 @@
                     attempts++;
                 }
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
-                    console.warn('Chart container still has 0 size, retrying...');
                     setTimeout(initChart, 300);
                     return;
                 }
@@ -4118,13 +4230,11 @@
                     return;
                 }
 
-                if (simChart) {
-                    try { simChart.remove(); } catch (e) {}
+                if (simChart) { try { simChart.remove(); } catch (e) {}
                     simChart = null;
                     simCandleSeries = null;
                     simVolumeSeries = null;
-                    simIndicatorSeries = {};
-                }
+                    simIndicatorSeries = {}; }
                 chartDiv.querySelectorAll('canvas').forEach(c => c.remove());
                 if (loadingEl) loadingEl.style.display = 'flex';
 
@@ -4166,13 +4276,10 @@
                     latestCandle = sanitizeCandle(latestCandle);
                     if (latestCandle) {
                         const exists = candles.some(c => c.time === latestCandle.time);
-                        if (!exists) {
-                            candles.push(latestCandle);
-                            candles.sort((a, b) => a.time - b.time);
-                        } else {
+                        if (!exists) { candles.push(latestCandle);
+                            candles.sort((a, b) => a.time - b.time); } else {
                             const idx = candles.findIndex(c => c.time === latestCandle.time);
-                            if (idx !== -1) candles[idx] = latestCandle;
-                        }
+                            if (idx !== -1) candles[idx] = latestCandle; }
                         realTimePrice = latestCandle.close;
                         simLastPrices[simCurrentSymbol] = latestCandle.close;
                         simBasePrices[simCurrentSymbol] = latestCandle.close;
@@ -4272,12 +4379,8 @@
                         }
                     }
                     safeAll = unique;
-                    if (safeAll.length > 0) {
-                        try { simCandleSeries.setData(safeAll); } catch (e) {
-                            console.error('SetData error:', e);
-                            simCandleSeries.setData([]);
-                        }
-                    }
+                    if (safeAll.length > 0) { try { simCandleSeries.setData(safeAll); } catch (e) { simCandleSeries
+                                .setData([]); } }
                     updateAllIndicators();
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
                             .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
@@ -4293,10 +4396,8 @@
                             Date.now() / 1000;
                         const newRight = lastTime + 60;
                         const newLeft = newRight - rangeWidth;
-                        if (newLeft > 0) {
-                            try { simChart.timeScale().setVisibleRange({ from: newLeft, to: newRight }); } catch (
-                            e) {}
-                        }
+                        if (newLeft > 0) { try { simChart.timeScale().setVisibleRange({ from: newLeft, to: newRight }); } catch (
+                            e) {} }
                     }
 
                     const savedInd = await loadIndicatorsFromDB();
@@ -4312,11 +4413,10 @@
                         redrawAllLines();
                     }
                     const savedState = await loadChartStateFromDB(simCurrentSymbol);
-                    if (savedState && savedState.zoom) {
-                        try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (e) {}
-                    }
+                    if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
+                        e) {} }
 
-                    // CLICK TO DRAW
+                    // Click to draw
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -4343,7 +4443,7 @@
                         }
                     });
 
-                    // DRAG LINES
+                    // Drag lines
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries || manualDrawnLines.length === 0) return;
@@ -4416,9 +4516,7 @@
                     document.addEventListener('touchend', upHandler);
 
                     simChart.timeScale().subscribeVisibleTimeRangeChange(range => {
-                        if (range) {
-                            saveChartStateToDB(simCurrentSymbol, { zoom: range });
-                        }
+                        if (range) { saveChartStateToDB(simCurrentSymbol, { zoom: range }); }
                     });
 
                     if (loadingEl) loadingEl.style.display = 'none';
@@ -4498,7 +4596,7 @@
                     const debouncedResize = debounce(() => {
                         if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight }); } catch (e) { console.warn('Resize error:', e); }
+                                    .clientHeight }); } catch (e) {}
                             try {
                                 const vr = simChart.timeScale().getVisibleRange();
                                 if (vr && simAllCandles.length > 0) {
@@ -4543,20 +4641,14 @@
                                         try { simChart.timeScale().fitContent(); } catch (e) {}
                                         try { const r = simChart.timeScale().getVisibleRange(); if (r)
                                                 simChart.timeScale().setVisibleRange(r); } catch (e) {}
-                                    } else {
-                                        console.warn('Chart container lost size, re-initializing...');
-                                        resetChart();
-                                    }
+                                    } else { resetChart(); }
                                 }, 120);
-                            } else {
-                                resetChart();
-                            }
+                            } else { resetChart(); }
                         }
                     };
                     document.addEventListener('visibilitychange', chartVisibilityHandler);
 
                 } catch (err) {
-                    console.error('Chart init error:', err);
                     if (loadingEl) loadingEl.innerHTML =
                         '<span style="color:var(--danger);">⚠️ Chart error: ' + err.message + '</span>';
                     if (simChart) { try { simChart.remove(); } catch (e) {}
@@ -4566,7 +4658,7 @@
                 }
             }
 
-            // ─── REDRAW LINES ──────────────────────────────────────────────
+            // ─── REDRAW ALL LINES (including entry lines) ──────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
@@ -4583,15 +4675,17 @@
                         lineObj: line, index: idx });
                 });
 
+                // ─── Entry lines for positions ──────────────────────────────
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol && p.entryPrice) {
+                        const label = 'Entry ' + p.type.toUpperCase() + ' ' + p.symbol;
                         const line = simCandleSeries.createPriceLine({
                             price: p.entryPrice,
-                            color: '#3b82f6',
+                            color: p.type === 'long' ? '#10b981' : '#ef4444',
                             lineWidth: 1.5,
                             lineStyle: 0,
                             axisLabelVisible: true,
-                            title: 'Entry ' + p.symbol + ' ' + p.id.slice(-4)
+                            title: label
                         });
                         allPriceLines['entry_' + p.id] = line;
                     }
@@ -4650,7 +4744,6 @@
                     'Resistance' : 'Horizontal line'));
             }
 
-            // ─── MOBILE DRAWN LINES ─────────────────────────────────────────
             function updateMobileDrawnLines() {
                 const el = document.getElementById('mobileDrawnLinesList');
                 if (!el) return;
@@ -4715,7 +4808,9 @@
                             time: new Date().toISOString(),
                             reason: reason,
                             pnl: pnl - fee,
-                            id: p.id
+                            id: p.id,
+                            entryPrice: p.entryPrice,
+                            typeLabel: p.type
                         };
                         portfolio.transactions.unshift(tx);
                         sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
@@ -4737,7 +4832,6 @@
             // ─── PENDING ORDERS ─────────────────────────────────────────────
             function checkPendingOrders() {
                 if (pendingOrders.length === 0) return;
-                const now = Date.now();
                 const toRemove = [];
                 for (let i = 0; i < pendingOrders.length; i++) {
                     const order = pendingOrders[i];
@@ -4758,7 +4852,7 @@
                                 continue;
                             }
                             portfolio.cash -= qty * execPrice + fee;
-                            portfolio.positions.push({
+                            const newPos = {
                                 id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                                 symbol: order.symbol,
                                 type: 'long',
@@ -4769,7 +4863,8 @@
                                 tpPrice: null,
                                 openTime: new Date().toISOString(),
                                 fee: fee
-                            });
+                            };
+                            portfolio.positions.push(newPos);
                             portfolio.transactions.unshift({
                                 type: 'buy',
                                 symbol: order.symbol,
@@ -4778,11 +4873,15 @@
                                 time: new Date().toISOString(),
                                 reason: 'Limit Order',
                                 id: order.id,
-                                fee: fee
+                                fee: fee,
+                                entryPrice: execPrice,
+                                typeLabel: 'long'
                             });
                             sendNotification('✅ Limit BUY Executed', order.symbol + ' @ $' + execPrice.toFixed(4),
                                 'success');
                             playTradeSound('buy');
+                            // Draw entry line
+                            drawEntryLine(order.symbol, execPrice, 'long');
                         } else {
                             const margin = qty * execPrice * 0.5;
                             if (portfolio.cash < margin + fee) {
@@ -4814,11 +4913,14 @@
                                 time: new Date().toISOString(),
                                 reason: 'Limit Order (Short)',
                                 id: order.id,
-                                fee: fee
+                                fee: fee,
+                                entryPrice: execPrice,
+                                typeLabel: 'short'
                             });
                             sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
                                 4), 'success');
                             playTradeSound('sell');
+                            drawEntryLine(order.symbol, execPrice, 'short');
                         }
                         order.status = 'filled';
                         toRemove.push(i);
@@ -4833,6 +4935,20 @@
                     savePendingOrders();
                     renderPendingOrdersUI();
                 }
+            }
+
+            // ─── DRAW ENTRY LINE ────────────────────────────────────────────
+            function drawEntryLine(symbol, price, type) {
+                if (symbol !== simCurrentSymbol) return;
+                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                const color = type === 'long' ? '#10b981' : '#ef4444';
+                const label = 'Entry ' + (type === 'long' ? 'BUY' : 'SELL') + ' @ ' + price.toFixed(4);
+                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color: color, label: label,
+                    style: 0 });
+                savePortfolioToStorage();
+                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
+                redrawAllLines();
+                showToast('📈 Entry line drawn at $' + price.toFixed(4));
             }
 
             // ─── PLACE ORDER ────────────────────────────────────────────────
@@ -4869,7 +4985,7 @@
                 if (type === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
                     portfolio.cash -= qty * price + fee;
-                    portfolio.positions.push({
+                    const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
                         type: 'long',
@@ -4880,7 +4996,8 @@
                         tpPrice: null,
                         openTime: new Date().toISOString(),
                         fee: fee
-                    });
+                    };
+                    portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
                         type: 'buy',
                         symbol: symbol,
@@ -4888,16 +5005,19 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order',
-                        fee: fee
+                        fee: fee,
+                        entryPrice: price,
+                        typeLabel: 'long'
                     });
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
+                    drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
                     portfolio.cash -= fee;
-                    portfolio.positions.push({
+                    const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
                         type: 'short',
@@ -4908,7 +5028,8 @@
                         tpPrice: null,
                         openTime: new Date().toISOString(),
                         fee: fee
-                    });
+                    };
+                    portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
                         type: 'sell',
                         symbol: symbol,
@@ -4916,11 +5037,14 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order (Short)',
-                        fee: fee
+                        fee: fee,
+                        entryPrice: price,
+                        typeLabel: 'short'
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
                     showToast('✅ Market SHORT ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
+                    drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
@@ -4938,7 +5062,7 @@
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                 const fee = Math.abs(p.qty * price * 0.0005);
                 portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
-                portfolio.transactions.unshift({
+                const tx = {
                     type: 'close',
                     symbol: p.symbol,
                     qty: p.qty,
@@ -4946,8 +5070,11 @@
                     time: new Date().toISOString(),
                     reason: 'Manual Exit',
                     pnl: pnl - fee,
-                    id: p.id
-                });
+                    id: p.id,
+                    entryPrice: p.entryPrice,
+                    typeLabel: p.type
+                };
+                portfolio.transactions.unshift(tx);
                 portfolio.positions.splice(idx, 1);
                 savePortfolioToStorage();
                 updateSimUI();
@@ -5003,7 +5130,9 @@
                             time: new Date().toISOString(),
                             reason: 'Close All',
                             pnl: pnl - fee,
-                            id: p.id
+                            id: p.id,
+                            entryPrice: p.entryPrice,
+                            typeLabel: p.type
                         });
                     });
                     portfolio.positions = [];
@@ -5100,11 +5229,12 @@
                     const price = simLastPrices[sym] || simBasePrices[sym] || 0;
                     const priceEl = el.querySelector('.price');
                     if (priceEl) priceEl.textContent = '$' + (typeof price === 'number' ? price.toFixed(4) :
-                    price);
-                    // Update change (simulated)
+                        price);
+                    // Calculate real change from last price
                     const changeEl = el.querySelector('.change');
                     if (changeEl) {
-                        const change = (Math.random() * 4 - 2);
+                        const basePrice = simBasePrices[sym] || price;
+                        const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
                         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
                         changeEl.className = 'change ' + (change >= 0 ? 'up' : 'down');
                     }
@@ -5137,7 +5267,6 @@
                 const symbol = simCurrentSymbol;
                 let price = simLastPrices[symbol] || simBasePrices[symbol] || 150;
                 if (!isValidNumber(price)) price = 150;
-                if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
 
                 if (orderType === 'limit') {
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
@@ -5164,7 +5293,7 @@
                 if (side === 'buy') {
                     if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
                     portfolio.cash -= qty * price + fee;
-                    portfolio.positions.push({
+                    const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
                         type: 'long',
@@ -5175,7 +5304,8 @@
                         tpPrice: null,
                         openTime: new Date().toISOString(),
                         fee: fee
-                    });
+                    };
+                    portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
                         type: 'buy',
                         symbol: symbol,
@@ -5183,16 +5313,19 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order',
-                        fee: fee
+                        fee: fee,
+                        entryPrice: price,
+                        typeLabel: 'long'
                     });
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol);
+                    drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
                     portfolio.cash -= fee;
-                    portfolio.positions.push({
+                    const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
                         type: 'short',
@@ -5203,7 +5336,8 @@
                         tpPrice: null,
                         openTime: new Date().toISOString(),
                         fee: fee
-                    });
+                    };
+                    portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
                         type: 'sell',
                         symbol: symbol,
@@ -5211,24 +5345,25 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order (Short)',
-                        fee: fee
+                        fee: fee,
+                        entryPrice: price,
+                        typeLabel: 'short'
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
                     showToast('✅ Market SHORT ' + qty + ' ' + symbol);
+                    drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
-                updateMobileTopBar();
-                renderMobileTradeSummary();
+                redrawAllLines();
                 syncPortfolioToServer();
                 document.getElementById('mobileSellBtn')?.blur();
                 document.getElementById('mobileBuyBtn')?.blur();
             }
 
-            // ─── UPDATE TRADE PANEL DATA (NO FULL RE-RENDER) ──────────────
+            // ─── UPDATE TRADE PANEL DATA ────────────────────────────────────
             function updateTradePanelData() {
-                // Update summary
                 const totalEquity = calcEquity();
                 const totalPL = calcTotalPL();
                 const summaryEl = document.getElementById('tradeSummaryContent');
@@ -5241,7 +5376,6 @@
                         </div>`;
                 }
 
-                // Update positions
                 const posContainer = document.getElementById('mobilePositionsList');
                 if (posContainer) {
                     const positions = portfolio.positions || [];
@@ -5271,7 +5405,6 @@
                     }
                 }
 
-                // Update pending orders
                 const pendingEl = document.getElementById('mobilePendingOrders');
                 if (pendingEl) {
                     const pending = pendingOrders.filter(o => o.status === 'pending');
@@ -5288,11 +5421,9 @@
                 }
             }
 
-            // ─── MOBILE TRADE SUMMARY (FULL RENDER FOR INIT) ──────────────
             function renderMobileTradeSummary() {
                 const panel = document.getElementById('tradePanel');
                 if (!panel) return;
-
                 if (!panel.dataset.initialized) {
                     panel.dataset.initialized = 'true';
                     panel.innerHTML = `
@@ -5312,7 +5443,6 @@
                             </div>
                         </div>
                     `;
-
                     document.getElementById('mobileDepositBtn').addEventListener('click', window.depositFunds);
                     document.getElementById('mobileWithdrawBtn').addEventListener('click', window.withdrawFunds);
                     document.getElementById('closeAllMobileBtn').addEventListener('click', () => {
@@ -5320,12 +5450,10 @@
                         setTimeout(updateTradePanelData, 200);
                     });
                 }
-
                 updateTradePanelData();
                 updateMobileTopBar();
             }
 
-            // ─── GLOBAL DEPOSIT/WITHDRAW FUNCTIONS ──────────────────────────
             window.depositFunds = function() {
                 const amtInput = document.getElementById('mobileDepositAmount');
                 if (!amtInput) return;
@@ -5366,7 +5494,8 @@
                 const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
                 html += list.map(sym => {
                     const price = simLastPrices[sym] || simBasePrices[sym] || 0;
-                    const change = (Math.random() * 4 - 2);
+                    const basePrice = simBasePrices[sym] || price;
+                    const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
                     const cls = change >= 0 ? 'up' : 'down';
                     return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                         <span class="sym">${sym}</span>
@@ -5387,7 +5516,8 @@
                     `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;min-height:36px;" value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
                     filtered.map(sym => {
                         const price = simLastPrices[sym] || simBasePrices[sym] || 0;
-                        const change = (Math.random() * 4 - 2);
+                        const basePrice = simBasePrices[sym] || price;
+                        const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
                         const cls = change >= 0 ? 'up' : 'down';
                         return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                             <span class="sym">${sym}</span>
@@ -5421,7 +5551,7 @@
                 showToast('📊 Switched to ' + sym);
             }
 
-            // ─── MOBILE HISTORY ─────────────────────────────────────────────
+            // ─── MOBILE HISTORY (MT5 STYLE) ─────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
@@ -5434,19 +5564,19 @@
                 });
                 let html = `
                     <div style="padding:3px 0;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <h4 style="color:var(--mt5-text-bright);font-size:0.75rem;">History</h4>
-                            <div class="history-header-actions">
-                                <span title="Refresh" onclick="renderMobileHistory()">⟳</span>
+                        <div class="history-header-row">
+                            <span class="h-title"><i class="fas fa-clock"></i> History</span>
+                            <div class="h-actions">
+                                <span onclick="renderMobileHistory()" title="Refresh">⟳</span>
                                 <span title="Sort">⇅</span>
                                 <span title="Calendar">📅</span>
                             </div>
                         </div>
-                        <div style="font-size:0.5rem;color:var(--mt5-text);">All symbols</div>
+                        <div class="history-all-symbols">All symbols</div>
                         <div class="history-tabs">
-                            <div class="htab active" data-htab="positions" onclick="switchHistoryTab('positions')">POSITIONS</div>
-                            <div class="htab" data-htab="orders" onclick="switchHistoryTab('orders')">ORDERS</div>
-                            <div class="htab" data-htab="deals" onclick="switchHistoryTab('deals')">DEALS</div>
+                            <button class="htab active" data-htab="positions" onclick="switchHistoryTab('positions')">POSITIONS</button>
+                            <button class="htab" data-htab="orders" onclick="switchHistoryTab('orders')">ORDERS</button>
+                            <button class="htab" data-htab="deals" onclick="switchHistoryTab('deals')">DEALS</button>
                         </div>
                         <div id="historyContent">
                             <div class="history-summary-row">
@@ -5461,19 +5591,25 @@
                                     const pnl = t.pnl || 0;
                                     const pnlStr = isClose ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) : '';
                                     const pnlCls = isClose ? (pnl >= 0 ? 'green' : 'red') : '';
-                                    const label = t.type === 'close' ? 'CLOSE' : t.type.toUpperCase();
+                                    const label = t.type === 'close' ? 'CLOSE' : t.type === 'deposit' ? 'DEPOSIT' : t.type === 'withdraw' ? 'WITHDRAW' : t.type.toUpperCase();
                                     const symbol = t.symbol || 'USD';
                                     const qtyStr = t.qty ? t.qty.toFixed(2) : '';
                                     const priceStr = t.price ? '$' + t.price.toFixed(4) : '';
                                     const timeStr = t.time ? new Date(t.time).toLocaleString() : '';
-                                    const detail = `${symbol} ${qtyStr} ${priceStr}`;
                                     const entryExit = t.reason ? ` (${t.reason})` : '';
+                                    // For close trades show entry→exit
+                                    let detail = `${symbol} ${qtyStr} ${priceStr}`;
+                                    if (isClose && t.entryPrice) {
+                                        detail = `${symbol} ${qtyStr} ${t.typeLabel||''} ${t.entryPrice.toFixed(4)} → ${t.price.toFixed(4)}`;
+                                    }
                                     return `<div class="history-item">
-                                        <div class="left">
-                                            <span class="type ${typeCls}">${label}${entryExit}</span>
-                                            <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
+                                        <div class="h-row">
+                                            <div class="h-left">
+                                                <span class="type ${typeCls}">${label}${entryExit}</span>
+                                                <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
+                                            </div>
+                                            <div class="h-right ${pnlCls}">${pnlStr}</div>
                                         </div>
-                                        <div class="right ${pnlCls}">${pnlStr}</div>
                                     </div>`;
                                 }).join('')}
                             </div>
@@ -5513,19 +5649,26 @@
                             const pnl = t.pnl || 0;
                             const pnlStr = isClose ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) : '';
                             const pnlCls = isClose ? (pnl >= 0 ? 'green' : 'red') : '';
-                            const label = t.type === 'close' ? 'CLOSE' : t.type.toUpperCase();
+                            const label = t.type === 'close' ? 'CLOSE' : t.type === 'deposit' ? 'DEPOSIT' :
+                                t.type === 'withdraw' ? 'WITHDRAW' : t.type.toUpperCase();
                             const symbol = t.symbol || 'USD';
                             const qtyStr = t.qty ? t.qty.toFixed(2) : '';
                             const priceStr = t.price ? '$' + t.price.toFixed(4) : '';
                             const timeStr = t.time ? new Date(t.time).toLocaleString() : '';
-                            const detail = `${symbol} ${qtyStr} ${priceStr}`;
                             const entryExit = t.reason ? ` (${t.reason})` : '';
+                            let detail = `${symbol} ${qtyStr} ${priceStr}`;
+                            if (isClose && t.entryPrice) {
+                                detail =
+                                    `${symbol} ${qtyStr} ${t.typeLabel||''} ${t.entryPrice.toFixed(4)} → ${t.price.toFixed(4)}`;
+                            }
                             listHtml += `<div class="history-item">
-                                <div class="left">
-                                    <span class="type ${typeCls}">${label}${entryExit}</span>
-                                    <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
+                                <div class="h-row">
+                                    <div class="h-left">
+                                        <span class="type ${typeCls}">${label}${entryExit}</span>
+                                        <span class="detail">${detail} <span class="time-stamp">• ${timeStr}</span></span>
+                                    </div>
+                                    <div class="h-right ${pnlCls}">${pnlStr}</div>
                                 </div>
-                                <div class="right ${pnlCls}">${pnlStr}</div>
                             </div>`;
                         });
                     }
@@ -5580,13 +5723,11 @@
 
             function resetChart() {
                 cleanupSimIntervals();
-                if (simChart) {
-                    try { simChart.remove(); } catch (e) {}
+                if (simChart) { try { simChart.remove(); } catch (e) {}
                     simChart = null;
                     simCandleSeries = null;
                     simVolumeSeries = null;
-                    simIndicatorSeries = {};
-                }
+                    simIndicatorSeries = {}; }
                 simAllCandles = [];
                 simCurrentCandle = null;
                 activeIndicators = {};
@@ -5594,9 +5735,7 @@
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                 const chartDiv = document.getElementById('simChartContainer');
-                if (chartDiv) {
-                    chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>';
-                }
+                if (chartDiv) { chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>'; }
                 if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
                 chartInitRetryTimer = setTimeout(initChart, 100);
             }
@@ -5609,7 +5748,6 @@
                 bgEngineInterval = setInterval(() => {
                     checkAndExecuteSLTP();
                     checkPendingOrders();
-                    // Auto-reset history every 24 hours
                     const now = Date.now();
                     if (now - lastHistoryReset > 86400000) {
                         const cutoff = now - 86400000;
@@ -5644,7 +5782,7 @@
                             drawnLines: portfolio.drawnLines
                         })
                     });
-                } catch (e) { console.warn('Portfolio sync error:', e.message); }
+                } catch (e) { /* silent */ }
             }
 
             // ─── UI UPDATES ──────────────────────────────────────────────────
@@ -5747,7 +5885,6 @@
                 updateLineManagerUI();
             }
 
-            // ─── TIME UPDATE ──────────────────────────────────────────────────
             setInterval(() => {
                 const el = document.getElementById('statusTime');
                 if (el) el.textContent = new Date().toLocaleTimeString();
@@ -5806,7 +5943,7 @@
                 });
             }
 
-            // ─── DESKTOP TERMINAL (2-BAR LAYOUT) ─────────────────────────────
+            // ─── DESKTOP TERMINAL ─────────────────────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
@@ -5967,8 +6104,7 @@
                             const chartDiv2 = document.getElementById('simChartContainer');
                             if (chartDiv2 && chartDiv2.clientWidth > 0) {
                                 try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
-                                        .clientHeight }); } catch (e) { console.warn('FS resize error:',
-                                        e); }
+                                        .clientHeight }); } catch (e) {}
                             }
                         }
                     }, 300);
@@ -6248,8 +6384,7 @@
                                 if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2
                                     .clientHeight > 0) {
                                     try { simChart.applyOptions({ width: chartDiv2.clientWidth,
-                                            height: chartDiv2.clientHeight }); } catch (e) { console
-                                            .warn('Nav resize error:', e); }
+                                            height: chartDiv2.clientHeight }); } catch (e) {}
                                 }
                             }
                         }, 150);
@@ -6270,8 +6405,7 @@
                         const chartDiv2 = document.getElementById('simChartContainer');
                         if (chartDiv2 && chartDiv2.clientWidth > 0 && chartDiv2.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv2.clientWidth, height: chartDiv2
-                                    .clientHeight }); } catch (e) { console.warn('Mobile resize error:',
-                                    e); }
+                                    .clientHeight }); } catch (e) {}
                         }
                     }
                 });
@@ -6386,7 +6520,86 @@
                 try {
                     stopBackgroundEngine();
                     cleanupSimIntervals();
-                    const chapterProgress = calcChapterProgress();
+                    const isMobile = window.innerWidth <= 768;
+                    const chapProg = calcChapterProgress();
+
+                    // Build header based on mobile/desktop
+                    let headerHTML = '';
+                    if (isMobile) {
+                        headerHTML = `
+                            <div class="mobile-header-glass">
+                                <div class="mh-left">
+                                    <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
+                                    <div class="mh-nav-links">
+                                        <span class="mh-link active" onclick="showLessonList()">Training</span>
+                                        <span class="mh-divider">|</span>
+                                        <span class="mh-link" onclick="window.open('?mode=trading','_blank')">Terminal</span>
+                                    </div>
+                                </div>
+                                <div class="mh-search">
+                                    <i class="fas fa-search mh-search-icon"></i>
+                                    <input type="text" id="searchInput" placeholder="Search...">
+                                </div>
+                                <div class="mh-right">
+                                    <button class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+                                    <div class="profile-dropdown-wrap">
+                                        <button class="user-profile-btn" id="profileToggleMobile">
+                                            <span class="avatar-circle">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                        </button>
+                                        <div class="profile-dropdown-menu" id="profileMenuMobile">
+                                            <div class="account-no-display">${userAccountNo}</div>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');document.getElementById('langSelect').click();"><span class="dd-icon">🌐</span> Language</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        headerHTML = `
+                            <div class="top-bar-glass">
+                                <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
+                                <div class="header-nav-links">
+                                    <span class="nav-link active" onclick="showLessonList()">Training Hub</span>
+                                    <span class="nav-divider">|</span>
+                                    <span class="nav-link" onclick="window.open('?mode=trading','_blank')">Terminal</span>
+                                </div>
+                                <div class="search-box-glass">
+                                    <i class="fas fa-search search-icon-glass"></i>
+                                    <input type="text" id="searchInput" placeholder="Search lessons...">
+                                </div>
+                                <div class="top-actions-glass">
+                                    <div class="header-icons">
+                                        <button class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+                                    </div>
+                                    <select class="lang-select-glass" id="langSelect">
+                                        <option value="en">🇬🇧 EN</option>
+                                        <option value="hi">🇮🇳 HI</option>
+                                        <option value="bn">🇧🇩 BN</option>
+                                    </select>
+                                    <button class="theme-toggle-btn-glass" id="themeToggle">
+                                        <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
+                                    </button>
+                                    <div class="profile-dropdown-wrap">
+                                        <button class="user-profile-btn" id="profileToggleDesktop">
+                                            <span class="avatar-circle">${currentUser?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                            <span class="username-text" style="font-size:0.6rem;font-weight:600;">${currentUser?.username || ''}</span>
+                                        </button>
+                                        <div class="profile-dropdown-menu" id="profileMenuDesktop">
+                                            <div class="account-no-display">${userAccountNo}</div>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');document.getElementById('langSelect').click();"><span class="dd-icon">🌐</span> Language</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     document.getElementById('app').innerHTML = `
                         <div class="app-glass">
                             <div class="sidebar-glass" id="sidebar">
@@ -6401,55 +6614,12 @@
                                 </div>
                             </div>
                             <div class="main-glass">
-                                <div class="top-bar-glass">
-                                    <button class="mobile-toggle-glass" id="menuToggle"><i class="fas fa-bars"></i></button>
-                                    <div class="header-nav-links">
-                                        <span class="nav-link active" onclick="showLessonList()">Training Hub</span>
-                                        <span class="nav-divider">|</span>
-                                        <span class="nav-link" onclick="window.open('?mode=trading','_blank')">Terminal</span>
-                                    </div>
-                                    <div class="search-box-glass">
-                                        <i class="fas fa-search search-icon-glass"></i>
-                                        <input type="text" id="searchInput" placeholder="Search lessons...">
-                                    </div>
-                                    <div class="top-actions-glass">
-                                        <div class="header-icons">
-                                            <button class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></button>
-                                        </div>
-                                        <select class="lang-select-glass" id="langSelect">
-                                            <option value="en">🇬🇧 EN</option>
-                                            <option value="hi">🇮🇳 HI</option>
-                                            <option value="bn">🇧🇩 BN</option>
-                                        </select>
-                                        <button class="theme-toggle-btn-glass" id="themeToggle">
-                                            <span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}
-                                        </button>
-                                        <div class="user-menu-glass">
-                                            <span class="username"><i class="fas fa-user"></i> ${currentUser?.username || ''}</span>
-                                            <span class="account-no">${userAccountNo}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                ${headerHTML}
                                 <div class="content-glass" id="contentArea"></div>
                             </div>
                         </div>`;
 
-                    // Chapter progress card at top of content
-                    const contentArea = document.getElementById('contentArea');
-                    if (contentArea) {
-                        const progHTML = `
-                            <div class="progress-card-glass" id="chapterProgressCard">
-                                <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
-                                    <span>📚 Chapter Progress</span>
-                                    <span>${chapterProgress.completed} / ${chapterProgress.total} Chapters Completed</span>
-                                </div>
-                                <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapterProgress.percent}%"></div></div>
-                                <div class="progress-stats"><span>${chapterProgress.percent}%</span><span>${chapterProgress.completed} of ${chapterProgress.total}</span></div>
-                            </div>
-                        `;
-                        contentArea.innerHTML = progHTML;
-                    }
-
+                    // ─── Setup ──────────────────────────────────────────────────
                     const langSelect = document.getElementById('langSelect');
                     if (langSelect) {
                         langSelect.value = currentLang;
@@ -6470,7 +6640,8 @@
                         themeToggle.onclick = function() {
                             appTheme = appTheme === 'dark' ? 'light' : 'dark';
                             applyTheme();
-                            this.innerHTML = `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
+                            this.innerHTML =
+                                `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
                         };
                     }
 
@@ -6480,7 +6651,6 @@
                             document.getElementById('sidebar').classList.toggle('open');
                         };
                     }
-                    // Close sidebar on outside click (mobile)
                     document.addEventListener('click', function(e) {
                         const sidebar = document.getElementById('sidebar');
                         const menuBtn = document.getElementById('menuToggle');
@@ -6491,6 +6661,31 @@
                         }
                     });
 
+                    // Profile dropdown toggles
+                    const profileToggleDesktop = document.getElementById('profileToggleDesktop');
+                    const profileMenuDesktop = document.getElementById('profileMenuDesktop');
+                    if (profileToggleDesktop && profileMenuDesktop) {
+                        profileToggleDesktop.onclick = (e) => {
+                            e.stopPropagation();
+                            profileMenuDesktop.classList.toggle('show');
+                        };
+                        document.addEventListener('click', () => {
+                            if (profileMenuDesktop) profileMenuDesktop.classList.remove('show');
+                        });
+                    }
+
+                    const profileToggleMobile = document.getElementById('profileToggleMobile');
+                    const profileMenuMobile = document.getElementById('profileMenuMobile');
+                    if (profileToggleMobile && profileMenuMobile) {
+                        profileToggleMobile.onclick = (e) => {
+                            e.stopPropagation();
+                            profileMenuMobile.classList.toggle('show');
+                        };
+                        document.addEventListener('click', () => {
+                            if (profileMenuMobile) profileMenuMobile.classList.remove('show');
+                        });
+                    }
+
                     const terminalBtns = document.querySelectorAll('#topTerminalBtn');
                     terminalBtns.forEach(btn => {
                         btn.onclick = () => window.open('?mode=trading', '_blank');
@@ -6498,9 +6693,7 @@
 
                     const logoutBtn = document.getElementById('logoutBtn');
                     if (logoutBtn) {
-                        logoutBtn.onclick = () => {
-                            customConfirm('Exit App?', () => logout());
-                        };
+                        logoutBtn.onclick = () => { customConfirm('Exit App?', () => logout()); };
                     }
 
                     renderSubjectList();
@@ -6511,8 +6704,7 @@
                     else showLessonList();
 
                 } catch (error) {
-                    console.error('❌ renderUserInterface error:', error);
-                    document.getElementById('app').innerHTML = `<div style="padding:20px;color:red;">⚠️ UI রেন্ডার করতে সমস্যা: ${error.message}</div>`;
+                    document.getElementById('app').innerHTML = `<div style="padding:20px;color:red;">⚠️ UI Render error: ${error.message}</div>`;
                 }
             }
 
@@ -6576,7 +6768,7 @@
                         const prog = calcChapterProgress();
                         area.innerHTML = `
                             <div class="progress-card-glass">
-                                <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
+                                <div class="progress-title-row">
                                     <span>📚 Chapter Progress</span>
                                     <span>${prog.completed} / ${prog.total} Chapters Completed</span>
                                 </div>
@@ -6599,7 +6791,7 @@
                     <div class="lesson-list-glass">
                         <!-- Chapter Progress -->
                         <div class="progress-card-glass">
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
+                            <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
                                 <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
                             </div>
@@ -6608,7 +6800,7 @@
                         </div>
                         <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
+                            <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
                                 <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
                             </div>
@@ -6663,17 +6855,18 @@
                 const area = document.getElementById('contentArea');
                 area.innerHTML = `
                     <div class="detail-view-glass">
-                        <!-- Progress Cards -->
+                        <!-- Chapter Progress -->
                         <div class="progress-card-glass">
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
+                            <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
                                 <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
                             </div>
                             <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
                             <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
                         </div>
+                        <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:600;color:var(--text);">
+                            <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
                                 <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
                             </div>
@@ -6740,7 +6933,6 @@
                         });
                         userProgress[id] = 100;
                         showLessonDetail(id);
-                        // Also update sidebar progress
                         renderSubjectList();
                     } catch (e) { showToast('⚠️ ' + e.message); } };
                 document.getElementById('backBtnDetail').onclick = () => { currentLessonId = null;
@@ -7000,11 +7192,7 @@
                             <div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject to manage lessons</div>
                         </div>
                     </div>`;
-                document.getElementById('logoutBtn').onclick = () => {
-                    customConfirm('Exit App?', () => {
-                        logout();
-                    });
-                };
+                document.getElementById('logoutBtn').onclick = () => { customConfirm('Exit App?', () => { logout(); }); };
                 document.getElementById('adminThemeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
                     applyTheme();
@@ -7461,7 +7649,6 @@
                     if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
                     portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
                             .toString(36).slice(2, 6); });
-                    // Filter history older than 24h
                     const cutoff = Date.now() - 86400000;
                     portfolio.transactions = portfolio.transactions.filter(t => {
                         if (t.time && typeof t.time === 'string') {
@@ -7473,7 +7660,6 @@
                     savePortfolioToStorage();
                     if (currentUser?.username === 'admin') isAdmin = true;
                     if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
-
                     if (document.getElementById('subjectList')) {
                         renderSubjectList();
                         if (currentLessonId) showLessonDetail(currentLessonId);
@@ -7485,7 +7671,6 @@
                     connectBinanceWS();
                     connectServerWS();
                 } catch (e) {
-                    console.error('Background load error:', e);
                     if (e.message?.includes('Session expired')) logout();
                 }
             }
@@ -7538,7 +7723,6 @@
                     connectBinanceWS();
                     connectServerWS();
                 } catch (e) {
-                    console.error('Load error:', e);
                     if (e.message?.includes('Session expired')) logout();
                     else renderApp();
                 }
@@ -7713,7 +7897,6 @@
                 return vwap;
             }
 
-            // ─── UPDATE INDICATORS ──────────────────────────────────────────
             function updateAllIndicators() {
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
@@ -7735,8 +7918,7 @@
                         const emaData = calculateEMA(safeData, period);
                         if (emaData.length > 0) {
                             if (simIndicatorSeries[key]) {
-                                try { simIndicatorSeries[key].setData(emaData); } catch (e) { console.warn(
-                                        'EMA update error:', e); }
+                                try { simIndicatorSeries[key].setData(emaData); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: color, lineWidth: 2,
@@ -7745,7 +7927,7 @@
                                             minMove: 0.0001 } });
                                     ls.setData(emaData);
                                     simIndicatorSeries[key] = ls;
-                                } catch (e) { console.warn('EMA create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     } else { removeSeries(key); }
@@ -7756,8 +7938,7 @@
                         const data = [sma, upper, lower][i];
                         if (data && data.length > 0) {
                             if (simIndicatorSeries[k]) {
-                                try { simIndicatorSeries[k].setData(data); } catch (e) { console.warn(
-                                        'BB update error:', e); }
+                                try { simIndicatorSeries[k].setData(data); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
@@ -7768,7 +7949,7 @@
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
                                     ls.setData(data);
                                     simIndicatorSeries[k] = ls;
-                                } catch (e) { console.warn('BB create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     });
@@ -7777,8 +7958,7 @@
                     const rsiData = calculateRSI(safeData);
                     if (rsiData.length > 0) {
                         if (simIndicatorSeries['rsi']) {
-                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) { console.warn(
-                                    'RSI update error:', e); }
+                            try { simIndicatorSeries['rsi'].setData(rsiData); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['rsi'],
@@ -7789,7 +7969,7 @@
                                         bottom: 0 } });
                                 pane.setData(rsiData);
                                 simIndicatorSeries['rsi'] = pane;
-                            } catch (e) { console.warn('RSI create error:', e); }
+                            } catch (e) {}
                         }
                     }
                 } else { removeSeries('rsi'); }
@@ -7797,8 +7977,7 @@
                     const { macd, signal, histogram } = calculateMACD(safeData);
                     if (macd.length > 0) {
                         if (simIndicatorSeries['macd']) {
-                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) { console.warn(
-                                    'MACD update error:', e); }
+                            try { simIndicatorSeries['macd'].setData(macd); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['macd'],
@@ -7809,12 +7988,11 @@
                                         bottom: 0.2 } });
                                 pane.setData(macd);
                                 simIndicatorSeries['macd'] = pane;
-                            } catch (e) { console.warn('MACD create error:', e); }
+                            } catch (e) {}
                         }
                         if (signal.length > 0) {
                             if (simIndicatorSeries['macd_signal']) {
-                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) { console
-                                        .warn('MACD signal update error:', e); }
+                                try { simIndicatorSeries['macd_signal'].setData(signal); } catch (e) {}
                             } else {
                                 try {
                                     const sigPane = simChart.addLineSeries({ color: '#34d399',
@@ -7823,7 +8001,7 @@
                                         minMove: 0.0001 } });
                                     sigPane.setData(signal);
                                     simIndicatorSeries['macd_signal'] = sigPane;
-                                } catch (e) { console.warn('MACD signal create error:', e); }
+                                } catch (e) {}
                             }
                         }
                         if (histogram.length > 0) {
@@ -7831,15 +8009,14 @@
                                     .value >= 0 ? 'rgba(16,185,129,0.5)' :
                                     'rgba(239,68,68,0.5)' }));
                             if (simIndicatorSeries['macd_hist']) {
-                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) { console
-                                        .warn('MACD hist update error:', e); }
+                                try { simIndicatorSeries['macd_hist'].setData(histData); } catch (e) {}
                             } else {
                                 try {
                                     const histSeries = simChart.addHistogramSeries({ priceScaleId: 'macd',
                                         priceFormat: { type: 'price', precision: 4 } });
                                     histSeries.setData(histData);
                                     simIndicatorSeries['macd_hist'] = histSeries;
-                                } catch (e) { console.warn('MACD hist create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     }
@@ -7848,8 +8025,7 @@
                     const { k, d } = calculateStochastic(safeData);
                     if (k.length > 0) {
                         if (simIndicatorSeries['stoch_k']) {
-                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) { console.warn(
-                                    'Stoch K update error:', e); }
+                            try { simIndicatorSeries['stoch_k'].setData(k); } catch (e) {}
                         } else {
                             try {
                                 const kPane = simChart.addLineSeries({ color: '#06b6d4', lineWidth: 2,
@@ -7860,12 +8036,11 @@
                                         bottom: 0.15 } });
                                 kPane.setData(k);
                                 simIndicatorSeries['stoch_k'] = kPane;
-                            } catch (e) { console.warn('Stoch K create error:', e); }
+                            } catch (e) {}
                         }
                         if (d.length > 0) {
                             if (simIndicatorSeries['stoch_d']) {
-                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) { console.warn(
-                                        'Stoch D update error:', e); }
+                                try { simIndicatorSeries['stoch_d'].setData(d); } catch (e) {}
                             } else {
                                 try {
                                     const dPane = simChart.addLineSeries({ color: '#f472b6',
@@ -7874,7 +8049,7 @@
                                         minMove: 0.01 } });
                                     dPane.setData(d);
                                     simIndicatorSeries['stoch_d'] = dPane;
-                                } catch (e) { console.warn('Stoch D create error:', e); }
+                                } catch (e) {}
                             }
                         }
                     }
@@ -7883,8 +8058,7 @@
                     const vwapData = calculateVWAP(safeData);
                     if (vwapData.length > 0) {
                         if (simIndicatorSeries['vwap']) {
-                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) { console.warn(
-                                    'VWAP update error:', e); }
+                            try { simIndicatorSeries['vwap'].setData(vwapData); } catch (e) {}
                         } else {
                             try {
                                 const pane = simChart.addLineSeries({ color: INDICATOR_COLORS['vwap'],
@@ -7892,7 +8066,7 @@
                                     priceFormat: { type: 'price', precision: 4, minMove: 0.0001 } });
                                 pane.setData(vwapData);
                                 simIndicatorSeries['vwap'] = pane;
-                            } catch (e) { console.warn('VWAP create error:', e); }
+                            } catch (e) {}
                         }
                     }
                 } else { removeSeries('vwap'); }
@@ -7908,7 +8082,7 @@
                         } else { simVolumeSeries.setData([]);
                             const volScale = simChart.priceScale('');
                             if (volScale) volScale.applyOptions({ scaleMargins: { top: 0, bottom: 0 } }); }
-                    } catch (e) { console.warn('Volume update error:', e); }
+                    } catch (e) {}
                 }
             }
 
@@ -7953,10 +8127,6 @@
                 const total = lazyAllCandles.length;
                 lazyVisibleEnd = Math.min(total, 2000);
                 lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
-                return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
-            }
-
-            function getVisibleCandles() {
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
@@ -8023,6 +8193,7 @@
             window.renderSubjectList = renderSubjectList;
             window.calcChapterProgress = calcChapterProgress;
             window.calcLessonProgress = calcLessonProgress;
+            window.drawEntryLine = drawEntryLine;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
@@ -8031,11 +8202,9 @@
                 saveAccountNo();
             }
             openDB().then(() => {
-                console.log('✅ IndexedDB ready');
                 if (token && currentUser) loadAllData();
                 else renderAuthPage();
             }).catch(err => {
-                console.warn('IndexedDB error:', err);
                 if (token && currentUser) loadAllData();
                 else renderAuthPage();
             });
@@ -8046,8 +8215,7 @@
                         const chartDiv = document.getElementById('simChartContainer');
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight }); } catch (e) { console.warn(
-                                    'Orientation resize error:', e); }
+                                    .clientHeight }); } catch (e) {}
                         }
                     }
                 }, 300);
@@ -8060,8 +8228,7 @@
                         const chartDiv = document.getElementById('simChartContainer');
                         if (chartDiv && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
-                                    .clientHeight }); } catch (e) { console.warn(
-                                    'Resize error:', e); }
+                                    .clientHeight }); } catch (e) {}
                         }
                     }
                 }, 300);
@@ -8087,19 +8254,12 @@
 
                     if (isLWChart && msg.includes('Value is null')) {
                         nullErrorCount++;
-                        console.warn('🔄 Chart null error #' + nullErrorCount + ' from', e.filename);
-
                         if (nullErrorCount >= RESET_THRESHOLD &&
                             document.querySelector('.terminal-wrapper, .mobile-terminal') &&
                             Date.now() - lastResetTime > RESET_COOLDOWN) {
-                            console.warn('🛠️ Auto-resetting chart due to consecutive errors...');
                             nullErrorCount = 0;
                             lastResetTime = Date.now();
-                            if (typeof resetChart === 'function') {
-                                resetChart();
-                            } else {
-                                console.error('resetChart not available');
-                            }
+                            if (typeof resetChart === 'function') resetChart();
                         }
                     }
                 });
