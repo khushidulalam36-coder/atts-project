@@ -2364,6 +2364,66 @@
             color: #fff;
         }
 
+        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
+        .mt5-sidebar-sheet .deposit-withdraw-section {
+            margin-top: 6px;
+            padding: 6px 0;
+            border-top: 1px solid var(--mt5-border);
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section h4 {
+            margin-top: 0;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input[type="number"] {
+            flex: 1;
+            background: var(--mt5-input);
+            border: 1px solid var(--mt5-border);
+            color: var(--mt5-text-bright);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.55rem;
+            font-family: var(--font);
+            min-width: 50px;
+            min-height: 32px;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input:focus {
+            border-color: var(--mt5-green);
+            outline: none;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw button {
+            background: var(--mt5-blue);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: var(--font);
+            touch-action: manipulation;
+            min-height: 32px;
+            min-width: 50px;
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw button:active {
+            transform: scale(0.96);
+        }
+        .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw button.withdraw-btn {
+            background: var(--mt5-red);
+        }
+
         .mt5-indicator-overlay {
             position: fixed;
             top: 0;
@@ -2499,58 +2559,6 @@
         }
         .position-card .exit-btn:active {
             transform: scale(0.96);
-        }
-
-        .mt5-deposit-withdraw {
-            display: flex;
-            gap: 4px;
-            margin-top: 4px;
-            flex-wrap: wrap;
-        }
-        .mt5-deposit-withdraw input[type="number"] {
-            flex: 1;
-            background: var(--mt5-input);
-            border: 1px solid var(--mt5-border);
-            color: var(--mt5-text-bright);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.65rem;
-            font-family: var(--font);
-            min-width: 60px;
-            -moz-appearance: textfield;
-            appearance: textfield;
-            min-height: 38px;
-        }
-        .mt5-deposit-withdraw input[type="number"]::-webkit-inner-spin-button,
-        .mt5-deposit-withdraw input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            appearance: none;
-            margin: 0;
-        }
-        .mt5-deposit-withdraw input:focus {
-            border-color: var(--mt5-green);
-            outline: none;
-        }
-        .mt5-deposit-withdraw button {
-            background: var(--mt5-blue);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.6rem;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: var(--font);
-            touch-action: manipulation;
-            min-height: 38px;
-            min-width: 60px;
-        }
-        .mt5-deposit-withdraw button:active {
-            transform: scale(0.96);
-        }
-        .mt5-deposit-withdraw button.withdraw-btn {
-            background: var(--mt5-red);
         }
 
         .history-item {
@@ -2957,33 +2965,9 @@
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* ─── ENTRY LINE STYLES ───────────────────────────────────────────── */
+        /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border: 1px solid #3b82f6;
-        }
-        .sl-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
-        }
-        .tp-line-label {
-            font-size: 0.4rem;
-            font-weight: 600;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-            border: 1px solid #8b5cf6;
+            display: none;
         }
 
         /* ─── MOBILE HEADER ────────────────────────────────────────────────── */
@@ -3371,6 +3355,17 @@
                 font-size: 0.55rem;
                 padding: 2px 5px;
             }
+            .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input[type="number"] {
+                min-height: 28px;
+                padding: 4px 6px;
+                font-size: 0.5rem;
+            }
+            .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw button {
+                min-height: 28px;
+                min-width: 44px;
+                padding: 4px 8px;
+                font-size: 0.45rem;
+            }
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
@@ -3545,6 +3540,17 @@
                 font-size: 0.5rem;
                 left: 6px;
             }
+            .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw input[type="number"] {
+                min-height: 24px;
+                padding: 3px 4px;
+                font-size: 0.45rem;
+            }
+            .mt5-sidebar-sheet .deposit-withdraw-section .mt5-deposit-withdraw button {
+                min-height: 24px;
+                min-width: 38px;
+                padding: 3px 6px;
+                font-size: 0.4rem;
+            }
         }
 
         /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
@@ -3630,6 +3636,8 @@
             let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
             let pendingOrders = [];
             let lastHistoryReset = Date.now();
+            // Track entry lines per position
+            let entryLineKeys = {};
 
             // ─── CHART STATE ────────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
@@ -3647,6 +3655,12 @@
                 ETHUSDT: 3000,
                 SOLUSDT: 150,
                 XAUUSD: 4090.50
+            };
+            let simPrevClosePrices = {
+                BTCUSDT: 44500,
+                ETHUSDT: 2950,
+                SOLUSDT: 145,
+                XAUUSD: 4080.00
             };
             let simVolatility = {
                 BTCUSDT: 0.002,
@@ -4064,6 +4078,10 @@
                                 };
                                 const safeCandle = sanitizeCandle(candle);
                                 if (!safeCandle) return;
+                                // Update previous close for % calculation
+                                if (simLastPrices[symbol]) {
+                                    simPrevClosePrices[symbol] = simLastPrices[symbol];
+                                }
                                 simLastPrices[symbol] = safeCandle.close;
                                 lastBinancePrice[symbol] = safeCandle.close;
                                 updateMobileTopBar();
@@ -4193,6 +4211,9 @@
                     const data = await res.json();
                     const price = parseFloat(data.price);
                     if (price && price > 0) {
+                        if (simLastPrices[symbol]) {
+                            simPrevClosePrices[symbol] = simLastPrices[symbol];
+                        }
                         simLastPrices[symbol] = price;
                         simBasePrices[symbol] = price;
                         lastBinancePrice[symbol] = price;
@@ -4280,6 +4301,9 @@
                             candles.sort((a, b) => a.time - b.time); } else {
                             const idx = candles.findIndex(c => c.time === latestCandle.time);
                             if (idx !== -1) candles[idx] = latestCandle; }
+                        if (simLastPrices[simCurrentSymbol]) {
+                            simPrevClosePrices[simCurrentSymbol] = simLastPrices[simCurrentSymbol];
+                        }
                         realTimePrice = latestCandle.close;
                         simLastPrices[simCurrentSymbol] = latestCandle.close;
                         simBasePrices[simCurrentSymbol] = latestCandle.close;
@@ -4416,7 +4440,7 @@
                     if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
                         e) {} }
 
-                    // Click to draw
+                    // Click to draw (manual lines only)
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -4528,6 +4552,9 @@
                         if (wsConnected && lastBinancePrice[simCurrentSymbol]) {
                             const price = lastBinancePrice[simCurrentSymbol];
                             if (isValidNumber(price) && price > 0) {
+                                if (simLastPrices[simCurrentSymbol]) {
+                                    simPrevClosePrices[simCurrentSymbol] = simLastPrices[simCurrentSymbol];
+                                }
                                 simLastPrices[simCurrentSymbol] = price;
                                 updateSimUI();
                                 updateMobileTopBar();
@@ -4543,6 +4570,9 @@
                                 0.8;
                             price = (simCurrentCandle.close || 100) + change;
                             price = +price.toFixed(4);
+                            if (simLastPrices[simCurrentSymbol]) {
+                                simPrevClosePrices[simCurrentSymbol] = simLastPrices[simCurrentSymbol];
+                            }
                             simLastPrices[simCurrentSymbol] = price;
                         }
                         if (!isValidNumber(price)) {
@@ -4658,13 +4688,15 @@
                 }
             }
 
-            // ─── REDRAW ALL LINES (including entry lines) ──────────────────
+            // ─── REDRAW ALL LINES (entry lines are simple, no label) ──────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
                 allPriceLines = {};
                 manualDrawnLines = [];
+                entryLineKeys = {};
 
+                // Manual drawn lines (Support/Resistance/H-Line)
                 const symbolLines = (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) || [];
                 symbolLines.forEach((l, idx) => {
                     const line = simCandleSeries.createPriceLine({ price: l.price, color: l.color || '#3b82f6',
@@ -4675,20 +4707,23 @@
                         lineObj: line, index: idx });
                 });
 
-                // ─── Entry lines for positions ──────────────────────────────
+                // ─── Entry lines (no label, just color) ─────────────────────
                 portfolio.positions.forEach(p => {
                     if (p.symbol === simCurrentSymbol && p.entryPrice) {
-                        const label = 'Entry ' + p.type.toUpperCase() + ' ' + p.symbol;
+                        const color = p.type === 'long' ? '#10b981' : '#ef4444';
                         const line = simCandleSeries.createPriceLine({
                             price: p.entryPrice,
-                            color: p.type === 'long' ? '#10b981' : '#ef4444',
-                            lineWidth: 1.5,
+                            color: color,
+                            lineWidth: 1.8,
                             lineStyle: 0,
-                            axisLabelVisible: true,
-                            title: label
+                            axisLabelVisible: false,
+                            title: ''
                         });
-                        allPriceLines['entry_' + p.id] = line;
+                        const key = 'entry_' + p.id;
+                        allPriceLines[key] = line;
+                        entryLineKeys[p.id] = key;
                     }
+                    // SL/TP lines (keep them with labels)
                     if (p.symbol === simCurrentSymbol && p.slPrice) {
                         const line = simCandleSeries.createPriceLine({
                             price: p.slPrice,
@@ -4714,6 +4749,23 @@
                 });
                 updateLineManagerUI();
                 updateMobileDrawnLines();
+            }
+
+            // ─── REMOVE ENTRY LINE FOR A POSITION ──────────────────────────
+            function removeEntryLine(posId) {
+                const key = entryLineKeys[posId];
+                if (key && allPriceLines[key]) {
+                    try { simCandleSeries.removePriceLine(allPriceLines[key]); } catch (e) {}
+                    delete allPriceLines[key];
+                    delete entryLineKeys[posId];
+                }
+                // Also remove from portfolio.drawnLines if it exists (cleanup)
+                if (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) {
+                    portfolio.drawnLines[simCurrentSymbol] = portfolio.drawnLines[simCurrentSymbol].filter(
+                        l => !(l.label && l.label.includes('Entry') && l.price === portfolio.positions.find(p => p
+                            .id === posId)?.entryPrice)
+                    );
+                }
             }
 
             function deleteSingleLine(idx) {
@@ -4771,6 +4823,15 @@
                 showToast('🗑️ Line deleted');
             }
 
+            // ─── DRAW ENTRY LINE (clean, no label) ─────────────────────────
+            function drawEntryLine(symbol, price, type) {
+                if (symbol !== simCurrentSymbol) return;
+                // We don't store entry lines in drawnLines anymore; they are managed per position
+                // The line is drawn in redrawAllLines() for each open position
+                // Just trigger a redraw
+                redrawAllLines();
+            }
+
             // ─── TRADING ENGINE ─────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
@@ -4816,6 +4877,8 @@
                         sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
                             fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
+                        // Remove entry line
+                        removeEntryLine(p.id);
                         toRemove.push(i);
                         changed = true;
                     }
@@ -4880,7 +4943,6 @@
                             sendNotification('✅ Limit BUY Executed', order.symbol + ' @ $' + execPrice.toFixed(4),
                                 'success');
                             playTradeSound('buy');
-                            // Draw entry line
                             drawEntryLine(order.symbol, execPrice, 'long');
                         } else {
                             const margin = qty * execPrice * 0.5;
@@ -4935,20 +4997,6 @@
                     savePendingOrders();
                     renderPendingOrdersUI();
                 }
-            }
-
-            // ─── DRAW ENTRY LINE ────────────────────────────────────────────
-            function drawEntryLine(symbol, price, type) {
-                if (symbol !== simCurrentSymbol) return;
-                if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                const color = type === 'long' ? '#10b981' : '#ef4444';
-                const label = 'Entry ' + (type === 'long' ? 'BUY' : 'SELL') + ' @ ' + price.toFixed(4);
-                portfolio.drawnLines[simCurrentSymbol].push({ price: +price.toFixed(4), color: color, label: label,
-                    style: 0 });
-                savePortfolioToStorage();
-                saveDrawingsToDB(simCurrentSymbol, portfolio.drawnLines[simCurrentSymbol]);
-                redrawAllLines();
-                showToast('📈 Entry line drawn at $' + price.toFixed(4));
             }
 
             // ─── PLACE ORDER ────────────────────────────────────────────────
@@ -5075,6 +5123,8 @@
                     typeLabel: p.type
                 };
                 portfolio.transactions.unshift(tx);
+                // Remove entry line
+                removeEntryLine(p.id);
                 portfolio.positions.splice(idx, 1);
                 savePortfolioToStorage();
                 updateSimUI();
@@ -5134,6 +5184,7 @@
                             entryPrice: p.entryPrice,
                             typeLabel: p.type
                         });
+                        removeEntryLine(p.id);
                     });
                     portfolio.positions = [];
                     savePortfolioToStorage();
@@ -5182,6 +5233,7 @@
                     simLastPrices = {};
                     activeIndicators = {};
                     simIndicatorSeries = {};
+                    entryLineKeys = {};
                     savePortfolioToStorage();
                     savePendingOrders();
                     updateSimUI();
@@ -5219,7 +5271,7 @@
                 showToast('🗑 Limit order canceled');
             }
 
-            // ─── UPDATE WATCHLIST PRICES ────────────────────────────────────
+            // ─── UPDATE WATCHLIST PRICES (with proper % calc) ──────────────
             function updateWatchlistPrices() {
                 const items = document.querySelectorAll('.watchlist-item');
                 items.forEach(el => {
@@ -5230,11 +5282,11 @@
                     const priceEl = el.querySelector('.price');
                     if (priceEl) priceEl.textContent = '$' + (typeof price === 'number' ? price.toFixed(4) :
                         price);
-                    // Calculate real change from last price
+                    // Calculate % change based on previous close price
                     const changeEl = el.querySelector('.change');
                     if (changeEl) {
-                        const basePrice = simBasePrices[sym] || price;
-                        const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
+                        const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
+                        const change = prevClose > 0 ? ((price - prevClose) / prevClose * 100) : 0;
                         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
                         changeEl.className = 'change ' + (change >= 0 ? 'up' : 'down');
                     }
@@ -5494,8 +5546,8 @@
                 const list = mobileWatchlist.length ? mobileWatchlist : SYMBOLS;
                 html += list.map(sym => {
                     const price = simLastPrices[sym] || simBasePrices[sym] || 0;
-                    const basePrice = simBasePrices[sym] || price;
-                    const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
+                    const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
+                    const change = prevClose > 0 ? ((price - prevClose) / prevClose * 100) : 0;
                     const cls = change >= 0 ? 'up' : 'down';
                     return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                         <span class="sym">${sym}</span>
@@ -5516,8 +5568,8 @@
                     `<div class="mobile-search" style="padding:2px 0;"><input type="text" id="watchlistSearch" placeholder="Search symbol..." style="width:100%;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:3px 6px;border-radius:4px;font-size:0.6rem;min-height:36px;" value="${query}" oninput="window.watchlistSearch(this.value)"></div>` +
                     filtered.map(sym => {
                         const price = simLastPrices[sym] || simBasePrices[sym] || 0;
-                        const basePrice = simBasePrices[sym] || price;
-                        const change = basePrice > 0 ? ((price - basePrice) / basePrice * 100) : 0;
+                        const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
+                        const change = prevClose > 0 ? ((price - prevClose) / prevClose * 100) : 0;
                         const cls = change >= 0 ? 'up' : 'down';
                         return `<div class="watchlist-item" onclick="selectMobileSymbol('${sym}')">
                             <span class="sym">${sym}</span>
@@ -5597,7 +5649,6 @@
                                     const priceStr = t.price ? '$' + t.price.toFixed(4) : '';
                                     const timeStr = t.time ? new Date(t.time).toLocaleString() : '';
                                     const entryExit = t.reason ? ` (${t.reason})` : '';
-                                    // For close trades show entry→exit
                                     let detail = `${symbol} ${qtyStr} ${priceStr}`;
                                     if (isClose && t.entryPrice) {
                                         detail = `${symbol} ${qtyStr} ${t.typeLabel||''} ${t.entryPrice.toFixed(4)} → ${t.price.toFixed(4)}`;
@@ -6227,6 +6278,15 @@
                                 <div class="timeframe-grid">${Object.keys(TIMEFRAMES).map(k => `<button data-tf="${TIMEFRAMES[k]}">${k}</button>`).join('')}</div>
                                 <h4>🎨 Theme</h4>
                                 <div class="theme-row"><button id="sidebarLightTheme">☀️ Light</button><button id="sidebarDarkTheme">🌙 Dark</button></div>
+                                <!-- Deposit / Withdraw in Hamburger -->
+                                <div class="deposit-withdraw-section">
+                                    <h4>💰 Deposit / Withdraw</h4>
+                                    <div class="mt5-deposit-withdraw">
+                                        <input type="number" id="sidebarDepositAmount" placeholder="Amount" step="0.01" inputmode="decimal" />
+                                        <button class="btn btn-success btn-sm" id="sidebarDepositBtn">Deposit</button>
+                                        <button class="btn btn-danger btn-sm withdraw-btn" id="sidebarWithdrawBtn">Withdraw</button>
+                                    </div>
+                                </div>
                                 <div style="margin-top:6px;padding-top:4px;border-top:1px solid var(--mt5-border);"><button class="btn btn-outline btn-sm" style="width:100%;color:var(--mt5-text);border-color:var(--mt5-border);font-size:0.5rem;" id="sidebarCloseBtn">Close</button></div>
                             </div>
                         </div>
@@ -6263,6 +6323,39 @@
                 document.getElementById('sidebarCloseBtn').onclick = () => sidebarOverlay.classList.remove('show');
                 sidebarOverlay.addEventListener('click', function(e) {
                     if (e.target === this) this.classList.remove('show');
+                });
+
+                // Sidebar deposit/withdraw
+                document.getElementById('sidebarDepositBtn').addEventListener('click', function() {
+                    const amtInput = document.getElementById('sidebarDepositAmount');
+                    const amt = parseFloat(amtInput?.value);
+                    if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
+                    portfolio.cash = (portfolio.cash || 0) + amt;
+                    portfolio.transactions.unshift({ type: 'deposit', qty: amt, price: 1, symbol: 'USD',
+                        time: new Date().toISOString() });
+                    savePortfolioToStorage();
+                    syncPortfolioToServer();
+                    updateTradePanelData();
+                    updateSimUI();
+                    amtInput.value = '';
+                    showToast('💰 Deposited $' + amt.toFixed(2));
+                    sidebarOverlay.classList.remove('show');
+                });
+                document.getElementById('sidebarWithdrawBtn').addEventListener('click', function() {
+                    const amtInput = document.getElementById('sidebarDepositAmount');
+                    const amt = parseFloat(amtInput?.value);
+                    if (!amt || amt <= 0) { showToast('❌ Enter a valid amount'); return; }
+                    if ((portfolio.cash || 0) < amt) { showToast('❌ Insufficient balance'); return; }
+                    portfolio.cash = (portfolio.cash || 0) - amt;
+                    portfolio.transactions.unshift({ type: 'withdraw', qty: amt, price: 1, symbol: 'USD',
+                        time: new Date().toISOString() });
+                    savePortfolioToStorage();
+                    syncPortfolioToServer();
+                    updateTradePanelData();
+                    updateSimUI();
+                    amtInput.value = '';
+                    showToast('💸 Withdrawn $' + amt.toFixed(2));
+                    sidebarOverlay.classList.remove('show');
                 });
 
                 document.getElementById('mobileExitBtn').onclick = () => {
@@ -8114,6 +8207,7 @@
                 candles.sort((a, b) => a.time - b.time);
                 simLastPrices[sym] = targetPrice;
                 simBasePrices[sym] = targetPrice;
+                simPrevClosePrices[sym] = targetPrice * 0.98;
                 return candles;
             }
 
@@ -8194,6 +8288,7 @@
             window.calcChapterProgress = calcChapterProgress;
             window.calcLessonProgress = calcLessonProgress;
             window.drawEntryLine = drawEntryLine;
+            window.removeEntryLine = removeEntryLine;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
