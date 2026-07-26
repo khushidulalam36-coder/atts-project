@@ -13,7 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <style>
-        /* ─── ROOT ────────────────────────────────────────────────────────── */
         :root {
             --bg: #0b0f17;
             --bg-secondary: #111824;
@@ -68,7 +67,6 @@
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
         }
-
         [data-theme="light"] {
             --bg: #f0f2f5;
             --bg-secondary: #e4e7ed;
@@ -113,7 +111,6 @@
             --glass-border: rgba(0, 0, 0, 0.06);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
-
         * {
             margin: 0;
             padding: 0;
@@ -149,7 +146,6 @@
             z-index: 1;
         }
 
-        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
         .app-glass {
             display: flex;
             height: 100vh;
@@ -187,7 +183,6 @@
         [data-theme="light"] .sidebar-glass {
             box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
         }
-
         .sidebar-header-glass {
             display: flex;
             align-items: center;
@@ -219,7 +214,6 @@
         [data-theme="light"] .logo-text {
             color: #1e293b;
         }
-
         .subject-list-glass {
             flex: 1;
             overflow-y: auto;
@@ -259,7 +253,6 @@
             flex-shrink: 0;
             transition: all var(--transition);
         }
-
         .sidebar-footer-glass {
             margin-top: 12px;
             padding-top: 12px;
@@ -309,7 +302,6 @@
             color: #fff;
         }
 
-        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
         .main-glass {
             flex: 1;
             display: flex;
@@ -318,8 +310,6 @@
             padding: 0 16px 16px 16px;
             min-width: 0;
         }
-
-        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
@@ -337,7 +327,6 @@
         [data-theme="light"] .top-bar-glass {
             background: rgba(240, 242, 245, 0.85);
         }
-
         .mobile-toggle-glass {
             display: none;
             background: var(--glass-bg);
@@ -387,7 +376,6 @@
             pointer-events: none;
             font-size: 0.65rem;
         }
-
         .top-actions-glass {
             display: flex;
             align-items: center;
@@ -396,7 +384,6 @@
             flex-shrink: 0;
             flex-wrap: wrap;
         }
-
         .header-nav-links {
             display: flex;
             align-items: center;
@@ -427,7 +414,6 @@
             color: var(--border);
             font-weight: 300;
         }
-
         .header-icons {
             display: flex;
             align-items: center;
@@ -457,7 +443,6 @@
         .header-icons .icon-btn.has-notif {
             color: var(--accent);
         }
-
         .user-profile-btn {
             background: transparent;
             border: none;
@@ -491,7 +476,6 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-
         .lang-select-glass {
             padding: 4px 20px 4px 8px;
             border-radius: var(--radius-full);
@@ -513,7 +497,6 @@
             border-color: var(--primary);
             box-shadow: 0 3px 14px var(--primary-glow);
         }
-
         .theme-toggle-btn-glass {
             padding: 4px 10px;
             border-radius: var(--radius-full);
@@ -536,8 +519,6 @@
             color: var(--primary);
             box-shadow: 0 3px 16px var(--primary-glow);
         }
-
-        /* ─── PROFILE DROPDOWN ───────────────────────────────────────────── */
         .profile-dropdown-wrap {
             position: relative;
             display: inline-block;
@@ -601,14 +582,11 @@
             text-align: center;
         }
 
-        /* ─── CONTENT ──────────────────────────────────────────────────────── */
         .content-glass {
             flex: 1;
             padding: 14px 0 10px 0;
             overflow-y: auto;
         }
-
-        /* ─── PROGRESS CARDS ──────────────────────────────────────────────── */
         .progress-card-glass {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -652,7 +630,6 @@
             color: var(--text);
         }
 
-        /* ─── LESSON LIST ──────────────────────────────────────────────────── */
         .lesson-list-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -751,8 +728,6 @@
             transform: translateX(4px);
             color: var(--primary);
         }
-
-        /* ─── DETAIL VIEW ──────────────────────────────────────────────────── */
         .detail-view-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -780,7 +755,6 @@
             transform: translateX(-3px);
             box-shadow: 0 4px 18px var(--primary-glow);
         }
-
         .tabs-glass {
             display: flex;
             gap: 2px;
@@ -813,15 +787,12 @@
             color: var(--text);
             background: rgba(255, 255, 255, 0.04);
         }
-
         .tab-content-glass {
             padding: 12px 0;
             line-height: 1.7;
             font-size: 0.8rem;
             color: var(--text);
         }
-
-        /* ─── TTS CONTROLS ─────────────────────────────────────────────────── */
         .tts-controls-glass {
             display: flex;
             gap: 4px;
@@ -900,7 +871,6 @@
             min-width: 20px;
             text-align: center;
         }
-
         .certificate-btn-glass {
             background: linear-gradient(135deg, #10b981, #059669);
             color: #fff;
@@ -930,7 +900,6 @@
         .certificate-btn-glass:hover {
             transform: translateY(-2px);
         }
-
         .quiz-container-glass {
             background: var(--glass-bg);
             border-radius: var(--radius-lg);
@@ -976,7 +945,6 @@
             font-weight: 600;
         }
 
-        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
         .custom-confirm-overlay {
             position: fixed;
             top: 0;
@@ -1051,7 +1019,6 @@
             box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
             transform: translateY(-1px);
         }
-
         @keyframes modalFadeInGlass {
             from {
                 opacity: 0;
@@ -1071,7 +1038,6 @@
             }
         }
 
-        /* ─── MODAL ────────────────────────────────────────────────────────── */
         .modal {
             position: fixed;
             top: 0;
@@ -1144,7 +1110,6 @@
             flex-wrap: wrap;
         }
 
-        /* ─── BUTTONS ──────────────────────────────────────────────────────── */
         .btn {
             padding: 6px 16px;
             border-radius: var(--radius-full);
@@ -1293,7 +1258,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* ─── TOAST ────────────────────────────────────────────────────────── */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -1322,7 +1286,6 @@
                 transform: translateY(0) scale(1);
             }
         }
-
         .notification-banner {
             position: fixed;
             top: 10px;
@@ -1386,7 +1349,6 @@
             }
         }
 
-        /* ─── AUTH ──────────────────────────────────────────────────────────── */
         .auth-container {
             display: flex;
             align-items: center;
@@ -2364,7 +2326,6 @@
             color: #fff;
         }
 
-        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
         .mt5-sidebar-sheet .deposit-withdraw-section {
             margin-top: 6px;
             padding: 6px 0;
@@ -2965,12 +2926,10 @@
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
             display: none;
         }
 
-        /* ─── MOBILE HEADER ────────────────────────────────────────────────── */
         .mobile-header-glass {
             display: flex;
             align-items: center;
@@ -3057,7 +3016,6 @@
             font-weight: 300;
         }
 
-        /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
             .sidebar-glass {
                 position: fixed;
@@ -3124,7 +3082,6 @@
             .lesson-meta-glass {
                 font-size: 0.5rem;
             }
-
             .terminal-bar-1 {
                 min-height: 24px;
                 padding: 2px 4px;
@@ -3553,7 +3510,6 @@
             }
         }
 
-        /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
         [data-theme="dark"] .ql-toolbar {
             background: #1e293b !important;
             border-color: #334155 !important;
@@ -3582,7 +3538,6 @@
             background: #1e293b !important;
             border-color: #334155 !important;
         }
-
         .hide-scrollbar::-webkit-scrollbar {
             width: 2px;
             height: 2px;
@@ -3636,8 +3591,8 @@
             let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
             let pendingOrders = [];
             let lastHistoryReset = Date.now();
-            // Track entry lines per position
             let entryLineKeys = {};
+            let sltpLineKeys = {};
 
             // ─── CHART STATE ────────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
@@ -3791,7 +3746,6 @@
                     setTimeout(() => el.remove(), 300); }, 2800);
             }
 
-            // ─── SAFE UPDATE CANDLE ──────────────────────────────────────────
             function safeUpdateCandle(candle, source) {
                 if (!simCandleSeries || !simChart) return false;
                 if (!candle || typeof candle !== 'object') return false;
@@ -3818,7 +3772,6 @@
                 } catch (err) { return false; }
             }
 
-            // ─── CUSTOM CONFIRM MODAL ──────────────────────────────────────
             function customConfirm(message, onConfirm, onCancel) {
                 const overlay = document.createElement('div');
                 overlay.className = 'custom-confirm-overlay';
@@ -3843,7 +3796,6 @@
                 return overlay;
             }
 
-            // ─── NOTIFICATIONS ──────────────────────────────────────────────
             function sendNotification(title, body, type) {
                 type = type || 'info';
                 const existing = document.querySelector('.notification-banner');
@@ -4078,7 +4030,6 @@
                                 };
                                 const safeCandle = sanitizeCandle(candle);
                                 if (!safeCandle) return;
-                                // Update previous close for % calculation
                                 if (simLastPrices[symbol]) {
                                     simPrevClosePrices[symbol] = simLastPrices[symbol];
                                 }
@@ -4272,12 +4223,22 @@
                     realTimePrice = simBasePrices[simCurrentSymbol] || 45000;
                 }
 
+                // Determine interval string for Binance
+                let intervalStr = '1m';
+                if (currentTimeframe <= 60) intervalStr = '1m';
+                else if (currentTimeframe <= 300) intervalStr = '5m';
+                else if (currentTimeframe <= 900) intervalStr = '15m';
+                else if (currentTimeframe <= 1800) intervalStr = '30m';
+                else if (currentTimeframe <= 3600) intervalStr = '1h';
+                else if (currentTimeframe <= 14400) intervalStr = '4h';
+                else intervalStr = '1d';
+
                 let candles = null;
                 let sourceLabel = 'Simulation';
-                let binanceData = await fetchBinanceCandles(simCurrentSymbol, '1m', 500);
+                let binanceData = await fetchBinanceCandles(simCurrentSymbol, intervalStr, 500);
                 if (binanceData && binanceData.length > 0) {
                     candles = sanitizeCandleData(binanceData);
-                    sourceLabel = 'Binance REST';
+                    sourceLabel = 'Binance REST (' + intervalStr + ')';
                     await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
                 } else {
                     let dbCandles = await loadCandlesFromDB(simCurrentSymbol, currentTimeframe);
@@ -4328,9 +4289,9 @@
                 }
 
                 const now = Math.floor(Date.now() / 1000);
-                const currentMinute = now - (now % 60);
+                const currentMinute = now - (now % currentTimeframe);
                 const lastClose = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].close :
-                realTimePrice;
+                    realTimePrice;
                 simCurrentCandle = sanitizeCandle({
                     time: currentMinute,
                     open: lastClose,
@@ -4418,7 +4379,7 @@
                         const rangeWidth = rightEdge - leftEdge;
                         const lastTime = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].time :
                             Date.now() / 1000;
-                        const newRight = lastTime + 60;
+                        const newRight = lastTime + currentTimeframe;
                         const newLeft = newRight - rangeWidth;
                         if (newLeft > 0) { try { simChart.timeScale().setVisibleRange({ from: newLeft, to: newRight }); } catch (
                             e) {} }
@@ -4597,7 +4558,7 @@
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
                         const now2 = Math.floor(Date.now() / 1000);
-                        const currentMinute2 = now2 - (now2 % 60);
+                        const currentMinute2 = now2 - (now2 % currentTimeframe);
                         if (simCurrentCandle.time < currentMinute2) {
                             const closedCandle = sanitizeCandle({ ...simCurrentCandle });
                             if (closedCandle) {
@@ -4632,10 +4593,10 @@
                                 if (vr && simAllCandles.length > 0) {
                                     const last = simAllCandles[simAllCandles.length - 1].time;
                                     const right = vr.to;
-                                    if (last > right - 60) {
+                                    if (last > right - currentTimeframe) {
                                         const width = vr.to - vr.from;
                                         simChart.timeScale().setVisibleRange({ from: vr.from, to: last +
-                                            60 });
+                                            currentTimeframe });
                                     }
                                 }
                             } catch (e) {}
@@ -4688,13 +4649,14 @@
                 }
             }
 
-            // ─── REDRAW ALL LINES (entry lines are simple, no label) ──────
+            // ─── REDRAW ALL LINES (entry + SL/TP + manual) ──────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 Object.values(allPriceLines).forEach(line => { try { simCandleSeries.removePriceLine(line); } catch (e) {} });
                 allPriceLines = {};
                 manualDrawnLines = [];
                 entryLineKeys = {};
+                sltpLineKeys = {};
 
                 // Manual drawn lines (Support/Resistance/H-Line)
                 const symbolLines = (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) || [];
@@ -4723,7 +4685,7 @@
                         allPriceLines[key] = line;
                         entryLineKeys[p.id] = key;
                     }
-                    // SL/TP lines (keep them with labels)
+                    // SL/TP lines (with labels)
                     if (p.symbol === simCurrentSymbol && p.slPrice) {
                         const line = simCandleSeries.createPriceLine({
                             price: p.slPrice,
@@ -4733,7 +4695,12 @@
                             axisLabelVisible: true,
                             title: 'SL ' + p.symbol
                         });
-                        allPriceLines['sl_' + p.id] = line;
+                        const key = 'sl_' + p.id;
+                        allPriceLines[key] = line;
+                        sltpLineKeys['sl_' + p.id] = key;
+                        // Also store for drag
+                        manualDrawnLines.push({ key, price: p.slPrice, color: '#f59e0b', label: 'SL',
+                            style: 2, lineObj: line, index: -1, isSLTP: true, posId: p.id });
                     }
                     if (p.symbol === simCurrentSymbol && p.tpPrice) {
                         const line = simCandleSeries.createPriceLine({
@@ -4744,14 +4711,107 @@
                             axisLabelVisible: true,
                             title: 'TP ' + p.symbol
                         });
-                        allPriceLines['tp_' + p.id] = line;
+                        const key = 'tp_' + p.id;
+                        allPriceLines[key] = line;
+                        sltpLineKeys['tp_' + p.id] = key;
+                        manualDrawnLines.push({ key, price: p.tpPrice, color: '#8b5cf6', label: 'TP',
+                            style: 2, lineObj: line, index: -1, isSLTP: true, posId: p.id });
                     }
                 });
                 updateLineManagerUI();
                 updateMobileDrawnLines();
+                updateSLTPDragHandlers();
             }
 
-            // ─── REMOVE ENTRY LINE FOR A POSITION ──────────────────────────
+            // ─── SL/TP DRAG HANDLERS ──────────────────────────────────────
+            let sltpDragState = null;
+
+            function updateSLTPDragHandlers() {
+                const chartDiv = document.getElementById('simChartContainer');
+                if (!chartDiv) return;
+                // Remove old handlers to avoid duplicates
+                chartDiv.removeEventListener('mousedown', sltpMouseDown);
+                chartDiv.removeEventListener('touchstart', sltpMouseDown);
+                chartDiv.addEventListener('mousedown', sltpMouseDown);
+                chartDiv.addEventListener('touchstart', sltpMouseDown, { passive: false });
+            }
+
+            function sltpMouseDown(e) {
+                if (!simCandleSeries) return;
+                const chartDiv = document.getElementById('simChartContainer');
+                if (!chartDiv) return;
+                const rect = chartDiv.getBoundingClientRect();
+                const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
+                const threshold = 14;
+                let closest = null,
+                    closestDist = Infinity;
+                // Only check SL/TP lines
+                const sltpLines = manualDrawnLines.filter(l => l.isSLTP === true);
+                for (const ml of sltpLines) {
+                    if (!ml.lineObj) continue;
+                    const lineY = simCandleSeries.priceToCoordinate(ml.price);
+                    if (lineY !== null) {
+                        const dist = Math.abs(y - lineY);
+                        if (dist < threshold && dist < closestDist) { closest = ml;
+                            closestDist = dist; }
+                    }
+                }
+                if (closest) {
+                    sltpDragState = { active: true, lineKey: closest.key, startPrice: closest.price,
+                        currentPrice: closest.price, posId: closest.posId, label: closest.label };
+                    chartDiv.classList.add('dragging-line');
+                    e.preventDefault();
+                }
+            }
+
+            // Global move/up handlers for SL/TP drag
+            const sltpMoveHandler = (e) => {
+                if (!sltpDragState || !sltpDragState.active || !simCandleSeries) return;
+                const chartDiv = document.getElementById('simChartContainer');
+                if (!chartDiv) return;
+                const rect = chartDiv.getBoundingClientRect();
+                const y = (e.clientY || e.touches?.[0]?.clientY || 0) - rect.top;
+                const newPrice = simCandleSeries.coordinateToPrice(y);
+                if (isValidNumber(newPrice) && newPrice > 0) {
+                    sltpDragState.currentPrice = +newPrice.toFixed(4);
+                    const ml = manualDrawnLines.find(m => m.key === sltpDragState.lineKey);
+                    if (ml && ml.lineObj) {
+                        try { simCandleSeries.removePriceLine(ml.lineObj); } catch (e) {}
+                        const newLine = simCandleSeries.createPriceLine({ price: sltpDragState.currentPrice,
+                            color: ml.color, lineWidth: 1.5, lineStyle: 2, axisLabelVisible: true,
+                            title: ml.label + ' ' + (ml.label === 'SL' ? '▼' : '▲') });
+                        ml.lineObj = newLine;
+                        allPriceLines[ml.key] = newLine;
+                    }
+                }
+            };
+
+            const sltpUpHandler = () => {
+                if (sltpDragState && sltpDragState.active) {
+                    const pos = portfolio.positions.find(p => p.id === sltpDragState.posId);
+                    if (pos && sltpDragState.currentPrice !== sltpDragState.startPrice) {
+                        if (sltpDragState.label === 'SL') {
+                            pos.slPrice = sltpDragState.currentPrice;
+                        } else if (sltpDragState.label === 'TP') {
+                            pos.tpPrice = sltpDragState.currentPrice;
+                        }
+                        savePortfolioToStorage();
+                        redrawAllLines();
+                        updateSimUI();
+                        showToast('📐 ' + sltpDragState.label + ' moved to $' + sltpDragState.currentPrice.toFixed(
+                            4));
+                    }
+                    sltpDragState = null;
+                    const chartDiv = document.getElementById('simChartContainer');
+                    if (chartDiv) chartDiv.classList.remove('dragging-line');
+                }
+            };
+
+            document.addEventListener('mousemove', sltpMoveHandler);
+            document.addEventListener('touchmove', sltpMoveHandler, { passive: false });
+            document.addEventListener('mouseup', sltpUpHandler);
+            document.addEventListener('touchend', sltpUpHandler);
+
             function removeEntryLine(posId) {
                 const key = entryLineKeys[posId];
                 if (key && allPriceLines[key]) {
@@ -4759,13 +4819,15 @@
                     delete allPriceLines[key];
                     delete entryLineKeys[posId];
                 }
-                // Also remove from portfolio.drawnLines if it exists (cleanup)
-                if (portfolio.drawnLines && portfolio.drawnLines[simCurrentSymbol]) {
-                    portfolio.drawnLines[simCurrentSymbol] = portfolio.drawnLines[simCurrentSymbol].filter(
-                        l => !(l.label && l.label.includes('Entry') && l.price === portfolio.positions.find(p => p
-                            .id === posId)?.entryPrice)
-                    );
-                }
+                // Remove SL/TP lines for this position
+                ['sl_' + posId, 'tp_' + posId].forEach(k => {
+                    if (allPriceLines[k]) {
+                        try { simCandleSeries.removePriceLine(allPriceLines[k]); } catch (e) {}
+                        delete allPriceLines[k];
+                    }
+                });
+                // Remove from manualDrawnLines
+                manualDrawnLines = manualDrawnLines.filter(l => l.posId !== posId);
             }
 
             function deleteSingleLine(idx) {
@@ -4823,12 +4885,8 @@
                 showToast('🗑️ Line deleted');
             }
 
-            // ─── DRAW ENTRY LINE (clean, no label) ─────────────────────────
             function drawEntryLine(symbol, price, type) {
                 if (symbol !== simCurrentSymbol) return;
-                // We don't store entry lines in drawnLines anymore; they are managed per position
-                // The line is drawn in redrawAllLines() for each open position
-                // Just trigger a redraw
                 redrawAllLines();
             }
 
@@ -4845,39 +4903,43 @@
                     const isShort = p.type === 'short';
                     let triggered = false;
                     let reason = '';
+                    let closePrice = price;
                     if (p.slPrice) {
                         if ((!isShort && price <= p.slPrice) || (isShort && price >= p.slPrice)) {
                             triggered = true;
                             reason = 'Stop Loss';
+                            closePrice = p.slPrice;
                         }
                     }
                     if (!triggered && p.tpPrice) {
                         if ((!isShort && price >= p.tpPrice) || (isShort && price <= p.tpPrice)) {
                             triggered = true;
                             reason = 'Take Profit';
+                            closePrice = p.tpPrice;
                         }
                     }
                     if (triggered) {
-                        const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
-                        const fee = Math.abs(p.qty * price * 0.0005);
-                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                        const pnl = isShort ? (p.entryPrice - closePrice) * p.qty : (closePrice - p.entryPrice) * p
+                            .qty;
+                        const fee = Math.abs(p.qty * closePrice * 0.0005);
+                        const netPnl = pnl - fee;
+                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * closePrice) - fee;
                         const tx = {
                             type: 'close',
                             symbol: p.symbol,
                             qty: p.qty,
-                            price: price,
+                            price: closePrice,
+                            entryPrice: p.entryPrice,
                             time: new Date().toISOString(),
                             reason: reason,
-                            pnl: pnl - fee,
+                            pnl: netPnl,
                             id: p.id,
-                            entryPrice: p.entryPrice,
                             typeLabel: p.type
                         };
                         portfolio.transactions.unshift(tx);
-                        sendNotification('🛑 ' + reason, p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl -
-                            fee).toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
+                        sendNotification('🛑 ' + reason, p.symbol + ' @ $' + closePrice.toFixed(4) + ' | P&L: ' +
+                            netPnl.toFixed(2), netPnl >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
-                        // Remove entry line
                         removeEntryLine(p.id);
                         toRemove.push(i);
                         changed = true;
@@ -5109,31 +5171,31 @@
                 const isShort = p.type === 'short';
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                 const fee = Math.abs(p.qty * price * 0.0005);
+                const netPnl = pnl - fee;
                 portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
                 const tx = {
                     type: 'close',
                     symbol: p.symbol,
                     qty: p.qty,
                     price: price,
+                    entryPrice: p.entryPrice,
                     time: new Date().toISOString(),
                     reason: 'Manual Exit',
-                    pnl: pnl - fee,
+                    pnl: netPnl,
                     id: p.id,
-                    entryPrice: p.entryPrice,
                     typeLabel: p.type
                 };
                 portfolio.transactions.unshift(tx);
-                // Remove entry line
                 removeEntryLine(p.id);
                 portfolio.positions.splice(idx, 1);
                 savePortfolioToStorage();
                 updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
-                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee)
-                    .toFixed(2), pnl - fee >= 0 ? 'success' : 'error');
+                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + netPnl
+                    .toFixed(2), netPnl >= 0 ? 'success' : 'error');
                 playTradeSound('sell');
-                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + (pnl - fee).toFixed(2));
+                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + netPnl.toFixed(2));
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -5170,18 +5232,19 @@
                         const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p
                             .qty;
                         const fee = Math.abs(p.qty * price * 0.0005);
+                        const netPnl = pnl - fee;
                         portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
-                        totalPnl += (pnl - fee);
+                        totalPnl += netPnl;
                         portfolio.transactions.unshift({
                             type: 'close',
                             symbol: p.symbol,
                             qty: p.qty,
                             price: price,
+                            entryPrice: p.entryPrice,
                             time: new Date().toISOString(),
                             reason: 'Close All',
-                            pnl: pnl - fee,
+                            pnl: netPnl,
                             id: p.id,
-                            entryPrice: p.entryPrice,
                             typeLabel: p.type
                         });
                         removeEntryLine(p.id);
@@ -5234,6 +5297,7 @@
                     activeIndicators = {};
                     simIndicatorSeries = {};
                     entryLineKeys = {};
+                    sltpLineKeys = {};
                     savePortfolioToStorage();
                     savePendingOrders();
                     updateSimUI();
@@ -5282,7 +5346,6 @@
                     const priceEl = el.querySelector('.price');
                     if (priceEl) priceEl.textContent = '$' + (typeof price === 'number' ? price.toFixed(4) :
                         price);
-                    // Calculate % change based on previous close price
                     const changeEl = el.querySelector('.change');
                     if (changeEl) {
                         const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
@@ -6278,7 +6341,6 @@
                                 <div class="timeframe-grid">${Object.keys(TIMEFRAMES).map(k => `<button data-tf="${TIMEFRAMES[k]}">${k}</button>`).join('')}</div>
                                 <h4>🎨 Theme</h4>
                                 <div class="theme-row"><button id="sidebarLightTheme">☀️ Light</button><button id="sidebarDarkTheme">🌙 Dark</button></div>
-                                <!-- Deposit / Withdraw in Hamburger -->
                                 <div class="deposit-withdraw-section">
                                     <h4>💰 Deposit / Withdraw</h4>
                                     <div class="mt5-deposit-withdraw">
@@ -6325,7 +6387,6 @@
                     if (e.target === this) this.classList.remove('show');
                 });
 
-                // Sidebar deposit/withdraw
                 document.getElementById('sidebarDepositBtn').addEventListener('click', function() {
                     const amtInput = document.getElementById('sidebarDepositAmount');
                     const amt = parseFloat(amtInput?.value);
@@ -6616,7 +6677,6 @@
                     const isMobile = window.innerWidth <= 768;
                     const chapProg = calcChapterProgress();
 
-                    // Build header based on mobile/desktop
                     let headerHTML = '';
                     if (isMobile) {
                         headerHTML = `
@@ -6712,7 +6772,6 @@
                             </div>
                         </div>`;
 
-                    // ─── Setup ──────────────────────────────────────────────────
                     const langSelect = document.getElementById('langSelect');
                     if (langSelect) {
                         langSelect.value = currentLang;
@@ -6754,7 +6813,6 @@
                         }
                     });
 
-                    // Profile dropdown toggles
                     const profileToggleDesktop = document.getElementById('profileToggleDesktop');
                     const profileMenuDesktop = document.getElementById('profileMenuDesktop');
                     if (profileToggleDesktop && profileMenuDesktop) {
@@ -6882,7 +6940,6 @@
                 const area = document.getElementById('contentArea');
                 area.innerHTML = `
                     <div class="lesson-list-glass">
-                        <!-- Chapter Progress -->
                         <div class="progress-card-glass">
                             <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
@@ -6891,7 +6948,6 @@
                             <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
                             <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
                         </div>
-                        <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
                             <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
@@ -6948,7 +7004,6 @@
                 const area = document.getElementById('contentArea');
                 area.innerHTML = `
                     <div class="detail-view-glass">
-                        <!-- Chapter Progress -->
                         <div class="progress-card-glass">
                             <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
@@ -6957,7 +7012,6 @@
                             <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
                             <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
                         </div>
-                        <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
                             <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
