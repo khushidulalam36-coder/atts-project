@@ -8224,28 +8224,21 @@ function speak() {
     if (ex) document.getElementById('qCor').value = ex.correct || 'a';
     modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 
-    // ✅ পরিবর্তিত saveQ (id ও explanation বাদ, question ও text স্ট্রিং)
+    // ✅ আপডেটেড saveQ (question ও options.text অবজেক্ট, id ও explanation বাদ)
     document.getElementById('saveQ').onclick = async () => {
-        const lang = currentLang;
-        const getText = (en, hi, bn) => {
-            if (lang === 'hi') return hi || en;
-            if (lang === 'bn') return bn || en;
-            return en;
-        };
-
         const qData = {
-            question: getText(
-                document.getElementById('qqEn').value.trim(),
-                document.getElementById('qqHi').value.trim(),
-                document.getElementById('qqBn').value.trim()
-            ),
+            question: {
+                en: document.getElementById('qqEn').value.trim(),
+                hi: document.getElementById('qqHi').value.trim(),
+                bn: document.getElementById('qqBn').value.trim()
+            },
             options: ['a', 'b', 'c', 'd'].map(o => ({
                 id: o,
-                text: getText(
-                    document.getElementById('o' + o + 'En').value.trim(),
-                    document.getElementById('o' + o + 'Hi').value.trim(),
-                    document.getElementById('o' + o + 'Bn').value.trim()
-                )
+                text: {
+                    en: document.getElementById('o' + o + 'En').value.trim(),
+                    hi: document.getElementById('o' + o + 'Hi').value.trim(),
+                    bn: document.getElementById('o' + o + 'Bn').value.trim()
+                }
             })),
             correct: document.getElementById('qCor').value,
             points: parseInt(document.getElementById('qPts').value) || 5
