@@ -22,8 +22,8 @@ JWT_SECRET=krfyde3332rtt#R$%$ERE$ttttrtgffft234
 # Server Port
 PORT=5000
 
-# Frontend URL (for CORS)
-FRONTEND_URL=http://localhost:5000
+# আপনার ফ্রন্টএন্ড URL (Vercel)
+FRONTEND_URL=https://atts-project.vercel.app
 `;
 
 // ─── FILE DEFINITIONS ───────────────────────────────────────────────
@@ -146,7 +146,7 @@ setInterval(() => {
 app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: process.env.FRONTEND_URL || '*', // ✅ .env থেকে নেয়
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false
@@ -1071,23 +1071,22 @@ const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
 const { fetchPrice } = require('../lib/binance');
 
-// GET – returns portfolio with frontend-compatible field names
 router.get('/', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);
-    
-    // Convert holdings object to frontend positions array
     let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
-    const positions = Object.entries(holdings).map(([symbol, data]) => ({
-      symbol,
-      qty: data.qty || 0,
-      entryPrice: data.avgPrice || 0,
-      type: (data.qty || 0) > 0 ? 'long' : 'short',
-      slPrice: data.slPrice || null,
-      tpPrice: data.tpPrice || null,
-      currentPrice: data.avgPrice || 0
-    }));
-
+    const positions = Object.entries(holdings).map(([symbol, data]) => {
+      const qty = data.qty || 0;
+      return {
+        symbol,
+        qty: Math.abs(qty),
+        entryPrice: data.avgPrice || 0,
+        type: qty > 0 ? 'long' : 'short',
+        slPrice: data.slPrice || null,
+        tpPrice: data.tpPrice || null,
+        currentPrice: data.avgPrice || 0
+      };
+    });
     res.json({
       cash: p.cash,
       positions: positions,
@@ -1100,7 +1099,6 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// PUT – execute a trade (buy/sell) – KEPT AS IS (works with holdings object)
 router.put('/', authenticate, async (req, res) => {
   try {
     const { symbol, qty, type, slPrice, tpPrice } = req.body;
@@ -1139,7 +1137,6 @@ router.put('/', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// NEW: PUT /sync – full portfolio sync from frontend (converts positions array → holdings object)
 router.put('/sync', authenticate, async (req, res) => {
   try {
     const { cash, positions, transactions, drawnLines } = req.body;
@@ -1147,12 +1144,13 @@ router.put('/sync', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Valid cash field required' });
     }
 
-    // Convert frontend positions (array) to backend holdings (object)
     const holdings = {};
     (positions || []).forEach(pos => {
       if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
+        let qty = pos.qty;
+        if (pos.type === 'short') qty = -pos.qty;
         holdings[pos.symbol] = {
-          qty: pos.qty,
+          qty: qty,
           avgPrice: pos.entryPrice,
           slPrice: pos.slPrice || null,
           tpPrice: pos.tpPrice || null
@@ -1183,7 +1181,6 @@ router.put('/sync', authenticate, async (req, res) => {
   }
 });
 
-// DELETE /holding/:symbol – manual exit a position
 router.delete('/holding/:symbol', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);

@@ -11,15 +11,18 @@ router.get('/', authenticate, async (req, res) => {
     
     // Convert holdings object to frontend positions array
     let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
-    const positions = Object.entries(holdings).map(([symbol, data]) => ({
-      symbol,
-      qty: data.qty || 0,
-      entryPrice: data.avgPrice || 0,
-      type: (data.qty || 0) > 0 ? 'long' : 'short',
-      slPrice: data.slPrice || null,
-      tpPrice: data.tpPrice || null,
-      currentPrice: data.avgPrice || 0
-    }));
+    const positions = Object.entries(holdings).map(([symbol, data]) => {
+      const qty = data.qty || 0;
+      return {
+        symbol,
+        qty: Math.abs(qty),
+        entryPrice: data.avgPrice || 0,
+        type: qty > 0 ? 'long' : 'short',
+        slPrice: data.slPrice || null,
+        tpPrice: data.tpPrice || null,
+        currentPrice: data.avgPrice || 0
+      };
+    });
 
     res.json({
       cash: p.cash,
@@ -72,7 +75,7 @@ router.put('/', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// NEW: PUT /sync – full portfolio sync from frontend (converts positions array → holdings object)
+// ✅ NEW: PUT /sync – full portfolio sync from frontend (converts positions array → holdings object)
 router.put('/sync', authenticate, async (req, res) => {
   try {
     const { cash, positions, transactions, drawnLines } = req.body;
@@ -81,11 +84,14 @@ router.put('/sync', authenticate, async (req, res) => {
     }
 
     // Convert frontend positions (array) to backend holdings (object)
+    // ✅ FIX: short position qty becomes negative so trade engine can detect it
     const holdings = {};
     (positions || []).forEach(pos => {
       if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
+        let qty = pos.qty;
+        if (pos.type === 'short') qty = -pos.qty;   // <-- CRITICAL FIX
         holdings[pos.symbol] = {
-          qty: pos.qty,
+          qty: qty,
           avgPrice: pos.entryPrice,
           slPrice: pos.slPrice || null,
           tpPrice: pos.tpPrice || null
