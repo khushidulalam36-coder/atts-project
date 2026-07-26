@@ -3019,6 +3019,28 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.45);
 }
+/* ─── EDIT BUTTON (ADMIN) ──────────────────────────────────────────── */
+.btn-edit {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.45rem;
+    transition: all var(--transition);
+    font-family: var(--font);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    min-height: 26px;
+}
+.btn-edit:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-1px);
+}
 
         /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
@@ -7977,35 +7999,38 @@ function speak() {
             }
 
             function showAdminLessonManager() {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const container = document.getElementById('adminRight');
-                if (!subj) { container.innerHTML =
-                        '<div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject</div>';
-                    return; }
-                const lessons = subj.lessons || [];
-                container.innerHTML = `
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px;">
-                        <h3 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.8rem;">📖 ${t(subj.names)} — Lessons</h3>
-                        <button class="btn btn-primary" id="addLessonBtn" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Lesson</button>
+    const subj = subjects.find(s => s.id === selectedSubjectId);
+    const container = document.getElementById('adminRight');
+    if (!subj) { container.innerHTML =
+            '<div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject</div>';
+        return; }
+    const lessons = subj.lessons || [];
+    container.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px;">
+            <h3 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.8rem;">📖 ${t(subj.names)} — Lessons</h3>
+            <button class="btn btn-primary" id="addLessonBtn" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Lesson</button>
+        </div>
+        <div>
+            ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">No lessons yet.</p>' :
+            lessons.map((l,i) => `
+                <div class="admin-lesson-row">
+                    <span style="font-size:0.65rem;">📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.55rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span>
+                    <div class="admin-lesson-actions" style="display:flex;gap:2px;flex-wrap:wrap;">
+                        <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)" style="font-size:0.4rem;">▲</button>
+                        <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)" style="font-size:0.4rem;">▼</button>
+                        <!-- ✅ এখানে Edit বাটন আপডেট করা হয়েছে -->
+                        <button class="btn-edit btn-sm" onclick="openLessonEditModal('${l.id}')" style="font-size:0.45rem;padding:3px 10px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-quiz-edit btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.45rem;padding:3px 10px;">
+                            <i class="fas fa-question-circle"></i> Quiz
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-trash"></i></button>
                     </div>
-                    <div>
-                        ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">No lessons yet.</p>' :
-                        lessons.map((l,i) => `
-                            <div class="admin-lesson-row">
-                                <span style="font-size:0.65rem;">📄 ${t(l.titles)} <span style="font-weight:400;font-size:0.55rem;color:var(--text-muted);">(${l.duration || 15}m · ${l.level || 'Beginner'} · Pass: ${l.quizPassScore || 80} · Quiz: ${(l.quiz||[]).length}Q)</span></span>
-                                <div class="admin-lesson-actions" style="display:flex;gap:2px;flex-wrap:wrap;">
-                                    <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)" style="font-size:0.4rem;">▲</button>
-                                    <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)" style="font-size:0.4rem;">▼</button>
-                                    <button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-edit"></i></button>
-<button class="btn-quiz-edit btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.45rem;padding:3px 10px;">
-    <i class="fas fa-question-circle"></i> Quiz
-</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>`).join('')}
-                    </div>`;
-                document.getElementById('addLessonBtn').onclick = () => openLessonEditModal(null);
-            }
+                </div>`).join('')}
+        </div>`;
+    document.getElementById('addLessonBtn').onclick = () => openLessonEditModal(null);
+}
 
             function moveLesson(idx, dir) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
