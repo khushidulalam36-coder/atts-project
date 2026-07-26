@@ -15,21 +15,21 @@
     <style>
         /* ─── ROOT ────────────────────────────────────────────────────────── */
         :root {
-            --bg: #0b0f17;
-            --bg-secondary: #111824;
-            --surface: #16202e;
-            --surface-alt: #111a28;
-            --surface-hover: #1c283a;
-            --border: #2a3346;
-            --border-light: #1e293b;
-            --border-strong: #3d4a5f;
-            --text: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --primary: #8b8cf8;
-            --primary-light: #1c1b3b;
-            --primary-glow: rgba(139, 140, 248, 0.28);
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b8cf8 40%, #a5b4fc 100%);
+            --bg: #0a0e1a;
+            --bg-secondary: #101826;
+            --surface: #151f2e;
+            --surface-alt: #0e1624;
+            --surface-hover: #1e2c40;
+            --border: #1e2d42;
+            --border-light: #162233;
+            --border-strong: #2a3f5a;
+            --text: #e8edf5;
+            --text-secondary: #8899b8;
+            --text-muted: #4a5a78;
+            --primary: #7c8cf8;
+            --primary-light: #1a1f3a;
+            --primary-glow: rgba(124, 140, 248, 0.3);
+            --primary-gradient: linear-gradient(135deg, #5b6cf0 0%, #7c8cf8 40%, #9bb0fc 100%);
             --success: #34d399;
             --success-light: #0a2e1f;
             --danger: #f87171;
@@ -40,53 +40,55 @@
             --radius-full: 9999px;
             --font: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
-            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.28);
-            --mt5-bg: #0a0e16;
-            --mt5-surface: #11161f;
-            --mt5-card: #171d29;
-            --mt5-input: #1e2636;
-            --mt5-border: #263040;
-            --mt5-text: #b0b8cc;
-            --mt5-text-bright: #e8edf5;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.25);
+            --mt5-bg: #080c16;
+            --mt5-surface: #0d1422;
+            --mt5-card: #111a2a;
+            --mt5-input: #162030;
+            --mt5-border: #1e2d42;
+            --mt5-text: #7a8aa8;
+            --mt5-text-bright: #e0e8f5;
             --mt5-green: #00c897;
             --mt5-red: #ff3b5c;
             --mt5-blue: #3b82f6;
             --mt5-gold: #f59e0b;
-            --mt5-nav-bg: #0c1018;
-            --mt5-nav-active: #182030;
+            --mt5-nav-bg: #080c16;
+            --mt5-nav-active: #111a2a;
             --mt5-chart-bg: #080c14;
             --trade-buy: #00c897;
             --trade-sell: #ff3b5c;
-            --trade-neutral: #5b6c8a;
+            --trade-neutral: #4a5a78;
             --terminal-header-h: 28px;
             --transition: 0.2s ease;
             --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(20, 24, 40, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --mt5-gradient-bg: linear-gradient(180deg, #0a0e16 0%, #11161f 100%);
-            --mt5-card-glow: 0 0 20px rgba(0, 200, 151, 0.06);
-            --mt5-border-glow: 0 0 12px rgba(0, 200, 151, 0.08);
+            --glass-bg: rgba(12, 18, 34, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --mt5-gradient-bg: linear-gradient(180deg, #080c16 0%, #0d1422 100%);
+            --mt5-card-glow: 0 0 20px rgba(0, 200, 151, 0.04);
+            --mt5-border-glow: 0 0 12px rgba(0, 200, 151, 0.05);
+            --admin-accent: #6c7cf0;
+            --admin-accent-glow: rgba(108, 124, 240, 0.25);
         }
 
         [data-theme="light"] {
-            --bg: #eef0f3;
+            --bg: #eef0f5;
             --bg-secondary: #dce0e8;
             --surface: #ffffff;
-            --surface-alt: #f5f7fa;
-            --surface-hover: #eef1f6;
-            --border: #c8cdd6;
+            --surface-alt: #f5f7fc;
+            --surface-hover: #eef1f8;
+            --border: #c8cdd8;
             --border-light: #e5e7eb;
-            --border-strong: #9ca3af;
+            --border-strong: #9ca3b0;
             --text: #111827;
             --text-secondary: #4b5563;
             --text-muted: #9ca3af;
             --primary: #4f46e5;
             --primary-light: #eef2ff;
-            --primary-glow: rgba(79, 70, 229, 0.20);
+            --primary-glow: rgba(79, 70, 229, 0.18);
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a78bfa 100%);
             --success: #10b981;
             --success-light: #ecfdf5;
@@ -95,29 +97,31 @@
             --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --mt5-bg: #eef0f3;
+            --mt5-bg: #eef0f5;
             --mt5-surface: #ffffff;
             --mt5-card: #f8f9fc;
             --mt5-input: #edf0f5;
-            --mt5-border: #c8cdd6;
+            --mt5-border: #c8cdd8;
             --mt5-text: #4b5563;
             --mt5-text-bright: #111827;
             --mt5-green: #10b981;
             --mt5-red: #ef4444;
             --mt5-blue: #3b82f6;
             --mt5-gold: #f59e0b;
-            --mt5-nav-bg: #eef0f3;
+            --mt5-nav-bg: #eef0f5;
             --mt5-nav-active: #dce0e8;
             --mt5-chart-bg: #ffffff;
             --trade-buy: #10b981;
             --trade-sell: #ef4444;
-            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
-            --glass-bg: rgba(255, 255, 255, 0.6);
+            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.25);
+            --glass-bg: rgba(255, 255, 255, 0.65);
             --glass-border: rgba(0, 0, 0, 0.06);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            --mt5-gradient-bg: linear-gradient(180deg, #eef0f3 0%, #dce0e8 100%);
-            --mt5-card-glow: 0 0 20px rgba(16, 185, 129, 0.06);
-            --mt5-border-glow: 0 0 12px rgba(16, 185, 129, 0.08);
+            --mt5-gradient-bg: linear-gradient(180deg, #eef0f5 0%, #dce0e8 100%);
+            --mt5-card-glow: 0 0 20px rgba(16, 185, 129, 0.05);
+            --mt5-border-glow: 0 0 12px rgba(16, 185, 129, 0.06);
+            --admin-accent: #4f46e5;
+            --admin-accent-glow: rgba(79, 70, 229, 0.2);
         }
 
         * {
@@ -159,17 +163,17 @@
         .app-glass {
             display: flex;
             height: 100vh;
-            background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.08), transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.06), transparent 50%),
-                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
+            background: radial-gradient(circle at 10% 20%, rgba(124, 140, 248, 0.08), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.05), transparent 50%),
+                linear-gradient(135deg, #0a0e1a 0%, #151f2e 100%);
             font-family: var(--font);
             overflow: hidden;
             width: 100%;
         }
         [data-theme="light"] .app-glass {
-            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.06), transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04), transparent 50%),
-                linear-gradient(135deg, #f0f2f5 0%, #e4e7ed 100%);
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03), transparent 50%),
+                linear-gradient(135deg, #eef0f5 0%, #dce0e8 100%);
         }
 
         .sidebar-glass {
@@ -181,7 +185,7 @@
             display: flex;
             flex-direction: column;
             padding: 20px 14px 14px 14px;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
             z-index: 20;
             flex-shrink: 0;
             transition: transform var(--transition), background var(--transition);
@@ -357,6 +361,7 @@
             flex-shrink: 0;
             min-height: 36px;
             min-width: 36px;
+            touch-action: manipulation;
         }
         .search-box-glass {
             flex: 1;
@@ -790,9 +795,19 @@
         .tabs-glass {
             display: flex;
             gap: 2px;
-            margin: 10px 0;
+            margin: 10px 0 6px 0;
             border-bottom: 2px solid var(--glass-border);
             flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding-top: 4px;
+        }
+        [data-theme="light"] .tabs-glass {
+            background: rgba(240, 242, 245, 0.85);
         }
         .tab-glass {
             padding: 5px 14px;
@@ -827,19 +842,27 @@
             color: var(--text);
         }
 
-        /* ─── TTS CONTROLS ─────────────────────────────────────────────────── */
-        .tts-controls-glass {
+        /* ─── TTS CONTROLS (TOP) ─────────────────────────────────────────── */
+        .tts-controls-top {
             display: flex;
             gap: 4px;
             align-items: center;
-            margin: 10px 0;
             flex-wrap: wrap;
             background: var(--glass-bg);
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
+            margin: 6px 0 4px 0;
+            position: sticky;
+            top: 42px;
+            z-index: 9;
+            background: var(--bg);
+            border-color: var(--border-light);
+        }
+        [data-theme="light"] .tts-controls-top {
+            background: rgba(240, 242, 245, 0.92);
         }
         .tts-btn-glass {
             background: var(--primary-gradient);
@@ -1398,15 +1421,15 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.10), transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.08), transparent 50%),
-                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
+            background: radial-gradient(circle at 10% 20%, rgba(124, 140, 248, 0.10), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.06), transparent 50%),
+                linear-gradient(135deg, #0a0e1a 0%, #151f2e 100%);
             padding: 20px;
         }
         [data-theme="light"] .auth-container {
-            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.06), transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04), transparent 50%),
-                linear-gradient(135deg, #f0f2f5 0%, #e4e7ed 100%);
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05), transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03), transparent 50%),
+                linear-gradient(135deg, #eef0f5 0%, #dce0e8 100%);
         }
         .auth-box {
             background: var(--glass-bg);
@@ -2975,6 +2998,27 @@
             transform: translateY(-1px);
             box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
         }
+        .btn-quiz-edit {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #fff;
+            border: none;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.45rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            min-height: 26px;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        }
+        .btn-quiz-edit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.45);
+        }
 
         /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
@@ -3314,8 +3358,10 @@
                 min-width: 50px;
                 padding: 6px 12px;
             }
-            .tts-controls-glass {
-                padding: 6px 10px;
+            .tts-controls-top {
+                padding: 4px 8px;
+                gap: 3px;
+                top: 38px;
             }
             .tts-btn-glass {
                 font-size: 0.5rem;
@@ -3376,6 +3422,17 @@
                 min-width: 44px;
                 padding: 4px 8px;
                 font-size: 0.45rem;
+            }
+            .tabs-glass {
+                top: 0;
+                padding-top: 2px;
+                background: var(--bg);
+            }
+            [data-theme="light"] .tabs-glass {
+                background: rgba(240, 242, 245, 0.92);
+            }
+            .tts-controls-top {
+                top: 36px;
             }
         }
         @media (max-width: 400px) {
@@ -3561,6 +3618,24 @@
                 min-width: 38px;
                 padding: 3px 6px;
                 font-size: 0.4rem;
+            }
+            .tts-controls-top {
+                top: 34px;
+                padding: 3px 6px;
+            }
+            .tts-btn-glass {
+                font-size: 0.45rem;
+                padding: 3px 7px;
+                min-height: 24px;
+            }
+            .btn-outline-glass {
+                font-size: 0.45rem;
+                padding: 2px 6px;
+                min-height: 24px;
+            }
+            .tabs-glass .tab-glass {
+                font-size: 0.6rem;
+                padding: 4px 8px;
             }
         }
 
@@ -3854,6 +3929,7 @@
             let serverWS = null;
             let wsConnected = false;
             let wsConnectedServer = false;
+            let selectedVoice = null;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -4228,6 +4304,7 @@
                                 };
                                 const safeCandle = sanitizeCandle(candle);
                                 if (!safeCandle) return;
+                                // Update prev close for % calculation
                                 if (simLastPrices[symbol]) {
                                     simPrevClosePrices[symbol] = simLastPrices[symbol];
                                 }
@@ -4240,7 +4317,7 @@
                                     const priceChange = Math.abs(safeCandle.close - currentCandle.close);
                                     const highChange = Math.abs(safeCandle.high - currentCandle.high);
                                     const lowChange = Math.abs(safeCandle.low - currentCandle.low);
-                                    const threshold = (currentCandle.close || 1) * 0.001;
+                                    const threshold = (currentCandle.close || 1) * 0.0005;
                                     if (priceChange > threshold || highChange > threshold || lowChange > threshold) {
                                         const idx = simAllCandles.findIndex(c => c.time === safeCandle.time);
                                         if (idx >= 0) simAllCandles[idx] = safeCandle;
@@ -4291,7 +4368,10 @@
                         try {
                             const d = JSON.parse(e.data);
                             if (d.type === 'price_update' && d.prices) {
-                                Object.assign(simLastPrices, d.prices);
+                                Object.keys(d.prices).forEach(sym => {
+                                    if (simLastPrices[sym]) simPrevClosePrices[sym] = simLastPrices[sym];
+                                    simLastPrices[sym] = d.prices[sym];
+                                });
                                 updateMobileTopBar();
                                 updateWatchlistPrices();
                             }
@@ -5091,14 +5171,16 @@
                     let triggered = false;
                     let reason = '';
                     let closePrice = price;
-                    if (p.slPrice) {
+                    // SL check
+                    if (p.slPrice && isValidNumber(p.slPrice) && p.slPrice > 0) {
                         if ((!isShort && price <= p.slPrice) || (isShort && price >= p.slPrice)) {
                             triggered = true;
                             reason = 'Stop Loss';
                             closePrice = p.slPrice;
                         }
                     }
-                    if (!triggered && p.tpPrice) {
+                    // TP check (only if not already triggered by SL)
+                    if (!triggered && p.tpPrice && isValidNumber(p.tpPrice) && p.tpPrice > 0) {
                         if ((!isShort && price >= p.tpPrice) || (isShort && price <= p.tpPrice)) {
                             triggered = true;
                             reason = 'Take Profit';
@@ -5106,11 +5188,17 @@
                         }
                     }
                     if (triggered) {
+                        // Calculate P&L correctly
                         const pnl = isShort ? (p.entryPrice - closePrice) * p.qty : (closePrice - p.entryPrice) * p
                         .qty;
                         const fee = Math.abs(p.qty * closePrice * 0.0005);
                         const netPnl = pnl - fee;
-                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * closePrice) - fee;
+                        // Return margin + profit/loss
+                        if (isShort) {
+                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                        } else {
+                            portfolio.cash += (p.qty * closePrice) - fee;
+                        }
                         const tx = {
                             type: 'close',
                             symbol: p.symbol,
@@ -5364,7 +5452,11 @@
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
                 const fee = Math.abs(p.qty * price * 0.0005);
                 const netPnl = pnl - fee;
-                portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                if (isShort) {
+                    portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                } else {
+                    portfolio.cash += (p.qty * price) - fee;
+                }
                 const tx = {
                     type: 'close',
                     symbol: p.symbol,
@@ -5428,7 +5520,11 @@
                             .qty;
                         const fee = Math.abs(p.qty * price * 0.0005);
                         const netPnl = pnl - fee;
-                        portfolio.cash += (isShort ? p.qty * p.entryPrice : p.qty * price) - fee;
+                        if (isShort) {
+                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                        } else {
+                            portfolio.cash += (p.qty * price) - fee;
+                        }
                         totalPnl += netPnl;
                         portfolio.transactions.unshift({
                             type: 'close',
@@ -5542,12 +5638,12 @@
                     if (!symEl) return;
                     const sym = symEl.textContent;
                     const price = simLastPrices[sym] || simBasePrices[sym] || 0;
+                    const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
                     const priceEl = el.querySelector('.price');
                     if (priceEl) priceEl.textContent = '$' + (typeof price === 'number' ? price.toFixed(4) :
                         price);
                     const changeEl = el.querySelector('.change');
                     if (changeEl) {
-                        const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
                         const change = prevClose > 0 ? ((price - prevClose) / prevClose * 100) : 0;
                         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
                         changeEl.className = 'change ' + (change >= 0 ? 'up' : 'down');
@@ -6971,7 +7067,7 @@
                                         </button>
                                         <div class="profile-dropdown-menu" id="profileMenuMobile">
                                             <div class="account-no-display">${userAccountNo}</div>
-                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');document.getElementById('langSelect').click();"><span class="dd-icon">🌐</span> Language</button>
+                                            <button class="dropdown-item" id="langDropdownMobile"><span class="dd-icon">🌐</span> Language</button>
                                             <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
@@ -7012,7 +7108,7 @@
                                         </button>
                                         <div class="profile-dropdown-menu" id="profileMenuDesktop">
                                             <div class="account-no-display">${userAccountNo}</div>
-                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');document.getElementById('langSelect').click();"><span class="dd-icon">🌐</span> Language</button>
+                                            <button class="dropdown-item" id="langDropdownDesktop"><span class="dd-icon">🌐</span> Language</button>
                                             <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
@@ -7042,6 +7138,7 @@
                             </div>
                         </div>`;
 
+                    // ─── Language select ──────────────────────────────────────
                     const langSelect = document.getElementById('langSelect');
                     if (langSelect) {
                         langSelect.value = currentLang;
@@ -7051,8 +7148,24 @@
                             renderSubjectList();
                             if (currentLessonId) showLessonDetail(currentLessonId);
                             else showLessonList();
+                            // Update TTS voice for new language
+                            selectVoiceForLanguage(currentLang);
                         };
                     }
+
+                    // ─── Profile dropdown language links ──────────────────────
+                    document.getElementById('langDropdownDesktop')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
+                        const ls = document.getElementById('langSelect');
+                        if (ls) ls.click();
+                    });
+                    document.getElementById('langDropdownMobile')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuMobile')?.classList.remove('show');
+                        const ls = document.getElementById('langSelect');
+                        if (ls) ls.click();
+                    });
 
                     const searchInput = document.getElementById('searchInput');
                     if (searchInput) searchInput.oninput = () => showLessonList();
@@ -7124,8 +7237,66 @@
                     if (currentLessonId) showLessonDetail(currentLessonId);
                     else showLessonList();
 
+                    // Select voice for current language
+                    selectVoiceForLanguage(currentLang);
+
                 } catch (error) {
                     document.getElementById('app').innerHTML = `<div style="padding:20px;color:var(--mt5-red);">⚠️ UI Render error: ${error.message}</div>`;
+                }
+            }
+
+            // ─── VOICE SELECTION ──────────────────────────────────────────────
+            function selectVoiceForLanguage(lang) {
+                if (!window.speechSynthesis) return;
+                const voices = window.speechSynthesis.getVoices();
+                if (!voices || voices.length === 0) {
+                    // Voices not loaded yet, wait
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        selectVoiceForLanguage(lang);
+                    };
+                    return;
+                }
+                // Map language to voice preference
+                const langMap = {
+                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
+                    'hi': ['hi', 'hindi', 'hi-IN'],
+                    'en': ['en-US', 'en-GB', 'en']
+                };
+                const preferred = langMap[lang] || langMap['en'];
+                // Find a female voice if possible
+                let bestVoice = null;
+                let bestScore = -1;
+                for (const v of voices) {
+                    const name = v.name.toLowerCase();
+                    const voiceLang = v.lang.toLowerCase();
+                    let score = 0;
+                    // Check language match
+                    for (const p of preferred) {
+                        if (voiceLang.includes(p) || name.includes(p)) {
+                            score += 3;
+                            break;
+                        }
+                    }
+                    // Prefer female voices
+                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
+                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
+                        name.includes('karen') || name.includes('emma') || name.includes('allison')) {
+                        score += 2;
+                    }
+                    // Prefer native voices
+                    if (name.includes('native') || name.includes('google') || name.includes('windows')) {
+                        score += 1;
+                    }
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestVoice = v;
+                    }
+                }
+                if (bestVoice) {
+                    selectedVoice = bestVoice;
+                } else if (voices.length > 0) {
+                    // Fallback to first voice
+                    selectedVoice = voices[0];
                 }
             }
 
@@ -7310,9 +7481,8 @@
                             <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
                             <div class="tab-glass" data-tab="resources">📂 Resources</div>
                         </div>
-                        <div class="tab-content-glass" id="tabContent"></div>
-                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
-                        <div class="tts-controls-glass">
+                        <!-- TTS Controls moved to TOP -->
+                        <div class="tts-controls-top">
                             <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
                             <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
                             <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
@@ -7322,6 +7492,8 @@
                             <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
                             <button class="btn-outline-glass" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
                         </div>
+                        <div class="tab-content-glass" id="tabContent"></div>
+                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
                         <div style="display:flex;justify-content:space-between;margin-top:10px;gap:6px;">
                             <button class="tts-btn-glass" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
                             <button class="tts-btn-glass" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
@@ -7365,6 +7537,8 @@
                 setupPrevNextGlass(subj, id);
                 if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
                     .onclick = () => generateCertificate(subj);
+                // Select voice for current language
+                selectVoiceForLanguage(currentLang);
             }
 
             function renderQuizTabGlass(container, lesson, lessonId) {
@@ -7444,7 +7618,7 @@
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── TTS GLASS ──────────────────────────────────────────────────
+            // ─── TTS GLASS (with female voice support) ──────────────────────
             function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -7464,12 +7638,42 @@
                             return;
                         }
                         utterance = new SpeechSynthesisUtterance(txt);
-                        utterance.rate = parseFloat(document.getElementById('speedSlider')?.value || 1);
-                        utterance.lang = currentLang === 'bn' ? 'bn-BD' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
+                        const speed = parseFloat(document.getElementById('speedSlider')?.value || 1);
+                        utterance.rate = speed;
+                        // Set language
+                        const langMap = { 'bn': 'bn-BD', 'hi': 'hi-IN', 'en': 'en-US' };
+                        utterance.lang = langMap[currentLang] || 'en-US';
+                        // Use selected female voice if available
+                        if (selectedVoice) {
+                            utterance.voice = selectedVoice;
+                        } else {
+                            // Try to find a female voice for the language
+                            const voices = window.speechSynthesis.getVoices();
+                            const langPrefix = currentLang === 'bn' ? 'bn' : currentLang === 'hi' ? 'hi' : 'en';
+                            const femaleVoices = voices.filter(v =>
+                                v.lang.toLowerCase().includes(langPrefix) &&
+                                (v.name.toLowerCase().includes('female') ||
+                                    v.name.toLowerCase().includes('samantha') ||
+                                    v.name.toLowerCase().includes('victoria') ||
+                                    v.name.toLowerCase().includes('zira') ||
+                                    v.name.toLowerCase().includes('heather') ||
+                                    v.name.toLowerCase().includes('sarah') ||
+                                    v.name.toLowerCase().includes('karen') ||
+                                    v.name.toLowerCase().includes('emma') ||
+                                    v.name.toLowerCase().includes('allison'))
+                            );
+                            if (femaleVoices.length > 0) {
+                                utterance.voice = femaleVoices[0];
+                            } else if (voices.length > 0) {
+                                utterance.voice = voices[0];
+                            }
+                        }
                         utterance.onstart = () => { showToast('🔊 Playing...');
                             isPaused = false; };
-                        utterance.onerror = () => { showToast('⚠️ TTS error');
-                            isPaused = false; };
+                        utterance.onerror = (e) => {
+                            showToast('⚠️ TTS error: ' + (e.error || 'unknown'));
+                            isPaused = false;
+                        };
                         utterance.onend = () => { showToast('✅ TTS finished');
                             isPaused = false; };
                         utterance.onpause = () => { isPaused = true;
@@ -7551,6 +7755,7 @@
                         document.getElementById('langSelect').value = currentLang;
                         modal.remove(); if (currentLessonId) showLessonDetail(currentLessonId); else
                             showLessonList();
+                        selectVoiceForLanguage(currentLang);
                         showToast('🌐 Language switched'); }; });
             }
 
@@ -7627,6 +7832,18 @@
                     inp.accept = '.json';
                     inp.onchange = e => { if (e.target.files[0]) importData(e.target.files[0]); };
                     inp.click(); };
+                // Admin functions exposed globally
+                window.showAdminLessonManager = showAdminLessonManager;
+                window.selectAdminSubject = selectAdminSubject;
+                window.moveSubject = moveSubject;
+                window.deleteSubject = deleteSubject;
+                window.openSubjectEditModal = openSubjectEditModal;
+                window.moveLesson = moveLesson;
+                window.deleteLesson = deleteLesson;
+                window.openLessonEditModal = openLessonEditModal;
+                window.openQuizManager = openQuizManager;
+                window.openQuizQEdit = openQuizQEdit;
+                window.deleteQuizQ = deleteQuizQ;
             }
 
             function renderAdminSubjectList() {
@@ -7644,23 +7861,32 @@
                     </div>`).join('');
             }
 
-            window.selectAdminSubject = function(id) { selectedSubjectId = id;
-                showAdminLessonManager(); };
-            window.moveSubject = async function(idx, dir) { const n = idx + dir; if (n < 0 || n >= subjects.length) return;
-                [subjects[idx], subjects[n]] = [subjects[n], subjects[idx]]; try { await apiFetch('/subjects/reorder', {
-                        method: 'POST',
-                        body: JSON.stringify({ ids: subjects.map(s => s.id) })
-                    });
-                    renderAdminSubjectList();
-                    showAdminLessonManager(); } catch (e) { showToast('⚠️ ' + e.message); } };
-            window.deleteSubject = async function(id) { if (!confirm('⚠️ Delete this subject and ALL its lessons?')) return;
-                try { await apiFetch('/subjects/' + id, { method: 'DELETE' });
-                    subjects = subjects.filter(s => s.id !== id); if (selectedSubjectId === id) selectedSubjectId = subjects[
-                        0]?.id || null;
-                    renderAdminSubjectList();
-                    showAdminLessonManager();
-                    showToast('🗑 Subject deleted'); } catch (e) { showToast('⚠️ ' + e.message); } };
-            window.openSubjectEditModal = function(id) {
+            function selectAdminSubject(id) { selectedSubjectId = id;
+                showAdminLessonManager(); }
+
+            function moveSubject(idx, dir) {
+                const n = idx + dir; if (n < 0 || n >= subjects.length) return;
+                [subjects[idx], subjects[n]] = [subjects[n], subjects[idx]];
+                apiFetch('/subjects/reorder', { method: 'POST', body: JSON.stringify({ ids: subjects.map(s => s.id) }) })
+                    .then(() => { renderAdminSubjectList();
+                        showAdminLessonManager(); })
+                    .catch(e => showToast('⚠️ ' + e.message));
+            }
+
+            function deleteSubject(id) {
+                if (!confirm('⚠️ Delete this subject and ALL its lessons?')) return;
+                apiFetch('/subjects/' + id, { method: 'DELETE' })
+                    .then(() => {
+                        subjects = subjects.filter(s => s.id !== id);
+                        if (selectedSubjectId === id) selectedSubjectId = subjects[0]?.id || null;
+                        renderAdminSubjectList();
+                        showAdminLessonManager();
+                        showToast('🗑 Subject deleted');
+                    })
+                    .catch(e => showToast('⚠️ ' + e.message));
+            }
+
+            function openSubjectEditModal(id) {
                 const ex = id ? subjects.find(s => s.id === id) : null;
                 const modal = document.createElement('div');
                 modal.className = 'modal';
@@ -7699,7 +7925,7 @@
                         showToast(ex ? '✅ Subject updated!' : '✅ Subject created!');
                     } catch (e) { showToast('⚠️ ' + e.message); }
                 };
-            };
+            }
 
             function showAdminLessonManager() {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
@@ -7722,7 +7948,7 @@
                                     <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},-1)" style="font-size:0.4rem;">▲</button>
                                     <button class="btn btn-outline btn-sm" onclick="moveLesson(${i},1)" style="font-size:0.4rem;">▼</button>
                                     <button class="btn btn-outline btn-sm" onclick="openLessonEditModal('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-info btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-question-circle"></i></button>
+                                    <button class="btn-quiz-edit btn-sm" onclick="openQuizManager('${l.id}')" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-question-circle"></i> Quiz</button>
                                     <button class="btn btn-danger btn-sm" onclick="deleteLesson('${l.id}')" style="font-size:0.4rem;"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>`).join('')}
@@ -7730,23 +7956,31 @@
                 document.getElementById('addLessonBtn').onclick = () => openLessonEditModal(null);
             }
 
-            window.moveLesson = async function(idx, dir) {
+            function moveLesson(idx, dir) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 if (!subj) return;
                 const lessons = subj.lessons || [];
                 const n = idx + dir; if (n < 0 || n >= lessons.length) return;
                 [lessons[idx], lessons[n]] = [lessons[n], lessons[idx]];
-                try { await apiFetch('/lessons/reorder', { method: 'POST', body: JSON.stringify({ subjectId: selectedSubjectId,
-                            ids: lessons.map(l => l.id) }) });
-                    showAdminLessonManager(); } catch (e) { showToast('⚠️ ' + e.message); }
-            };
-            window.deleteLesson = async function(id) { if (!confirm('⚠️ Delete this lesson?')) return; try { await apiFetch(
-                        '/lessons/' + id, { method: 'DELETE' });
-                    const subj = subjects.find(s => s.id === selectedSubjectId); if (subj) subj.lessons = (subj
-                        .lessons || []).filter(l => l.id !== id);
-                    showAdminLessonManager();
-                    showToast('🗑 Lesson deleted'); } catch (e) { showToast('⚠️ ' + e.message); } };
-            window.openLessonEditModal = function(id) {
+                apiFetch('/lessons/reorder', { method: 'POST', body: JSON.stringify({ subjectId: selectedSubjectId,
+                        ids: lessons.map(l => l.id) }) })
+                    .then(() => showAdminLessonManager())
+                    .catch(e => showToast('⚠️ ' + e.message));
+            }
+
+            function deleteLesson(id) {
+                if (!confirm('⚠️ Delete this lesson?')) return;
+                apiFetch('/lessons/' + id, { method: 'DELETE' })
+                    .then(() => {
+                        const subj = subjects.find(s => s.id === selectedSubjectId);
+                        if (subj) subj.lessons = (subj.lessons || []).filter(l => l.id !== id);
+                        showAdminLessonManager();
+                        showToast('🗑 Lesson deleted');
+                    })
+                    .catch(e => showToast('⚠️ ' + e.message));
+            }
+
+            function openLessonEditModal(id) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 if (!subj) return;
                 const ex = id ? (subj.lessons || []).find(l => l.id === id) : null;
@@ -7816,7 +8050,8 @@
                                 Object.assign(ex, payload); } else { const res = await apiFetch('/lessons', {
                                     method: 'POST',
                                     body: JSON.stringify({ ...payload, subjectId: selectedSubjectId })
-                                }); if (!subj.lessons) subj.lessons = [];
+                                });
+                                if (!subj.lessons) subj.lessons = [];
                                 subj.lessons.push(res); }
                             modal.remove();
                             showAdminLessonManager();
@@ -7826,20 +8061,20 @@
                 }
                 setTimeout(() => {
                     if (typeof Quill === 'undefined') {
-                        ['qlEn', 'qlHi', 'qlBn'].forEach(id => {
-                            const el = document.getElementById(id);
+                        ['qlEn', 'qlHi', 'qlBn'].forEach(id2 => {
+                            const el = document.getElementById(id2);
                             if (el) { const ta = document.createElement('textarea');
                                 ta.style.cssText =
                                     'width:100%;height:70px;padding:4px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);font-size:0.65rem;';
                                 ta.value = el.innerHTML;
                                 el.parentNode.replaceChild(ta, el);
-                                ta.id = id; }
+                                ta.id = id2; }
                         });
                     }
                 }, 2000);
-            };
+            }
 
-            window.openQuizManager = function(lessonId) {
+            function openQuizManager(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
                 if (!les) return;
@@ -7855,7 +8090,7 @@
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
                                     <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
                                     <div style="display:flex;gap:2px;">
-                                        <button class="btn btn-outline btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;">✏️</button>
+                                        <button class="btn-quiz-edit btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-edit"></i> Edit</button>
                                         <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
                                     </div>
                                 </div>`).join('')}
@@ -7866,22 +8101,23 @@
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) { modal.remove();
                         showAdminLessonManager(); } });
-            };
+            }
 
-            window.deleteQuizQ = async function(lessonId, idx) {
+            function deleteQuizQ(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
-                try {
-                    await apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'DELETE' });
-                    const subj = subjects.find(s => s.id === selectedSubjectId);
-                    const les = subj?.lessons?.find(l => l.id === lessonId);
-                    if (les) les.quiz.splice(idx, 1);
-                    document.querySelector('.modal')?.remove();
-                    openQuizManager(lessonId);
-                    showToast('🗑 Question deleted');
-                } catch (e) { showToast('⚠️ ' + e.message); }
-            };
+                apiFetch('/quiz/' + lessonId + '/' + idx, { method: 'DELETE' })
+                    .then(() => {
+                        const subj = subjects.find(s => s.id === selectedSubjectId);
+                        const les = subj?.lessons?.find(l => l.id === lessonId);
+                        if (les) les.quiz.splice(idx, 1);
+                        document.querySelector('.modal')?.remove();
+                        openQuizManager(lessonId);
+                        showToast('🗑 Question deleted');
+                    })
+                    .catch(e => showToast('⚠️ ' + e.message));
+            }
 
-            window.openQuizQEdit = function(lessonId, idx) {
+            function openQuizQEdit(lessonId, idx) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
                 if (!les) return;
@@ -7943,7 +8179,7 @@
                         showToast(ex ? '✅ Question updated!' : '✅ Question added!');
                     } catch (e) { showToast('⚠️ ' + e.message); }
                 };
-            };
+            }
 
             async function exportData() { try { const data = await apiFetch('/export'); const blob = new Blob([JSON
                         .stringify(data, null, 2)], { type: 'application/json' });
@@ -8091,6 +8327,7 @@
                     applyTheme();
                     connectBinanceWS();
                     connectServerWS();
+                    selectVoiceForLanguage(currentLang);
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
                 }
@@ -8143,6 +8380,7 @@
                     renderApp();
                     connectBinanceWS();
                     connectServerWS();
+                    selectVoiceForLanguage(currentLang);
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
                     else renderApp();
@@ -8618,6 +8856,19 @@
             window.drawEntryLine = drawEntryLine;
             window.removePositionLines = removePositionLines;
             window.updateHistoryUI = updateHistoryUI;
+            window.selectVoiceForLanguage = selectVoiceForLanguage;
+            // Admin globals
+            window.showAdminLessonManager = showAdminLessonManager;
+            window.selectAdminSubject = selectAdminSubject;
+            window.moveSubject = moveSubject;
+            window.deleteSubject = deleteSubject;
+            window.openSubjectEditModal = openSubjectEditModal;
+            window.moveLesson = moveLesson;
+            window.deleteLesson = deleteLesson;
+            window.openLessonEditModal = openLessonEditModal;
+            window.openQuizManager = openQuizManager;
+            window.openQuizQEdit = openQuizQEdit;
+            window.deleteQuizQ = deleteQuizQ;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
@@ -8692,6 +8943,14 @@
                     if (nullErrorCount > 0) nullErrorCount = Math.max(0, nullErrorCount - 1);
                 }, 30000);
             })();
+
+            // ─── Preload voices on load ──────────────────────────────────────
+            if (window.speechSynthesis) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => {
+                    selectVoiceForLanguage(currentLang);
+                };
+            }
 
         })();
     </script>
