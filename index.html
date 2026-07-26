@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -13,60 +13,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <style>
-        /* ─── ROOT ────────────────────────────────────────────────────────── */
+        /* ─── ROOT ─── Modern Dark Theme ─────────────────────────────────── */
         :root {
-            --bg: #0b0f17;
-            --bg-secondary: #111824;
-            --surface: #16202e;
-            --surface-alt: #111a28;
-            --surface-hover: #1c283a;
-            --border: #2a3346;
-            --border-light: #1e293b;
-            --border-strong: #3d4a5f;
-            --text: #e2e8f0;
+            --bg: #0b0e17;
+            --bg-secondary: #111827;
+            --surface: #1a2332;
+            --surface-alt: #0f172a;
+            --surface-hover: #243044;
+            --border: #2d3a4f;
+            --border-light: #1e2a3a;
+            --border-strong: #4a5a78;
+            --text: #e8edf5;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            --primary: #8b8cf8;
-            --primary-light: #1c1b3b;
-            --primary-glow: rgba(139, 140, 248, 0.28);
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b8cf8 40%, #a5b4fc 100%);
+            --primary: #818cf8;
+            --primary-light: #1e1b4b;
+            --primary-glow: rgba(129, 140, 248, 0.35);
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a5b4fc 100%);
             --success: #34d399;
             --success-light: #0a2e1f;
             --danger: #f87171;
             --danger-light: #2a1215;
-            --accent: #f59e0b;
+            --accent: #fbbf24;
             --radius: 8px;
             --radius-lg: 12px;
             --radius-full: 9999px;
             --font: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
-            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.28);
-            --mt5-bg: #0a0e16;
-            --mt5-surface: #11161f;
-            --mt5-card: #171d29;
-            --mt5-input: #1e2636;
-            --mt5-border: #263040;
-            --mt5-text: #b0b8cc;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.7);
+            --shadow-glow-success: 0 0 30px rgba(52, 211, 153, 0.3);
+            --mt5-bg: #0b0e17;
+            --mt5-surface: #111827;
+            --mt5-card: #1a2332;
+            --mt5-input: #1e2a3a;
+            --mt5-border: #2d3a4f;
+            --mt5-text: #94a3b8;
             --mt5-text-bright: #e8edf5;
-            --mt5-green: #00c897;
-            --mt5-red: #ff3b5c;
-            --mt5-blue: #3b82f6;
-            --mt5-gold: #f59e0b;
-            --mt5-nav-bg: #0c1018;
-            --mt5-nav-active: #182030;
-            --mt5-chart-bg: #080c14;
-            --trade-buy: #00c897;
-            --trade-sell: #ff3b5c;
+            --mt5-green: #34d399;
+            --mt5-red: #f87171;
+            --mt5-blue: #60a5fa;
+            --mt5-gold: #fbbf24;
+            --mt5-nav-bg: #0b0e17;
+            --mt5-nav-active: #1a2332;
+            --mt5-chart-bg: #0b0e17;
+            --trade-buy: #34d399;
+            --trade-sell: #f87171;
             --trade-neutral: #5b6c8a;
             --terminal-header-h: 28px;
             --transition: 0.2s ease;
             --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(20, 24, 40, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            --glass-bg: rgba(20, 24, 40, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         }
 
         [data-theme="light"] {
@@ -83,7 +83,7 @@
             --text-muted: #9ca3af;
             --primary: #4f46e5;
             --primary-light: #eef2ff;
-            --primary-glow: rgba(79, 70, 229, 0.22);
+            --primary-glow: rgba(79, 70, 229, 0.25);
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a78bfa 100%);
             --success: #10b981;
             --success-light: #ecfdf5;
@@ -108,12 +108,13 @@
             --mt5-chart-bg: #ffffff;
             --trade-buy: #10b981;
             --trade-sell: #ef4444;
-            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.28);
+            --shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.25);
             --glass-bg: rgba(255, 255, 255, 0.6);
             --glass-border: rgba(0, 0, 0, 0.06);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
+        /* ─── RESET ─────────────────────────────────────────────────────────── */
         * {
             margin: 0;
             padding: 0;
@@ -149,13 +150,13 @@
             z-index: 1;
         }
 
-        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
+        /* ─── GLASS SIDEBAR ────────────────────────────────────────────────── */
         .app-glass {
             display: flex;
             height: 100vh;
             background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.08), transparent 50%),
                 radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.06), transparent 50%),
-                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
+                linear-gradient(135deg, #0b0e17 0%, #1a2332 100%);
             font-family: var(--font);
             overflow: hidden;
             width: 100%;
@@ -175,7 +176,7 @@
             display: flex;
             flex-direction: column;
             padding: 20px 14px 14px 14px;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
             z-index: 20;
             flex-shrink: 0;
             transition: transform var(--transition), background var(--transition);
@@ -309,7 +310,7 @@
             color: #fff;
         }
 
-        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
+        /* ─── MAIN ──────────────────────────────────────────────────────────── */
         .main-glass {
             flex: 1;
             display: flex;
@@ -319,7 +320,7 @@
             min-width: 0;
         }
 
-        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
+        /* ─── HEADER ────────────────────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
@@ -983,7 +984,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1078,7 +1079,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 15, 25, 0.55);
+            background: rgba(10, 15, 25, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1394,7 +1395,7 @@
             min-height: 100vh;
             background: radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.10), transparent 50%),
                 radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.08), transparent 50%),
-                linear-gradient(135deg, #0b0f17 0%, #1a1e2b 100%);
+                linear-gradient(135deg, #0b0e17 0%, #1a2332 100%);
             padding: 20px;
         }
         [data-theme="light"] .auth-container {
@@ -1767,7 +1768,7 @@
             top: 3px;
             right: 3px;
             z-index: 10;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -1777,7 +1778,7 @@
             transition: all var(--transition);
         }
         .chart-fullscreen-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
         }
 
         .indicator-dropdown {
@@ -2222,7 +2223,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 100;
             display: none;
             align-items: flex-start;
@@ -2364,7 +2365,6 @@
             color: #fff;
         }
 
-        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
         .mt5-sidebar-sheet .deposit-withdraw-section {
             margin-top: 6px;
             padding: 6px 0;
@@ -2430,7 +2430,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 100;
             display: none;
             align-items: flex-end;
@@ -3700,10 +3700,42 @@
         .drag-hint.hidden {
             display: none;
         }
+
+        /* ─── LOADER ───────────────────────────────────────────────────────── */
+        .loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: var(--bg);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .loader .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="app"></div>
+    <div id="app">
+        <div class="loader"><div class="spinner"></div><span>Loading Terminal...</span></div>
+    </div>
     <script>
         (function() {
             'use strict';
@@ -3719,17 +3751,16 @@
             const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XAUUSD'];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
             const DEFAULT_TF = 300;
-            const INDICATOR_COLORS = { 'ema9': '#f59e0b', 'ema20': '#3b82f6', 'ema50': '#10b981', 'ema100': '#8b5cf6',
-                'ema200': '#ef4444', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4',
+            const INDICATOR_COLORS = { 'ema9': '#f59e0b', 'ema20': '#60a5fa', 'ema50': '#34d399', 'ema100': '#a78bfa',
+                'ema200': '#f87171', 'bb': '#a78bfa', 'rsi': '#ec4899', 'macd': '#f97316', 'stoch': '#06b6d4',
                 'vwap': '#f472b6' };
             const INDICATOR_NAMES = { 'ema9': 'EMA 9', 'ema20': 'EMA 20', 'ema50': 'EMA 50', 'ema100': 'EMA 100',
                 'ema200': 'EMA 200', 'bb': 'Bollinger Bands', 'rsi': 'RSI (14)', 'macd': 'MACD', 'stoch': 'Stochastic',
                 'vwap': 'VWAP' };
-            const TF_LABELS = Object.keys(TIMEFRAMES);
 
             // ─── STATE ────────────────────────────────────────────────────────
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
-            let appTheme = localStorage.getItem(THEME_KEY) || 'light';
+            let appTheme = localStorage.getItem(THEME_KEY) || 'dark';
             let token = localStorage.getItem(TOKEN_KEY) || null;
             let currentUser = null;
             try { const u = localStorage.getItem(USER_KEY); if (u) currentUser = JSON.parse(u); } catch (e) {}
@@ -3747,10 +3778,9 @@
             let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
             let pendingOrders = [];
             let lastHistoryReset = Date.now();
-            let entryLineKeys = {};
+            let positionLineMap = {};
             let allPriceLines = {};
             let manualDrawnLines = [];
-            let positionLineMap = {}; // posId -> { entryKey, slKey, tpKey }
 
             // ─── CHART STATE ────────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
@@ -3785,7 +3815,6 @@
             let currentTimeframe = DEFAULT_TF;
             let dragState = null;
             let activeIndicators = {};
-            let fsShowBottom = false;
             let simResizeObserver = null;
             let showVolume = true;
             let mobileWatchlist = JSON.parse(localStorage.getItem('watchlist') || JSON.stringify(SYMBOLS));
@@ -3796,25 +3825,16 @@
             let binanceReconnectTimer = null;
             let lastBinancePrice = {};
             let chartInitRetryTimer = null;
-            let chartInitAttempts = 0;
             let currentMobileLot = 0.01;
-            let ttsUtterance = null;
-            let ttsPausedAt = 0;
-            let ttsTotalLength = 0;
-            let ttsStartTime = 0;
             let isExitingTerminal = false;
-            let terminalExitConfirmShown = false;
-            let chartResizeTimer = null;
-            let chartVisibilityHandler = null;
-            let chartReinitCounter = 0;
-            let serverWS = null;
             let wsConnected = false;
             let wsConnectedServer = false;
+            let serverWS = null;
+            let db = null;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
             const DB_VERSION = 2;
-            let db = null;
 
             function openDB() {
                 return new Promise((resolve, reject) => {
@@ -3902,7 +3922,7 @@
                     setTimeout(() => el.remove(), 300); }, 2800);
             }
 
-            function safeUpdateCandle(candle, source) {
+            function safeUpdateCandle(candle) {
                 if (!simCandleSeries || !simChart) return false;
                 if (!candle || typeof candle !== 'object') return false;
                 let time = candle.time;
@@ -3922,10 +3942,7 @@
                     close: close,
                     volume: volume
                 };
-                try {
-                    simCandleSeries.update(safeClone);
-                    return true;
-                } catch (err) { return false; }
+                try { simCandleSeries.update(safeClone); return true; } catch (err) { return false; }
             }
 
             function customConfirm(message, onConfirm, onCancel) {
@@ -4203,14 +4220,14 @@
                                         else { simAllCandles.push(safeCandle); if (simAllCandles.length > 10000)
                                                 simAllCandles = simAllCandles.slice(-10000); }
                                         simCurrentCandle = safeCandle;
-                                        safeUpdateCandle(safeCandle, 'WS full');
+                                        safeUpdateCandle(safeCandle);
                                         updateAllIndicators();
                                         checkAndExecuteSLTP();
                                         updateSimUI();
                                     } else {
                                         currentCandle.close = safeCandle.close;
                                         currentCandle.volume = safeCandle.volume;
-                                        safeUpdateCandle(currentCandle, 'WS partial');
+                                        safeUpdateCandle(currentCandle);
                                         updateAllIndicators();
                                         updateSimUI();
                                     }
@@ -4407,7 +4424,6 @@
                 if (latestCandle && latestCandle.close) {
                     latestCandle = sanitizeCandle(latestCandle);
                     if (latestCandle) {
-                        // Aggregate latest into current timeframe
                         const tfSeconds = currentTimeframe;
                         const bucket = Math.floor(latestCandle.time / tfSeconds) * tfSeconds;
                         const exists = candles.some(c => {
@@ -4445,6 +4461,12 @@
                         lastCandle.close = realTimePrice;
                         if (realTimePrice > lastCandle.high) lastCandle.high = realTimePrice;
                         if (realTimePrice < lastCandle.low) lastCandle.low = realTimePrice;
+                    }
+                    // Set prev close for each symbol
+                    if (candles.length >= 2) {
+                        simPrevClosePrices[simCurrentSymbol] = candles[candles.length - 2].close;
+                    } else {
+                        simPrevClosePrices[simCurrentSymbol] = candles[0].close * 0.99;
                     }
                 }
 
@@ -4507,12 +4529,12 @@
                     });
 
                     simCandleSeries = simChart.addCandlestickSeries({
-                        upColor: '#10b981',
-                        downColor: '#ef4444',
-                        borderUpColor: '#10b981',
-                        borderDownColor: '#ef4444',
-                        wickUpColor: '#10b981',
-                        wickDownColor: '#ef4444'
+                        upColor: '#34d399',
+                        downColor: '#f87171',
+                        borderUpColor: '#34d399',
+                        borderDownColor: '#f87171',
+                        wickUpColor: '#34d399',
+                        wickDownColor: '#f87171'
                     });
                     simVolumeSeries = simChart.addHistogramSeries({ priceFormat: { type: 'volume' },
                         priceScaleId: '' });
@@ -4538,7 +4560,7 @@
                                 .setData([]); } }
                     updateAllIndicators();
                     const volData = visible.map(c => ({ time: c.time, value: c.volume || 0, color: c.close >= c
-                            .open ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)' }));
+                            .open ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)' }));
                     simVolumeSeries.setData(volData);
 
                     simChart.timeScale().fitContent();
@@ -4571,17 +4593,38 @@
                     if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
                         e) {} }
 
-                    // ─── Click to draw (manual lines) ──────────────────────
-                    simChart.subscribeClick(param => {
-                        if (!currentDrawingTool || !param.point || !simCandleSeries) return;
-                        if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
-                            const price = simCandleSeries.coordinateToPrice(param.point.y);
+                    // ─── Click to draw (manual lines) with drag detection ──
+                    let mouseDownPos = null;
+                    let clickTimer = null;
+
+                    chartDiv.addEventListener('mousedown', (e) => {
+                        mouseDownPos = { x: e.clientX, y: e.clientY };
+                    });
+                    chartDiv.addEventListener('mouseup', (e) => {
+                        if (mouseDownPos) {
+                            const dx = e.clientX - mouseDownPos.x;
+                            const dy = e.clientY - mouseDownPos.y;
+                            if (Math.sqrt(dx * dx + dy * dy) < 5) {
+                                // It's a click, handle drawing
+                                handleChartClick(e);
+                            }
+                            mouseDownPos = null;
+                        }
+                    });
+
+                    function handleChartClick(e) {
+                        if (!currentDrawingTool || !simChart || !simCandleSeries) return;
+                        const rect = chartDiv.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        if (y > 0 && y < chartDiv.clientHeight) {
+                            const price = simCandleSeries.coordinateToPrice(y);
                             if (isValidNumber(price) && price > 0) {
                                 let color, label;
-                                if (currentDrawingTool === 'support') { color = '#10b981';
+                                if (currentDrawingTool === 'support') { color = '#34d399';
                                     label = 'Support'; } else if (currentDrawingTool === 'resistance') { color =
-                                        '#ef4444';
-                                    label = 'Resistance'; } else { color = '#3b82f6';
+                                        '#f87171';
+                                    label = 'Resistance'; } else { color = '#60a5fa';
                                     label = 'H-Line'; }
                                 if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[
                                     simCurrentSymbol] = [];
@@ -4596,7 +4639,7 @@
                                     'active'));
                             }
                         }
-                    });
+                    }
 
                     // ─── Drag lines (including SL/TP) ──────────────────────
                     let dragStateLocal = null;
@@ -4607,11 +4650,9 @@
                         const threshold = 14;
                         let closest = null,
                             closestDist = Infinity;
-                        // Check all price lines
                         for (const key of Object.keys(allPriceLines)) {
                             const line = allPriceLines[key];
                             if (!line) continue;
-                            // Try to get price from line
                             let price = null;
                             try { price = line.options?.price; } catch (e) {}
                             if (price === undefined || price === null) continue;
@@ -4619,14 +4660,13 @@
                             if (lineY !== null) {
                                 const dist = Math.abs(y - lineY);
                                 if (dist < threshold && dist < closestDist) {
-                                    // Check if this is a SL/TP line (contains 'sl_' or 'tp_')
                                     const isSLTP = key.startsWith('sl_') || key.startsWith('tp_') || key.startsWith(
                                         'entry_');
                                     const posId = key.startsWith('sl_') ? key.replace('sl_', '') :
                                         key.startsWith('tp_') ? key.replace('tp_', '') :
                                         key.startsWith('entry_') ? key.replace('entry_', '') : null;
                                     const pos = posId ? portfolio.positions.find(p => p.id === posId) : null;
-                                    if (isSLTP && !pos) continue; // don't drag orphaned lines
+                                    if (isSLTP && !pos) continue;
                                     closest = { key, price, posId, pos, isSLTP, line };
                                     closestDist = dist;
                                 }
@@ -4650,13 +4690,10 @@
                         const newPrice = simCandleSeries.coordinateToPrice(y);
                         if (isValidNumber(newPrice) && newPrice > 0) {
                             dragStateLocal.currentPrice = +newPrice.toFixed(4);
-                            // Update line position
                             const key = dragStateLocal.lineKey;
                             if (allPriceLines[key]) {
                                 try {
                                     const line = allPriceLines[key];
-                                    const opts = line.options || {};
-                                    opts.price = dragStateLocal.currentPrice;
                                     line.applyOptions({ price: dragStateLocal.currentPrice });
                                 } catch (e) {}
                             }
@@ -4679,8 +4716,6 @@
                                     } else if (key.startsWith('tp_')) {
                                         pos.tpPrice = newPrice;
                                         showToast('🔧 TP moved to $' + newPrice.toFixed(4));
-                                    } else if (key.startsWith('entry_')) {
-                                        // Don't allow moving entry line
                                     }
                                     savePortfolioToStorage();
                                     syncPortfolioToServer();
@@ -4689,7 +4724,6 @@
                                 }
                             } else if (key && !key.startsWith('sl_') && !key.startsWith('tp_') && !key.startsWith(
                                     'entry_')) {
-                                // Manual line drag
                                 const lines = portfolio.drawnLines[simCurrentSymbol] || [];
                                 const idx = manualDrawnLines.findIndex(m => m.key === key);
                                 if (idx >= 0 && idx < lines.length) {
@@ -4751,7 +4785,7 @@
                         simCurrentCandle.close = price;
                         simCurrentCandle.volume = (simCurrentCandle.volume || 0) + Math.floor(500 + Math
                             .random() * 3000);
-                        safeUpdateCandle(simCurrentCandle, 'simulation');
+                        safeUpdateCandle(simCurrentCandle);
                         updateAllIndicators();
                         checkAndExecuteSLTP();
                         updateSimUI();
@@ -4774,6 +4808,8 @@
                                 if (simAllCandles.length > 10000) simAllCandles = simAllCandles.slice(
                                     -10000);
                                 saveCandlesToDB(simCurrentSymbol, currentTimeframe, simAllCandles);
+                                // Update prev close
+                                simPrevClosePrices[simCurrentSymbol] = closedCandle.close;
                             }
                             const newOpen = simCurrentCandle.close;
                             const newCandle = sanitizeCandle({
@@ -4786,7 +4822,7 @@
                             });
                             if (newCandle) {
                                 simCurrentCandle = newCandle;
-                                safeUpdateCandle(simCurrentCandle, 'candle close');
+                                safeUpdateCandle(simCurrentCandle);
                                 updateAllIndicators();
                             }
                         }
@@ -4875,7 +4911,6 @@
                     }
                 }
                 const result = Object.values(buckets).sort((a, b) => a.time - b.time);
-                // Fix open for each bucket (use first candle's open)
                 for (let i = 0; i < result.length; i++) {
                     const bucketTime = result[i].time;
                     const first = rawCandles.find(c => Math.floor(c.time / tfSeconds) * tfSeconds === bucketTime);
@@ -4887,7 +4922,6 @@
             // ─── REDRAW ALL LINES ────────────────────────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
-                // Remove all existing price lines
                 for (const key of Object.keys(allPriceLines)) {
                     try { simCandleSeries.removePriceLine(allPriceLines[key]); } catch (e) {}
                 }
@@ -4900,7 +4934,7 @@
                 symbolLines.forEach((l, idx) => {
                     const line = simCandleSeries.createPriceLine({
                         price: l.price,
-                        color: l.color || '#3b82f6',
+                        color: l.color || '#60a5fa',
                         lineWidth: 2,
                         lineStyle: l.style || 0,
                         axisLabelVisible: true,
@@ -4916,9 +4950,8 @@
                 portfolio.positions.forEach(p => {
                     if (p.symbol !== simCurrentSymbol) return;
                     const posId = p.id;
-                    const entryColor = p.type === 'long' ? '#10b981' : '#ef4444';
+                    const entryColor = p.type === 'long' ? '#34d399' : '#f87171';
 
-                    // Entry line (clean, no label)
                     if (p.entryPrice) {
                         const entryLine = simCandleSeries.createPriceLine({
                             price: p.entryPrice,
@@ -4934,11 +4967,10 @@
                         positionLineMap[posId].entryKey = entryKey;
                     }
 
-                    // SL line (dashed, orange)
                     if (p.slPrice) {
                         const slLine = simCandleSeries.createPriceLine({
                             price: p.slPrice,
-                            color: '#f59e0b',
+                            color: '#fbbf24',
                             lineWidth: 1.5,
                             lineStyle: 2,
                             axisLabelVisible: true,
@@ -4950,11 +4982,10 @@
                         positionLineMap[posId].slKey = slKey;
                     }
 
-                    // TP line (dashed, purple)
                     if (p.tpPrice) {
                         const tpLine = simCandleSeries.createPriceLine({
                             price: p.tpPrice,
-                            color: '#8b5cf6',
+                            color: '#a78bfa',
                             lineWidth: 1.5,
                             lineStyle: 2,
                             axisLabelVisible: true,
@@ -4972,7 +5003,6 @@
                 updateHistoryUI();
             }
 
-            // ─── REMOVE POSITION LINES ──────────────────────────────────────
             function removePositionLines(posId) {
                 const map = positionLineMap[posId];
                 if (map) {
@@ -4983,15 +5013,6 @@
                         }
                     }
                     delete positionLineMap[posId];
-                }
-                // Also remove from entryLineKeys for backward compat
-                if (entryLineKeys[posId]) {
-                    const key = entryLineKeys[posId];
-                    if (allPriceLines[key]) {
-                        try { simCandleSeries.removePriceLine(allPriceLines[key]); } catch (e) {}
-                        delete allPriceLines[key];
-                    }
-                    delete entryLineKeys[posId];
                 }
             }
 
@@ -5011,7 +5032,7 @@
                 if (lines.length === 0) { el.innerHTML =
                         '<span style="color:var(--text-muted);font-size:0.45rem;">No lines</span>'; return; }
                 el.innerHTML = lines.map((l, i) =>
-                    `<div class="line-manager-row"><span class="line-dot" style="background:${l.color || '#3b82f6'};"></span><span style="flex:1;font-size:0.45rem;">${l.label || 'Line'} — $${l.price.toFixed(4)}</span><button class="line-delete-btn" onclick="deleteSingleLine(${i})" title="Delete">×</button></div>`
+                    `<div class="line-manager-row"><span class="line-dot" style="background:${l.color || '#60a5fa'};"></span><span style="flex:1;font-size:0.45rem;">${l.label || 'Line'} — $${l.price.toFixed(4)}</span><button class="line-delete-btn" onclick="deleteSingleLine(${i})" title="Delete">×</button></div>`
                 ).join('');
             }
 
@@ -5033,7 +5054,7 @@
                 }
                 el.innerHTML = lines.map((l, i) =>
                     `<div class="mobile-drawn-line-row">
-                        <span class="line-dot" style="background:${l.color || '#3b82f6'};"></span>
+                        <span class="line-dot" style="background:${l.color || '#60a5fa'};"></span>
                         <span style="flex:1;">${l.label || 'Line'} $${l.price.toFixed(4)}</span>
                         <button class="line-delete-btn" onclick="deleteMobileLine(${i})" title="Delete">×</button>
                     </div>`
@@ -5050,12 +5071,6 @@
                 showToast('🗑️ Line deleted');
             }
 
-            // ─── DRAW ENTRY LINE ─────────────────────────────────────────────
-            function drawEntryLine(symbol, price, type) {
-                if (symbol !== simCurrentSymbol) return;
-                redrawAllLines();
-            }
-
             // ─── TRADING ENGINE ─────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
@@ -5063,7 +5078,6 @@
                 const toRemove = [];
                 for (let i = 0; i < portfolio.positions.length; i++) {
                     const p = portfolio.positions[i];
-                    // Use the SL/TP price as the closing price, not market price
                     let price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice;
                     if (!isValidNumber(price) || price <= 0) continue;
                     p.currentPrice = price;
@@ -5175,7 +5189,6 @@
                             sendNotification('✅ Limit BUY Executed', order.symbol + ' @ $' + execPrice.toFixed(4),
                                 'success');
                             playTradeSound('buy');
-                            drawEntryLine(order.symbol, execPrice, 'long');
                         } else {
                             const margin = qty * execPrice * 0.5;
                             if (portfolio.cash < margin + fee) {
@@ -5214,7 +5227,6 @@
                             sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
                                 4), 'success');
                             playTradeSound('sell');
-                            drawEntryLine(order.symbol, execPrice, 'short');
                         }
                         order.status = 'filled';
                         toRemove.push(i);
@@ -5293,7 +5305,6 @@
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
-                    drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
@@ -5325,7 +5336,6 @@
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
                     showToast('✅ Market SHORT ' + qty + ' ' + symbol + ' @ $' + price.toFixed(4));
-                    drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
@@ -5475,7 +5485,6 @@
                     activeIndicators = {};
                     simIndicatorSeries = {};
                     positionLineMap = {};
-                    entryLineKeys = {};
                     savePortfolioToStorage();
                     savePendingOrders();
                     updateSimUI();
@@ -5527,7 +5536,6 @@
                         price);
                     const changeEl = el.querySelector('.change');
                     if (changeEl) {
-                        // Use previous day's close price (simPrevClosePrices)
                         const prevClose = simPrevClosePrices[sym] || simBasePrices[sym] || price;
                         const change = prevClose > 0 ? ((price - prevClose) / prevClose * 100) : 0;
                         changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
@@ -5573,11 +5581,7 @@
                     histEl.innerHTML = html;
                 }
 
-                // Mobile history
-                const mobileHist = document.getElementById('historyList');
-                if (mobileHist) {
-                    // Will be updated by renderMobileHistory
-                }
+                // Mobile history will be updated by renderMobileHistory
             }
 
             // ─── MOBILE TERMINAL ─────────────────────────────────────────────
@@ -5589,10 +5593,12 @@
 
             function updateMobileTopBar() {
                 const price = simLastPrices[simCurrentSymbol] || simBasePrices[simCurrentSymbol] || 0;
+                // No spread: sell and buy price same
                 const sellPrice = document.getElementById('mobileSellPrice');
                 const buyPrice = document.getElementById('mobileBuyPrice');
-                if (sellPrice) sellPrice.textContent = '$' + (price * 0.9998).toFixed(4);
-                if (buyPrice) buyPrice.textContent = '$' + (price * 1.0002).toFixed(4);
+                const priceStr = '$' + (typeof price === 'number' ? price.toFixed(4) : price);
+                if (sellPrice) sellPrice.textContent = priceStr;
+                if (buyPrice) buyPrice.textContent = priceStr;
                 const symEl = document.querySelector('.mt5-symbol');
                 if (symEl) symEl.textContent = simCurrentSymbol;
                 const pairEl = document.querySelector('.mt5-pair');
@@ -5659,7 +5665,6 @@
                     sendNotification('✅ Market BUY', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('buy');
                     showToast('✅ Market BUY ' + qty + ' ' + symbol);
-                    drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
@@ -5691,7 +5696,6 @@
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
                     showToast('✅ Market SHORT ' + qty + ' ' + symbol);
-                    drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
                 updateSimUI();
@@ -5894,7 +5898,7 @@
                 showToast('📊 Switched to ' + sym);
             }
 
-            // ─── MOBILE HISTORY (MT5 STYLE) ─────────────────────────────────
+            // ─── MOBILE HISTORY ─────────────────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
@@ -6430,7 +6434,6 @@
 
                 document.getElementById('chartFullscreenBtn').onclick = () => {
                     document.getElementById('terminalWrapper').classList.add('fullscreen-active');
-                    fsShowBottom = false;
                     setTimeout(() => {
                         if (simChart && simCandleSeries) {
                             const chartDiv2 = document.getElementById('simChartContainer');
@@ -6442,7 +6445,6 @@
                     }, 300);
                 };
 
-                // ─── History dropdown button ──────────────────────────────
                 document.getElementById('historyDdBtn').onclick = function() {
                     updateHistoryUI();
                     const panel = document.getElementById('ddHistory');
@@ -6477,7 +6479,6 @@
                     };
                 });
 
-                // ─── Desktop History button ────────────────────────────────
                 document.getElementById('desktopHistoryBtn').onclick = () => {
                     document.getElementById('historyDdBtn')?.click();
                 };
@@ -6500,7 +6501,6 @@
                     document.getElementById('simQty').value = val;
                 };
 
-                // ─── Show drag hint after a moment ─────────────────────────
                 setTimeout(() => {
                     const hint = document.getElementById('dragHint');
                     if (hint) hint.classList.remove('hidden');
@@ -6614,9 +6614,9 @@
                                 <h3>📐 Draw Line</h3>
                                 <label>Price <input type="number" id="drawPriceInput" step="0.0001" style="width:100%;min-height:32px;background:var(--mt5-input);border:1px solid var(--mt5-border);color:var(--mt5-text-bright);padding:4px 8px;border-radius:4px;font-size:0.6rem;"></label>
                                 <div style="display:flex;gap:4px;margin-top:6px;">
-                                    <button class="btn btn-sm" onclick="addLineMobile('Support','#10b981')" style="background:#10b981;color:#fff;flex:1;min-height:32px;">Support</button>
-                                    <button class="btn btn-sm" onclick="addLineMobile('Resistance','#ef4444')" style="background:#ef4444;color:#fff;flex:1;min-height:32px;">Resist</button>
-                                    <button class="btn btn-sm" onclick="addLineMobile('H-Line','#3b82f6')" style="background:#3b82f6;color:#fff;flex:1;min-height:32px;">H-Line</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('Support','#34d399')" style="background:#34d399;color:#fff;flex:1;min-height:32px;">Support</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('Resistance','#f87171')" style="background:#f87171;color:#fff;flex:1;min-height:32px;">Resist</button>
+                                    <button class="btn btn-sm" onclick="addLineMobile('H-Line','#60a5fa')" style="background:#60a5fa;color:#fff;flex:1;min-height:32px;">H-Line</button>
                                 </div>
                                 <h4 style="margin-top:10px;color:var(--mt5-text-bright);font-size:0.65rem;">📌 Drawn Lines</h4>
                                 <div id="mobileDrawnLinesList" style="max-height:120px;overflow-y:auto;margin-bottom:6px;"></div>
@@ -8477,8 +8477,8 @@
                     try {
                         if (showVolume) {
                             const volData = safeData.map(c => ({ time: c.time, value: c.volume || 0,
-                                color: c.close >= c.open ? 'rgba(16,185,129,0.35)' :
-                                'rgba(239,68,68,0.35)' }));
+                                color: c.close >= c.open ? 'rgba(52,211,153,0.35)' :
+                                'rgba(248,113,113,0.35)' }));
                             simVolumeSeries.setData(volData);
                             const volScale = simChart.priceScale('');
                             if (volScale) volScale.applyOptions({ scaleMargins: { top: 0.88, bottom: 0 } });
@@ -8597,9 +8597,9 @@
             window.renderSubjectList = renderSubjectList;
             window.calcChapterProgress = calcChapterProgress;
             window.calcLessonProgress = calcLessonProgress;
-            window.drawEntryLine = drawEntryLine;
             window.removePositionLines = removePositionLines;
             window.updateHistoryUI = updateHistoryUI;
+            window.aggregateCandles = aggregateCandles;
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
