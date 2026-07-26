@@ -1016,9 +1016,24 @@ router.get('/', authenticate, async (req, res) => {
 
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
-    await query('INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [req.user.userId, req.params.lessonId]);
-    res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+    const { id, question, options, correct, points, explanation } = req.body;
+    if (!question?.en) return res.status(400).json({ error: 'Question text required' });
+
+    // 🔥 লেসনটি ডেটাবেসে আছে কিনা চেক করুন
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found. Please create the lesson first.' });
+    }
+
+    const qid = id || ('q-' + Date.now());
+    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+    const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
+    res.status(201).json((r.rows || r)[0]);
+  } catch (e) {
+    console.error('Quiz POST error:', e);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
 });
 
 router.delete('/:lessonId', authenticate, async (req, res) => {
