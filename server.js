@@ -57,16 +57,24 @@ setInterval(() => {
 }, 2000);
 
 // ── Middleware ─────────────────────────────────────────────────────
-// Helmet with custom CSP (allows inline scripts for Quill & FontAwesome)
+// Helmet with custom CSP (allows inline scripts, Binance WebSocket, CDN resources)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "cdn.quilljs.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+      scriptSrcAttr: ["'unsafe-inline'"], // allow inline event handlers (onclick, etc.)
       styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdn.quilljs.com", "cdnjs.cloudflare.com"],
       fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com"],
       imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "wss://stream.binance.com", "wss://*.binance.com"],
+      connectSrc: [
+        "'self'",
+        process.env.FRONTEND_URL || '',
+        "wss://stream.binance.com",
+        "wss://stream.binance.com:9443",
+        "wss://*.binance.com",
+        "https://cdnjs.cloudflare.com"
+      ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
     },
@@ -198,6 +206,7 @@ server.listen(PORT, () => {
   logger.info(`║  ❤️  Health: /api/health               ║`);
   logger.info(`║  🕐 Cron:  Every 5 minutes (Blob update)║`);
   logger.info(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
+  logger.info(`║  🔒 CSP:  Inline, Binance WS, CDN allowed║`);
   logger.info(`╚══════════════════════════════════════════╝`);
 });
 

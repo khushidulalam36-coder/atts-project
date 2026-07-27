@@ -106,14 +106,14 @@ npm start
 ## Production Notes
 - All routes are validated with express-validator.
 - Rate limiting is applied per IP (100 requests per 15 min).
-- Helmet CSP is configured for inline scripts.
+- Helmet CSP is configured for inline scripts, Binance WebSocket, and CDN resources.
 - Trade engine uses cached prices (updated every 3 sec).
 - Cron job updates public candles every 5 minutes.
 - Graceful shutdown on SIGTERM.
 - Winston logging (error.log, combined.log).
 `,
 
-  // ── server.js (production-ready) ────────────────────────────────
+  // ── server.js (production-ready with CSP fixes) ──────────────────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -173,16 +173,24 @@ setInterval(() => {
 }, 2000);
 
 // ── Middleware ─────────────────────────────────────────────────────
-// Helmet with custom CSP (allows inline scripts for Quill & FontAwesome)
+// Helmet with custom CSP (allows inline scripts, Binance WebSocket, CDN resources)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "cdn.quilljs.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+      scriptSrcAttr: ["'unsafe-inline'"], // allow inline event handlers (onclick, etc.)
       styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdn.quilljs.com", "cdnjs.cloudflare.com"],
       fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com"],
       imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "wss://stream.binance.com", "wss://*.binance.com"],
+      connectSrc: [
+        "'self'",
+        process.env.FRONTEND_URL || '',
+        "wss://stream.binance.com",
+        "wss://stream.binance.com:9443",
+        "wss://*.binance.com",
+        "https://cdnjs.cloudflare.com"
+      ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
     },
@@ -314,6 +322,7 @@ server.listen(PORT, () => {
   logger.info(\`║  ❤️  Health: /api/health               ║\`);
   logger.info(\`║  🕐 Cron:  Every 5 minutes (Blob update)║\`);
   logger.info(\`║  ⚙️  Trade Engine: Active (SL/TP)       ║\`);
+  logger.info(\`║  🔒 CSP:  Inline, Binance WS, CDN allowed║\`);
   logger.info(\`╚══════════════════════════════════════════╝\`);
 });
 
@@ -346,7 +355,7 @@ const logger = winston.createLogger({
 module.exports = logger;
 `,
 
-  // ── lib/binance.js (unchanged, but with fetch) ──────────────────
+  // ── lib/binance.js (unchanged) ──────────────────────────────────
   'lib/binance.js': `// Node.js 18+ has native fetch
 const BASE_URL = 'https://api.binance.com/api/v3';
 
@@ -1703,7 +1712,8 @@ function createProject() {
   console.log('📌 Cron job updates Blob every 5 minutes (public store with token).');
   console.log('📌 Trade engine uses cached prices (refreshed every 3s).');
   console.log('📌 Graceful shutdown enabled (SIGTERM).');
-  console.log('📌 Logging with winston (error.log, combined.log).\n');
+  console.log('📌 Logging with winston (error.log, combined.log).');
+  console.log('📌 CSP fixed: Binance WS, CDN source maps, inline event handlers allowed.\n');
 }
 
 // ─── EXECUTE ─────────────────────────────────────────────────────────
