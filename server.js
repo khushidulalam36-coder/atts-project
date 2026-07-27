@@ -8,13 +8,13 @@ const http = require('http');
 const path = require('path');
 const { WebSocketServer } = require('ws');
 const cron = require('node-cron');
-const { envalid, str, num } = require('envalid');
+const { cleanEnv, str, num } = require('envalid');   // ✅ সঠিক ইমপোর্ট
 
 // Load environment variables
 dotenv.config();
 
-// Validate environment
-envalid.cleanEnv(process.env, {
+// ✅ Validate environment – cleanEnv সরাসরি ব্যবহার
+cleanEnv(process.env, {
   DATABASE_URL: str(),
   JWT_SECRET: str().min(32),
   PORT: num({ default: 5000 }),
@@ -38,7 +38,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-// ── Trust proxy (for rate limiter behind reverse proxy) ──────────
+// ── Trust proxy ──────────────────────────────────────────────────
 app.set('trust proxy', 1);
 
 // ── WebSocket ──────────────────────────────────────────────────────
@@ -66,7 +66,6 @@ setInterval(() => {
 }, 2000);
 
 // ── Security & Middleware ─────────────────────────────────────────
-// Helmet with CSP
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -80,10 +79,8 @@ app.use(helmet({
   },
 }));
 
-// Compression
 app.use(compression());
 
-// CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -102,7 +99,6 @@ app.options('*', (req, res) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: process.env.NODE_ENV === 'production' ? 100 : 1000,
@@ -139,7 +135,6 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// Proxy endpoint to serve candles from public Blob store
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -223,10 +218,7 @@ function gracefulShutdown(signal) {
   logger.info(`${signal} received, shutting down gracefully`);
   server.close(() => {
     logger.info('HTTP server closed');
-    // Close WebSocket connections
     wsClients.forEach(ws => ws.close());
-    // Close DB connection (if any)
-    // Neon driver handles it automatically, but if we have a pool we close it.
     process.exit(0);
   });
 }
@@ -237,7 +229,7 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
   logger.info(`╔══════════════════════════════════════════╗`);
-  logger.info(`║  🚀 Alamquant Backend  v3.0.0          ║`);
+  logger.info(`║  🚀 Alamquant Backend  v3.1.0          ║`);
   logger.info(`║  📡 API:  http://localhost:${PORT}/api     ║`);
   logger.info(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
   logger.info(`║  ❤️  Health: /api/health               ║`);
