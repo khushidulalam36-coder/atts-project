@@ -13,9 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <style>
-        /* ================================================================
-               ROOT VARIABLES – MT5 INSPIRED + GLASS DARK/LIGHT
-               ================================================================ */
+        /* ─── ROOT ────────────────────────────────────────────────────────── */
         :root {
             --bg: #0a0e1a;
             --bg-secondary: #101826;
@@ -31,10 +29,10 @@
             --primary: #7c8cf8;
             --primary-light: #1a1f3a;
             --primary-glow: rgba(124, 140, 248, 0.3);
-            --primary-gradient: linear-gradient(135deg, #5b6cf0 0%, #7c8cf8 40%, #9bb0fc 100%);
-            --success: #34d399;
+            --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 40%, #c4b5fd 100%);
+            --success: #10b981;
             --success-light: #0a2e1f;
-            --danger: #f87171;
+            --danger: #ef4444;
             --danger-light: #2a1215;
             --accent: #f59e0b;
             --radius: 8px;
@@ -45,8 +43,8 @@
             --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
             --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
             --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
-            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.25);
-            --mt5-bg: #080c16;
+            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.25);
+            --mt5-bg: #0a0e1a;
             --mt5-surface: #0d1422;
             --mt5-card: #111a2a;
             --mt5-input: #162030;
@@ -66,7 +64,7 @@
             --terminal-header-h: 28px;
             --transition: 0.2s ease;
             --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(12, 18, 34, 0.7);
+            --glass-bg: rgba(12, 18, 34, 0.75);
             --glass-border: rgba(255, 255, 255, 0.06);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --mt5-gradient-bg: linear-gradient(180deg, #080c16 0%, #0d1422 100%);
@@ -74,6 +72,8 @@
             --mt5-border-glow: 0 0 12px rgba(0, 200, 151, 0.05);
             --admin-accent: #6c7cf0;
             --admin-accent-glow: rgba(108, 124, 240, 0.25);
+            --mt5-toolbar-bg: #0d1422;
+            --mt5-toolbar-border: #1a2740;
         }
 
         [data-theme="light"] {
@@ -124,9 +124,10 @@
             --mt5-border-glow: 0 0 12px rgba(16, 185, 129, 0.06);
             --admin-accent: #4f46e5;
             --admin-accent-glow: rgba(79, 70, 229, 0.2);
+            --mt5-toolbar-bg: #f0f2f5;
+            --mt5-toolbar-border: #d1d5db;
         }
 
-        /* ─── RESET & BASE ──────────────────────────────────────────────── */
         * {
             margin: 0;
             padding: 0;
@@ -162,7 +163,7 @@
             z-index: 1;
         }
 
-        /* ─── GLASS SIDEBAR ──────────────────────────────────────────────── */
+        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
         .app-glass {
             display: flex;
             height: 100vh;
@@ -322,7 +323,7 @@
             color: #fff;
         }
 
-        /* ─── MAIN GLASS ──────────────────────────────────────────────────── */
+        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
         .main-glass {
             flex: 1;
             display: flex;
@@ -332,7 +333,7 @@
             min-width: 0;
         }
 
-        /* ─── TOP BAR ────────────────────────────────────────────────────── */
+        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
@@ -845,7 +846,7 @@
             color: var(--text);
         }
 
-        /* ─── TTS CONTROLS ────────────────────────────────────────────────── */
+        /* ─── TTS CONTROLS (TOP) ─────────────────────────────────────────── */
         .tts-controls-top {
             display: flex;
             gap: 4px;
@@ -933,6 +934,30 @@
             text-align: center;
         }
 
+        /* Voice selector */
+        .voice-select-glass {
+            padding: 2px 16px 2px 6px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--glass-border);
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.5rem;
+            background: var(--glass-bg);
+            font-family: var(--font);
+            color: var(--text);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            min-height: 28px;
+            max-width: 120px;
+        }
+        .voice-select-glass:hover {
+            border-color: var(--primary);
+            box-shadow: 0 3px 14px var(--primary-glow);
+        }
+
         .certificate-btn-glass {
             background: linear-gradient(135deg, #10b981, #059669);
             color: #fff;
@@ -1008,7 +1033,7 @@
             font-weight: 600;
         }
 
-        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────────── */
+        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
         .custom-confirm-overlay {
             position: fixed;
             top: 0;
@@ -1355,7 +1380,6 @@
             }
         }
 
-        /* ─── NOTIFICATION BANNER ─────────────────────────────────────────── */
         .notification-banner {
             position: fixed;
             top: 10px;
@@ -1510,11 +1534,11 @@
             margin-bottom: 6px;
         }
 
-        /* ─── TERMINAL (MT5 INSPIRED) ────────────────────────────────────── */
+        /* ─── TERMINAL ────────────────────────────────────────────────────── */
         .terminal-wrapper {
             background: var(--mt5-gradient-bg);
             border-radius: var(--radius-lg);
-            padding: 3px;
+            padding: 2px;
             border: 1px solid var(--mt5-border);
             box-shadow: var(--shadow), var(--mt5-border-glow);
             transition: all var(--transition);
@@ -1553,8 +1577,8 @@
             align-items: center;
             gap: 4px;
             padding: 2px 6px;
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
+            background: var(--mt5-toolbar-bg);
+            border-bottom: 1px solid var(--mt5-toolbar-border);
             min-height: 28px;
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1599,8 +1623,8 @@
             align-items: center;
             gap: 3px;
             padding: 2px 6px;
-            background: var(--mt5-surface);
-            border-bottom: 1px solid var(--mt5-border);
+            background: var(--mt5-toolbar-bg);
+            border-bottom: 1px solid var(--mt5-toolbar-border);
             min-height: 32px;
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1672,7 +1696,7 @@
             align-items: center;
             gap: 4px;
             padding: 1px 6px;
-            background: var(--mt5-surface);
+            background: var(--mt5-toolbar-bg);
             border-bottom: 1px solid var(--mt5-border-light);
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1885,7 +1909,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 1px 6px;
-            background: var(--mt5-surface);
+            background: var(--mt5-toolbar-bg);
             border-top: 1px solid var(--mt5-border-light);
             font-size: 0.45rem;
             color: var(--mt5-text);
@@ -1937,7 +1961,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 3px 6px;
-            background: var(--mt5-surface);
+            background: var(--mt5-toolbar-bg);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
@@ -2009,7 +2033,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 2px 6px;
-            background: var(--mt5-surface);
+            background: var(--mt5-toolbar-bg);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             min-height: 18px;
@@ -2401,6 +2425,7 @@
             color: #fff;
         }
 
+        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
         .mt5-sidebar-sheet .deposit-withdraw-section {
             margin-top: 6px;
             padding: 6px 0;
@@ -3044,6 +3069,7 @@
             transform: translateY(-1px);
         }
 
+        /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
             display: none;
         }
@@ -3186,6 +3212,12 @@
                 font-size: 0.5rem;
                 padding: 3px 6px;
                 min-height: 28px;
+            }
+            .user-menu-glass .username {
+                font-size: 0.55rem;
+            }
+            .user-menu-glass .account-no {
+                font-size: 0.45rem;
             }
             .lesson-card-glass {
                 padding: 10px 12px;
@@ -3451,6 +3483,11 @@
             .tts-controls-top {
                 top: 36px;
             }
+            .voice-select-glass {
+                max-width: 80px;
+                font-size: 0.4rem;
+                min-height: 24px;
+            }
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
@@ -3534,6 +3571,13 @@
                 font-size: 0.45rem;
                 padding: 2px 5px;
                 min-height: 24px;
+            }
+            .user-menu-glass .username {
+                font-size: 0.45rem;
+            }
+            .user-menu-glass .account-no {
+                font-size: 0.4rem;
+                padding: 1px 4px;
             }
             .chart-container-wrap #simChartContainer {
                 min-height: 90px;
@@ -3646,6 +3690,12 @@
             .tabs-glass .tab-glass {
                 font-size: 0.6rem;
                 padding: 4px 8px;
+            }
+            .voice-select-glass {
+                max-width: 60px;
+                font-size: 0.35rem;
+                min-height: 20px;
+                padding: 2px 12px 2px 4px;
             }
         }
 
@@ -3778,6 +3828,7 @@
             box-shadow: 0 3px 12px rgba(0, 200, 151, 0.15);
         }
 
+        /* ─── DRAGGABLE LINE HINT ───────────────────────────────────────── */
         .drag-hint {
             position: absolute;
             bottom: 30px;
@@ -3797,6 +3848,7 @@
             display: none;
         }
 
+        /* ─── MT5 PRICE SCALE OVERRIDE ──────────────────────────────────── */
         .tv-lightweight-charts {
             --tv-color-pane-background: transparent !important;
         }
@@ -3807,6 +3859,7 @@
             background: transparent !important;
         }
 
+        /* ─── SCROLLBAR FOR MT5 ──────────────────────────────────────────── */
         .mt5-sidebar-sheet::-webkit-scrollbar,
         .panel-content::-webkit-scrollbar,
         .terminal-dropdown-panel::-webkit-scrollbar,
@@ -3841,6 +3894,11 @@
             const TOKEN_KEY = 'auth_token_v10';
             const USER_KEY = 'auth_user_v10';
             const PORTFOLIO_KEY = 'sim_portfolio_v10';
+            const CACHE_SUBJECTS_KEY = 'cached_subjects_v10';
+            const CACHE_PROGRESS_KEY = 'cached_progress_v10';
+            const CACHE_BOOKMARKS_KEY = 'cached_bookmarks_v10';
+            const CACHE_QUIZ_KEY = 'cached_quiz_v10';
+            const CACHE_NOTES_KEY = 'cached_notes_v10';
 
             const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XAUUSD'];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
@@ -3937,6 +3995,7 @@
             let wsConnected = false;
             let wsConnectedServer = false;
             let selectedVoice = null;
+            let _indicatorUpdatePending = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -4285,6 +4344,61 @@
                 try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
             }
 
+            // ─── VOICE SELECTION ──────────────────────────────────────────────
+            function selectVoiceForLanguage(lang) {
+                if (!window.speechSynthesis) return;
+                const voices = window.speechSynthesis.getVoices();
+                if (!voices || voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        selectVoiceForLanguage(lang);
+                    };
+                    return;
+                }
+                const langMap = {
+                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
+                    'hi': ['hi', 'hindi', 'hi-IN'],
+                    'en': ['en-US', 'en-GB', 'en']
+                };
+                const preferred = langMap[lang] || langMap['en'];
+                let bestVoice = null;
+                let bestScore = -1;
+                for (const v of voices) {
+                    const name = v.name.toLowerCase();
+                    const voiceLang = v.lang.toLowerCase();
+                    let score = 0;
+                    for (const p of preferred) {
+                        if (voiceLang.includes(p) || name.includes(p)) {
+                            score += 5;
+                            break;
+                        }
+                    }
+                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
+                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
+                        name.includes('karen') || name.includes('emma') || name.includes('allison')) {
+                        score += 3;
+                    }
+                    if (name.includes('native') || name.includes('google') || name.includes('windows')) {
+                        score += 1;
+                    }
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestVoice = v;
+                    }
+                }
+                if (bestVoice) {
+                    selectedVoice = bestVoice;
+                } else if (voices.length > 0) {
+                    selectedVoice = voices[0];
+                }
+                // Update voice selector dropdown if it exists
+                const voiceSelect = document.getElementById('voiceSelect');
+                if (voiceSelect) {
+                    voiceSelect.innerHTML = voices.map(v =>
+                        `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
+                    ).join('');
+                }
+            }
+
             // ─── BINANCE WS ──────────────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
@@ -4398,7 +4512,7 @@
 
             // ─── BINANCE REST ──────────────────────────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit) {
-                limit = limit || 500;
+                limit = limit || 5000;
                 try {
                     const url =
                         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -4508,7 +4622,7 @@
                 }
 
                 const binanceInterval = '1m';
-                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 2500); // 5x more candles
+                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 5000);
                 let candles = [];
                 let sourceLabel = 'Binance REST';
 
@@ -4523,7 +4637,7 @@
                         candles = sanitizeCandleData(dbCandles);
                         sourceLabel = 'IndexedDB';
                     } else {
-                        const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
+                        const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice,
                             currentTimeframe);
                         candles = sanitizeCandleData(simCandles);
                         sourceLabel = 'Simulation (Fallback)';
@@ -4577,7 +4691,7 @@
 
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
-                    const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
+                    const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice,
                         currentTimeframe);
                     simAllCandles = sanitizeCandleData(simCandles);
                     sourceLabel = 'Simulation (Emergency)';
@@ -4609,16 +4723,18 @@
                 const isDark = appTheme === 'dark';
 
                 try {
-                    const barSpacing = isMobile ? 2 : 4;
+                    const barSpacing = isMobile ? 1 : 1;
+                    const minBarSpacing = isMobile ? 0.5 : 0.5;
+                    const rightOffset = isMobile ? 2 : 5;
                     simChart = LightweightCharts.createChart(chartDiv, {
                         width: chartDiv.clientWidth,
                         height: chartHeight,
                         timeScale: {
                             timeVisible: true,
                             secondsVisible: currentTimeframe < 300,
-                            rightOffset: isMobile ? 4 : 10,
+                            rightOffset: rightOffset,
                             barSpacing: barSpacing,
-                            minBarSpacing: isMobile ? 1 : 2
+                            minBarSpacing: minBarSpacing
                         },
                         layout: {
                             background: { type: 'solid', color: 'transparent' },
@@ -4697,7 +4813,7 @@
                     if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
                         e) {} }
 
-                    // ─── Click to draw ──────────────────────────────────────
+                    // ─── Click to draw (manual lines) ──────────────────────
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -4724,7 +4840,7 @@
                         }
                     });
 
-                    // ─── Drag lines ──────────────────────────────────────────
+                    // ─── Drag lines (including SL/TP) ──────────────────────
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries) return;
@@ -4875,7 +4991,7 @@
                         updateMobileTopBar();
                         updateWatchlistPrices();
                         checkPendingOrders();
-                    }, 1000);
+                    }, 2000);
 
                     // ─── Candle close interval ──────────────────────────────
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
@@ -5197,7 +5313,7 @@
                         const fee = Math.abs(p.qty * closePrice * 0.0005);
                         const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                            portfolio.cash -= (p.qty * closePrice) + fee;
                         } else {
                             portfolio.cash += (p.qty * closePrice) - fee;
                         }
@@ -5407,7 +5523,7 @@
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
-                    portfolio.cash -= fee;
+                    portfolio.cash += qty * price - fee;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5455,7 +5571,7 @@
                 const fee = Math.abs(p.qty * price * 0.0005);
                 const netPnl = pnl - fee;
                 if (isShort) {
-                    portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                    portfolio.cash -= (p.qty * price) + fee;
                 } else {
                     portfolio.cash += (p.qty * price) - fee;
                 }
@@ -5523,7 +5639,7 @@
                         const fee = Math.abs(p.qty * price * 0.0005);
                         const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                            portfolio.cash -= (p.qty * price) + fee;
                         } else {
                             portfolio.cash += (p.qty * price) - fee;
                         }
@@ -5778,7 +5894,7 @@
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
-                    portfolio.cash -= fee;
+                    portfolio.cash += qty * price - fee;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -6009,7 +6125,7 @@
                 showToast('📊 Switched to ' + sym);
             }
 
-            // ─── MOBILE HISTORY ─────────────────────────────────────────────
+            // ─── MOBILE HISTORY (MT5 STYLE) ─────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
@@ -6449,7 +6565,7 @@
                                 <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;padding:3px 8px;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
 
-                            <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--mt5-surface);border-bottom:1px solid var(--mt5-border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--mt5-toolbar-bg);border-bottom:1px solid var(--mt5-border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
                                 <span style="font-size:0.4rem;font-weight:600;color:var(--mt5-text);">📌 Pending:</span>
                                 <span id="pendingOrdersList" style="font-size:0.45rem;color:var(--mt5-text);">No pending orders</span>
                             </div>
@@ -7037,7 +7153,97 @@
                     origRemove.call(modal); };
             }
 
-            // ─── USER INTERFACE ──────────────────────────────────────────────
+            // ─── CACHED DATA LOAD ───────────────────────────────────────────
+            function loadCachedData() {
+                try {
+                    const cachedSubjects = localStorage.getItem(CACHE_SUBJECTS_KEY);
+                    if (cachedSubjects) {
+                        const parsed = JSON.parse(cachedSubjects);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            subjects = parsed;
+                            return true;
+                        }
+                    }
+                } catch (e) {}
+                return false;
+            }
+
+            function saveCachedData() {
+                try {
+                    localStorage.setItem(CACHE_SUBJECTS_KEY, JSON.stringify(subjects));
+                    localStorage.setItem(CACHE_PROGRESS_KEY, JSON.stringify(userProgress));
+                    localStorage.setItem(CACHE_BOOKMARKS_KEY, JSON.stringify([...bookmarks]));
+                    localStorage.setItem(CACHE_QUIZ_KEY, JSON.stringify(quizScores));
+                    localStorage.setItem(CACHE_NOTES_KEY, JSON.stringify(userNotes));
+                } catch (e) {}
+            }
+
+            function loadCachedProgress() {
+                try {
+                    const p = localStorage.getItem(CACHE_PROGRESS_KEY);
+                    if (p) { userProgress = JSON.parse(p); }
+                    const b = localStorage.getItem(CACHE_BOOKMARKS_KEY);
+                    if (b) { bookmarks = new Set(JSON.parse(b)); }
+                    const q = localStorage.getItem(CACHE_QUIZ_KEY);
+                    if (q) { quizScores = JSON.parse(q); }
+                    const n = localStorage.getItem(CACHE_NOTES_KEY);
+                    if (n) { userNotes = JSON.parse(n); }
+                } catch (e) {}
+            }
+
+            async function loadCachedDataAndRender() {
+                const hasCache = loadCachedData();
+                loadCachedProgress();
+                if (hasCache && subjects.length > 0) {
+                    if (!selectedSubjectId) selectedSubjectId = subjects[0]?.id || null;
+                    renderApp();
+                }
+                // Background full load
+                try {
+                    const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
+                        apiFetch('/subjects').catch(() => []),
+                        apiFetch('/progress').catch(() => ({})),
+                        apiFetch('/bookmarks').catch(() => ({})),
+                        apiFetch('/quiz/scores').catch(() => ({})),
+                        apiFetch('/notes/all').catch(() => ({})),
+                        apiFetch('/portfolio').catch(() => ({})),
+                    ]);
+                    subjects = subjRes || [];
+                    userProgress = progRes || {};
+                    bookmarks = new Set(bmRes || []);
+                    quizScores = quizRes || {};
+                    userNotes = notesRes || {};
+                    if (portRes && portRes.cash !== undefined) {
+                        portfolio.cash = parseFloat(portRes.cash) || 100000;
+                        portfolio.positions = portRes.positions || portRes.holdings || [];
+                        portfolio.transactions = portRes.transactions || [];
+                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
+                    }
+                    if (!portfolio.drawnLines) portfolio.drawnLines = {};
+                    if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
+                    portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
+                            .toString(36).slice(2, 6); });
+                    const cutoff = Date.now() - 86400000;
+                    portfolio.transactions = portfolio.transactions.filter(t => {
+                        if (t.time && typeof t.time === 'string') {
+                            const ts = new Date(t.time).getTime();
+                            if (!isNaN(ts)) return ts > cutoff;
+                        }
+                        return true;
+                    });
+                    savePortfolioToStorage();
+                    saveCachedData();
+                    if (currentUser?.username === 'admin') isAdmin = true;
+                    if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
+                    renderApp();
+                    connectBinanceWS();
+                    connectServerWS();
+                } catch (e) {
+                    if (e.message?.includes('Session expired')) logout();
+                }
+            }
+
+            // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
             function renderUserInterface() {
                 try {
                     stopBackgroundEngine();
@@ -7070,13 +7276,18 @@
                                         <div class="profile-dropdown-menu" id="profileMenuMobile">
                                             <div class="account-no-display">${userAccountNo}</div>
                                             <button class="dropdown-item" id="langDropdownMobile"><span class="dd-icon">🌐</span> Language</button>
-                                            <button class="dropdown-item" id="themeDropdownMobile"><span class="dd-icon">🎨</span> Toggle Theme</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
                                             <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item" id="logoutDropdownMobile"><span class="dd-icon">🚪</span> Logout</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuMobile').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <select class="lang-select-glass" id="langSelect" style="display:none;">
+                                <option value="en">🇬🇧 EN</option>
+                                <option value="hi">🇮🇳 HI</option>
+                                <option value="bn">🇧🇩 BN</option>
+                            </select>
                         `;
                     } else {
                         headerHTML = `
@@ -7111,9 +7322,9 @@
                                         <div class="profile-dropdown-menu" id="profileMenuDesktop">
                                             <div class="account-no-display">${userAccountNo}</div>
                                             <button class="dropdown-item" id="langDropdownDesktop"><span class="dd-icon">🌐</span> Language</button>
-                                            <button class="dropdown-item" id="themeDropdownDesktop"><span class="dd-icon">🎨</span> Toggle Theme</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');appTheme=appTheme==='dark'?'light':'dark';applyTheme();"><span class="dd-icon">🎨</span> Toggle Theme</button>
                                             <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item" id="logoutDropdownDesktop"><span class="dd-icon">🚪</span> Logout</button>
+                                            <button class="dropdown-item" onclick="document.getElementById('profileMenuDesktop').classList.remove('show');logout();"><span class="dd-icon">🚪</span> Logout</button>
                                         </div>
                                     </div>
                                 </div>
@@ -7151,11 +7362,10 @@
                             if (currentLessonId) showLessonDetail(currentLessonId);
                             else showLessonList();
                             selectVoiceForLanguage(currentLang);
-                            showToast('🌐 Language switched to ' + e.target.value);
                         };
                     }
 
-                    // ─── Profile dropdown handlers ───────────────────────────
+                    // ─── Profile dropdown language links ──────────────────────
                     document.getElementById('langDropdownDesktop')?.addEventListener('click', function(e) {
                         e.stopPropagation();
                         document.getElementById('profileMenuDesktop')?.classList.remove('show');
@@ -7169,42 +7379,6 @@
                         if (ls) ls.click();
                     });
 
-                    document.getElementById('themeDropdownDesktop')?.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
-                        appTheme = appTheme === 'dark' ? 'light' : 'dark';
-                        applyTheme();
-                        const tb = document.getElementById('themeToggle');
-                        if (tb) {
-                            tb.innerHTML =
-                                `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                        }
-                        showToast('🎨 Theme toggled');
-                    });
-                    document.getElementById('themeDropdownMobile')?.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        document.getElementById('profileMenuMobile')?.classList.remove('show');
-                        appTheme = appTheme === 'dark' ? 'light' : 'dark';
-                        applyTheme();
-                        const tb = document.getElementById('themeToggle');
-                        if (tb) {
-                            tb.innerHTML =
-                                `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                        }
-                        showToast('🎨 Theme toggled');
-                    });
-
-                    document.getElementById('logoutDropdownDesktop')?.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
-                        logout();
-                    });
-                    document.getElementById('logoutDropdownMobile')?.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        document.getElementById('profileMenuMobile')?.classList.remove('show');
-                        logout();
-                    });
-
                     const searchInput = document.getElementById('searchInput');
                     if (searchInput) searchInput.oninput = () => showLessonList();
 
@@ -7215,7 +7389,6 @@
                             applyTheme();
                             this.innerHTML =
                                 `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                            showToast('🎨 Theme toggled');
                         };
                     }
 
@@ -7283,55 +7456,6 @@
                 }
             }
 
-            // ─── VOICE SELECTION ──────────────────────────────────────────────
-            function selectVoiceForLanguage(lang) {
-                if (!window.speechSynthesis) return;
-                const voices = window.speechSynthesis.getVoices();
-                if (!voices || voices.length === 0) {
-                    window.speechSynthesis.onvoiceschanged = () => {
-                        selectVoiceForLanguage(lang);
-                    };
-                    return;
-                }
-                const langMap = {
-                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
-                    'hi': ['hi', 'hindi', 'hi-IN'],
-                    'en': ['en-US', 'en-GB', 'en']
-                };
-                const preferred = langMap[lang] || langMap['en'];
-                let bestVoice = null;
-                let bestScore = -1;
-                for (const v of voices) {
-                    const name = v.name.toLowerCase();
-                    const voiceLang = v.lang.toLowerCase();
-                    let score = 0;
-                    for (const p of preferred) {
-                        if (voiceLang.includes(p) || name.includes(p)) {
-                            score += 3;
-                            break;
-                        }
-                    }
-                    // Prefer female voices
-                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
-                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
-                        name.includes('karen') || name.includes('emma') || name.includes('allison')) {
-                        score += 2;
-                    }
-                    if (name.includes('native') || name.includes('google') || name.includes('windows')) {
-                        score += 1;
-                    }
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestVoice = v;
-                    }
-                }
-                if (bestVoice) {
-                    selectedVoice = bestVoice;
-                } else if (voices.length > 0) {
-                    selectedVoice = voices[0];
-                }
-            }
-
             // ─── TTS GLASS ──────────────────────────────────────────────────
             function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
@@ -7341,9 +7465,26 @@
                 let utterance = null;
                 let isPaused = false;
 
+                // Populate voice selector
+                const voiceSelect = document.getElementById('voiceSelect');
+                if (voiceSelect && window.speechSynthesis) {
+                    const voices = window.speechSynthesis.getVoices();
+                    if (voices.length) {
+                        voiceSelect.innerHTML = voices.map(v =>
+                            `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
+                        ).join('');
+                        voiceSelect.onchange = function() {
+                            const name = this.value;
+                            const found = window.speechSynthesis.getVoices().find(v => v.name === name);
+                            if (found) selectedVoice = found;
+                        };
+                    }
+                }
+
                 function speak() {
                     if (!txt) { showToast('⚠️ No text to speak'); return; }
                     if (window.speechSynthesis) {
+                        if (!selectedVoice) selectVoiceForLanguage(currentLang);
                         if (utterance && !isPaused) window.speechSynthesis.cancel();
                         if (isPaused && utterance) {
                             window.speechSynthesis.resume();
@@ -7368,15 +7509,20 @@
                                     v.name.toLowerCase().includes('victoria') ||
                                     v.name.toLowerCase().includes('zira') ||
                                     v.name.toLowerCase().includes('heather') ||
-                                    v.name.toLowerCase().includes('sarah'))
+                                    v.name.toLowerCase().includes('sarah') ||
+                                    v.name.toLowerCase().includes('karen') ||
+                                    v.name.toLowerCase().includes('emma') ||
+                                    v.name.toLowerCase().includes('allison'))
                             );
                             if (femaleVoices.length > 0) utterance.voice = femaleVoices[0];
                             else if (voices.length > 0) utterance.voice = voices[0];
                         }
                         utterance.onstart = () => { showToast('🔊 Playing...');
                             isPaused = false; };
-                        utterance.onerror = (e) => { showToast('⚠️ TTS error: ' + (e.error || 'unknown'));
-                            isPaused = false; };
+                        utterance.onerror = (e) => {
+                            showToast('⚠️ TTS error: ' + (e.error || 'unknown'));
+                            isPaused = false;
+                        };
                         utterance.onend = () => { showToast('✅ TTS finished');
                             isPaused = false; };
                         utterance.onpause = () => { isPaused = true;
@@ -7401,17 +7547,6 @@
                             .speechSynthesis.cancel();
                         isPaused = false;
                         showToast('⏹️ Stopped'); } };
-            }
-
-            function setupPrevNextGlass(subj, curId) {
-                const lessons = subj?.lessons || [];
-                const idx = lessons.findIndex(l => l.id === curId);
-                document.getElementById('prevLesson').onclick = () => { if (idx > 0) showLessonDetail(lessons[idx - 1]
-                        .id);
-                    else showToast('📌 First lesson'); };
-                document.getElementById('nextLesson').onclick = () => { if (idx < lessons.length - 1) showLessonDetail(
-                        lessons[idx + 1].id);
-                    else showToast('📌 Last lesson'); };
             }
 
             // ─── CHAPTER PROGRESS ───────────────────────────────────────────
@@ -7595,6 +7730,7 @@
                             <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
                             <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
                             <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
+                            <select class="voice-select-glass" id="voiceSelect"><option value="">Select voice...</option></select>
                             <span class="speed-label-glass">Speed:</span><input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label-glass" id="speedDisplay">1.0x</span>
                             <button class="btn-outline-glass ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
                             <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
@@ -7647,6 +7783,21 @@
                 if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
                     .onclick = () => generateCertificate(subj);
                 selectVoiceForLanguage(currentLang);
+                // Populate voice select
+                if (window.speechSynthesis) {
+                    const voices = window.speechSynthesis.getVoices();
+                    const vSel = document.getElementById('voiceSelect');
+                    if (vSel && voices.length) {
+                        vSel.innerHTML = voices.map(v =>
+                            `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
+                        ).join('');
+                        vSel.onchange = function() {
+                            const name = this.value;
+                            const found = window.speechSynthesis.getVoices().find(v => v.name === name);
+                            if (found) selectedVoice = found;
+                        };
+                    }
+                }
             }
 
             function renderQuizTabGlass(container, lesson, lessonId) {
@@ -7724,6 +7875,17 @@
                     setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
                             .click(); }, 100);
                 } catch (e) { showToast('⚠️ ' + e.message); }
+            }
+
+            function setupPrevNextGlass(subj, curId) {
+                const lessons = subj?.lessons || [];
+                const idx = lessons.findIndex(l => l.id === curId);
+                document.getElementById('prevLesson').onclick = () => { if (idx > 0) showLessonDetail(lessons[idx - 1]
+                        .id);
+                    else showToast('📌 First lesson'); };
+                document.getElementById('nextLesson').onclick = () => { if (idx < lessons.length - 1) showLessonDetail(
+                        lessons[idx + 1].id);
+                    else showToast('📌 Last lesson'); };
             }
 
             function openNoteModalGlass(lessonId) {
@@ -8152,11 +8314,15 @@
                         `).join('')}
                         <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
                         <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Explanation EN<textarea id="qExpEn" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.en || ''}</textarea></label>
+                        <label style="font-size:0.65rem;">Explanation HI<textarea id="qExpHi" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.hi || ''}</textarea></label>
+                        <label style="font-size:0.65rem;">Explanation BN<textarea id="qExpBn" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.bn || ''}</textarea></label>
                         <div class="modal-actions">
                             <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
                             <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
                         </div>
-                    </div>`;
+                    </div>
+                `;
                 document.body.appendChild(modal);
                 if (ex) document.getElementById('qCor').value = ex.correct || 'a';
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
@@ -8177,7 +8343,12 @@
                             }
                         })),
                         correct: document.getElementById('qCor').value,
-                        points: parseInt(document.getElementById('qPts').value) || 5
+                        points: parseInt(document.getElementById('qPts').value) || 5,
+                        explanation: {
+                            en: document.getElementById('qExpEn').value.trim(),
+                            hi: document.getElementById('qExpHi').value.trim(),
+                            bn: document.getElementById('qExpBn').value.trim()
+                        }
                     };
 
                     try {
@@ -8274,7 +8445,7 @@
                             showToast('🎉 Registration successful!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
-                            loadAllDataBackground();
+                            loadCachedDataAndRender();
                         } catch (e) { showToast('❌ ' + e.message); }
                     } else {
                         try { const res = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({
@@ -8290,13 +8461,12 @@
                             showToast('✅ Welcome back, ' + username + '!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
-                            loadAllDataBackground();
+                            loadCachedDataAndRender();
                         } catch (e) { showToast('❌ ' + e.message); }
                     }
                 };
             }
 
-            // ─── BACKGROUND DATA LOAD ──────────────────────────────────────
             async function loadAllDataBackground() {
                 try {
                     loadPortfolioFromStorage();
@@ -8578,12 +8748,32 @@
                 return vwap;
             }
 
+            const debouncedUpdateIndicators = debounce(function() {
+                updateAllIndicatorsInternal();
+            }, 200);
+
             function updateAllIndicators() {
+                if (_indicatorUpdatePending) return;
+                _indicatorUpdatePending = true;
+                requestAnimationFrame(() => {
+                    debouncedUpdateIndicators();
+                    _indicatorUpdatePending = false;
+                });
+            }
+
+            function updateAllIndicatorsInternal() {
                 if (!simCandleSeries || !simChart) return;
-                const allData = [...simAllCandles];
-                if (simCurrentCandle) allData.push(simCurrentCandle);
-                if (allData.length === 0) return;
-                const safeData = sanitizeCandleData(allData);
+                let visibleRange = null;
+                try { visibleRange = simChart.timeScale().getVisibleRange(); } catch (e) {}
+                let data = [...simAllCandles];
+                if (simCurrentCandle) data.push(simCurrentCandle);
+                if (visibleRange) {
+                    const buffer = (visibleRange.to - visibleRange.from) * 0.3;
+                    data = data.filter(c => c.time >= visibleRange.from - buffer && c.time <= visibleRange.to +
+                    buffer);
+                }
+                if (data.length < 5) data = [...simAllCandles];
+                const safeData = sanitizeCandleData(data);
                 if (safeData.length === 0) return;
 
                 const removeSeries = (key) => {
@@ -8616,10 +8806,10 @@
                 if (activeIndicators['bb']) {
                     const { sma, upper, lower } = calculateBB(safeData);
                     ['bb_sma', 'bb_upper', 'bb_lower'].forEach((k, i) => {
-                        const data = [sma, upper, lower][i];
-                        if (data && data.length > 0) {
+                        const data2 = [sma, upper, lower][i];
+                        if (data2 && data2.length > 0) {
                             if (simIndicatorSeries[k]) {
-                                try { simIndicatorSeries[k].setData(data); } catch (e) {}
+                                try { simIndicatorSeries[k].setData(data2); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
@@ -8628,7 +8818,7 @@
                                         lastValueVisible: false, priceFormat: { type: 'price',
                                             precision: 4, minMove: 0.0001 } });
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
-                                    ls.setData(data);
+                                    ls.setData(data2);
                                     simIndicatorSeries[k] = ls;
                                 } catch (e) {}
                             }
@@ -8861,7 +9051,7 @@
             window.checkPendingOrders = checkPendingOrders;
             window.customConfirm = customConfirm;
             window.exitTerminalSafely = exitTerminalSafely;
-            window.loadAllDataBackground = loadAllDataBackground;
+            window.loadCachedDataAndRender = loadCachedDataAndRender;
             window.renderApp = renderApp;
             window.addLineMobile = addLineMobile;
             window.switchHistoryTab = switchHistoryTab;
@@ -8898,10 +9088,10 @@
                 saveAccountNo();
             }
             openDB().then(() => {
-                if (token && currentUser) loadAllData();
+                if (token && currentUser) loadCachedDataAndRender();
                 else renderAuthPage();
             }).catch(err => {
-                if (token && currentUser) loadAllData();
+                if (token && currentUser) loadCachedDataAndRender();
                 else renderAuthPage();
             });
 
