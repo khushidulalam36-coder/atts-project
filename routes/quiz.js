@@ -1,31 +1,82 @@
 const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
+const Joi = require('joi');
+
+const quizQuestionSchema = Joi.object({
+  id: Joi.string().optional(),
+  question: Joi.object({
+    en: Joi.string().required(),
+    hi: Joi.string().optional(),
+    bn: Joi.string().optional()
+  }).required(),
+  options: Joi.array().items(Joi.object({
+    id: Joi.string().required(),
+    text: Joi.object({
+      en: Joi.string().required(),
+      hi: Joi.string().optional(),
+      bn: Joi.string().optional()
+    }).required()
+  })).min(2).required(),
+  correct: Joi.string().valid('a','b','c','d').required(),
+  points: Joi.number().integer().min(1).default(5),
+  explanation: Joi.object().optional()
+});
 
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
-    const { id, question, options, correct, points, explanation } = req.body;
-    if (!question?.en) return res.status(400).json({ error: 'Question text required' });
-    const qid = id || ('q-' + Date.now());
-    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+    const { error, value } = quizQuestionSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { question, options, correct, points, explanation } = value;
+    const qid = value.id || ('q-' + Date.now());
+
+    // Check if lesson exists
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+
+    await query(
+      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [qid, req.params.lessonId, question, options, correct, points, explanation || {}]
+    );
     const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
     res.status(201).json((r.rows || r)[0]);
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error('❌ Quiz POST error:', e.message);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
 });
 
 router.put('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
-    const { id, question, options, correct, points, explanation } = req.body;
-    const qid = id || ('q-' + Date.now());
+    const { error, value } = quizQuestionSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { question, options, correct, points, explanation } = value;
+    const qid = value.id || ('q-' + Date.now());
+
+    // Check if lesson exists
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
     const rows = existing.rows || existing;
     const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
-    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+
+    await query(
+      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [qid, req.params.lessonId, question, options, correct, points, explanation || {}]
+    );
     res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error('❌ Quiz PUT error:', e.message);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
 });
 
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
@@ -35,7 +86,10 @@ router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
     const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.post('/submit', authenticate, async (req, res) => {
@@ -46,14 +100,20 @@ router.post('/submit', authenticate, async (req, res) => {
       [req.user.userId, lessonId, score, passed]
     );
     res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.post('/reset/:lessonId', authenticate, async (req, res) => {
   try {
     await query('DELETE FROM quiz_scores WHERE user_id=$1 AND lesson_id=$2', [req.user.userId, req.params.lessonId]);
     res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 router.get('/scores', authenticate, async (req, res) => {
@@ -62,7 +122,10 @@ router.get('/scores', authenticate, async (req, res) => {
     const scores = {};
     (r.rows || r).forEach(row => { scores[row.lesson_id] = { score: row.score, passed: row.passed }; });
     res.json(scores);
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;

@@ -22,7 +22,10 @@ router.post('/', authenticate, async (req, res) => {
       }
     }
     res.json({ success: true, count: data.length });
-  } catch (e) { console.error(e); res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 module.exports = router;

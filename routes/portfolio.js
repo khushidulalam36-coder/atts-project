@@ -4,12 +4,9 @@ const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
 const { fetchPrice } = require('../lib/binance');
 
-// GET – returns portfolio with frontend-compatible field names
 router.get('/', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);
-    
-    // Convert holdings object to frontend positions array
     let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
     const positions = Object.entries(holdings).map(([symbol, data]) => {
       const qty = data.qty || 0;
@@ -23,7 +20,6 @@ router.get('/', authenticate, async (req, res) => {
         currentPrice: data.avgPrice || 0
       };
     });
-
     res.json({
       cash: p.cash,
       positions: positions,
@@ -36,7 +32,6 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// PUT – execute a trade (buy/sell) – KEPT AS IS (works with holdings object)
 router.put('/', authenticate, async (req, res) => {
   try {
     const { symbol, qty, type, slPrice, tpPrice } = req.body;
@@ -75,7 +70,6 @@ router.put('/', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// ✅ NEW: PUT /sync – full portfolio sync from frontend (converts positions array → holdings object)
 router.put('/sync', authenticate, async (req, res) => {
   try {
     const { cash, positions, transactions, drawnLines } = req.body;
@@ -83,13 +77,11 @@ router.put('/sync', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Valid cash field required' });
     }
 
-    // Convert frontend positions (array) to backend holdings (object)
-    // ✅ FIX: short position qty becomes negative so trade engine can detect it
     const holdings = {};
     (positions || []).forEach(pos => {
       if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
         let qty = pos.qty;
-        if (pos.type === 'short') qty = -pos.qty;   // <-- CRITICAL FIX
+        if (pos.type === 'short') qty = -pos.qty;
         holdings[pos.symbol] = {
           qty: qty,
           avgPrice: pos.entryPrice,
@@ -122,7 +114,6 @@ router.put('/sync', authenticate, async (req, res) => {
   }
 });
 
-// DELETE /holding/:symbol – manual exit a position
 router.delete('/holding/:symbol', authenticate, async (req, res) => {
   try {
     const p = await getOrCreatePortfolio(req.user.userId);
