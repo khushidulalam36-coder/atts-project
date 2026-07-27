@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
-const logger = require('../lib/logger');
 
 const migrations = [
   `CREATE TABLE IF NOT EXISTS users (
@@ -82,9 +81,9 @@ async function createDefaultAdmin() {
       'INSERT INTO users (username, password_hash) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING',
       [username, hashed]
     );
-    logger.info('✅ Default admin created (username: admin, password: admin123)');
+    console.log('✅ Default admin created (username: admin, password: admin123)');
   } catch (err) {
-    logger.info('ℹ️ Admin user already exists or error:', err.message);
+    console.log('ℹ️ Admin user already exists or error:', err.message);
   }
 }
 
@@ -98,22 +97,22 @@ async function createAdminPortfolio() {
       );
     }
   } catch (err) {
-    logger.info('ℹ️ Portfolio creation error:', err.message);
+    console.log('ℹ️ Portfolio creation error:', err.message);
   }
 }
 
 (async function migrate() {
-  logger.info('🔄 Running migrations...');
+  console.log('🔄 Running migrations...');
   for (const sql of migrations) {
     try {
       await query(sql);
-      logger.info('✅ Migration executed.');
+      console.log('✅ Migration executed.');
     } catch (err) {
-      logger.error('❌ Migration error:', err.message);
+      console.error('❌ Migration error:', err.message);
     }
   }
   await createDefaultAdmin();
   await createAdminPortfolio();
-  logger.info('🎉 Migration complete!');
+  console.log('🎉 Migration complete!');
   process.exit(0);
 })();

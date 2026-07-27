@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
-const logger = require('../lib/logger');
 
 router.get('/all', authenticate, async (req, res) => {
   try {
@@ -9,20 +8,14 @@ router.get('/all', authenticate, async (req, res) => {
     const notes = {};
     (r.rows || r).forEach(row => { notes[row.lesson_id] = row.content; });
     res.json(notes);
-  } catch (e) {
-    logger.error('GET all notes error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 router.get('/:lessonId', authenticate, async (req, res) => {
   try {
     const r = await query('SELECT content FROM notes WHERE user_id=$1 AND lesson_id=$2', [req.user.userId, req.params.lessonId]);
     res.json({ content: (r.rows || r)[0]?.content || '' });
-  } catch (e) {
-    logger.error('GET note error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 router.put('/:lessonId', authenticate, async (req, res) => {
@@ -32,10 +25,7 @@ router.put('/:lessonId', authenticate, async (req, res) => {
       [req.user.userId, req.params.lessonId, req.body.content || '']
     );
     res.json({ success: true });
-  } catch (e) {
-    logger.error('PUT note error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;

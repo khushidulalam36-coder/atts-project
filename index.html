@@ -13,7 +13,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <style>
-        /* ─── ROOT ────────────────────────────────────────────────────────── */
+        /* ================================================================
+               ROOT VARIABLES – MT5 INSPIRED + GLASS DARK/LIGHT
+               ================================================================ */
         :root {
             --bg: #0a0e1a;
             --bg-secondary: #101826;
@@ -124,6 +126,7 @@
             --admin-accent-glow: rgba(79, 70, 229, 0.2);
         }
 
+        /* ─── RESET & BASE ──────────────────────────────────────────────── */
         * {
             margin: 0;
             padding: 0;
@@ -159,7 +162,7 @@
             z-index: 1;
         }
 
-        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
+        /* ─── GLASS SIDEBAR ──────────────────────────────────────────────── */
         .app-glass {
             display: flex;
             height: 100vh;
@@ -319,7 +322,7 @@
             color: #fff;
         }
 
-        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
+        /* ─── MAIN GLASS ──────────────────────────────────────────────────── */
         .main-glass {
             flex: 1;
             display: flex;
@@ -329,7 +332,7 @@
             min-width: 0;
         }
 
-        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
+        /* ─── TOP BAR ────────────────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
@@ -842,7 +845,7 @@
             color: var(--text);
         }
 
-        /* ─── TTS CONTROLS (TOP) ─────────────────────────────────────────── */
+        /* ─── TTS CONTROLS ────────────────────────────────────────────────── */
         .tts-controls-top {
             display: flex;
             gap: 4px;
@@ -1005,7 +1008,7 @@
             font-weight: 600;
         }
 
-        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
+        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────────── */
         .custom-confirm-overlay {
             position: fixed;
             top: 0;
@@ -1352,6 +1355,7 @@
             }
         }
 
+        /* ─── NOTIFICATION BANNER ─────────────────────────────────────────── */
         .notification-banner {
             position: fixed;
             top: 10px;
@@ -1506,7 +1510,7 @@
             margin-bottom: 6px;
         }
 
-        /* ─── TERMINAL ────────────────────────────────────────────────────── */
+        /* ─── TERMINAL (MT5 INSPIRED) ────────────────────────────────────── */
         .terminal-wrapper {
             background: var(--mt5-gradient-bg);
             border-radius: var(--radius-lg);
@@ -2397,7 +2401,6 @@
             color: #fff;
         }
 
-        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
         .mt5-sidebar-sheet .deposit-withdraw-section {
             margin-top: 6px;
             padding: 6px 0;
@@ -2823,6 +2826,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
             flex-shrink: 0;
         }
         .mobile-drawn-line-row .line-delete-btn:active {
@@ -3040,7 +3044,6 @@
             transform: translateY(-1px);
         }
 
-        /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
             display: none;
         }
@@ -3132,46 +3135,6 @@
             font-weight: 300;
         }
 
-        /* ─── LOADING SCREEN ────────────────────────────────────────── */
-        #app-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg, #0a0e1a);
-            z-index: 9999;
-            flex-direction: column;
-            gap: 16px;
-            transition: opacity 0.5s ease;
-        }
-        #app-loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #app-loading .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border, #1e2d42);
-            border-top-color: var(--primary, #7c8cf8);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        #app-loading .loading-text {
-            color: var(--text-secondary, #8899b8);
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
         /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
             .sidebar-glass {
@@ -3223,12 +3186,6 @@
                 font-size: 0.5rem;
                 padding: 3px 6px;
                 min-height: 28px;
-            }
-            .user-menu-glass .username {
-                font-size: 0.55rem;
-            }
-            .user-menu-glass .account-no {
-                font-size: 0.45rem;
             }
             .lesson-card-glass {
                 padding: 10px 12px;
@@ -3578,13 +3535,6 @@
                 padding: 2px 5px;
                 min-height: 24px;
             }
-            .user-menu-glass .username {
-                font-size: 0.45rem;
-            }
-            .user-menu-glass .account-no {
-                font-size: 0.4rem;
-                padding: 1px 4px;
-            }
             .chart-container-wrap #simChartContainer {
                 min-height: 90px;
             }
@@ -3828,7 +3778,6 @@
             box-shadow: 0 3px 12px rgba(0, 200, 151, 0.15);
         }
 
-        /* ─── DRAGGABLE LINE HINT ───────────────────────────────────────── */
         .drag-hint {
             position: absolute;
             bottom: 30px;
@@ -3848,7 +3797,6 @@
             display: none;
         }
 
-        /* ─── MT5 PRICE SCALE OVERRIDE ──────────────────────────────────── */
         .tv-lightweight-charts {
             --tv-color-pane-background: transparent !important;
         }
@@ -3859,7 +3807,6 @@
             background: transparent !important;
         }
 
-        /* ─── SCROLLBAR FOR MT5 ──────────────────────────────────────────── */
         .mt5-sidebar-sheet::-webkit-scrollbar,
         .panel-content::-webkit-scrollbar,
         .terminal-dropdown-panel::-webkit-scrollbar,
@@ -3882,14 +3829,7 @@
     </style>
 </head>
 <body>
-    <!-- ─── LOADING SCREEN ────────────────────────────────────────── -->
-    <div id="app-loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Loading ATTS Platform...</div>
-    </div>
-
     <div id="app"></div>
-
     <script>
         (function() {
             'use strict';
@@ -3997,23 +3937,6 @@
             let wsConnected = false;
             let wsConnectedServer = false;
             let selectedVoice = null;
-
-            // ─── PERFORMANCE OPTIMISATION ──────────────────────────────────
-            let updateFrameId = null;
-            let pendingUpdate = false;
-
-            function scheduleUIUpdate() {
-                if (pendingUpdate) return;
-                pendingUpdate = true;
-                if (updateFrameId) cancelAnimationFrame(updateFrameId);
-                updateFrameId = requestAnimationFrame(() => {
-                    pendingUpdate = false;
-                    updateFrameId = null;
-                    updateSimUI();
-                    updateMobileTopBar();
-                    updateWatchlistPrices();
-                });
-            }
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -4363,18 +4286,6 @@
             }
 
             // ─── BINANCE WS ──────────────────────────────────────────────────
-            let wsReconnectDelay = 1000;
-            let wsMaxDelay = 30000;
-
-            function reconnectBinanceWS() {
-                if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
-                const delay = Math.min(wsReconnectDelay, wsMaxDelay);
-                binanceReconnectTimer = setTimeout(() => {
-                    wsReconnectDelay = Math.min(wsReconnectDelay * 1.5, wsMaxDelay);
-                    connectBinanceWS();
-                }, delay);
-            }
-
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
                         .CONNECTING)) return;
@@ -4383,8 +4294,7 @@
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { wsConnected = true;
-                        wsReconnectDelay = 1000; };
+                    binanceWS.onopen = () => { wsConnected = true; };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -4406,7 +4316,8 @@
                                 }
                                 simLastPrices[symbol] = safeCandle.close;
                                 lastBinancePrice[symbol] = safeCandle.close;
-                                scheduleUIUpdate();
+                                updateMobileTopBar();
+                                updateWatchlistPrices();
                                 if (symbol === simCurrentSymbol && simCandleSeries && simCurrentCandle) {
                                     const currentCandle = simCurrentCandle;
                                     const priceChange = Math.abs(safeCandle.close - currentCandle.close);
@@ -4422,13 +4333,13 @@
                                         safeUpdateCandle(safeCandle, 'WS full');
                                         updateAllIndicators();
                                         checkAndExecuteSLTP();
-                                        scheduleUIUpdate();
+                                        updateSimUI();
                                     } else {
                                         currentCandle.close = safeCandle.close;
                                         currentCandle.volume = safeCandle.volume;
                                         safeUpdateCandle(currentCandle, 'WS partial');
                                         updateAllIndicators();
-                                        scheduleUIUpdate();
+                                        updateSimUI();
                                     }
                                 }
                             }
@@ -4436,10 +4347,11 @@
                     };
                     binanceWS.onclose = () => {
                         wsConnected = false;
-                        reconnectBinanceWS();
+                        if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
+                        binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
                     };
                     binanceWS.onerror = () => { if (binanceWS) binanceWS.close(); };
-                } catch (e) { reconnectBinanceWS(); }
+                } catch (e) {}
             }
 
             function disconnectBinanceWS() {
@@ -4466,7 +4378,8 @@
                                     if (simLastPrices[sym]) simPrevClosePrices[sym] = simLastPrices[sym];
                                     simLastPrices[sym] = d.prices[sym];
                                 });
-                                scheduleUIUpdate();
+                                updateMobileTopBar();
+                                updateWatchlistPrices();
                             }
                         } catch (err) {}
                     };
@@ -4485,7 +4398,7 @@
 
             // ─── BINANCE REST ──────────────────────────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit) {
-                limit = limit || 2500;
+                limit = limit || 500;
                 try {
                     const url =
                         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -4595,7 +4508,7 @@
                 }
 
                 const binanceInterval = '1m';
-                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 2500);
+                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 2500); // 5x more candles
                 let candles = [];
                 let sourceLabel = 'Binance REST';
 
@@ -4756,13 +4669,16 @@
 
                     simChart.timeScale().fitContent();
                     const visibleRange = simChart.timeScale().getVisibleRange();
-                    if (visibleRange && simAllCandles.length > 500) {
-                        const lastIdx = simAllCandles.length - 1;
-                        const lastTime = simAllCandles[lastIdx].time;
-                        const firstTime = simAllCandles[Math.max(0, lastIdx - 500)].time;
-                        try {
-                            simChart.timeScale().setVisibleRange({ from: firstTime, to: lastTime + currentTimeframe });
-                        } catch (e) {}
+                    if (visibleRange) {
+                        const rightEdge = visibleRange.to;
+                        const leftEdge = visibleRange.from;
+                        const rangeWidth = rightEdge - leftEdge;
+                        const lastTime = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].time :
+                            Date.now() / 1000;
+                        const newRight = lastTime + tfSeconds;
+                        const newLeft = newRight - rangeWidth;
+                        if (newLeft > 0) { try { simChart.timeScale().setVisibleRange({ from: newLeft, to: newRight }); } catch (
+                            e) {} }
                     }
 
                     const savedInd = await loadIndicatorsFromDB();
@@ -4781,7 +4697,7 @@
                     if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
                         e) {} }
 
-                    // ─── Click to draw (manual lines) ──────────────────────
+                    // ─── Click to draw ──────────────────────────────────────
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -4808,7 +4724,7 @@
                         }
                     });
 
-                    // ─── Drag lines (including SL/TP) ──────────────────────
+                    // ─── Drag lines ──────────────────────────────────────────
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries) return;
@@ -4887,7 +4803,7 @@
                                     savePortfolioToStorage();
                                     syncPortfolioToServer();
                                     redrawAllLines();
-                                    scheduleUIUpdate();
+                                    updateSimUI();
                                 }
                             } else if (key && !key.startsWith('sl_') && !key.startsWith('tp_') && !key.startsWith(
                                     'entry_')) {
@@ -4925,7 +4841,9 @@
                                     simPrevClosePrices[simCurrentSymbol] = simLastPrices[simCurrentSymbol];
                                 }
                                 simLastPrices[simCurrentSymbol] = price;
-                                scheduleUIUpdate();
+                                updateSimUI();
+                                updateMobileTopBar();
+                                updateWatchlistPrices();
                             }
                             return;
                         }
@@ -4953,7 +4871,9 @@
                         safeUpdateCandle(simCurrentCandle, 'simulation');
                         updateAllIndicators();
                         checkAndExecuteSLTP();
-                        scheduleUIUpdate();
+                        updateSimUI();
+                        updateMobileTopBar();
+                        updateWatchlistPrices();
                         checkPendingOrders();
                     }, 1000);
 
@@ -4989,7 +4909,7 @@
                         }
                     }, Math.min(tfSeconds * 1000, 30000));
 
-                    const debouncedChartResize = debounce(() => {
+                    const debouncedResize = debounce(() => {
                         if (simChart && chartDiv.clientWidth > 0 && chartDiv.clientHeight > 0) {
                             try { simChart.applyOptions({ width: chartDiv.clientWidth, height: chartDiv
                                     .clientHeight }); } catch (e) {}
@@ -5006,9 +4926,9 @@
                                 }
                             } catch (e) {}
                         }
-                    }, 100);
+                    }, 150);
                     if (simResizeObserver) simResizeObserver.disconnect();
-                    simResizeObserver = new ResizeObserver(debouncedChartResize);
+                    simResizeObserver = new ResizeObserver(debouncedResize);
                     simResizeObserver.observe(chartDiv);
 
                     window._chartCleanup = function() {
@@ -5307,7 +5227,7 @@
                 if (changed) {
                     portfolio.positions = portfolio.positions.filter((_, i) => !toRemove.includes(i));
                     savePortfolioToStorage();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     redrawAllLines();
                     syncPortfolioToServer();
                     updateHistoryUI();
@@ -5409,7 +5329,7 @@
                         order.status = 'filled';
                         toRemove.push(i);
                         savePortfolioToStorage();
-                        scheduleUIUpdate();
+                        updateSimUI();
                         redrawAllLines();
                         syncPortfolioToServer();
                         updateHistoryUI();
@@ -5518,7 +5438,7 @@
                     drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
-                scheduleUIUpdate();
+                updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
                 updateHistoryUI();
@@ -5557,7 +5477,7 @@
                 removePositionLines(p.id);
                 portfolio.positions.splice(idx, 1);
                 savePortfolioToStorage();
-                scheduleUIUpdate();
+                updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
                 updateHistoryUI();
@@ -5626,7 +5546,7 @@
                     });
                     portfolio.positions = [];
                     savePortfolioToStorage();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     redrawAllLines();
                     syncPortfolioToServer();
                     updateHistoryUI();
@@ -5655,7 +5575,7 @@
                     p.slPrice = !isNaN(sl) && sl > 0 ? sl : null;
                     p.tpPrice = !isNaN(tp) && tp > 0 ? tp : null;
                     savePortfolioToStorage();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     redrawAllLines();
                     syncPortfolioToServer();
                     modal.remove();
@@ -5676,7 +5596,7 @@
                     entryLineKeys = {};
                     savePortfolioToStorage();
                     savePendingOrders();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     redrawAllLines();
                     syncPortfolioToServer();
                     renderPendingOrdersUI();
@@ -5889,7 +5809,7 @@
                     drawEntryLine(symbol, price, 'short');
                 }
                 savePortfolioToStorage();
-                scheduleUIUpdate();
+                updateSimUI();
                 redrawAllLines();
                 syncPortfolioToServer();
                 updateHistoryUI();
@@ -6089,7 +6009,7 @@
                 showToast('📊 Switched to ' + sym);
             }
 
-            // ─── MOBILE HISTORY (MT5 STYLE) ─────────────────────────────────
+            // ─── MOBILE HISTORY ─────────────────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
@@ -6276,20 +6196,14 @@
                     simIndicatorSeries = {}; }
                 simAllCandles = [];
                 simCurrentCandle = null;
-                // ✅ Don't reset activeIndicators
+                activeIndicators = {};
                 simIndicatorSeries = {};
                 currentDrawingTool = null;
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                 const chartDiv = document.getElementById('simChartContainer');
                 if (chartDiv) { chartDiv.innerHTML = '<div class="chart-loading" id="chartLoading">Loading chart...</div>'; }
                 if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                chartInitRetryTimer = setTimeout(async () => {
-                    const savedInd = await loadIndicatorsFromDB();
-                    if (savedInd && Object.keys(savedInd).length) {
-                        activeIndicators = savedInd;
-                    }
-                    initChart();
-                }, 100);
+                chartInitRetryTimer = setTimeout(initChart, 100);
             }
 
             // ─── BACKGROUND ENGINE ──────────────────────────────────────────
@@ -6357,42 +6271,6 @@
                 return pl;
             }
 
-            function renderPositionsLimited() {
-                const tbody = document.querySelector('#simHoldingsTable tbody');
-                if (!tbody) return;
-                const positions = portfolio.positions || [];
-                const maxVisible = 20;
-                const visible = positions.slice(0, maxVisible);
-                const remaining = positions.length - maxVisible;
-
-                tbody.innerHTML = visible.map(p => {
-                    const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
-                    const val = Math.abs(p.qty) * cp;
-                    const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p.qty;
-                    const isShort = p.type === 'short';
-                    return `<tr>
-                        <td><strong>${p.symbol}</strong> ${isShort ? '<span style="color:var(--mt5-red);font-size:0.45rem;">SHORT</span>' : '<span style="color:var(--mt5-green);font-size:0.45rem;">LONG</span>'}</td>
-                        <td>${Math.abs(p.qty)}</td>
-                        <td><span class="entry-badge">$${(p.entryPrice || 0).toFixed(4)}</span></td>
-                        <td>$${cp.toFixed(4)}</td>
-                        <td>${p.slPrice ? '<span class="sl-badge">$' + p.slPrice.toFixed(4) + '</span>' : '—'}</td>
-                        <td>${p.tpPrice ? '<span class="tp-badge">$' + p.tpPrice.toFixed(4) + '</span>' : '—'}</td>
-                        <td>$${val.toFixed(2)}</td>
-                        <td style="display:flex;gap:2px;flex-wrap:wrap;">
-                            <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i></button>
-                            <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i></button>
-                        </td>
-                    </tr>`;
-                }).join('');
-
-                if (remaining > 0) {
-                    tbody.innerHTML += `<tr><td colspan="8" style="text-align:center;color:var(--mt5-text);font-size:0.5rem;">+ ${remaining} more positions...</td></tr>`;
-                } else if (positions.length === 0) {
-                    tbody.innerHTML =
-                        '<tr><td colspan="8" style="text-align:center;color:var(--mt5-text);font-size:0.55rem;">No open positions</td></tr>';
-                }
-            }
-
             function updateSimUI() {
                 if (!portfolio) return;
                 const totalPL = calcTotalPL();
@@ -6410,7 +6288,31 @@
                 });
                 document.querySelectorAll('.stat-acct').forEach(el => el.textContent = userAccountNo);
 
-                renderPositionsLimited();
+                const tbody = document.querySelector('#simHoldingsTable tbody');
+                if (tbody) {
+                    const rowsHTML = portfolio.positions.map(p => {
+                        const cp = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
+                        const val = Math.abs(p.qty) * cp;
+                        const pl = p.type === 'long' ? (cp - p.entryPrice) * p.qty : (p.entryPrice - cp) * p
+                            .qty;
+                        const isShort = p.type === 'short';
+                        return `<tr>
+                            <td><strong>${p.symbol}</strong> ${isShort ? '<span style="color:var(--mt5-red);font-size:0.45rem;">SHORT</span>' : '<span style="color:var(--mt5-green);font-size:0.45rem;">LONG</span>'}</td>
+                            <td>${Math.abs(p.qty)}</td>
+                            <td><span class="entry-badge">$${(p.entryPrice || 0).toFixed(4)}</span></td>
+                            <td>$${cp.toFixed(4)}</td>
+                            <td>${p.slPrice ? '<span class="sl-badge">$' + p.slPrice.toFixed(4) + '</span>' : '—'}</td>
+                            <td>${p.tpPrice ? '<span class="tp-badge">$' + p.tpPrice.toFixed(4) + '</span>' : '—'}</td>
+                            <td>$${val.toFixed(2)}</td>
+                            <td style="display:flex;gap:2px;flex-wrap:wrap;">
+                                <button class="btn-exit" onclick="exitPositionById('${p.id}')"><i class="fas fa-times"></i></button>
+                                <button class="btn btn-modify btn-sm" onclick="editSLTPById('${p.id}')"><i class="fas fa-sliders-h"></i></button>
+                            </td>
+                        </tr>`;
+                    }).join('') ||
+                        '<tr><td colspan="8" style="text-align:center;color:var(--mt5-text);font-size:0.55rem;">No open positions</td></tr>';
+                    tbody.innerHTML = rowsHTML;
+                }
 
                 const sp = document.getElementById('statusPrice');
                 if (sp) sp.textContent = '$' + (simLastPrices[simCurrentSymbol] || 0).toFixed(4);
@@ -6701,7 +6603,7 @@
                     requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
                 }, 100);
 
-                scheduleUIUpdate();
+                updateSimUI();
                 renderPendingOrdersUI();
                 updateHistoryUI();
 
@@ -6860,7 +6762,7 @@
                     savePortfolioToStorage();
                     syncPortfolioToServer();
                     updateTradePanelData();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     updateHistoryUI();
                     amtInput.value = '';
                     showToast('💰 Deposited $' + amt.toFixed(2));
@@ -6877,7 +6779,7 @@
                     savePortfolioToStorage();
                     syncPortfolioToServer();
                     updateTradePanelData();
-                    scheduleUIUpdate();
+                    updateSimUI();
                     updateHistoryUI();
                     amtInput.value = '';
                     showToast('💸 Withdrawn $' + amt.toFixed(2));
@@ -6912,32 +6814,12 @@
                     document.getElementById('mobileVolumeToggle').checked = showVolume;
                     updateAllIndicators();
                 };
-                document.getElementById('sidebarLightTheme').onclick = () => {
-                    appTheme = 'light';
+                document.getElementById('sidebarLightTheme').onclick = () => { appTheme = 'light';
                     applyTheme();
-                    const themeToggleBtn = document.getElementById('themeToggle');
-                    if (themeToggleBtn) {
-                        themeToggleBtn.innerHTML = `<span class="toggle-icon">☀️</span> Light`;
-                    }
-                    document.querySelectorAll('.theme-toggle-btn-glass, .admin-theme-toggle').forEach(el => {
-                        if (el.id !== 'themeToggle') el.textContent = '☀️ Light';
-                    });
-                    sidebarOverlay.classList.remove('show');
-                    showToast('🎨 Theme: Light');
-                };
-                document.getElementById('sidebarDarkTheme').onclick = () => {
-                    appTheme = 'dark';
+                    sidebarOverlay.classList.remove('show'); };
+                document.getElementById('sidebarDarkTheme').onclick = () => { appTheme = 'dark';
                     applyTheme();
-                    const themeToggleBtn = document.getElementById('themeToggle');
-                    if (themeToggleBtn) {
-                        themeToggleBtn.innerHTML = `<span class="toggle-icon">🌙</span> Dark`;
-                    }
-                    document.querySelectorAll('.theme-toggle-btn-glass, .admin-theme-toggle').forEach(el => {
-                        if (el.id !== 'themeToggle') el.textContent = '🌙 Dark';
-                    });
-                    sidebarOverlay.classList.remove('show');
-                    showToast('🎨 Theme: Dark');
-                };
+                    sidebarOverlay.classList.remove('show'); };
                 document.querySelectorAll('.timeframe-grid button').forEach(b => {
                     b.onclick = function() {
                         const tf = parseInt(this.dataset.tf);
@@ -7036,7 +6918,7 @@
                     requestAnimationFrame(() => requestAnimationFrame(() => initChart()));
                 }, 200);
                 updateMobileTopBar();
-                scheduleUIUpdate();
+                updateSimUI();
                 updateMobileDrawnLines();
                 updateHistoryUI();
 
@@ -7155,7 +7037,7 @@
                     origRemove.call(modal); };
             }
 
-            // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
+            // ─── USER INTERFACE ──────────────────────────────────────────────
             function renderUserInterface() {
                 try {
                     stopBackgroundEngine();
@@ -7249,7 +7131,7 @@
                                 <div class="subject-list-glass" id="subjectList"></div>
                                 <div class="sidebar-footer-glass">
                                     <button class="terminal-nav-btn-glass" id="topTerminalBtn"><i class="fas fa-chart-line"></i> Terminal</button>
-                                    <button class="sidebar-logout-btn-glass" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                    <button class="sidebar-logout-btn-glass" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                                 </div>
                             </div>
                             <div class="main-glass">
@@ -7269,164 +7151,74 @@
                             if (currentLessonId) showLessonDetail(currentLessonId);
                             else showLessonList();
                             selectVoiceForLanguage(currentLang);
-                            // ✅ Safe close
-                            document.getElementById('profileMenuDesktop')?.classList?.remove('show');
-                            document.getElementById('profileMenuMobile')?.classList?.remove('show');
-                            showToast('🌐 Language switched to ' + currentLang.toUpperCase());
+                            showToast('🌐 Language switched to ' + e.target.value);
                         };
                     }
 
-                    // ─── Profile dropdown handlers (FIX 3 & 6) ──────────────
-                    // Desktop
-                    const profileToggleDesktop = document.getElementById('profileToggleDesktop');
-                    const profileMenuDesktop = document.getElementById('profileMenuDesktop');
-                    if (profileToggleDesktop && profileMenuDesktop) {
-                        profileToggleDesktop.onclick = (e) => {
-                            e.stopPropagation();
-                            profileMenuDesktop.classList.toggle('show');
-                        };
-                        document.addEventListener('click', (e) => {
-                            if (profileMenuDesktop && !profileMenuDesktop.contains(e.target) &&
-                                !profileToggleDesktop.contains(e.target)) {
-                                profileMenuDesktop.classList.remove('show');
-                            }
-                        });
-                        // Language dropdown
-                        const langDropdownDesktop = document.getElementById('langDropdownDesktop');
-                        if (langDropdownDesktop) {
-                            langDropdownDesktop.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuDesktop.classList.remove('show');
-                                const ls = document.getElementById('langSelect');
-                                if (ls) {
-                                    ls.focus();
-                                    ls.click();
-                                    if (typeof ls.showPicker === 'function') ls.showPicker();
-                                }
-                            });
-                        }
-                        // Theme dropdown
-                        const themeDropdownDesktop = document.getElementById('themeDropdownDesktop');
-                        if (themeDropdownDesktop) {
-                            themeDropdownDesktop.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuDesktop.classList.remove('show');
-                                appTheme = appTheme === 'dark' ? 'light' : 'dark';
-                                applyTheme();
-                                const themeToggleBtn = document.getElementById('themeToggle');
-                                if (themeToggleBtn) {
-                                    themeToggleBtn.innerHTML =
-                                        `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                                }
-                                document.querySelectorAll('.theme-toggle-btn-glass, .admin-theme-toggle').forEach(el => {
-                                    if (el.id !== 'themeToggle') el.textContent = appTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-                                });
-                                showToast('🎨 Theme: ' + (appTheme === 'dark' ? 'Dark' : 'Light'));
-                            });
-                        }
-                        // Logout dropdown
-                        const logoutDropdownDesktop = document.getElementById('logoutDropdownDesktop');
-                        if (logoutDropdownDesktop) {
-                            logoutDropdownDesktop.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuDesktop.classList.remove('show');
-                                logout();
-                            });
-                        }
-                    }
+                    // ─── Profile dropdown handlers ───────────────────────────
+                    document.getElementById('langDropdownDesktop')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
+                        const ls = document.getElementById('langSelect');
+                        if (ls) ls.click();
+                    });
+                    document.getElementById('langDropdownMobile')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuMobile')?.classList.remove('show');
+                        const ls = document.getElementById('langSelect');
+                        if (ls) ls.click();
+                    });
 
-                    // Mobile
-                    const profileToggleMobile = document.getElementById('profileToggleMobile');
-                    const profileMenuMobile = document.getElementById('profileMenuMobile');
-                    if (profileToggleMobile && profileMenuMobile) {
-                        profileToggleMobile.onclick = (e) => {
-                            e.stopPropagation();
-                            profileMenuMobile.classList.toggle('show');
-                        };
-                        document.addEventListener('click', (e) => {
-                            if (profileMenuMobile && !profileMenuMobile.contains(e.target) &&
-                                !profileToggleMobile.contains(e.target)) {
-                                profileMenuMobile.classList.remove('show');
-                            }
-                        });
-                        const langDropdownMobile = document.getElementById('langDropdownMobile');
-                        if (langDropdownMobile) {
-                            langDropdownMobile.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuMobile.classList.remove('show');
-                                const ls = document.getElementById('langSelect');
-                                if (ls) {
-                                    ls.focus();
-                                    ls.click();
-                                    if (typeof ls.showPicker === 'function') ls.showPicker();
-                                }
-                            });
+                    document.getElementById('themeDropdownDesktop')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
+                        appTheme = appTheme === 'dark' ? 'light' : 'dark';
+                        applyTheme();
+                        const tb = document.getElementById('themeToggle');
+                        if (tb) {
+                            tb.innerHTML =
+                                `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
                         }
-                        const themeDropdownMobile = document.getElementById('themeDropdownMobile');
-                        if (themeDropdownMobile) {
-                            themeDropdownMobile.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuMobile.classList.remove('show');
-                                appTheme = appTheme === 'dark' ? 'light' : 'dark';
-                                applyTheme();
-                                const themeToggleBtn = document.getElementById('themeToggle');
-                                if (themeToggleBtn) {
-                                    themeToggleBtn.innerHTML =
-                                        `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                                }
-                                document.querySelectorAll('.theme-toggle-btn-glass, .admin-theme-toggle').forEach(el => {
-                                    if (el.id !== 'themeToggle') el.textContent = appTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-                                });
-                                showToast('🎨 Theme: ' + (appTheme === 'dark' ? 'Dark' : 'Light'));
-                            });
+                        showToast('🎨 Theme toggled');
+                    });
+                    document.getElementById('themeDropdownMobile')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuMobile')?.classList.remove('show');
+                        appTheme = appTheme === 'dark' ? 'light' : 'dark';
+                        applyTheme();
+                        const tb = document.getElementById('themeToggle');
+                        if (tb) {
+                            tb.innerHTML =
+                                `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
                         }
-                        const logoutDropdownMobile = document.getElementById('logoutDropdownMobile');
-                        if (logoutDropdownMobile) {
-                            logoutDropdownMobile.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                profileMenuMobile.classList.remove('show');
-                                logout();
-                            });
-                        }
-                    }
+                        showToast('🎨 Theme toggled');
+                    });
 
-                    // ─── Theme toggle (desktop top bar) ──────────────────────
-                    const desktopThemeToggle = document.getElementById('themeToggle');
-                    if (desktopThemeToggle) {
-                        desktopThemeToggle.onclick = function(e) {
-                            e.stopPropagation();
+                    document.getElementById('logoutDropdownDesktop')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuDesktop')?.classList.remove('show');
+                        logout();
+                    });
+                    document.getElementById('logoutDropdownMobile')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        document.getElementById('profileMenuMobile')?.classList.remove('show');
+                        logout();
+                    });
+
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) searchInput.oninput = () => showLessonList();
+
+                    const themeToggle = document.getElementById('themeToggle');
+                    if (themeToggle) {
+                        themeToggle.onclick = function() {
                             appTheme = appTheme === 'dark' ? 'light' : 'dark';
                             applyTheme();
                             this.innerHTML =
                                 `<span class="toggle-icon">${appTheme === 'dark' ? '☀️' : '🌙'}</span> ${appTheme === 'dark' ? 'Light' : 'Dark'}`;
-                            document.querySelectorAll('.theme-toggle-btn-glass, .admin-theme-toggle').forEach(el => {
-                                if (el.id !== 'themeToggle') el.textContent = appTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-                            });
-                            if (profileMenuDesktop) profileMenuDesktop.classList.remove('show');
-                            if (profileMenuMobile) profileMenuMobile.classList.remove('show');
-                            showToast('🎨 Theme: ' + (appTheme === 'dark' ? 'Dark' : 'Light'));
+                            showToast('🎨 Theme toggled');
                         };
                     }
 
-                    // ─── Logout from sidebar ──────────────────────────────────
-                    const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
-                    if (sidebarLogoutBtn) {
-                        sidebarLogoutBtn.onclick = function(e) {
-                            e.stopPropagation();
-                            logout();
-                        };
-                    }
-
-                    // ─── Terminal buttons ─────────────────────────────────────
-                    const terminalBtns = document.querySelectorAll('.terminal-nav-btn-glass, #topTerminalBtn');
-                    terminalBtns.forEach(btn => {
-                        btn.onclick = function(e) {
-                            e.stopPropagation();
-                            window.open('?mode=trading', '_blank');
-                        };
-                    });
-
-                    // ─── Menu toggle ──────────────────────────────────────────
                     const menuToggle = document.getElementById('menuToggle');
                     if (menuToggle) {
                         menuToggle.onclick = function() {
@@ -7443,8 +7235,39 @@
                         }
                     });
 
-                    const searchInput = document.getElementById('searchInput');
-                    if (searchInput) searchInput.oninput = () => showLessonList();
+                    const profileToggleDesktop = document.getElementById('profileToggleDesktop');
+                    const profileMenuDesktop = document.getElementById('profileMenuDesktop');
+                    if (profileToggleDesktop && profileMenuDesktop) {
+                        profileToggleDesktop.onclick = (e) => {
+                            e.stopPropagation();
+                            profileMenuDesktop.classList.toggle('show');
+                        };
+                        document.addEventListener('click', () => {
+                            if (profileMenuDesktop) profileMenuDesktop.classList.remove('show');
+                        });
+                    }
+
+                    const profileToggleMobile = document.getElementById('profileToggleMobile');
+                    const profileMenuMobile = document.getElementById('profileMenuMobile');
+                    if (profileToggleMobile && profileMenuMobile) {
+                        profileToggleMobile.onclick = (e) => {
+                            e.stopPropagation();
+                            profileMenuMobile.classList.toggle('show');
+                        };
+                        document.addEventListener('click', () => {
+                            if (profileMenuMobile) profileMenuMobile.classList.remove('show');
+                        });
+                    }
+
+                    const terminalBtns = document.querySelectorAll('#topTerminalBtn');
+                    terminalBtns.forEach(btn => {
+                        btn.onclick = () => window.open('?mode=trading', '_blank');
+                    });
+
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.onclick = () => { customConfirm('Exit App?', () => logout()); };
+                    }
 
                     renderSubjectList();
                     if (!selectedSubjectId && subjects.length > 0) {
@@ -7453,17 +7276,14 @@
                     if (currentLessonId) showLessonDetail(currentLessonId);
                     else showLessonList();
 
-                    // Select voice for current language (with delay for voice loading)
-                    setTimeout(() => {
-                        selectVoiceForLanguage(currentLang);
-                    }, 500);
+                    selectVoiceForLanguage(currentLang);
 
                 } catch (error) {
                     document.getElementById('app').innerHTML = `<div style="padding:20px;color:var(--mt5-red);">⚠️ UI Render error: ${error.message}</div>`;
                 }
             }
 
-            // ─── VOICE SELECTION (FIX 2) ─────────────────────────────────────
+            // ─── VOICE SELECTION ──────────────────────────────────────────────
             function selectVoiceForLanguage(lang) {
                 if (!window.speechSynthesis) return;
                 const voices = window.speechSynthesis.getVoices();
@@ -7473,104 +7293,46 @@
                     };
                     return;
                 }
-
-                const langPreferences = {
-                    'bn': {
-                        langCodes: ['bn-BD', 'bn-IN', 'bn'],
-                        keywords: ['bengali', 'bn', 'sraboni', 'tithi', 'female'],
-                        femaleNames: ['sraboni', 'tithi', 'nilima', 'shanta', 'ruma', 'sanjida']
-                    },
-                    'hi': {
-                        langCodes: ['hi-IN', 'hi'],
-                        keywords: ['hindi', 'hi', 'lekha', 'sanskrit', 'female'],
-                        femaleNames: ['lekha', 'sanskrit', 'devika', 'kavya', 'anisha', 'priya']
-                    },
-                    'en': {
-                        langCodes: ['en-US', 'en-GB', 'en-AU', 'en'],
-                        keywords: ['english', 'en', 'samantha', 'victoria', 'zira', 'female'],
-                        femaleNames: ['samantha', 'victoria', 'zira', 'heather', 'sarah', 'karen', 'emma', 'allison', 'ava',
-                            'mia'
-                        ]
-                    }
+                const langMap = {
+                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
+                    'hi': ['hi', 'hindi', 'hi-IN'],
+                    'en': ['en-US', 'en-GB', 'en']
                 };
-
-                const pref = langPreferences[lang] || langPreferences['en'];
+                const preferred = langMap[lang] || langMap['en'];
                 let bestVoice = null;
                 let bestScore = -1;
-
                 for (const v of voices) {
                     const name = v.name.toLowerCase();
                     const voiceLang = v.lang.toLowerCase();
                     let score = 0;
-
-                    for (const code of pref.langCodes) {
-                        if (voiceLang.includes(code.toLowerCase())) {
-                            score += 10;
+                    for (const p of preferred) {
+                        if (voiceLang.includes(p) || name.includes(p)) {
+                            score += 3;
                             break;
                         }
                     }
-
-                    for (const kw of pref.keywords) {
-                        if (name.includes(kw) || voiceLang.includes(kw)) {
-                            score += 5;
-                            break;
-                        }
-                    }
-
-                    const isFemale = name.includes('female') ||
-                        pref.femaleNames.some(fn => name.includes(fn)) ||
-                        name.includes('samantha') || name.includes('victoria') ||
-                        name.includes('zira') || name.includes('heather') ||
-                        name.includes('sarah') || name.includes('karen') ||
-                        name.includes('emma') || name.includes('allison') ||
-                        name.includes('ava') || name.includes('mia') ||
-                        name.includes('google uk') || name.includes('google us');
-
-                    if (isFemale) {
-                        score += 8;
-                    }
-
-                    if (name.includes('google') || name.includes('amazon') || name.includes('windows')) {
+                    // Prefer female voices
+                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
+                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
+                        name.includes('karen') || name.includes('emma') || name.includes('allison')) {
                         score += 2;
                     }
-                    if (name.includes('native') || name.includes('natural')) {
+                    if (name.includes('native') || name.includes('google') || name.includes('windows')) {
                         score += 1;
                     }
-
                     if (score > bestScore) {
                         bestScore = score;
                         bestVoice = v;
                     }
                 }
-
-                if (!bestVoice || bestScore < 5) {
-                    for (const v of voices) {
-                        const voiceLang = v.lang.toLowerCase();
-                        for (const code of pref.langCodes) {
-                            if (voiceLang.includes(code.toLowerCase())) {
-                                bestVoice = v;
-                                break;
-                            }
-                        }
-                        if (bestVoice) break;
-                    }
+                if (bestVoice) {
+                    selectedVoice = bestVoice;
+                } else if (voices.length > 0) {
+                    selectedVoice = voices[0];
                 }
-
-                if (!bestVoice) {
-                    const femaleVoices = voices.filter(v =>
-                        v.name.toLowerCase().includes('female') ||
-                        ['samantha', 'victoria', 'zira', 'heather', 'sarah', 'karen', 'emma', 'allison'].some(n =>
-                            v.name.toLowerCase().includes(n)
-                        )
-                    );
-                    bestVoice = femaleVoices.length > 0 ? femaleVoices[0] : voices[0];
-                }
-
-                selectedVoice = bestVoice;
-                console.log(`✅ TTS Voice selected for ${lang}: ${bestVoice?.name} (${bestVoice?.lang})`);
             }
 
-            // ─── TTS GLASS (with female voice support) ──────────────────────
+            // ─── TTS GLASS ──────────────────────────────────────────────────
             function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -7602,22 +7364,19 @@
                             const femaleVoices = voices.filter(v =>
                                 v.lang.toLowerCase().includes(langPrefix) &&
                                 (v.name.toLowerCase().includes('female') ||
-                                    ['samantha', 'victoria', 'zira', 'heather', 'sarah', 'karen', 'emma',
-                                        'allison'
-                                    ].some(n => v.name.toLowerCase().includes(n)))
+                                    v.name.toLowerCase().includes('samantha') ||
+                                    v.name.toLowerCase().includes('victoria') ||
+                                    v.name.toLowerCase().includes('zira') ||
+                                    v.name.toLowerCase().includes('heather') ||
+                                    v.name.toLowerCase().includes('sarah'))
                             );
-                            if (femaleVoices.length > 0) {
-                                utterance.voice = femaleVoices[0];
-                            } else if (voices.length > 0) {
-                                utterance.voice = voices[0];
-                            }
+                            if (femaleVoices.length > 0) utterance.voice = femaleVoices[0];
+                            else if (voices.length > 0) utterance.voice = voices[0];
                         }
                         utterance.onstart = () => { showToast('🔊 Playing...');
                             isPaused = false; };
-                        utterance.onerror = (e) => {
-                            showToast('⚠️ TTS error: ' + (e.error || 'unknown'));
-                            isPaused = false;
-                        };
+                        utterance.onerror = (e) => { showToast('⚠️ TTS error: ' + (e.error || 'unknown'));
+                            isPaused = false; };
                         utterance.onend = () => { showToast('✅ TTS finished');
                             isPaused = false; };
                         utterance.onpause = () => { isPaused = true;
@@ -7653,6 +7412,318 @@
                 document.getElementById('nextLesson').onclick = () => { if (idx < lessons.length - 1) showLessonDetail(
                         lessons[idx + 1].id);
                     else showToast('📌 Last lesson'); };
+            }
+
+            // ─── CHAPTER PROGRESS ───────────────────────────────────────────
+            function calcChapterProgress() {
+                let total = 0,
+                    completed = 0;
+                subjects.forEach(s => {
+                    const lessons = s.lessons || [];
+                    if (lessons.length === 0) return;
+                    total++;
+                    const allDone = lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                    if (allDone) completed++;
+                });
+                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                return { total, completed, percent };
+            }
+
+            function calcLessonProgress(subjectId) {
+                const subj = subjects.find(s => s.id === subjectId);
+                if (!subj) return { total: 0, completed: 0, percent: 0 };
+                const lessons = subj.lessons || [];
+                const total = lessons.length;
+                const completed = lessons.filter(l => (userProgress[l.id] || 0) >= 100).length;
+                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                return { total, completed, percent };
+            }
+
+            // ─── RENDER SUBJECT LIST ───────────────────────────────────────
+            function renderSubjectList() {
+                const c = document.getElementById('subjectList');
+                if (!c) return;
+                c.innerHTML = subjects.map(s => {
+                    const prog = calcLessonProgress(s.id);
+                    const isActive = s.id === selectedSubjectId;
+                    return `<div class="subject-item-glass ${isActive ? 'active' : ''}" data-id="${s.id}">
+                        <span class="subject-icon-glass">${s.icon || '📁'}</span>
+                        <span style="flex:1;">${t(s.names)}</span>
+                        ${prog.total > 0 ? `<span style="font-size:0.5rem;color:${isActive ? '#fff' : 'var(--text-muted)'};background:${isActive ? 'rgba(255,255,255,0.15)' : 'var(--glass-bg)'};padding:1px 6px;border-radius:10px;">${prog.percent}%</span>` : ''}
+                    </div>`;
+                }).join('');
+                c.querySelectorAll('.subject-item-glass').forEach(el => { el.onclick = () => { selectedSubjectId = el
+                            .dataset.id;
+                        currentLessonId = null;
+                        renderSubjectList();
+                        showLessonList();
+                        document.getElementById('sidebar').classList.remove('open'); }; });
+            }
+
+            // ─── SHOW LESSON LIST ───────────────────────────────────────────
+            function showLessonList() {
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                if (!subj) {
+                    if (subjects.length > 0 && !selectedSubjectId) {
+                        selectedSubjectId = subjects[0].id;
+                        showLessonList();
+                        return;
+                    }
+                    const area = document.getElementById('contentArea');
+                    if (area) {
+                        const prog = calcChapterProgress();
+                        area.innerHTML = `
+                            <div class="progress-card-glass">
+                                <div class="progress-title-row">
+                                    <span>📚 Chapter Progress</span>
+                                    <span>${prog.completed} / ${prog.total} Chapters Completed</span>
+                                </div>
+                                <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog.percent}%"></div></div>
+                                <div class="progress-stats"><span>${prog.percent}%</span><span>${prog.completed} of ${prog.total}</span></div>
+                            </div>
+                            <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:0.75rem;">📚 Select a subject from the sidebar.</div>`;
+                    }
+                    return;
+                }
+                const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
+                let lessons = subj.lessons || [];
+                if (q) lessons = lessons.filter(l => t(l.titles).toLowerCase().includes(q));
+                const allComplete = lessons.length > 0 && lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                const chapProg = calcChapterProgress();
+                const lesProg = calcLessonProgress(selectedSubjectId);
+
+                const area = document.getElementById('contentArea');
+                area.innerHTML = `
+                    <div class="lesson-list-glass">
+                        <div class="progress-card-glass">
+                            <div class="progress-title-row">
+                                <span>📚 Chapter Progress</span>
+                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
+                        </div>
+                        <div class="progress-card-glass" style="margin-top:6px;">
+                            <div class="progress-title-row">
+                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
+                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
+                        </div>
+                        <h2 style="margin-top:12px;">📖 ${t(subj.names)} — Lessons</h2>
+                        ${allComplete ? `<div style="text-align:center;margin-bottom:8px;"><button class="certificate-btn-glass" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">✨ No lessons found</p>' :
+                        lessons.map(l => {
+                            const prog = userProgress[l.id] || 0;
+                            const qs = quizScores[l.id];
+                            let quizBadge = '';
+                            if (l.quiz && l.quiz.length) {
+                                if (qs?.passed) quizBadge = '<span class="badge-glass badge-passed-glass">Quiz ✓</span>';
+                                else if (qs) quizBadge = '<span class="badge-glass badge-failed-glass">Quiz ✗</span>';
+                            }
+                            return `<div class="lesson-card-glass" data-id="${l.id}">
+                                <div class="lesson-info-glass">
+                                    <span class="lesson-title-glass">📄 ${t(l.titles)}</span>
+                                    <div class="lesson-meta-glass">
+                                        <span><i class="far fa-clock"></i> ${l.duration || 15}m</span>
+                                        <span class="badge-glass ${l.level === 'Beginner' ? 'badge-beginner-glass' : l.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${l.level || 'Beginner'}</span>
+                                        ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Done</span>' : ''}
+                                        ${quizBadge}
+                                        ${bookmarks.has(l.id) ? '<span style="color:var(--accent);">⭐</span>' : ''}
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-right chevron-icon-glass"></i>
+                            </div>`;
+                        }).join('')}
+                    </div>`;
+                document.querySelectorAll('.lesson-card-glass').forEach(el => el.onclick = () => showLessonDetail(el
+                    .dataset.id));
+                if (allComplete && document.getElementById('certBtnList')) document.getElementById('certBtnList').onclick =
+                    () => generateCertificate(subj);
+            }
+
+            // ─── SHOW LESSON DETAIL ─────────────────────────────────────────
+            function showLessonDetail(id) {
+                currentLessonId = id;
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                const les = subj?.lessons?.find(l => l.id === id);
+                if (!les) return;
+                const prog = userProgress[id] || 0;
+                const qs = quizScores[id];
+                const bm = bookmarks.has(id);
+                const allComplete = subj.lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                const chapProg = calcChapterProgress();
+                const lesProg = calcLessonProgress(selectedSubjectId);
+
+                const area = document.getElementById('contentArea');
+                area.innerHTML = `
+                    <div class="detail-view-glass">
+                        <div class="progress-card-glass">
+                            <div class="progress-title-row">
+                                <span>📚 Chapter Progress</span>
+                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
+                        </div>
+                        <div class="progress-card-glass" style="margin-top:6px;">
+                            <div class="progress-title-row">
+                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
+                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
+                        </div>
+
+                        <div class="back-btn-glass" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
+                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">${t(les.titles)}</h2>
+                        <div class="lesson-meta-glass" style="margin:3px 0 1px;">
+                            <span><i class="far fa-clock"></i> ${les.duration || 15} min</span>
+                            <span class="badge-glass ${les.level === 'Beginner' ? 'badge-beginner-glass' : les.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${les.level || 'Beginner'}</span>
+                            ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Completed</span>' : ''}
+                            ${qs?.passed ? '<span class="badge-glass badge-passed-glass">Quiz Passed</span>' : qs ? '<span class="badge-glass badge-failed-glass">Quiz Failed</span>' : ''}
+                        </div>
+                        <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog}%"></div></div>
+                        <p style="font-size:0.55rem;color:var(--text-muted);">${prog}% complete</p>
+                        <div class="tabs-glass">
+                            <div class="tab-glass active" data-tab="summary">📝 Summary</div>
+                            <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
+                            <div class="tab-glass" data-tab="resources">📂 Resources</div>
+                        </div>
+                        <div class="tts-controls-top">
+                            <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
+                            <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
+                            <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
+                            <span class="speed-label-glass">Speed:</span><input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label-glass" id="speedDisplay">1.0x</span>
+                            <button class="btn-outline-glass ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
+                            <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
+                            <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
+                            <button class="btn-outline-glass" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
+                        </div>
+                        <div class="tab-content-glass" id="tabContent"></div>
+                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        <div style="display:flex;justify-content:space-between;margin-top:10px;gap:6px;">
+                            <button class="tts-btn-glass" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
+                            <button class="tts-btn-glass" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>`;
+                const tabs = document.querySelectorAll('.tab-glass');
+                const tc = document.getElementById('tabContent');
+
+                function showTab(tn) {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    const tabEl = document.querySelector(`.tab-glass[data-tab="${tn}"]`);
+                    if (tabEl) tabEl.classList.add('active');
+                    if (tn === 'summary') tc.innerHTML = les.contents ? t(les.contents) :
+                        '<p style="color:var(--text-muted);font-size:0.75rem;">No content available.</p>';
+                    else if (tn === 'quiz') renderQuizTabGlass(tc, les, id);
+                    else tc.innerHTML =
+                        '<div style="padding:12px;background:rgba(59,130,246,0.08);border-radius:12px;border:1.5px solid rgba(59,130,246,0.2);font-size:0.75rem;">📂 Additional Resources</div>';
+                }
+                tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
+                showTab('summary');
+                document.getElementById('bookmarkBtn').onclick = async () => { try { if (bookmarks.has(id)) { await apiFetch(
+                                '/bookmarks/' + id, { method: 'DELETE' });
+                            bookmarks.delete(id); } else { await apiFetch('/bookmarks/' + id, { method: 'POST' });
+                            bookmarks.add(id); } showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); } };
+                document.getElementById('noteBtn').onclick = () => openNoteModalGlass(id);
+                document.getElementById('translateBtn').onclick = () => openTranslateOptionsGlass();
+                document.getElementById('markCompleteBtn').onclick = async () => { try { await apiFetch('/progress', {
+                            method: 'PUT',
+                            body: JSON.stringify({ lessonId: id, progress: 100 })
+                        });
+                        userProgress[id] = 100;
+                        showLessonDetail(id);
+                        renderSubjectList();
+                    } catch (e) { showToast('⚠️ ' + e.message); } };
+                document.getElementById('backBtnDetail').onclick = () => { currentLessonId = null;
+                    showLessonList(); };
+                document.getElementById('speedSlider').oninput = function() { const speed = parseFloat(this.value);
+                    document.getElementById('speedDisplay').textContent = speed.toFixed(1) + 'x';
+                    window._ttsSpeed = speed; };
+                setupTTSGlass(id);
+                setupPrevNextGlass(subj, id);
+                if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
+                    .onclick = () => generateCertificate(subj);
+                selectVoiceForLanguage(currentLang);
+            }
+
+            function renderQuizTabGlass(container, lesson, lessonId) {
+                if (!lesson.quiz || lesson.quiz.length === 0) { container.innerHTML =
+                        '<div style="padding:12px;text-align:center;background:rgba(245,158,11,0.08);border-radius:12px;font-size:0.75rem;border:1px solid rgba(245,158,11,0.15);">🧠 No quiz available.</div>';
+                    return; }
+                const qs = quizScores[lessonId];
+                if (qs) {
+                    const total = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
+                    container.innerHTML = `
+                        <div class="quiz-container-glass">
+                            <h3 style="text-align:center;font-size:0.85rem;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
+                            <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
+                            <p style="text-align:center;font-size:0.75rem;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
+                            <div style="text-align:center;margin-top:6px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
+                        </div>`;
+                    document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
+                            lessonId, { method: 'POST' });
+                            delete quizScores[lessonId];
+                            showLessonDetail(lessonId);
+                            setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt)
+                                    qt.click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
+                    return;
+                }
+                let answers = new Array(lesson.quiz.length).fill(null);
+                let qIdx = 0;
+
+                function renderQuestion() {
+                    const q = lesson.quiz[qIdx];
+                    container.innerHTML = `
+                        <div class="quiz-container-glass">
+                            <p style="font-size:0.6rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
+                            <p class="quiz-question-glass">${t(q.question)}</p>
+                            <div id="quizOptionsGlass"></div>
+                            <div style="display:flex;justify-content:space-between;margin-top:8px;gap:4px;">
+                                <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
+                                <button class="btn btn-primary btn-sm" id="nextQBtn" ${qIdx >= lesson.quiz.length-1 ? 'style="display:none;"' : ''}>Next →</button>
+                                <button class="btn btn-success btn-sm" id="submitQuizBtn" ${qIdx < lesson.quiz.length-1 ? 'style="display:none;"' : ''}>✅ Submit Quiz</button>
+                            </div>
+                        </div>`;
+                    const optsDiv = document.getElementById('quizOptionsGlass');
+                    q.options.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = 'quiz-option-glass' + (answers[qIdx] === opt.id ? ' selected' : '');
+                        btn.textContent = t(opt.text);
+                        btn.style.fontSize = '0.7rem';
+                        btn.onclick = () => { answers[qIdx] = opt.id;
+                            optsDiv.querySelectorAll('.quiz-option-glass').forEach(b => b.classList.remove(
+                                'selected'));
+                            btn.classList.add('selected'); };
+                        optsDiv.appendChild(btn);
+                    });
+                    document.getElementById('prevQBtn').onclick = () => { if (qIdx > 0) { qIdx--;
+                            renderQuestion(); } };
+                    document.getElementById('nextQBtn').onclick = () => { if (qIdx < lesson.quiz.length - 1) { qIdx++;
+                            renderQuestion(); } };
+                    document.getElementById('submitQuizBtn').onclick = () => submitQuizGlass(container, lesson, lessonId,
+                        answers);
+                }
+                renderQuestion();
+            }
+
+            async function submitQuizGlass(container, lesson, lessonId, answers) {
+                const unanswered = answers.findIndex(a => a === null);
+                if (unanswered !== -1) { showToast('⚠️ Please answer question ' + (unanswered + 1)); return; }
+                let earned = 0;
+                lesson.quiz.forEach((q, i) => { if (answers[i] === q.correct) earned += (q.points || 5); });
+                const passed = earned >= (lesson.quizPassScore || 80);
+                try {
+                    await apiFetch('/quiz/submit', { method: 'POST', body: JSON.stringify({ lessonId, score: earned,
+                            passed }) });
+                    quizScores[lessonId] = { score: earned, passed };
+                    showToast('📝 Score: ' + earned + ' — ' + (passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
+                    showLessonDetail(lessonId);
+                    setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
+                            .click(); }, 100);
+                } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
             function openNoteModalGlass(lessonId) {
@@ -7762,7 +7833,7 @@
                             <div style="text-align:center;padding:50px;color:var(--text-muted);font-size:0.75rem;">📋 Select a subject to manage lessons</div>
                         </div>
                     </div>`;
-                document.getElementById('logoutBtn').onclick = () => { logout(); };
+                document.getElementById('logoutBtn').onclick = () => { customConfirm('Exit App?', () => { logout(); }); };
                 document.getElementById('adminThemeToggle').onclick = () => { appTheme = appTheme === 'dark' ? 'light' :
                         'dark';
                     applyTheme();
@@ -7776,7 +7847,6 @@
                     inp.accept = '.json';
                     inp.onchange = e => { if (e.target.files[0]) importData(e.target.files[0]); };
                     inp.click(); };
-                // Admin functions exposed globally
                 window.showAdminLessonManager = showAdminLessonManager;
                 window.selectAdminSubject = selectAdminSubject;
                 window.moveSubject = moveSubject;
@@ -8086,8 +8156,7 @@
                             <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
                             <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 document.body.appendChild(modal);
                 if (ex) document.getElementById('qCor').value = ex.correct || 'a';
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
@@ -8275,12 +8344,12 @@
                         if (currentLessonId) showLessonDetail(currentLessonId);
                         else showLessonList();
                     } else if (document.querySelector('.terminal-wrapper, .mobile-terminal')) {
-                        scheduleUIUpdate();
+                        updateSimUI();
                     }
                     applyTheme();
                     connectBinanceWS();
                     connectServerWS();
-                    setTimeout(() => { selectVoiceForLanguage(currentLang); }, 500);
+                    selectVoiceForLanguage(currentLang);
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
                 }
@@ -8333,7 +8402,7 @@
                     renderApp();
                     connectBinanceWS();
                     connectServerWS();
-                    setTimeout(() => { selectVoiceForLanguage(currentLang); }, 500);
+                    selectVoiceForLanguage(currentLang);
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
                     else renderApp();
@@ -8509,20 +8578,7 @@
                 return vwap;
             }
 
-            let indicatorCache = {};
-            let lastIndicatorUpdate = 0;
-            const INDICATOR_UPDATE_INTERVAL = 5000;
-
             function updateAllIndicators() {
-                const now = Date.now();
-                // ✅ Generate data hash for cache
-                const dataHash = simAllCandles.length > 0 ? simAllCandles[simAllCandles.length - 1].time : 0;
-                if (now - lastIndicatorUpdate < INDICATOR_UPDATE_INTERVAL && indicatorCache.hash === dataHash) {
-                    return;
-                }
-                lastIndicatorUpdate = now;
-                indicatorCache.hash = dataHash;
-
                 if (!simCandleSeries || !simChart) return;
                 const allData = [...simAllCandles];
                 if (simCurrentCandle) allData.push(simCurrentCandle);
@@ -8751,313 +8807,9 @@
             function initLazy(candles) {
                 lazyAllCandles = candles.slice();
                 const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, 3000);
-                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 3000);
+                lazyVisibleEnd = Math.min(total, 2000);
+                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
-            }
-
-            // ─── SUBJECT / LESSON FUNCTIONS ──────────────────────────────────
-            function renderSubjectList() {
-                const el = document.getElementById('subjectList');
-                if (!el) return;
-                if (subjects.length === 0) {
-                    el.innerHTML = '<div style="color:var(--text-muted);font-size:0.7rem;padding:10px;">No subjects</div>';
-                    return;
-                }
-                el.innerHTML = subjects.map(s => `
-                    <div class="subject-item-glass ${selectedSubjectId === s.id ? 'active' : ''}" data-id="${s.id}" onclick="selectSubject('${s.id}')">
-                        <span class="subject-icon-glass">${s.icon || '📁'}</span>
-                        <span>${t(s.names)}</span>
-                    </div>
-                `).join('');
-            }
-
-            function selectSubject(id) {
-                selectedSubjectId = id;
-                currentLessonId = null;
-                renderSubjectList();
-                showLessonList();
-            }
-
-            function calcChapterProgress() {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                if (!subj || !subj.lessons) return { total: 0, completed: 0, pct: 0 };
-                const total = subj.lessons.length;
-                const completed = subj.lessons.filter(l => userProgress[l.id] && userProgress[l.id].completed).length;
-                return { total, completed, pct: total > 0 ? Math.round((completed / total) * 100) : 0 };
-            }
-
-            function calcLessonProgress(lessonId) {
-                const prog = userProgress[lessonId];
-                if (!prog) return 0;
-                return prog.completed ? 100 : 0;
-            }
-
-            function showLessonList() {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const area = document.getElementById('contentArea');
-                if (!area) return;
-                const lessons = subj?.lessons || [];
-                const chapProg = calcChapterProgress();
-
-                let html = `<div class="lesson-list-glass">`;
-                if (subj) {
-                    html += `
-                        <div class="progress-card-glass">
-                            <div class="progress-title-row">
-                                <span>${subj.icon || '📁'} ${t(subj.names)}</span>
-                                <span>${chapProg.completed}/${chapProg.total}</span>
-                            </div>
-                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.pct}%;"></div></div>
-                            <div class="progress-stats"><span>Progress</span><strong>${chapProg.pct}%</strong></div>
-                        </div>`;
-                }
-                html += `<h2>📚 Lessons</h2>`;
-                if (lessons.length === 0) {
-                    html += `<p style="color:var(--text-muted);font-size:0.7rem;text-align:center;padding:20px;">No lessons in this subject.</p>`;
-                } else {
-                    lessons.forEach(l => {
-                        const prog = userProgress[l.id] || {};
-                        const completed = prog.completed ? '✅' : '⏳';
-                        const levelBadge = l.level || 'Beginner';
-                        const levelClass = levelBadge.toLowerCase() === 'beginner' ? 'badge-beginner-glass' :
-                            levelBadge.toLowerCase() === 'intermediate' ? 'badge-intermediate-glass' :
-                            'badge-advanced-glass';
-                        const metaParts = [
-                            `<span class="badge-glass ${levelClass}">${levelBadge}</span>`,
-                            `⏱️ ${l.duration || 15}m`,
-                            `${completed}`
-                        ];
-                        html += `
-                            <div class="lesson-card-glass" onclick="showLessonDetail('${l.id}')">
-                                <div class="lesson-info-glass">
-                                    <div class="lesson-title-glass">${t(l.titles)}</div>
-                                    <div class="lesson-meta-glass">${metaParts.join(' · ')}</div>
-                                </div>
-                                <div class="chevron-icon-glass"><i class="fas fa-chevron-right"></i></div>
-                            </div>`;
-                    });
-                }
-                html += `</div>`;
-                area.innerHTML = html;
-                currentLessonId = null;
-                // Update header active state
-                document.querySelectorAll('.mh-link, .nav-link').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('.mh-link, .nav-link').forEach(el => {
-                    if (el.textContent.trim() === 'Training' || el.textContent.trim() === 'Training Hub') {
-                        el.classList.add('active');
-                    }
-                });
-            }
-
-            function showLessonDetail(lessonId) {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const les = subj?.lessons?.find(l => l.id === lessonId);
-                const area = document.getElementById('contentArea');
-                if (!area || !les) {
-                    if (!les) showToast('⚠️ Lesson not found');
-                    return;
-                }
-                currentLessonId = lessonId;
-                const isBookmarked = bookmarks.has(lessonId);
-                const prog = userProgress[lessonId] || {};
-                const completed = prog.completed || false;
-                const content = t(les.contents) || 'No content available.';
-                const quiz = les.quiz || [];
-                const quizScore = quizScores[lessonId] || null;
-                const passScore = les.quizPassScore || 80;
-
-                let html = `
-                    <div class="detail-view-glass">
-                        <button class="back-btn-glass" onclick="showLessonList()"><i class="fas fa-arrow-left"></i> Back</button>
-                        <h2 style="font-size:1rem;font-weight:700;font-family:'Outfit',sans-serif;color:var(--text);">${t(les.titles)}</h2>
-                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin:4px 0;font-size:0.6rem;color:var(--text-secondary);">
-                            <span class="badge-glass ${les.level === 'Beginner' ? 'badge-beginner-glass' : les.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${les.level || 'Beginner'}</span>
-                            <span>⏱️ ${les.duration || 15}m</span>
-                            <span>📝 ${quiz.length} questions</span>
-                            <span>🎯 Pass: ${passScore}%</span>
-                            ${completed ? '<span style="color:var(--success);">✅ Completed</span>' : ''}
-                            ${quizScore !== null ? `<span style="color:${quizScore >= passScore ? 'var(--success)' : 'var(--danger)'};">${quizScore >= passScore ? '✅' : '❌'} Score: ${quizScore}%</span>` : ''}
-                        </div>
-                        <div class="tts-controls-top">
-                            <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
-                            <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
-                            <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
-                            <input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1">
-                            <span class="speed-label-glass" id="speedLabel">1.0x</span>
-                            <button class="btn-outline-glass" id="bookmarkBtn">${isBookmarked ? '🔖' : '☆'} Bookmark</button>
-                            <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-edit"></i> Note</button>
-                            <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
-                            ${!completed ? `<button class="btn-outline-glass" id="markCompleteBtn">✅ Mark Complete</button>` : `<button class="btn-outline-glass" id="unmarkCompleteBtn">↩️ Unmark</button>`}
-                        </div>
-                        <div class="tabs-glass">
-                            <button class="tab-glass active" data-tab="content">📖 Content</button>
-                            <button class="tab-glass" data-tab="quiz">📝 Quiz</button>
-                        </div>
-                        <div class="tab-content-glass" id="tabContent">
-                            <div id="contentTab">${content}</div>
-                            <div id="quizTab" style="display:none;"></div>
-                        </div>
-                        <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;">
-                            <button class="btn btn-outline" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
-                            <button class="btn btn-outline" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
-                            ${completed ? `<button class="certificate-btn-glass" id="certBtn"><i class="fas fa-certificate"></i> Certificate</button>` : ''}
-                        </div>
-                    </div>`;
-
-                area.innerHTML = html;
-                setupTTSGlass(lessonId);
-                setupPrevNextGlass(subj, lessonId);
-
-                // ─── Tabs ────────────────────────────────────────────────────
-                document.querySelectorAll('.tab-glass').forEach(tab => {
-                    tab.onclick = function() {
-                        document.querySelectorAll('.tab-glass').forEach(t => t.classList.remove('active'));
-                        this.classList.add('active');
-                        const target = this.dataset.tab;
-                        document.getElementById('contentTab').style.display = target === 'content' ? 'block' :
-                            'none';
-                        document.getElementById('quizTab').style.display = target === 'quiz' ? 'block' : 'none';
-                        if (target === 'quiz') renderQuiz(lessonId);
-                    };
-                });
-
-                // ─── Bookmark ──────────────────────────────────────────────
-                document.getElementById('bookmarkBtn').onclick = async () => {
-                    try {
-                        if (bookmarks.has(lessonId)) { await apiFetch('/bookmarks/' + lessonId, { method: 'DELETE' });
-                            bookmarks.delete(lessonId);
-                            showToast('🔖 Bookmark removed'); } else { await apiFetch('/bookmarks/' + lessonId, {
-                                method: 'POST' });
-                            bookmarks.add(lessonId);
-                            showToast('🔖 Bookmarked!'); }
-                        showLessonDetail(lessonId);
-                    } catch (e) { showToast('⚠️ ' + e.message); }
-                };
-
-                // ─── Note ──────────────────────────────────────────────────
-                document.getElementById('noteBtn').onclick = () => openNoteModalGlass(lessonId);
-
-                // ─── Translate ─────────────────────────────────────────────
-                document.getElementById('translateBtn').onclick = openTranslateOptionsGlass;
-
-                // ─── Mark Complete ──────────────────────────────────────────
-                const markBtn = document.getElementById('markCompleteBtn');
-                const unmarkBtn = document.getElementById('unmarkCompleteBtn');
-                if (markBtn) {
-                    markBtn.onclick = async () => {
-                        try { await apiFetch('/progress/' + lessonId, { method: 'PUT', body: JSON.stringify({
-                                    completed: true }) });
-                            userProgress[lessonId] = { completed: true };
-                            showToast('✅ Marked complete!');
-                            showLessonDetail(lessonId);
-                            renderSubjectList();
-                        } catch (e) { showToast('⚠️ ' + e.message); }
-                    };
-                }
-                if (unmarkBtn) {
-                    unmarkBtn.onclick = async () => {
-                        try { await apiFetch('/progress/' + lessonId, { method: 'PUT', body: JSON.stringify({
-                                    completed: false }) });
-                            userProgress[lessonId] = { completed: false };
-                            showToast('↩️ Unmarked');
-                            showLessonDetail(lessonId);
-                            renderSubjectList();
-                        } catch (e) { showToast('⚠️ ' + e.message); }
-                    };
-                }
-
-                // ─── Certificate ────────────────────────────────────────────
-                const certBtn = document.getElementById('certBtn');
-                if (certBtn) certBtn.onclick = () => generateCertificate(subj);
-
-                // ─── Speed slider ──────────────────────────────────────────
-                const slider = document.getElementById('speedSlider');
-                const label = document.getElementById('speedLabel');
-                if (slider && label) {
-                    slider.oninput = () => { label.textContent = parseFloat(slider.value).toFixed(1) + 'x'; };
-                }
-
-                // Update header active state
-                document.querySelectorAll('.mh-link, .nav-link').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('.mh-link, .nav-link').forEach(el => {
-                    if (el.textContent.trim() === 'Training' || el.textContent.trim() === 'Training Hub') {
-                        el.classList.add('active');
-                    }
-                });
-            }
-
-            function renderQuiz(lessonId) {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const les = subj?.lessons?.find(l => l.id === lessonId);
-                const container = document.getElementById('quizTab');
-                if (!container || !les) return;
-                const quiz = les.quiz || [];
-                const passScore = les.quizPassScore || 80;
-                const quizScore = quizScores[lessonId] || null;
-
-                if (quiz.length === 0) {
-                    container.innerHTML = '<p style="color:var(--text-muted);font-size:0.7rem;">No quiz questions for this lesson.</p>';
-                    return;
-                }
-
-                let html = `
-                    <div class="quiz-container-glass">
-                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
-                            <span style="font-weight:600;font-size:0.7rem;">📝 Quiz — ${quiz.length} questions</span>
-                            <span style="font-size:0.6rem;color:var(--text-secondary);">Pass: ${passScore}% ${quizScore !== null ? `| Your score: <strong style="color:${quizScore >= passScore ? 'var(--success)' : 'var(--danger)'};">${quizScore}%</strong>` : ''}</span>
-                        </div>
-                        <div id="quizQuestions"></div>
-                        <button class="btn btn-primary" id="submitQuizBtn" style="margin-top:10px;">📝 Submit Quiz</button>
-                    </div>`;
-                container.innerHTML = html;
-
-                const qContainer = document.getElementById('quizQuestions');
-                let qHtml = '';
-                quiz.forEach((q, idx) => {
-                    const qText = t(q.question) || 'Question ' + (idx + 1);
-                    qHtml += `<div class="quiz-question-glass" style="margin-top:8px;">${qText} <span style="font-size:0.5rem;color:var(--text-muted);">(${q.points || 5} pts)</span></div>`;
-                    q.options.forEach(o => {
-                        const optText = t(o.text) || o.id.toUpperCase();
-                        qHtml += `<button class="quiz-option-glass" data-q="${idx}" data-opt="${o.id}">${o.id.toUpperCase()}. ${optText}</button>`;
-                    });
-                });
-                qContainer.innerHTML = qHtml;
-
-                let selectedAnswers = {};
-                qContainer.querySelectorAll('.quiz-option-glass').forEach(btn => {
-                    btn.onclick = function() {
-                        const qIdx = parseInt(this.dataset.q);
-                        const opt = this.dataset.opt;
-                        selectedAnswers[qIdx] = opt;
-                        qContainer.querySelectorAll(`.quiz-option-glass[data-q="${qIdx}"]`).forEach(b => b
-                            .classList.remove('selected'));
-                        this.classList.add('selected');
-                    };
-                });
-
-                document.getElementById('submitQuizBtn').onclick = async () => {
-                    let correct = 0,
-                        total = quiz.length;
-                    quiz.forEach((q, idx) => {
-                        if (selectedAnswers[idx] === q.correct) correct++;
-                    });
-                    const score = Math.round((correct / total) * 100);
-                    try {
-                        await apiFetch('/quiz/submit/' + lessonId, { method: 'POST', body: JSON.stringify({
-                                answers: selectedAnswers, score }) });
-                        quizScores[lessonId] = score;
-                        const passed = score >= passScore;
-                        if (passed) {
-                            await apiFetch('/progress/' + lessonId, { method: 'PUT', body: JSON.stringify({
-                                    completed: true }) });
-                            userProgress[lessonId] = { completed: true };
-                        }
-                        showToast(passed ? '🎉 Quiz passed! Score: ' + score + '%' : '❌ Quiz failed. Score: ' +
-                            score + '% (Pass: ' + passScore + '%)');
-                        showLessonDetail(lessonId);
-                    } catch (e) { showToast('⚠️ ' + e.message); }
-                };
             }
 
             // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
@@ -9127,9 +8879,6 @@
             window.removePositionLines = removePositionLines;
             window.updateHistoryUI = updateHistoryUI;
             window.selectVoiceForLanguage = selectVoiceForLanguage;
-            window.selectSubject = selectSubject;
-
-            // Admin globals
             window.showAdminLessonManager = showAdminLessonManager;
             window.selectAdminSubject = selectAdminSubject;
             window.moveSubject = moveSubject;
@@ -9141,23 +8890,6 @@
             window.openQuizManager = openQuizManager;
             window.openQuizQEdit = openQuizQEdit;
             window.deleteQuizQ = deleteQuizQ;
-
-            // ─── HIDE LOADING SCREEN ──────────────────────────────────────
-            (function hideLoading() {
-                const loadingEl = document.getElementById('app-loading');
-                if (loadingEl) {
-                    const hide = () => {
-                        loadingEl.classList.add('hidden');
-                        setTimeout(() => { loadingEl.style.display = 'none'; }, 600);
-                    };
-                    if (document.readyState === 'complete') {
-                        setTimeout(hide, 400);
-                    } else {
-                        window.addEventListener('load', () => setTimeout(hide, 400));
-                    }
-                    setTimeout(hide, 2000);
-                }
-            })();
 
             // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
@@ -9240,21 +8972,6 @@
                     selectVoiceForLanguage(currentLang);
                 };
             }
-
-            // ─── Make functions globally available for inline onclick ────────
-            window.deleteSingleLine = deleteSingleLine;
-            window.deleteMobileLine = deleteMobileLine;
-            window.changeDesktopLot = function(delta) {
-                const input = document.getElementById('simQty');
-                if (!input) return;
-                let val = parseFloat(input.value) || 0.01;
-                val = Math.max(0.01, val + delta);
-                input.value = +val.toFixed(2);
-            };
-            window.setDesktopLot = function(val) {
-                const input = document.getElementById('simQty');
-                if (input) input.value = val;
-            };
 
         })();
     </script>

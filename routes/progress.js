@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
-const logger = require('../lib/logger');
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -9,10 +8,7 @@ router.get('/', authenticate, async (req, res) => {
     const prog = {};
     (r.rows || r).forEach(row => { prog[row.lesson_id] = row.progress; });
     res.json(prog);
-  } catch (e) {
-    logger.error('GET progress error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 router.put('/', authenticate, async (req, res) => {
@@ -23,10 +19,7 @@ router.put('/', authenticate, async (req, res) => {
       [req.user.userId, lessonId, progress, progress >= 100]
     );
     res.json({ success: true });
-  } catch (e) {
-    logger.error('PUT progress error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;

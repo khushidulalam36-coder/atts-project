@@ -2,7 +2,6 @@ require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
 const readline = require('readline');
-const logger = require('../lib/logger');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -27,9 +26,9 @@ async function createAdmin() {
             [user.rows[0].id, 100000.00, '{}', '[]', '{}']
           );
         }
-        logger.info(`✅ Admin user "${u}" created/updated successfully!`);
+        console.log(`✅ Admin user "${u}" created/updated successfully!`);
       } catch (err) {
-        logger.error('❌ Error:', err.message);
+        console.error('❌ Error:', err.message);
       }
       rl.close();
       process.exit(0);

@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
-const logger = require('../lib/logger');
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -18,10 +17,7 @@ router.get('/', authenticate, async (req, res) => {
       }
     }
     res.json(subjs.rows || subjs);
-  } catch (e) {
-    logger.error('Export error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;

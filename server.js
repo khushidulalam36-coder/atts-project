@@ -7,18 +7,8 @@ const http = require('http');
 const path = require('path');
 const { WebSocketServer } = require('ws');
 const cron = require('node-cron');
-const logger = require('./lib/logger');
 
 dotenv.config();
-
-// Validate required environment variables
-const requiredEnv = ['DATABASE_URL', 'VERCEL_BLOB_READ_WRITE_TOKEN', 'JWT_SECRET', 'FRONTEND_URL'];
-requiredEnv.forEach(key => {
-  if (!process.env[key]) {
-    logger.error(`Missing required env: ${key}`);
-    process.exit(1);
-  }
-});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -57,51 +47,29 @@ setInterval(() => {
 }, 2000);
 
 // ── Middleware ─────────────────────────────────────────────────────
-// Helmet with custom CSP (allows inline scripts, Binance WebSocket, CDN resources)
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.quilljs.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
-      scriptSrcAttr: ["'unsafe-inline'"], // allow inline event handlers (onclick, etc.)
-      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdn.quilljs.com", "cdnjs.cloudflare.com"],
-      fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: [
-        "'self'",
-        process.env.FRONTEND_URL || '',
-        "wss://stream.binance.com",
-        "wss://stream.binance.com:9443",
-        "wss://*.binance.com",
-        "https://cdnjs.cloudflare.com"
-      ],
-      frameSrc: ["'none'"],
-      objectSrc: ["'none'"],
-    },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
-// CORS – only allow specified frontend
-const corsOptions = {
-  origin: process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ['http://localhost:3000'],
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*', // ✅ .env থেকে নেয়
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false,
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+  credentials: false
+}));
+
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200);
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiter – per IP
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, // 100 requests per 15 minutes per IP
-  keyGenerator: (req) => req.ip,
-  skip: (req) => req.path === '/api/health',
-  message: { error: 'Too many requests, please try again later.' },
+  max: 500,
+  message: { error: 'Too many requests, try again later.' }
 });
 app.use('/api', apiLimiter);
 
@@ -126,7 +94,6 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
     if (candle) res.json(candle);
     else res.status(404).json({ error: 'Candle not found' });
   } catch (e) {
-    logger.error('Candle latest error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -145,7 +112,7 @@ app.get('/api/candles/:symbol', async (req, res) => {
     const data = await blob.json();
     res.json(data);
   } catch (e) {
-    logger.error('Proxy error:', e.message);
+    console.error('Proxy error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -168,46 +135,31 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ── Cron Job: Update Blob every 5 minutes ────────────────────────
-cron.schedule('*/5 * * * *', async () => {
-  logger.info('⏰ Running candle update cron...');
+// ── Cron Job: Update Blob every minute ──────────────────────────
+cron.schedule('* * * * *', async () => {
+  console.log('⏰ Running candle update cron...');
   try {
     await updateBlobCandles();
     global._cronLastRun = new Date().toISOString();
-    logger.info('✅ Blob candles updated');
+    console.log('✅ Blob candles updated');
   } catch (e) {
-    logger.error('❌ Cron error:', e.message);
+    console.error('❌ Cron error:', e.message);
   }
 });
 
 // ── Start Background Trade Engine ────────────────────────────────
 startTradeEngine();
 
-// ── Graceful Shutdown ─────────────────────────────────────────────
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, closing server...');
-  server.close(() => {
-    logger.info('Server closed.');
-    process.exit(0);
-  });
-  // Force exit after 10s if not closed
-  setTimeout(() => {
-    logger.error('Forced shutdown after timeout.');
-    process.exit(1);
-  }, 10000);
-});
-
 // ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
-  logger.info(`╔══════════════════════════════════════════╗`);
-  logger.info(`║  🚀 Alamquant Backend  v2.1.0          ║`);
-  logger.info(`║  📡 API:  http://localhost:${PORT}/api     ║`);
-  logger.info(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
-  logger.info(`║  ❤️  Health: /api/health               ║`);
-  logger.info(`║  🕐 Cron:  Every 5 minutes (Blob update)║`);
-  logger.info(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
-  logger.info(`║  🔒 CSP:  Inline, Binance WS, CDN allowed║`);
-  logger.info(`╚══════════════════════════════════════════╝`);
+  console.log(`╔══════════════════════════════════════════╗`);
+  console.log(`║  🚀 Alamquant Backend  v2.0.0          ║`);
+  console.log(`║  📡 API:  http://localhost:${PORT}/api     ║`);
+  console.log(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
+  console.log(`║  ❤️  Health: /api/health               ║`);
+  console.log(`║  🕐 Cron:  Every minute (Blob update)  ║`);
+  console.log(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
+  console.log(`╚══════════════════════════════════════════╝`);
 });
 
 module.exports = { app, server, wss, broadcast };

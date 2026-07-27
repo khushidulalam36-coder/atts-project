@@ -1,10 +1,8 @@
 const router = require('express').Router();
-const { body, validationResult } = require('express-validator');
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 const { getOrCreatePortfolio } = require('../lib/auth');
 const { fetchPrice } = require('../lib/binance');
-const logger = require('../lib/logger');
 
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -28,116 +26,93 @@ router.get('/', authenticate, async (req, res) => {
       transactions: p.transactions,
       drawnLines: p.drawn_lines
     });
-  } catch (e) {
-    logger.error('GET /portfolio error:', e);
-    res.status(500).json({ error: 'Server error' });
+  } catch (e) { 
+    console.error('GET /portfolio error:', e); 
+    res.status(500).json({ error: 'Server error' }); 
   }
 });
 
-router.put('/',
-  authenticate,
-  [
-    body('symbol').isString().notEmpty(),
-    body('qty').isFloat({ min: 0.001 }),
-    body('type').isIn(['buy','sell']),
-    body('slPrice').optional().isFloat({ min: 0 }),
-    body('tpPrice').optional().isFloat({ min: 0 })
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+router.put('/', authenticate, async (req, res) => {
+  try {
+    const { symbol, qty, type, slPrice, tpPrice } = req.body;
+    if (!symbol || !qty || qty <= 0 || !type) return res.status(400).json({ error: 'symbol, qty, type required' });
+    const p = await getOrCreatePortfolio(req.user.userId);
+    let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
+    let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
+    let cash = parseFloat(p.cash);
+    const price = await fetchPrice(symbol);
+    if (!price) return res.status(500).json({ error: 'Could not fetch price' });
 
-    try {
-      const { symbol, qty, type, slPrice, tpPrice } = req.body;
-      const p = await getOrCreatePortfolio(req.user.userId);
-      let holdings = typeof p.holdings === 'string' ? JSON.parse(p.holdings) : (p.holdings || {});
-      let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
-      let cash = parseFloat(p.cash);
-      const price = await fetchPrice(symbol);
-      if (!price) return res.status(500).json({ error: 'Could not fetch price' });
+    if (type === 'buy') {
+      const cost = qty * price;
+      if (cash < cost) return res.status(400).json({ error: 'Insufficient cash' });
+      cash -= cost;
+      if (!holdings[symbol]) holdings[symbol] = { qty: 0, avgPrice: 0 };
+      const h = holdings[symbol];
+      h.avgPrice = ((h.qty * h.avgPrice) + (qty * price)) / (h.qty + qty);
+      h.qty += qty;
+      if (slPrice) h.slPrice = slPrice;
+      if (tpPrice) h.tpPrice = tpPrice;
+      transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date().toISOString() });
+    } else if (type === 'sell') {
+      if (!holdings[symbol] || holdings[symbol].qty <= 0) return res.status(400).json({ error: 'No position to sell' });
+      const h = holdings[symbol];
+      const closeQty = Math.min(h.qty, qty);
+      cash += closeQty * price;
+      h.qty -= closeQty;
+      if (h.qty === 0) delete holdings[symbol];
+      transactions.unshift({ type: 'sell', symbol, qty: closeQty, price, time: new Date().toISOString() });
+    }
 
-      if (type === 'buy') {
-        const cost = qty * price;
-        if (cash < cost) return res.status(400).json({ error: 'Insufficient cash' });
-        cash -= cost;
-        if (!holdings[symbol]) holdings[symbol] = { qty: 0, avgPrice: 0 };
-        const h = holdings[symbol];
-        h.avgPrice = ((h.qty * h.avgPrice) + (qty * price)) / (h.qty + qty);
-        h.qty += qty;
-        if (slPrice) h.slPrice = slPrice;
-        if (tpPrice) h.tpPrice = tpPrice;
-        transactions.unshift({ type: 'buy', symbol, qty, price, time: new Date().toISOString() });
-      } else if (type === 'sell') {
-        if (!holdings[symbol] || holdings[symbol].qty <= 0) return res.status(400).json({ error: 'No position to sell' });
-        const h = holdings[symbol];
-        const closeQty = Math.min(h.qty, qty);
-        cash += closeQty * price;
-        h.qty -= closeQty;
-        if (h.qty === 0) delete holdings[symbol];
-        transactions.unshift({ type: 'sell', symbol, qty: closeQty, price, time: new Date().toISOString() });
+    await query('UPDATE portfolios SET cash=$1, holdings=$2, transactions=$3 WHERE user_id=$4',
+      [cash, JSON.stringify(holdings), JSON.stringify(transactions), req.user.userId]);
+    res.json(await getOrCreatePortfolio(req.user.userId));
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
+router.put('/sync', authenticate, async (req, res) => {
+  try {
+    const { cash, positions, transactions, drawnLines } = req.body;
+    if (cash === undefined || isNaN(parseFloat(cash))) {
+      return res.status(400).json({ error: 'Valid cash field required' });
+    }
+
+    const holdings = {};
+    (positions || []).forEach(pos => {
+      if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
+        let qty = pos.qty;
+        if (pos.type === 'short') qty = -pos.qty;
+        holdings[pos.symbol] = {
+          qty: qty,
+          avgPrice: pos.entryPrice,
+          slPrice: pos.slPrice || null,
+          tpPrice: pos.tpPrice || null
+        };
       }
+    });
 
-      await query('UPDATE portfolios SET cash=$1, holdings=$2, transactions=$3 WHERE user_id=$4',
-        [cash, JSON.stringify(holdings), JSON.stringify(transactions), req.user.userId]);
-      res.json(await getOrCreatePortfolio(req.user.userId));
-    } catch (e) {
-      logger.error('PUT portfolio error:', e);
-      res.status(500).json({ error: 'Server error' });
-    }
+    await query(
+      `UPDATE portfolios 
+       SET cash = $1, 
+           holdings = $2, 
+           transactions = $3, 
+           drawn_lines = $4 
+       WHERE user_id = $5`,
+      [
+        parseFloat(cash),
+        JSON.stringify(holdings),
+        JSON.stringify(transactions || []),
+        JSON.stringify(drawnLines || {}),
+        req.user.userId
+      ]
+    );
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Portfolio sync error:', e.message);
+    res.status(500).json({ error: 'Sync failed' });
   }
-);
-
-router.put('/sync',
-  authenticate,
-  [
-    body('cash').isFloat({ min: 0 }),
-    body('positions').optional().isArray(),
-    body('transactions').optional().isArray(),
-    body('drawnLines').optional().isObject()
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-    try {
-      const { cash, positions, transactions, drawnLines } = req.body;
-      const holdings = {};
-      (positions || []).forEach(pos => {
-        if (pos.symbol && pos.qty !== undefined && pos.entryPrice !== undefined) {
-          let qty = pos.qty;
-          if (pos.type === 'short') qty = -pos.qty;
-          holdings[pos.symbol] = {
-            qty: qty,
-            avgPrice: pos.entryPrice,
-            slPrice: pos.slPrice || null,
-            tpPrice: pos.tpPrice || null
-          };
-        }
-      });
-
-      await query(
-        `UPDATE portfolios 
-         SET cash = $1, 
-             holdings = $2, 
-             transactions = $3, 
-             drawn_lines = $4 
-         WHERE user_id = $5`,
-        [
-          parseFloat(cash),
-          JSON.stringify(holdings),
-          JSON.stringify(transactions || []),
-          JSON.stringify(drawnLines || {}),
-          req.user.userId
-        ]
-      );
-
-      res.json({ success: true });
-    } catch (e) {
-      logger.error('Portfolio sync error:', e.message);
-      res.status(500).json({ error: 'Sync failed' });
-    }
-  }
-);
+});
 
 router.delete('/holding/:symbol', authenticate, async (req, res) => {
   try {
@@ -155,10 +130,7 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
     await query('UPDATE portfolios SET cash=$1, holdings=$2, transactions=$3 WHERE user_id=$4',
       [cash, JSON.stringify(holdings), JSON.stringify(transactions), req.user.userId]);
     res.json(await getOrCreatePortfolio(req.user.userId));
-  } catch (e) {
-    logger.error('DELETE holding error:', e);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;
