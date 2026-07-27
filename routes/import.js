@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
+const logger = require('../lib/logger');
 
 router.post('/', authenticate, async (req, res) => {
   try {
@@ -23,7 +24,7 @@ router.post('/', authenticate, async (req, res) => {
     }
     res.json({ success: true, count: data.length });
   } catch (e) {
-    console.error(e);
+    logger.error('Import error:', e);
     res.status(500).json({ error: e.message });
   }
 });

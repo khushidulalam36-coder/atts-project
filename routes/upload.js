@@ -2,19 +2,9 @@ const router = require('express').Router();
 const multer = require('multer');
 const { uploadFile, deleteFile } = require('../lib/blob');
 const { authenticate } = require('../middleware/auth');
+const logger = require('../lib/logger');
 
-const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf', 'image/gif', 'image/webp'];
-const upload = multer({ 
-  storage: multer.memoryStorage(), 
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('File type not allowed'), false);
-    }
-  }
-});
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 router.post('/', authenticate, upload.single('file'), async (req, res) => {
   try {
@@ -22,8 +12,8 @@ router.post('/', authenticate, upload.single('file'), async (req, res) => {
     const url = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
     res.json({ url, success: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message || 'Upload failed' });
+    logger.error('Upload error:', e);
+    res.status(500).json({ error: e.message });
   }
 });
 
@@ -33,8 +23,8 @@ router.delete('/', authenticate, async (req, res) => {
     await deleteFile(req.body.url);
     res.json({ success: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message || 'Delete failed' });
+    logger.error('Delete file error:', e);
+    res.status(500).json({ error: e.message });
   }
 });
 

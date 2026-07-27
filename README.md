@@ -1,4 +1,4 @@
-# 🚀 Alamquant Training Platform – Backend (Production v3)
+# 🚀 Alamquant Training Platform – Backend
 
 ## Quick Start
 ```bash
@@ -15,20 +15,18 @@ npm start
 | JWT_SECRET | Secret key for JWT (change this!) |
 | PORT | Server port (default 5000) |
 | FRONTEND_URL | Frontend URL for CORS |
-| NODE_ENV | 'production' or 'development' |
-| LOG_LEVEL | debug, info, warn, error |
+| LOG_LEVEL | Log level (debug/info/warn/error) |
 
 ## Default Admin
 - Username: `admin`
 - Password: `admin123`
 - **Change after first login!**
 
-## PM2 (Production)
-```bash
-npm run pm2:start
-npm run pm2:stop
-npm run pm2:restart
-```
-
-## Logs
-Logs are stored in `./logs/` directory.
+## Production Notes
+- All routes are validated with express-validator.
+- Rate limiting is applied per IP (100 requests per 15 min).
+- Helmet CSP is configured for inline scripts.
+- Trade engine uses cached prices (updated every 3 sec).
+- Cron job updates public candles every 5 minutes.
+- Graceful shutdown on SIGTERM.
+- Winston logging (error.log, combined.log).

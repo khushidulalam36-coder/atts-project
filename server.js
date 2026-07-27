@@ -3,42 +3,34 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const compression = require('compression');
 const http = require('http');
 const path = require('path');
 const { WebSocketServer } = require('ws');
 const cron = require('node-cron');
-const { cleanEnv, str, num } = require('envalid');   // ✅ সঠিক ইমপোর্ট
+const logger = require('./lib/logger');
 
-// Load environment variables
 dotenv.config();
 
-// ✅ Validate environment – cleanEnv সরাসরি ব্যবহার
-cleanEnv(process.env, {
-  DATABASE_URL: str(),
-  JWT_SECRET: str().min(32),
-  PORT: num({ default: 5000 }),
-  FRONTEND_URL: str(),
-  VERCEL_BLOB_READ_WRITE_TOKEN: str(),
-  NODE_ENV: str({ choices: ['development', 'production', 'test'], default: 'development' }),
-  LOG_LEVEL: str({ choices: ['debug', 'info', 'warn', 'error'], default: 'info' })
+// Validate required environment variables
+const requiredEnv = ['DATABASE_URL', 'VERCEL_BLOB_READ_WRITE_TOKEN', 'JWT_SECRET', 'FRONTEND_URL'];
+requiredEnv.forEach(key => {
+  if (!process.env[key]) {
+    logger.error(`Missing required env: ${key}`);
+    process.exit(1);
+  }
 });
 
-// ── Logger ────────────────────────────────────────────────────────
-const logger = require('./lib/logger');
+const app = express();
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
 // ── Imports ────────────────────────────────────────────────────────
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
 const { fetchLatestCandle } = require('./lib/binance');
 const { get } = require('@vercel/blob');
-const { query } = require('./lib/db');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const server = http.createServer(app);
-
-// ── Trust proxy ──────────────────────────────────────────────────
+// ── Trust proxy (for rate limiter behind reverse proxy) ──────────
 app.set('trust proxy', 1);
 
 // ── WebSocket ──────────────────────────────────────────────────────
@@ -49,7 +41,6 @@ wss.on('connection', (ws) => {
   wsClients.add(ws);
   ws.on('close', () => wsClients.delete(ws));
   ws.send(JSON.stringify({ type: 'connected', message: 'WebSocket connected' }));
-  logger.debug('WebSocket client connected');
 });
 
 function broadcast(data) {
@@ -65,47 +56,44 @@ setInterval(() => {
   broadcast({ type: 'price_update', prices, timestamp: Date.now() });
 }, 2000);
 
-// ── Security & Middleware ─────────────────────────────────────────
+// ── Middleware ─────────────────────────────────────────────────────
+// Helmet with custom CSP (allows inline scripts for Quill & FontAwesome)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "vercel.com"],
-      connectSrc: ["'self'", "api.binance.com", "stream.binance.com", "atts-project.onrender.com"],
-      fontSrc: ["'self'", "cdnjs.cloudflare.com", "fonts.gstatic.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.quilljs.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdn.quilljs.com", "cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "wss://stream.binance.com", "wss://*.binance.com"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
     },
   },
+  crossOriginEmbedderPolicy: false,
 }));
 
-app.use(compression());
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
+// CORS – only allow specified frontend
+const corsOptions = {
+  origin: process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ['http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  maxAge: 86400
-}));
-
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.sendStatus(200);
-});
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Rate limiter – per IP
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
+  max: 100, // 100 requests per 15 minutes per IP
+  keyGenerator: (req) => req.ip,
   skip: (req) => req.path === '/api/health',
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests, try again later.' }
+  message: { error: 'Too many requests, please try again later.' },
 });
 app.use('/api', apiLimiter);
 
@@ -130,11 +118,12 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
     if (candle) res.json(candle);
     else res.status(404).json({ error: 'Candle not found' });
   } catch (e) {
-    logger.error('Latest candle error', { error: e.message, symbol: req.params.symbol });
+    logger.error('Candle latest error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
+// 🔥 Proxy endpoint to serve candles from public Blob store (still requires token for get)
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -148,46 +137,19 @@ app.get('/api/candles/:symbol', async (req, res) => {
     const data = await blob.json();
     res.json(data);
   } catch (e) {
-    logger.error('Candle proxy error', { error: e.message, symbol: req.params.symbol });
+    logger.error('Proxy error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
-// Enhanced health check
-app.get('/api/health', async (req, res) => {
-  const health = {
-    status: 'ok',
-    uptime: process.uptime(),
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    uptime: process.uptime(), 
+    wsClients: wsClients.size, 
     timestamp: new Date().toISOString(),
-    services: {
-      db: false,
-      blob: false,
-      binance: false,
-      wsClients: wsClients.size
-    }
-  };
-  try {
-    await query('SELECT 1');
-    health.services.db = true;
-  } catch (e) {
-    logger.error('Health check DB failed', { error: e.message });
-  }
-  try {
-    const { get } = require('@vercel/blob');
-    await get('health-check', { token: process.env.VERCEL_BLOB_READ_WRITE_TOKEN });
-    health.services.blob = true;
-  } catch (e) {
-    logger.error('Health check Blob failed', { error: e.message });
-  }
-  try {
-    const res = await fetch('https://api.binance.com/api/v3/ping');
-    health.services.binance = res.ok;
-  } catch (e) {
-    logger.error('Health check Binance failed', { error: e.message });
-  }
-  const overall = Object.values(health.services).every(v => v === true);
-  health.status = overall ? 'ok' : 'degraded';
-  res.status(overall ? 200 : 503).json(health);
+    cronLastRun: global._cronLastRun || null
+  });
 });
 
 // Static files
@@ -198,15 +160,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ── Cron Job: Update Blob every minute with retry ──────────────
-const updateBlobWithRetry = require('./cron/updateCandles').updateBlobCandlesWithRetry;
-cron.schedule('* * * * *', async () => {
+// ── Cron Job: Update Blob every 5 minutes ────────────────────────
+cron.schedule('*/5 * * * *', async () => {
   logger.info('⏰ Running candle update cron...');
   try {
-    await updateBlobWithRetry(3);
+    await updateBlobCandles();
+    global._cronLastRun = new Date().toISOString();
     logger.info('✅ Blob candles updated');
   } catch (e) {
-    logger.error('❌ Cron error:', { error: e.message });
+    logger.error('❌ Cron error:', e.message);
   }
 });
 
@@ -214,26 +176,27 @@ cron.schedule('* * * * *', async () => {
 startTradeEngine();
 
 // ── Graceful Shutdown ─────────────────────────────────────────────
-function gracefulShutdown(signal) {
-  logger.info(`${signal} received, shutting down gracefully`);
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, closing server...');
   server.close(() => {
-    logger.info('HTTP server closed');
-    wsClients.forEach(ws => ws.close());
+    logger.info('Server closed.');
     process.exit(0);
   });
-}
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  // Force exit after 10s if not closed
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout.');
+    process.exit(1);
+  }, 10000);
+});
 
 // ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
   logger.info(`╔══════════════════════════════════════════╗`);
-  logger.info(`║  🚀 Alamquant Backend  v3.1.0          ║`);
+  logger.info(`║  🚀 Alamquant Backend  v2.1.0          ║`);
   logger.info(`║  📡 API:  http://localhost:${PORT}/api     ║`);
   logger.info(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
   logger.info(`║  ❤️  Health: /api/health               ║`);
-  logger.info(`║  🕐 Cron:  Every minute (Blob update)  ║`);
+  logger.info(`║  🕐 Cron:  Every 5 minutes (Blob update)║`);
   logger.info(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
   logger.info(`╚══════════════════════════════════════════╝`);
 });

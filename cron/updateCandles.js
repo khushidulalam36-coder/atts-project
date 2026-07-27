@@ -19,7 +19,7 @@ async function updateBlobCandles() {
         logger.warn(`⚠️ No candles for ${symbol}`);
       }
     } catch (e) {
-      logger.error(`❌ Error updating ${symbol}:`, { error: e.message });
+      logger.error(`❌ Error updating ${symbol}:`, e.message);
     }
   }
   if (anyUpdated) {
@@ -27,24 +27,6 @@ async function updateBlobCandles() {
   } else {
     logger.warn('⚠️ No candles were updated for any symbol');
   }
-  return anyUpdated;
 }
 
-async function updateBlobCandlesWithRetry(maxRetries = 3) {
-  let lastError;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await updateBlobCandles();
-      if (result) return true;
-    } catch (e) {
-      lastError = e;
-      logger.warn(`Attempt ${attempt} failed: ${e.message}`);
-      if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 1000 * attempt));
-      }
-    }
-  }
-  throw lastError || new Error('All retries failed');
-}
-
-module.exports = { updateBlobCandles, updateBlobCandlesWithRetry };
+module.exports = { updateBlobCandles };

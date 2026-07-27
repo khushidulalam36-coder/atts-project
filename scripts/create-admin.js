@@ -29,7 +29,7 @@ async function createAdmin() {
         }
         logger.info(`✅ Admin user "${u}" created/updated successfully!`);
       } catch (err) {
-        logger.error('❌ Error:', { error: err.message });
+        logger.error('❌ Error:', err.message);
       }
       rl.close();
       process.exit(0);

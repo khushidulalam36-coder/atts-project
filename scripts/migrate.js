@@ -84,7 +84,7 @@ async function createDefaultAdmin() {
     );
     logger.info('✅ Default admin created (username: admin, password: admin123)');
   } catch (err) {
-    logger.warn('Admin user already exists or error:', { error: err.message });
+    logger.info('ℹ️ Admin user already exists or error:', err.message);
   }
 }
 
@@ -98,7 +98,7 @@ async function createAdminPortfolio() {
       );
     }
   } catch (err) {
-    logger.warn('Portfolio creation error:', { error: err.message });
+    logger.info('ℹ️ Portfolio creation error:', err.message);
   }
 }
 
@@ -109,7 +109,7 @@ async function createAdminPortfolio() {
       await query(sql);
       logger.info('✅ Migration executed.');
     } catch (err) {
-      logger.error('❌ Migration error:', { error: err.message });
+      logger.error('❌ Migration error:', err.message);
     }
   }
   await createDefaultAdmin();
