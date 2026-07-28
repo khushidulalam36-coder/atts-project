@@ -906,24 +906,48 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
+  // ── routes/quiz.js – FIXED with lesson existence check ─────────────
   'routes/quiz.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 
+// POST: Add new question to a lesson
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     const { id, question, options, correct, points, explanation } = req.body;
-    if (!question?.en) return res.status(400).json({ error: 'Question text required' });
+    if (!question?.en) return res.status(400).json({ error: 'Question text (EN) required' });
+    if (!Array.isArray(options) || options.length < 2) {
+      return res.status(400).json({ error: 'At least two options required' });
+    }
+
+    // 🔍 Lesson existence check (fixes 500 error if lesson ID is invalid)
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+
     const qid = id || ('q-' + Date.now());
-    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+    await query(
+      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]
+    );
     const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
     res.status(201).json((r.rows || r)[0]);
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error('❌ Quiz POST error:', e.message, e.stack);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
 });
 
+// PUT: Update question by index
 router.put('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
+    // Check lesson existence
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+
     const { id, question, options, correct, points, explanation } = req.body;
     const qid = id || ('q-' + Date.now());
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
@@ -933,9 +957,13 @@ router.put('/:lessonId/:idx', authenticate, async (req, res) => {
     await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
       [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
     res.json({ success: true });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch (e) {
+    console.error('❌ Quiz PUT error:', e.message);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
 });
 
+// DELETE question by index
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
@@ -1016,29 +1044,12 @@ router.get('/', authenticate, async (req, res) => {
 
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
-    const { id, question, options, correct, points, explanation } = req.body;
-    if (!question?.en) return res.status(400).json({ error: 'Question text (EN) required' });
-    if (!Array.isArray(options) || options.length < 2) {
-      return res.status(400).json({ error: 'At least two options required' });
-    }
-    // নিশ্চিত করুন lesson_id exists
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
-    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
-      return res.status(404).json({ error: 'Lesson not found' });
-    }
-    const qid = id || ('q-' + Date.now());
-    // JSONB-তে সেভ করার জন্য options-কে JSON.stringify করা লাগবে না, neon driver নিজেই করবে
     await query(
-      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]
+      'INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+      [req.user.userId, req.params.lessonId]
     );
-    const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
-    res.status(201).json((r.rows || r)[0]);
-  } catch (e) {
-    console.error('❌ Quiz POST error:', e.message, e.stack);
-    // ডিটেইলড এরর পাঠান (শুধু ডেভের জন্য)
-    res.status(500).json({ error: 'Server error: ' + e.message });
-  }
+    res.json({ success: true });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 router.delete('/:lessonId', authenticate, async (req, res) => {
