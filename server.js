@@ -50,7 +50,7 @@ setInterval(() => {
 app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // ✅ .env থেকে নেয়
+  origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false
@@ -98,7 +98,7 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 Proxy endpoint to serve candles from public Blob store (still requires token for get)
+// 🔥 Proxy endpoint to serve candles from public Blob store
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;

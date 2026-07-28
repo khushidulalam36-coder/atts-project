@@ -2,6 +2,8 @@
 // SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel Blob Public)
 // All files created directly in current folder.
 // index.html will be empty – fill manually.
+// 🔥 Quiz 500 error FIXED: JSON.stringify for JSONB columns
+// 🔍 Debug enhanced: detailed error logging in quiz routes
 // ================================================================
 
 const fs = require('fs');
@@ -93,7 +95,7 @@ npm start
 - **Change after first login!**
 `,
 
-  // ── server.js (with proxy for public blob) ──────────────────────
+  // ── server.js ──────────────────────────────────────────────────
   'server.js': `const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -146,7 +148,7 @@ setInterval(() => {
 app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // ✅ .env থেকে নেয়
+  origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false
@@ -194,7 +196,7 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 Proxy endpoint to serve candles from public Blob store (still requires token for get)
+// 🔥 Proxy endpoint to serve candles from public Blob store
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -261,9 +263,8 @@ server.listen(PORT, () => {
 module.exports = { app, server, wss, broadcast };
 `,
 
-  // ── lib/binance.js (clean, uses native fetch) ────────────────────
-  'lib/binance.js': `// Node.js 18+ has native fetch
-const BASE_URL = 'https://api.binance.com/api/v3';
+  // ── lib/binance.js ──────────────────────────────────────────────
+  'lib/binance.js': `const BASE_URL = 'https://api.binance.com/api/v3';
 
 async function fetchLatestCandle(symbol) {
   try {
@@ -325,7 +326,7 @@ async function fetchCandles(symbol, interval = '1m', limit = 10000) {
 module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
 `,
 
-  // ── lib/blob.js (uses public access) ────────────────────────────
+  // ── lib/blob.js ─────────────────────────────────────────────────
   'lib/blob.js': `const { put, del, list } = require('@vercel/blob');
 
 const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
@@ -369,7 +370,7 @@ async function uploadCandles(symbol, candles, tf = 60) {
 module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
 `,
 
-  // ── cron/updateCandles.js (improved logging) ────────────────────
+  // ── cron/updateCandles.js ───────────────────────────────────────
   'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
 const { uploadCandles } = require('../lib/blob');
 
@@ -403,7 +404,7 @@ async function updateBlobCandles() {
 module.exports = { updateBlobCandles };
 `,
 
-  // ── scripts/migrate.js (unchanged) ──────────────────────────────────
+  // ── scripts/migrate.js ──────────────────────────────────────────
   'scripts/migrate.js': `require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
@@ -524,7 +525,7 @@ async function createAdminPortfolio() {
 })();
 `,
 
-  // ── scripts/create-admin.js (unchanged) ────────────────────────────
+  // ── scripts/create-admin.js ─────────────────────────────────────
   'scripts/create-admin.js': `require('dotenv').config();
 const { query } = require('../lib/db');
 const bcrypt = require('bcrypt');
@@ -566,7 +567,7 @@ async function createAdmin() {
 createAdmin();
 `,
 
-  // ── lib/db.js (unchanged) ──────────────────────────────────────────
+  // ── lib/db.js ───────────────────────────────────────────────────
   'lib/db.js': `const { neon } = require('@neondatabase/serverless');
 
 if (!process.env.DATABASE_URL) {
@@ -589,7 +590,7 @@ async function query(text, params = []) {
 module.exports = { query };
 `,
 
-  // ── lib/auth.js (unchanged) ─────────────────────────────────────────
+  // ── lib/auth.js ─────────────────────────────────────────────────
   'lib/auth.js': `const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { query } = require('./db');
@@ -648,7 +649,7 @@ module.exports = {
 };
 `,
 
-  // ── lib/tradeEngine.js (unchanged) ──────────────────────────────────
+  // ── lib/tradeEngine.js ──────────────────────────────────────────
   'lib/tradeEngine.js': `const { query } = require('./db');
 const { fetchPrice } = require('./binance');
 
@@ -722,7 +723,7 @@ function stopTradeEngine() {
 module.exports = { checkAndExecuteSLTP, startTradeEngine, stopTradeEngine };
 `,
 
-  // ── middleware/auth.js (unchanged) ──────────────────────────────────
+  // ── middleware/auth.js ───────────────────────────────────────────
   'middleware/auth.js': `const { verifyToken } = require('../lib/auth');
 
 function authenticate(req, res, next) {
@@ -751,7 +752,7 @@ function optionalAuth(req, res, next) {
 module.exports = { authenticate, optionalAuth };
 `,
 
-  // ── ROUTES ────────────────────────────────────────────────────────
+  // ── ROUTES (auth, subjects, lessons, progress, bookmarks, notes, portfolio, upload, export, import) same as before ─
   'routes/auth.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const {
@@ -906,34 +907,49 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ── routes/quiz.js – FIXED with lesson existence check ─────────────
+  // ── routes/quiz.js (🔥 FIXED with JSON.stringify & debug) ──────
   'routes/quiz.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 
-// POST: Add new question to a lesson
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     const { id, question, options, correct, points, explanation } = req.body;
-    if (!question?.en) return res.status(400).json({ error: 'Question text (EN) required' });
+    console.log('🔍 Quiz POST request body:', JSON.stringify(req.body, null, 2)); // DEBUG
+
+    if (!question?.en) {
+      console.warn('⚠️ Missing question.en');
+      return res.status(400).json({ error: 'Question text (EN) required' });
+    }
     if (!Array.isArray(options) || options.length < 2) {
+      console.warn('⚠️ Invalid options array');
       return res.status(400).json({ error: 'At least two options required' });
     }
 
-    const lessonId = req.params.lessonId;
-
-    // Lesson existence check (handles both array and {rows} return)
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
-    const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
-    if (rows.length === 0) {
+    // Check lesson existence
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+      console.warn('⚠️ Lesson not found:', req.params.lessonId);
       return res.status(404).json({ error: 'Lesson not found' });
     }
 
     const qid = id || ('q-' + Date.now());
+
+    // 🛡️ JSONB safe: always stringify objects
     await query(
       'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, lessonId, question, options, correct, points || 5, explanation || {}]
+      [
+        qid,
+        req.params.lessonId,
+        JSON.stringify(question),
+        JSON.stringify(options),
+        correct,
+        points || 5,
+        JSON.stringify(explanation || {})
+      ]
     );
+    console.log('✅ Quiz inserted, id:', qid);
+
     const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
     res.status(201).json((r.rows || r)[0]);
   } catch (e) {
@@ -942,36 +958,38 @@ router.post('/:lessonId', authenticate, async (req, res) => {
   }
 });
 
-// PUT: Update question by index
 router.put('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
-    const lessonId = req.params.lessonId;
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
-    const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Lesson not found' });
-    }
-
     const { id, question, options, correct, points, explanation } = req.body;
     const qid = id || ('q-' + Date.now());
-    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [lessonId]);
-    const existingRows = Array.isArray(existing) ? existing : (existing.rows || []);
-    const oldId = existingRows[parseInt(req.params.idx)]?.id;
+    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
+    const rows = existing.rows || existing;
+    const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
-    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, lessonId, question, options, correct, points || 5, explanation || {}]);
+
+    await query(
+      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [
+        qid,
+        req.params.lessonId,
+        JSON.stringify(question),
+        JSON.stringify(options),
+        correct,
+        points || 5,
+        JSON.stringify(explanation || {})
+      ]
+    );
     res.json({ success: true });
   } catch (e) {
-    console.error('❌ Quiz PUT error:', e.message);
+    console.error('Quiz PUT error:', e.message);
     res.status(500).json({ error: 'Server error: ' + e.message });
   }
 });
 
-// DELETE question by index
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
-    const rows = Array.isArray(existing) ? existing : (existing.rows || []);
+    const rows = existing.rows || existing;
     const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     res.json({ success: true });
@@ -1008,6 +1026,7 @@ router.get('/scores', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
+  // ── other routes (progress, bookmarks, notes, portfolio, upload, export, import) keep unchanged ──
   'routes/progress.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1049,7 +1068,7 @@ router.get('/', authenticate, async (req, res) => {
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     await query(
-      'INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+      'INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT (user_id, lesson_id) DO NOTHING',
       [req.user.userId, req.params.lessonId]
     );
     res.json({ success: true });
@@ -1099,7 +1118,7 @@ router.put('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ── routes/portfolio.js – FIXED with proper conversion ──────────────
+  // ── routes/portfolio.js (same as before, no change needed) ─────
   'routes/portfolio.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');

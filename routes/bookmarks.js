@@ -12,7 +12,7 @@ router.get('/', authenticate, async (req, res) => {
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     await query(
-      'INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+      'INSERT INTO bookmarks (user_id, lesson_id) VALUES ($1,$2) ON CONFLICT (user_id, lesson_id) DO NOTHING',
       [req.user.userId, req.params.lessonId]
     );
     res.json({ success: true });
