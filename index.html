@@ -29,10 +29,10 @@
             --primary: #7c8cf8;
             --primary-light: #1a1f3a;
             --primary-glow: rgba(124, 140, 248, 0.3);
-            --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 40%, #c4b5fd 100%);
-            --success: #10b981;
+            --primary-gradient: linear-gradient(135deg, #5b6cf0 0%, #7c8cf8 40%, #9bb0fc 100%);
+            --success: #34d399;
             --success-light: #0a2e1f;
-            --danger: #ef4444;
+            --danger: #f87171;
             --danger-light: #2a1215;
             --accent: #f59e0b;
             --radius: 8px;
@@ -43,8 +43,8 @@
             --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
             --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
             --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
-            --shadow-glow-success: 0 0 28px rgba(16, 185, 129, 0.25);
-            --mt5-bg: #0a0e1a;
+            --shadow-glow-success: 0 0 28px rgba(52, 211, 153, 0.25);
+            --mt5-bg: #080c16;
             --mt5-surface: #0d1422;
             --mt5-card: #111a2a;
             --mt5-input: #162030;
@@ -64,7 +64,7 @@
             --terminal-header-h: 28px;
             --transition: 0.2s ease;
             --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(12, 18, 34, 0.75);
+            --glass-bg: rgba(12, 18, 34, 0.7);
             --glass-border: rgba(255, 255, 255, 0.06);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --mt5-gradient-bg: linear-gradient(180deg, #080c16 0%, #0d1422 100%);
@@ -72,8 +72,9 @@
             --mt5-border-glow: 0 0 12px rgba(0, 200, 151, 0.05);
             --admin-accent: #6c7cf0;
             --admin-accent-glow: rgba(108, 124, 240, 0.25);
-            --mt5-toolbar-bg: #0d1422;
-            --mt5-toolbar-border: #1a2740;
+            --loading-bg: #0a0e1a;
+            --loading-text: #e8edf5;
+            --loading-glow: rgba(124, 140, 248, 0.15);
         }
 
         [data-theme="light"] {
@@ -124,8 +125,9 @@
             --mt5-border-glow: 0 0 12px rgba(16, 185, 129, 0.06);
             --admin-accent: #4f46e5;
             --admin-accent-glow: rgba(79, 70, 229, 0.2);
-            --mt5-toolbar-bg: #f0f2f5;
-            --mt5-toolbar-border: #d1d5db;
+            --loading-bg: #eef0f5;
+            --loading-text: #111827;
+            --loading-glow: rgba(79, 70, 229, 0.1);
         }
 
         * {
@@ -161,6 +163,52 @@
             width: 100%;
             position: relative;
             z-index: 1;
+        }
+
+        /* ─── LOADING SCREEN ──────────────────────────────────────────────── */
+        #app-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--loading-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        #app-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #app-loading .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        #app-loading .loader-text {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--loading-text);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            opacity: 0.7;
+        }
+        #app-loading .loader-sub {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
@@ -934,30 +982,6 @@
             text-align: center;
         }
 
-        /* Voice selector */
-        .voice-select-glass {
-            padding: 2px 16px 2px 6px;
-            border-radius: var(--radius-full);
-            border: 1.5px solid var(--glass-border);
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 0.5rem;
-            background: var(--glass-bg);
-            font-family: var(--font);
-            color: var(--text);
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 4px center;
-            min-height: 28px;
-            max-width: 120px;
-        }
-        .voice-select-glass:hover {
-            border-color: var(--primary);
-            box-shadow: 0 3px 14px var(--primary-glow);
-        }
-
         .certificate-btn-glass {
             background: linear-gradient(135deg, #10b981, #059669);
             color: #fff;
@@ -1538,7 +1562,7 @@
         .terminal-wrapper {
             background: var(--mt5-gradient-bg);
             border-radius: var(--radius-lg);
-            padding: 2px;
+            padding: 3px;
             border: 1px solid var(--mt5-border);
             box-shadow: var(--shadow), var(--mt5-border-glow);
             transition: all var(--transition);
@@ -1577,8 +1601,8 @@
             align-items: center;
             gap: 4px;
             padding: 2px 6px;
-            background: var(--mt5-toolbar-bg);
-            border-bottom: 1px solid var(--mt5-toolbar-border);
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
             min-height: 28px;
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1623,8 +1647,8 @@
             align-items: center;
             gap: 3px;
             padding: 2px 6px;
-            background: var(--mt5-toolbar-bg);
-            border-bottom: 1px solid var(--mt5-toolbar-border);
+            background: var(--mt5-surface);
+            border-bottom: 1px solid var(--mt5-border);
             min-height: 32px;
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1696,7 +1720,7 @@
             align-items: center;
             gap: 4px;
             padding: 1px 6px;
-            background: var(--mt5-toolbar-bg);
+            background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border-light);
             flex-shrink: 0;
             flex-wrap: wrap;
@@ -1909,7 +1933,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 1px 6px;
-            background: var(--mt5-toolbar-bg);
+            background: var(--mt5-surface);
             border-top: 1px solid var(--mt5-border-light);
             font-size: 0.45rem;
             color: var(--mt5-text);
@@ -1961,7 +1985,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 3px 6px;
-            background: var(--mt5-toolbar-bg);
+            background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             z-index: 20;
@@ -2033,7 +2057,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 2px 6px;
-            background: var(--mt5-toolbar-bg);
+            background: var(--mt5-surface);
             border-bottom: 1px solid var(--mt5-border);
             flex-shrink: 0;
             min-height: 18px;
@@ -3483,11 +3507,6 @@
             .tts-controls-top {
                 top: 36px;
             }
-            .voice-select-glass {
-                max-width: 80px;
-                font-size: 0.4rem;
-                min-height: 24px;
-            }
         }
         @media (max-width: 400px) {
             .mt5-quick-trade-row {
@@ -3691,12 +3710,6 @@
                 font-size: 0.6rem;
                 padding: 4px 8px;
             }
-            .voice-select-glass {
-                max-width: 60px;
-                font-size: 0.35rem;
-                min-height: 20px;
-                padding: 2px 12px 2px 4px;
-            }
         }
 
         /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
@@ -3882,10 +3895,22 @@
     </style>
 </head>
 <body>
+    <!-- ─── LOADING SCREEN ──────────────────────────────────────────────── -->
+    <div id="app-loading">
+        <div class="loader"></div>
+        <div class="loader-text">⚡ Loading ATTS Platform</div>
+        <div class="loader-sub">Enterprise Trading Terminal</div>
+    </div>
     <div id="app"></div>
     <script>
         (function() {
             'use strict';
+
+            // ─── HIDE LOADING ──────────────────────────────────────────────
+            function hideLoading() {
+                const el = document.getElementById('app-loading');
+                if (el) el.classList.add('hidden');
+            }
 
             // ─── CONFIG ──────────────────────────────────────────────────────
             const API_BASE = 'https://atts-project.onrender.com/api';
@@ -3894,11 +3919,6 @@
             const TOKEN_KEY = 'auth_token_v10';
             const USER_KEY = 'auth_user_v10';
             const PORTFOLIO_KEY = 'sim_portfolio_v10';
-            const CACHE_SUBJECTS_KEY = 'cached_subjects_v10';
-            const CACHE_PROGRESS_KEY = 'cached_progress_v10';
-            const CACHE_BOOKMARKS_KEY = 'cached_bookmarks_v10';
-            const CACHE_QUIZ_KEY = 'cached_quiz_v10';
-            const CACHE_NOTES_KEY = 'cached_notes_v10';
 
             const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XAUUSD'];
             const TIMEFRAMES = { 'M1': 60, 'M5': 300, 'M15': 900, 'M30': 1800, 'H1': 3600, 'H4': 14400, 'D1': 86400 };
@@ -3995,7 +4015,6 @@
             let wsConnected = false;
             let wsConnectedServer = false;
             let selectedVoice = null;
-            let _indicatorUpdatePending = false;
 
             // ─── INDEXEDDB ──────────────────────────────────────────────────
             const DB_NAME = 'ATTS_Cache_v2';
@@ -4344,61 +4363,6 @@
                 try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
             }
 
-            // ─── VOICE SELECTION ──────────────────────────────────────────────
-            function selectVoiceForLanguage(lang) {
-                if (!window.speechSynthesis) return;
-                const voices = window.speechSynthesis.getVoices();
-                if (!voices || voices.length === 0) {
-                    window.speechSynthesis.onvoiceschanged = () => {
-                        selectVoiceForLanguage(lang);
-                    };
-                    return;
-                }
-                const langMap = {
-                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
-                    'hi': ['hi', 'hindi', 'hi-IN'],
-                    'en': ['en-US', 'en-GB', 'en']
-                };
-                const preferred = langMap[lang] || langMap['en'];
-                let bestVoice = null;
-                let bestScore = -1;
-                for (const v of voices) {
-                    const name = v.name.toLowerCase();
-                    const voiceLang = v.lang.toLowerCase();
-                    let score = 0;
-                    for (const p of preferred) {
-                        if (voiceLang.includes(p) || name.includes(p)) {
-                            score += 5;
-                            break;
-                        }
-                    }
-                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
-                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
-                        name.includes('karen') || name.includes('emma') || name.includes('allison')) {
-                        score += 3;
-                    }
-                    if (name.includes('native') || name.includes('google') || name.includes('windows')) {
-                        score += 1;
-                    }
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestVoice = v;
-                    }
-                }
-                if (bestVoice) {
-                    selectedVoice = bestVoice;
-                } else if (voices.length > 0) {
-                    selectedVoice = voices[0];
-                }
-                // Update voice selector dropdown if it exists
-                const voiceSelect = document.getElementById('voiceSelect');
-                if (voiceSelect) {
-                    voiceSelect.innerHTML = voices.map(v =>
-                        `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
-                    ).join('');
-                }
-            }
-
             // ─── BINANCE WS ──────────────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
@@ -4512,7 +4476,7 @@
 
             // ─── BINANCE REST ──────────────────────────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit) {
-                limit = limit || 5000;
+                limit = limit || 500;
                 try {
                     const url =
                         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -4622,7 +4586,7 @@
                 }
 
                 const binanceInterval = '1m';
-                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 5000);
+                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 5000); // Increased from 1000 to 5000
                 let candles = [];
                 let sourceLabel = 'Binance REST';
 
@@ -4637,8 +4601,8 @@
                         candles = sanitizeCandleData(dbCandles);
                         sourceLabel = 'IndexedDB';
                     } else {
-                        const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice,
-                            currentTimeframe);
+                        const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
+                            currentTimeframe); // 5x more
                         candles = sanitizeCandleData(simCandles);
                         sourceLabel = 'Simulation (Fallback)';
                         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
@@ -4689,9 +4653,10 @@
                     }
                 }
 
+                // Increase visible candles by using more data
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
-                    const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 500, realTimePrice,
+                    const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
                         currentTimeframe);
                     simAllCandles = sanitizeCandleData(simCandles);
                     sourceLabel = 'Simulation (Emergency)';
@@ -4723,18 +4688,16 @@
                 const isDark = appTheme === 'dark';
 
                 try {
-                    const barSpacing = isMobile ? 1 : 1;
-                    const minBarSpacing = isMobile ? 0.5 : 0.5;
-                    const rightOffset = isMobile ? 2 : 5;
+                    const barSpacing = isMobile ? 2 : 4;
                     simChart = LightweightCharts.createChart(chartDiv, {
                         width: chartDiv.clientWidth,
                         height: chartHeight,
                         timeScale: {
                             timeVisible: true,
                             secondsVisible: currentTimeframe < 300,
-                            rightOffset: rightOffset,
+                            rightOffset: isMobile ? 4 : 10,
                             barSpacing: barSpacing,
-                            minBarSpacing: minBarSpacing
+                            minBarSpacing: isMobile ? 1 : 2
                         },
                         layout: {
                             background: { type: 'solid', color: 'transparent' },
@@ -4991,7 +4954,7 @@
                         updateMobileTopBar();
                         updateWatchlistPrices();
                         checkPendingOrders();
-                    }, 2000);
+                    }, 1000);
 
                     // ─── Candle close interval ──────────────────────────────
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
@@ -5313,7 +5276,7 @@
                         const fee = Math.abs(p.qty * closePrice * 0.0005);
                         const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash -= (p.qty * closePrice) + fee;
+                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
                         } else {
                             portfolio.cash += (p.qty * closePrice) - fee;
                         }
@@ -5523,7 +5486,7 @@
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
-                    portfolio.cash += qty * price - fee;
+                    portfolio.cash -= fee;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5571,7 +5534,7 @@
                 const fee = Math.abs(p.qty * price * 0.0005);
                 const netPnl = pnl - fee;
                 if (isShort) {
-                    portfolio.cash -= (p.qty * price) + fee;
+                    portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
                 } else {
                     portfolio.cash += (p.qty * price) - fee;
                 }
@@ -5639,7 +5602,7 @@
                         const fee = Math.abs(p.qty * price * 0.0005);
                         const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash -= (p.qty * price) + fee;
+                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
                         } else {
                             portfolio.cash += (p.qty * price) - fee;
                         }
@@ -5894,7 +5857,7 @@
                 } else {
                     const margin = qty * price * 0.5;
                     if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
-                    portfolio.cash += qty * price - fee;
+                    portfolio.cash -= fee;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -6565,7 +6528,7 @@
                                 <button class="btn btn-outline btn-sm" onclick="openDesktopTradePanel()" style="font-size:0.45rem;padding:3px 8px;"><i class="fas fa-wallet"></i> Trade</button>
                             </div>
 
-                            <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--mt5-toolbar-bg);border-bottom:1px solid var(--mt5-border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:4px;padding:1px 6px;background:var(--mt5-surface);border-bottom:1px solid var(--mt5-border-light);flex-shrink:0;min-height:18px;flex-wrap:wrap;">
                                 <span style="font-size:0.4rem;font-weight:600;color:var(--mt5-text);">📌 Pending:</span>
                                 <span id="pendingOrdersList" style="font-size:0.45rem;color:var(--mt5-text);">No pending orders</span>
                             </div>
@@ -7153,96 +7116,6 @@
                     origRemove.call(modal); };
             }
 
-            // ─── CACHED DATA LOAD ───────────────────────────────────────────
-            function loadCachedData() {
-                try {
-                    const cachedSubjects = localStorage.getItem(CACHE_SUBJECTS_KEY);
-                    if (cachedSubjects) {
-                        const parsed = JSON.parse(cachedSubjects);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            subjects = parsed;
-                            return true;
-                        }
-                    }
-                } catch (e) {}
-                return false;
-            }
-
-            function saveCachedData() {
-                try {
-                    localStorage.setItem(CACHE_SUBJECTS_KEY, JSON.stringify(subjects));
-                    localStorage.setItem(CACHE_PROGRESS_KEY, JSON.stringify(userProgress));
-                    localStorage.setItem(CACHE_BOOKMARKS_KEY, JSON.stringify([...bookmarks]));
-                    localStorage.setItem(CACHE_QUIZ_KEY, JSON.stringify(quizScores));
-                    localStorage.setItem(CACHE_NOTES_KEY, JSON.stringify(userNotes));
-                } catch (e) {}
-            }
-
-            function loadCachedProgress() {
-                try {
-                    const p = localStorage.getItem(CACHE_PROGRESS_KEY);
-                    if (p) { userProgress = JSON.parse(p); }
-                    const b = localStorage.getItem(CACHE_BOOKMARKS_KEY);
-                    if (b) { bookmarks = new Set(JSON.parse(b)); }
-                    const q = localStorage.getItem(CACHE_QUIZ_KEY);
-                    if (q) { quizScores = JSON.parse(q); }
-                    const n = localStorage.getItem(CACHE_NOTES_KEY);
-                    if (n) { userNotes = JSON.parse(n); }
-                } catch (e) {}
-            }
-
-            async function loadCachedDataAndRender() {
-                const hasCache = loadCachedData();
-                loadCachedProgress();
-                if (hasCache && subjects.length > 0) {
-                    if (!selectedSubjectId) selectedSubjectId = subjects[0]?.id || null;
-                    renderApp();
-                }
-                // Background full load
-                try {
-                    const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
-                        apiFetch('/subjects').catch(() => []),
-                        apiFetch('/progress').catch(() => ({})),
-                        apiFetch('/bookmarks').catch(() => ({})),
-                        apiFetch('/quiz/scores').catch(() => ({})),
-                        apiFetch('/notes/all').catch(() => ({})),
-                        apiFetch('/portfolio').catch(() => ({})),
-                    ]);
-                    subjects = subjRes || [];
-                    userProgress = progRes || {};
-                    bookmarks = new Set(bmRes || []);
-                    quizScores = quizRes || {};
-                    userNotes = notesRes || {};
-                    if (portRes && portRes.cash !== undefined) {
-                        portfolio.cash = parseFloat(portRes.cash) || 100000;
-                        portfolio.positions = portRes.positions || portRes.holdings || [];
-                        portfolio.transactions = portRes.transactions || [];
-                        portfolio.drawnLines = portRes.drawnLines || portRes.drawn_lines || {};
-                    }
-                    if (!portfolio.drawnLines) portfolio.drawnLines = {};
-                    if (!portfolio.drawnLines[simCurrentSymbol]) portfolio.drawnLines[simCurrentSymbol] = [];
-                    portfolio.positions.forEach(p => { if (!p.id) p.id = 'pos_' + Date.now() + '_' + Math.random()
-                            .toString(36).slice(2, 6); });
-                    const cutoff = Date.now() - 86400000;
-                    portfolio.transactions = portfolio.transactions.filter(t => {
-                        if (t.time && typeof t.time === 'string') {
-                            const ts = new Date(t.time).getTime();
-                            if (!isNaN(ts)) return ts > cutoff;
-                        }
-                        return true;
-                    });
-                    savePortfolioToStorage();
-                    saveCachedData();
-                    if (currentUser?.username === 'admin') isAdmin = true;
-                    if (subjects.length > 0 && !selectedSubjectId) selectedSubjectId = subjects[0].id;
-                    renderApp();
-                    connectBinanceWS();
-                    connectServerWS();
-                } catch (e) {
-                    if (e.message?.includes('Session expired')) logout();
-                }
-            }
-
             // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
             function renderUserInterface() {
                 try {
@@ -7283,11 +7156,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <select class="lang-select-glass" id="langSelect" style="display:none;">
-                                <option value="en">🇬🇧 EN</option>
-                                <option value="hi">🇮🇳 HI</option>
-                                <option value="bn">🇧🇩 BN</option>
-                            </select>
                         `;
                     } else {
                         headerHTML = `
@@ -7456,6 +7324,60 @@
                 }
             }
 
+            // ─── VOICE SELECTION ──────────────────────────────────────────────
+            function selectVoiceForLanguage(lang) {
+                if (!window.speechSynthesis) return;
+                const voices = window.speechSynthesis.getVoices();
+                if (!voices || voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        selectVoiceForLanguage(lang);
+                    };
+                    return;
+                }
+                const langMap = {
+                    'bn': ['bn', 'bengali', 'bn-BD', 'bn-IN'],
+                    'hi': ['hi', 'hindi', 'hi-IN'],
+                    'en': ['en-US', 'en-GB', 'en']
+                };
+                const preferred = langMap[lang] || langMap['en'];
+                let bestVoice = null;
+                let bestScore = -1;
+                for (const v of voices) {
+                    const name = v.name.toLowerCase();
+                    const voiceLang = v.lang.toLowerCase();
+                    let score = 0;
+                    for (const p of preferred) {
+                        if (voiceLang.includes(p) || name.includes(p)) {
+                            score += 3;
+                            break;
+                        }
+                    }
+                    // Prefer female voices
+                    if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
+                        name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
+                        name.includes('karen') || name.includes('emma') || name.includes('allison') ||
+                        name.includes('google') || name.includes('windows') || name.includes('natural')) {
+                        score += 2;
+                    }
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestVoice = v;
+                    }
+                }
+                if (bestVoice) {
+                    selectedVoice = bestVoice;
+                } else if (voices.length > 0) {
+                    selectedVoice = voices[0];
+                }
+                // Force update TTS voice if currently speaking
+                if (ttsUtterance && window.speechSynthesis) {
+                    try {
+                        window.speechSynthesis.cancel();
+                        ttsUtterance = null;
+                    } catch (e) {}
+                }
+            }
+
             // ─── TTS GLASS ──────────────────────────────────────────────────
             function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
@@ -7465,26 +7387,9 @@
                 let utterance = null;
                 let isPaused = false;
 
-                // Populate voice selector
-                const voiceSelect = document.getElementById('voiceSelect');
-                if (voiceSelect && window.speechSynthesis) {
-                    const voices = window.speechSynthesis.getVoices();
-                    if (voices.length) {
-                        voiceSelect.innerHTML = voices.map(v =>
-                            `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
-                        ).join('');
-                        voiceSelect.onchange = function() {
-                            const name = this.value;
-                            const found = window.speechSynthesis.getVoices().find(v => v.name === name);
-                            if (found) selectedVoice = found;
-                        };
-                    }
-                }
-
                 function speak() {
                     if (!txt) { showToast('⚠️ No text to speak'); return; }
                     if (window.speechSynthesis) {
-                        if (!selectedVoice) selectVoiceForLanguage(currentLang);
                         if (utterance && !isPaused) window.speechSynthesis.cancel();
                         if (isPaused && utterance) {
                             window.speechSynthesis.resume();
@@ -7497,6 +7402,7 @@
                         utterance.rate = speed;
                         const langMap = { 'bn': 'bn-BD', 'hi': 'hi-IN', 'en': 'en-US' };
                         utterance.lang = langMap[currentLang] || 'en-US';
+                        // Use selected voice (female preferred)
                         if (selectedVoice) {
                             utterance.voice = selectedVoice;
                         } else {
@@ -7514,8 +7420,11 @@
                                     v.name.toLowerCase().includes('emma') ||
                                     v.name.toLowerCase().includes('allison'))
                             );
-                            if (femaleVoices.length > 0) utterance.voice = femaleVoices[0];
-                            else if (voices.length > 0) utterance.voice = voices[0];
+                            if (femaleVoices.length > 0) {
+                                utterance.voice = femaleVoices[0];
+                            } else if (voices.length > 0) {
+                                utterance.voice = voices[0];
+                            }
                         }
                         utterance.onstart = () => { showToast('🔊 Playing...');
                             isPaused = false; };
@@ -7547,334 +7456,6 @@
                             .speechSynthesis.cancel();
                         isPaused = false;
                         showToast('⏹️ Stopped'); } };
-            }
-
-            // ─── CHAPTER PROGRESS ───────────────────────────────────────────
-            function calcChapterProgress() {
-                let total = 0,
-                    completed = 0;
-                subjects.forEach(s => {
-                    const lessons = s.lessons || [];
-                    if (lessons.length === 0) return;
-                    total++;
-                    const allDone = lessons.every(l => (userProgress[l.id] || 0) >= 100);
-                    if (allDone) completed++;
-                });
-                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-                return { total, completed, percent };
-            }
-
-            function calcLessonProgress(subjectId) {
-                const subj = subjects.find(s => s.id === subjectId);
-                if (!subj) return { total: 0, completed: 0, percent: 0 };
-                const lessons = subj.lessons || [];
-                const total = lessons.length;
-                const completed = lessons.filter(l => (userProgress[l.id] || 0) >= 100).length;
-                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-                return { total, completed, percent };
-            }
-
-            // ─── RENDER SUBJECT LIST ───────────────────────────────────────
-            function renderSubjectList() {
-                const c = document.getElementById('subjectList');
-                if (!c) return;
-                c.innerHTML = subjects.map(s => {
-                    const prog = calcLessonProgress(s.id);
-                    const isActive = s.id === selectedSubjectId;
-                    return `<div class="subject-item-glass ${isActive ? 'active' : ''}" data-id="${s.id}">
-                        <span class="subject-icon-glass">${s.icon || '📁'}</span>
-                        <span style="flex:1;">${t(s.names)}</span>
-                        ${prog.total > 0 ? `<span style="font-size:0.5rem;color:${isActive ? '#fff' : 'var(--text-muted)'};background:${isActive ? 'rgba(255,255,255,0.15)' : 'var(--glass-bg)'};padding:1px 6px;border-radius:10px;">${prog.percent}%</span>` : ''}
-                    </div>`;
-                }).join('');
-                c.querySelectorAll('.subject-item-glass').forEach(el => { el.onclick = () => { selectedSubjectId = el
-                            .dataset.id;
-                        currentLessonId = null;
-                        renderSubjectList();
-                        showLessonList();
-                        document.getElementById('sidebar').classList.remove('open'); }; });
-            }
-
-            // ─── SHOW LESSON LIST ───────────────────────────────────────────
-            function showLessonList() {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                if (!subj) {
-                    if (subjects.length > 0 && !selectedSubjectId) {
-                        selectedSubjectId = subjects[0].id;
-                        showLessonList();
-                        return;
-                    }
-                    const area = document.getElementById('contentArea');
-                    if (area) {
-                        const prog = calcChapterProgress();
-                        area.innerHTML = `
-                            <div class="progress-card-glass">
-                                <div class="progress-title-row">
-                                    <span>📚 Chapter Progress</span>
-                                    <span>${prog.completed} / ${prog.total} Chapters Completed</span>
-                                </div>
-                                <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog.percent}%"></div></div>
-                                <div class="progress-stats"><span>${prog.percent}%</span><span>${prog.completed} of ${prog.total}</span></div>
-                            </div>
-                            <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:0.75rem;">📚 Select a subject from the sidebar.</div>`;
-                    }
-                    return;
-                }
-                const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
-                let lessons = subj.lessons || [];
-                if (q) lessons = lessons.filter(l => t(l.titles).toLowerCase().includes(q));
-                const allComplete = lessons.length > 0 && lessons.every(l => (userProgress[l.id] || 0) >= 100);
-                const chapProg = calcChapterProgress();
-                const lesProg = calcLessonProgress(selectedSubjectId);
-
-                const area = document.getElementById('contentArea');
-                area.innerHTML = `
-                    <div class="lesson-list-glass">
-                        <div class="progress-card-glass">
-                            <div class="progress-title-row">
-                                <span>📚 Chapter Progress</span>
-                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
-                            </div>
-                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
-                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
-                        </div>
-                        <div class="progress-card-glass" style="margin-top:6px;">
-                            <div class="progress-title-row">
-                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
-                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
-                            </div>
-                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
-                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
-                        </div>
-                        <h2 style="margin-top:12px;">📖 ${t(subj.names)} — Lessons</h2>
-                        ${allComplete ? `<div style="text-align:center;margin-bottom:8px;"><button class="certificate-btn-glass" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
-                        ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">✨ No lessons found</p>' :
-                        lessons.map(l => {
-                            const prog = userProgress[l.id] || 0;
-                            const qs = quizScores[l.id];
-                            let quizBadge = '';
-                            if (l.quiz && l.quiz.length) {
-                                if (qs?.passed) quizBadge = '<span class="badge-glass badge-passed-glass">Quiz ✓</span>';
-                                else if (qs) quizBadge = '<span class="badge-glass badge-failed-glass">Quiz ✗</span>';
-                            }
-                            return `<div class="lesson-card-glass" data-id="${l.id}">
-                                <div class="lesson-info-glass">
-                                    <span class="lesson-title-glass">📄 ${t(l.titles)}</span>
-                                    <div class="lesson-meta-glass">
-                                        <span><i class="far fa-clock"></i> ${l.duration || 15}m</span>
-                                        <span class="badge-glass ${l.level === 'Beginner' ? 'badge-beginner-glass' : l.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${l.level || 'Beginner'}</span>
-                                        ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Done</span>' : ''}
-                                        ${quizBadge}
-                                        ${bookmarks.has(l.id) ? '<span style="color:var(--accent);">⭐</span>' : ''}
-                                    </div>
-                                </div>
-                                <i class="fas fa-chevron-right chevron-icon-glass"></i>
-                            </div>`;
-                        }).join('')}
-                    </div>`;
-                document.querySelectorAll('.lesson-card-glass').forEach(el => el.onclick = () => showLessonDetail(el
-                    .dataset.id));
-                if (allComplete && document.getElementById('certBtnList')) document.getElementById('certBtnList').onclick =
-                    () => generateCertificate(subj);
-            }
-
-            // ─── SHOW LESSON DETAIL ─────────────────────────────────────────
-            function showLessonDetail(id) {
-                currentLessonId = id;
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const les = subj?.lessons?.find(l => l.id === id);
-                if (!les) return;
-                const prog = userProgress[id] || 0;
-                const qs = quizScores[id];
-                const bm = bookmarks.has(id);
-                const allComplete = subj.lessons.every(l => (userProgress[l.id] || 0) >= 100);
-                const chapProg = calcChapterProgress();
-                const lesProg = calcLessonProgress(selectedSubjectId);
-
-                const area = document.getElementById('contentArea');
-                area.innerHTML = `
-                    <div class="detail-view-glass">
-                        <div class="progress-card-glass">
-                            <div class="progress-title-row">
-                                <span>📚 Chapter Progress</span>
-                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
-                            </div>
-                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
-                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
-                        </div>
-                        <div class="progress-card-glass" style="margin-top:6px;">
-                            <div class="progress-title-row">
-                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
-                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
-                            </div>
-                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
-                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
-                        </div>
-
-                        <div class="back-btn-glass" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
-                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">${t(les.titles)}</h2>
-                        <div class="lesson-meta-glass" style="margin:3px 0 1px;">
-                            <span><i class="far fa-clock"></i> ${les.duration || 15} min</span>
-                            <span class="badge-glass ${les.level === 'Beginner' ? 'badge-beginner-glass' : les.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${les.level || 'Beginner'}</span>
-                            ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Completed</span>' : ''}
-                            ${qs?.passed ? '<span class="badge-glass badge-passed-glass">Quiz Passed</span>' : qs ? '<span class="badge-glass badge-failed-glass">Quiz Failed</span>' : ''}
-                        </div>
-                        <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog}%"></div></div>
-                        <p style="font-size:0.55rem;color:var(--text-muted);">${prog}% complete</p>
-                        <div class="tabs-glass">
-                            <div class="tab-glass active" data-tab="summary">📝 Summary</div>
-                            <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
-                            <div class="tab-glass" data-tab="resources">📂 Resources</div>
-                        </div>
-                        <div class="tts-controls-top">
-                            <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
-                            <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
-                            <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
-                            <select class="voice-select-glass" id="voiceSelect"><option value="">Select voice...</option></select>
-                            <span class="speed-label-glass">Speed:</span><input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label-glass" id="speedDisplay">1.0x</span>
-                            <button class="btn-outline-glass ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
-                            <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
-                            <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
-                            <button class="btn-outline-glass" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
-                        </div>
-                        <div class="tab-content-glass" id="tabContent"></div>
-                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
-                        <div style="display:flex;justify-content:space-between;margin-top:10px;gap:6px;">
-                            <button class="tts-btn-glass" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
-                            <button class="tts-btn-glass" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
-                        </div>
-                    </div>`;
-                const tabs = document.querySelectorAll('.tab-glass');
-                const tc = document.getElementById('tabContent');
-
-                function showTab(tn) {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    const tabEl = document.querySelector(`.tab-glass[data-tab="${tn}"]`);
-                    if (tabEl) tabEl.classList.add('active');
-                    if (tn === 'summary') tc.innerHTML = les.contents ? t(les.contents) :
-                        '<p style="color:var(--text-muted);font-size:0.75rem;">No content available.</p>';
-                    else if (tn === 'quiz') renderQuizTabGlass(tc, les, id);
-                    else tc.innerHTML =
-                        '<div style="padding:12px;background:rgba(59,130,246,0.08);border-radius:12px;border:1.5px solid rgba(59,130,246,0.2);font-size:0.75rem;">📂 Additional Resources</div>';
-                }
-                tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
-                showTab('summary');
-                document.getElementById('bookmarkBtn').onclick = async () => { try { if (bookmarks.has(id)) { await apiFetch(
-                                '/bookmarks/' + id, { method: 'DELETE' });
-                            bookmarks.delete(id); } else { await apiFetch('/bookmarks/' + id, { method: 'POST' });
-                            bookmarks.add(id); } showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); } };
-                document.getElementById('noteBtn').onclick = () => openNoteModalGlass(id);
-                document.getElementById('translateBtn').onclick = () => openTranslateOptionsGlass();
-                document.getElementById('markCompleteBtn').onclick = async () => { try { await apiFetch('/progress', {
-                            method: 'PUT',
-                            body: JSON.stringify({ lessonId: id, progress: 100 })
-                        });
-                        userProgress[id] = 100;
-                        showLessonDetail(id);
-                        renderSubjectList();
-                    } catch (e) { showToast('⚠️ ' + e.message); } };
-                document.getElementById('backBtnDetail').onclick = () => { currentLessonId = null;
-                    showLessonList(); };
-                document.getElementById('speedSlider').oninput = function() { const speed = parseFloat(this.value);
-                    document.getElementById('speedDisplay').textContent = speed.toFixed(1) + 'x';
-                    window._ttsSpeed = speed; };
-                setupTTSGlass(id);
-                setupPrevNextGlass(subj, id);
-                if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
-                    .onclick = () => generateCertificate(subj);
-                selectVoiceForLanguage(currentLang);
-                // Populate voice select
-                if (window.speechSynthesis) {
-                    const voices = window.speechSynthesis.getVoices();
-                    const vSel = document.getElementById('voiceSelect');
-                    if (vSel && voices.length) {
-                        vSel.innerHTML = voices.map(v =>
-                            `<option value="${v.name}" ${selectedVoice && v.name === selectedVoice.name ? 'selected' : ''}>${v.name} (${v.lang})</option>`
-                        ).join('');
-                        vSel.onchange = function() {
-                            const name = this.value;
-                            const found = window.speechSynthesis.getVoices().find(v => v.name === name);
-                            if (found) selectedVoice = found;
-                        };
-                    }
-                }
-            }
-
-            function renderQuizTabGlass(container, lesson, lessonId) {
-                if (!lesson.quiz || lesson.quiz.length === 0) { container.innerHTML =
-                        '<div style="padding:12px;text-align:center;background:rgba(245,158,11,0.08);border-radius:12px;font-size:0.75rem;border:1px solid rgba(245,158,11,0.15);">🧠 No quiz available.</div>';
-                    return; }
-                const qs = quizScores[lessonId];
-                if (qs) {
-                    const total = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
-                    container.innerHTML = `
-                        <div class="quiz-container-glass">
-                            <h3 style="text-align:center;font-size:0.85rem;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
-                            <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
-                            <p style="text-align:center;font-size:0.75rem;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
-                            <div style="text-align:center;margin-top:6px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
-                        </div>`;
-                    document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
-                            lessonId, { method: 'POST' });
-                            delete quizScores[lessonId];
-                            showLessonDetail(lessonId);
-                            setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt)
-                                    qt.click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
-                    return;
-                }
-                let answers = new Array(lesson.quiz.length).fill(null);
-                let qIdx = 0;
-
-                function renderQuestion() {
-                    const q = lesson.quiz[qIdx];
-                    container.innerHTML = `
-                        <div class="quiz-container-glass">
-                            <p style="font-size:0.6rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
-                            <p class="quiz-question-glass">${t(q.question)}</p>
-                            <div id="quizOptionsGlass"></div>
-                            <div style="display:flex;justify-content:space-between;margin-top:8px;gap:4px;">
-                                <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
-                                <button class="btn btn-primary btn-sm" id="nextQBtn" ${qIdx >= lesson.quiz.length-1 ? 'style="display:none;"' : ''}>Next →</button>
-                                <button class="btn btn-success btn-sm" id="submitQuizBtn" ${qIdx < lesson.quiz.length-1 ? 'style="display:none;"' : ''}>✅ Submit Quiz</button>
-                            </div>
-                        </div>`;
-                    const optsDiv = document.getElementById('quizOptionsGlass');
-                    q.options.forEach(opt => {
-                        const btn = document.createElement('button');
-                        btn.className = 'quiz-option-glass' + (answers[qIdx] === opt.id ? ' selected' : '');
-                        btn.textContent = t(opt.text);
-                        btn.style.fontSize = '0.7rem';
-                        btn.onclick = () => { answers[qIdx] = opt.id;
-                            optsDiv.querySelectorAll('.quiz-option-glass').forEach(b => b.classList.remove(
-                                'selected'));
-                            btn.classList.add('selected'); };
-                        optsDiv.appendChild(btn);
-                    });
-                    document.getElementById('prevQBtn').onclick = () => { if (qIdx > 0) { qIdx--;
-                            renderQuestion(); } };
-                    document.getElementById('nextQBtn').onclick = () => { if (qIdx < lesson.quiz.length - 1) { qIdx++;
-                            renderQuestion(); } };
-                    document.getElementById('submitQuizBtn').onclick = () => submitQuizGlass(container, lesson, lessonId,
-                        answers);
-                }
-                renderQuestion();
-            }
-
-            async function submitQuizGlass(container, lesson, lessonId, answers) {
-                const unanswered = answers.findIndex(a => a === null);
-                if (unanswered !== -1) { showToast('⚠️ Please answer question ' + (unanswered + 1)); return; }
-                let earned = 0;
-                lesson.quiz.forEach((q, i) => { if (answers[i] === q.correct) earned += (q.points || 5); });
-                const passed = earned >= (lesson.quizPassScore || 80);
-                try {
-                    await apiFetch('/quiz/submit', { method: 'POST', body: JSON.stringify({ lessonId, score: earned,
-                            passed }) });
-                    quizScores[lessonId] = { score: earned, passed };
-                    showToast('📝 Score: ' + earned + ' — ' + (passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
-                    showLessonDetail(lessonId);
-                    setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
-                            .click(); }, 100);
-                } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
             function setupPrevNextGlass(subj, curId) {
@@ -8314,41 +7895,36 @@
                         `).join('')}
                         <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
                         <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
-                        <label style="font-size:0.65rem;">Explanation EN<textarea id="qExpEn" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.en || ''}</textarea></label>
-                        <label style="font-size:0.65rem;">Explanation HI<textarea id="qExpHi" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.hi || ''}</textarea></label>
-                        <label style="font-size:0.65rem;">Explanation BN<textarea id="qExpBn" style="font-size:0.65rem;min-height:40px;">${ex?.explanation?.bn || ''}</textarea></label>
                         <div class="modal-actions">
                             <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
                             <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 document.body.appendChild(modal);
                 if (ex) document.getElementById('qCor').value = ex.correct || 'a';
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 
                 document.getElementById('saveQ').onclick = async () => {
+                    // Build options array with proper text objects
+                    const options = ['a', 'b', 'c', 'd'].map(o => ({
+                        id: o,
+                        text: {
+                            en: document.getElementById('o' + o + 'En').value.trim() || 'Option ' + o,
+                            hi: document.getElementById('o' + o + 'Hi').value.trim() || 'Option ' + o,
+                            bn: document.getElementById('o' + o + 'Bn').value.trim() || 'Option ' + o
+                        }
+                    }));
+
                     const qData = {
                         question: {
-                            en: document.getElementById('qqEn').value.trim(),
-                            hi: document.getElementById('qqHi').value.trim(),
-                            bn: document.getElementById('qqBn').value.trim()
+                            en: document.getElementById('qqEn').value.trim() || 'Question text',
+                            hi: document.getElementById('qqHi').value.trim() || 'प्रश्न पाठ',
+                            bn: document.getElementById('qqBn').value.trim() || 'প্রশ্ন পাঠ্য'
                         },
-                        options: ['a', 'b', 'c', 'd'].map(o => ({
-                            id: o,
-                            text: {
-                                en: document.getElementById('o' + o + 'En').value.trim(),
-                                hi: document.getElementById('o' + o + 'Hi').value.trim(),
-                                bn: document.getElementById('o' + o + 'Bn').value.trim()
-                            }
-                        })),
+                        options: options,
                         correct: document.getElementById('qCor').value,
                         points: parseInt(document.getElementById('qPts').value) || 5,
-                        explanation: {
-                            en: document.getElementById('qExpEn').value.trim(),
-                            hi: document.getElementById('qExpHi').value.trim(),
-                            bn: document.getElementById('qExpBn').value.trim()
-                        }
+                        explanation: {}
                     };
 
                     try {
@@ -8363,6 +7939,7 @@
                                 method: 'POST',
                                 body: JSON.stringify(qData)
                             });
+                            if (!les.quiz) les.quiz = [];
                             les.quiz.push(res);
                         }
                         modal.remove();
@@ -8370,6 +7947,7 @@
                         showToast(ex ? '✅ Question updated!' : '✅ Question added!');
                     } catch (e) {
                         showToast('⚠️ ' + e.message);
+                        console.error('Quiz save error:', e);
                     }
                 };
             };
@@ -8445,7 +8023,7 @@
                             showToast('🎉 Registration successful!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
-                            loadCachedDataAndRender();
+                            loadAllDataBackground();
                         } catch (e) { showToast('❌ ' + e.message); }
                     } else {
                         try { const res = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({
@@ -8461,12 +8039,13 @@
                             showToast('✅ Welcome back, ' + username + '!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
-                            loadCachedDataAndRender();
+                            loadAllDataBackground();
                         } catch (e) { showToast('❌ ' + e.message); }
                     }
                 };
             }
 
+            // ─── BACKGROUND DATA LOAD ──────────────────────────────────────
             async function loadAllDataBackground() {
                 try {
                     loadPortfolioFromStorage();
@@ -8520,13 +8099,16 @@
                     connectBinanceWS();
                     connectServerWS();
                     selectVoiceForLanguage(currentLang);
+                    hideLoading();
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
+                    hideLoading();
                 }
             }
 
             async function loadAllData() {
-                if (!token || !currentUser) { renderAuthPage(); return; }
+                if (!token || !currentUser) { renderAuthPage();
+                    hideLoading(); return; }
                 loadPortfolioFromStorage();
                 loadPendingOrders();
                 if (!userAccountNo || userAccountNo === 'ACC-000000') {
@@ -8573,9 +8155,11 @@
                     connectBinanceWS();
                     connectServerWS();
                     selectVoiceForLanguage(currentLang);
+                    hideLoading();
                 } catch (e) {
                     if (e.message?.includes('Session expired')) logout();
                     else renderApp();
+                    hideLoading();
                 }
             }
 
@@ -8748,32 +8332,12 @@
                 return vwap;
             }
 
-            const debouncedUpdateIndicators = debounce(function() {
-                updateAllIndicatorsInternal();
-            }, 200);
-
             function updateAllIndicators() {
-                if (_indicatorUpdatePending) return;
-                _indicatorUpdatePending = true;
-                requestAnimationFrame(() => {
-                    debouncedUpdateIndicators();
-                    _indicatorUpdatePending = false;
-                });
-            }
-
-            function updateAllIndicatorsInternal() {
                 if (!simCandleSeries || !simChart) return;
-                let visibleRange = null;
-                try { visibleRange = simChart.timeScale().getVisibleRange(); } catch (e) {}
-                let data = [...simAllCandles];
-                if (simCurrentCandle) data.push(simCurrentCandle);
-                if (visibleRange) {
-                    const buffer = (visibleRange.to - visibleRange.from) * 0.3;
-                    data = data.filter(c => c.time >= visibleRange.from - buffer && c.time <= visibleRange.to +
-                    buffer);
-                }
-                if (data.length < 5) data = [...simAllCandles];
-                const safeData = sanitizeCandleData(data);
+                const allData = [...simAllCandles];
+                if (simCurrentCandle) allData.push(simCurrentCandle);
+                if (allData.length === 0) return;
+                const safeData = sanitizeCandleData(allData);
                 if (safeData.length === 0) return;
 
                 const removeSeries = (key) => {
@@ -8806,10 +8370,10 @@
                 if (activeIndicators['bb']) {
                     const { sma, upper, lower } = calculateBB(safeData);
                     ['bb_sma', 'bb_upper', 'bb_lower'].forEach((k, i) => {
-                        const data2 = [sma, upper, lower][i];
-                        if (data2 && data2.length > 0) {
+                        const data = [sma, upper, lower][i];
+                        if (data && data.length > 0) {
                             if (simIndicatorSeries[k]) {
-                                try { simIndicatorSeries[k].setData(data2); } catch (e) {}
+                                try { simIndicatorSeries[k].setData(data); } catch (e) {}
                             } else {
                                 try {
                                     const ls = simChart.addLineSeries({ color: i === 0 ? '#a78bfa' :
@@ -8818,7 +8382,7 @@
                                         lastValueVisible: false, priceFormat: { type: 'price',
                                             precision: 4, minMove: 0.0001 } });
                                     if (i > 0) ls.applyOptions({ lineStyle: 2 });
-                                    ls.setData(data2);
+                                    ls.setData(data);
                                     simIndicatorSeries[k] = ls;
                                 } catch (e) {}
                             }
@@ -8997,8 +8561,8 @@
             function initLazy(candles) {
                 lazyAllCandles = candles.slice();
                 const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, 2000);
-                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 2000);
+                lazyVisibleEnd = Math.min(total, 5000); // Increased from 2000 to 5000 (2.5x more visible)
+                lazyVisibleStart = Math.max(0, lazyVisibleEnd - 5000);
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
@@ -9051,7 +8615,7 @@
             window.checkPendingOrders = checkPendingOrders;
             window.customConfirm = customConfirm;
             window.exitTerminalSafely = exitTerminalSafely;
-            window.loadCachedDataAndRender = loadCachedDataAndRender;
+            window.loadAllDataBackground = loadAllDataBackground;
             window.renderApp = renderApp;
             window.addLineMobile = addLineMobile;
             window.switchHistoryTab = switchHistoryTab;
@@ -9069,6 +8633,7 @@
             window.removePositionLines = removePositionLines;
             window.updateHistoryUI = updateHistoryUI;
             window.selectVoiceForLanguage = selectVoiceForLanguage;
+            // Admin globals
             window.showAdminLessonManager = showAdminLessonManager;
             window.selectAdminSubject = selectAdminSubject;
             window.moveSubject = moveSubject;
@@ -9088,11 +8653,13 @@
                 saveAccountNo();
             }
             openDB().then(() => {
-                if (token && currentUser) loadCachedDataAndRender();
-                else renderAuthPage();
+                if (token && currentUser) loadAllData();
+                else { renderAuthPage();
+                    hideLoading(); }
             }).catch(err => {
-                if (token && currentUser) loadCachedDataAndRender();
-                else renderAuthPage();
+                if (token && currentUser) loadAllData();
+                else { renderAuthPage();
+                    hideLoading(); }
             });
 
             window.addEventListener('orientationchange', () => {
@@ -9162,6 +8729,323 @@
                     selectVoiceForLanguage(currentLang);
                 };
             }
+
+            // ─── CHAPTER FUNCTIONS ──────────────────────────────────────────
+            function calcChapterProgress() {
+                let total = 0,
+                    completed = 0;
+                subjects.forEach(s => {
+                    const lessons = s.lessons || [];
+                    if (lessons.length === 0) return;
+                    total++;
+                    const allDone = lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                    if (allDone) completed++;
+                });
+                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                return { total, completed, percent };
+            }
+
+            function calcLessonProgress(subjectId) {
+                const subj = subjects.find(s => s.id === subjectId);
+                if (!subj) return { total: 0, completed: 0, percent: 0 };
+                const lessons = subj.lessons || [];
+                const total = lessons.length;
+                const completed = lessons.filter(l => (userProgress[l.id] || 0) >= 100).length;
+                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                return { total, completed, percent };
+            }
+
+            function renderSubjectList() {
+                const c = document.getElementById('subjectList');
+                if (!c) return;
+                c.innerHTML = subjects.map(s => {
+                    const prog = calcLessonProgress(s.id);
+                    const isActive = s.id === selectedSubjectId;
+                    return `<div class="subject-item-glass ${isActive ? 'active' : ''}" data-id="${s.id}">
+                        <span class="subject-icon-glass">${s.icon || '📁'}</span>
+                        <span style="flex:1;">${t(s.names)}</span>
+                        ${prog.total > 0 ? `<span style="font-size:0.5rem;color:${isActive ? '#fff' : 'var(--text-muted)'};background:${isActive ? 'rgba(255,255,255,0.15)' : 'var(--glass-bg)'};padding:1px 6px;border-radius:10px;">${prog.percent}%</span>` : ''}
+                    </div>`;
+                }).join('');
+                c.querySelectorAll('.subject-item-glass').forEach(el => { el.onclick = () => { selectedSubjectId = el
+                            .dataset.id;
+                        currentLessonId = null;
+                        renderSubjectList();
+                        showLessonList();
+                        document.getElementById('sidebar').classList.remove('open'); }; });
+            }
+
+            function showLessonList() {
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                if (!subj) {
+                    if (subjects.length > 0 && !selectedSubjectId) {
+                        selectedSubjectId = subjects[0].id;
+                        showLessonList();
+                        return;
+                    }
+                    const area = document.getElementById('contentArea');
+                    if (area) {
+                        const prog = calcChapterProgress();
+                        area.innerHTML = `
+                            <div class="progress-card-glass">
+                                <div class="progress-title-row">
+                                    <span>📚 Chapter Progress</span>
+                                    <span>${prog.completed} / ${prog.total} Chapters Completed</span>
+                                </div>
+                                <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog.percent}%"></div></div>
+                                <div class="progress-stats"><span>${prog.percent}%</span><span>${prog.completed} of ${prog.total}</span></div>
+                            </div>
+                            <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:0.75rem;">📚 Select a subject from the sidebar.</div>`;
+                    }
+                    return;
+                }
+                const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
+                let lessons = subj.lessons || [];
+                if (q) lessons = lessons.filter(l => t(l.titles).toLowerCase().includes(q));
+                const allComplete = lessons.length > 0 && lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                const chapProg = calcChapterProgress();
+                const lesProg = calcLessonProgress(selectedSubjectId);
+
+                const area = document.getElementById('contentArea');
+                area.innerHTML = `
+                    <div class="lesson-list-glass">
+                        <!-- Chapter Progress -->
+                        <div class="progress-card-glass">
+                            <div class="progress-title-row">
+                                <span>📚 Chapter Progress</span>
+                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
+                        </div>
+                        <!-- Lesson Progress -->
+                        <div class="progress-card-glass" style="margin-top:6px;">
+                            <div class="progress-title-row">
+                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
+                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
+                        </div>
+                        <h2 style="margin-top:12px;">📖 ${t(subj.names)} — Lessons</h2>
+                        ${allComplete ? `<div style="text-align:center;margin-bottom:8px;"><button class="certificate-btn-glass" id="certBtnList"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        ${lessons.length === 0 ? '<p style="color:var(--text-muted);text-align:center;padding:30px;font-size:0.75rem;">✨ No lessons found</p>' :
+                        lessons.map(l => {
+                            const prog = userProgress[l.id] || 0;
+                            const qs = quizScores[l.id];
+                            let quizBadge = '';
+                            if (l.quiz && l.quiz.length) {
+                                if (qs?.passed) quizBadge = '<span class="badge-glass badge-passed-glass">Quiz ✓</span>';
+                                else if (qs) quizBadge = '<span class="badge-glass badge-failed-glass">Quiz ✗</span>';
+                            }
+                            return `<div class="lesson-card-glass" data-id="${l.id}">
+                                <div class="lesson-info-glass">
+                                    <span class="lesson-title-glass">📄 ${t(l.titles)}</span>
+                                    <div class="lesson-meta-glass">
+                                        <span><i class="far fa-clock"></i> ${l.duration || 15}m</span>
+                                        <span class="badge-glass ${l.level === 'Beginner' ? 'badge-beginner-glass' : l.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${l.level || 'Beginner'}</span>
+                                        ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Done</span>' : ''}
+                                        ${quizBadge}
+                                        ${bookmarks.has(l.id) ? '<span style="color:var(--accent);">⭐</span>' : ''}
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-right chevron-icon-glass"></i>
+                            </div>`;
+                        }).join('')}
+                    </div>`;
+                document.querySelectorAll('.lesson-card-glass').forEach(el => el.onclick = () => showLessonDetail(el
+                    .dataset.id));
+                if (allComplete && document.getElementById('certBtnList')) document.getElementById('certBtnList').onclick =
+                    () => generateCertificate(subj);
+            }
+
+            function showLessonDetail(id) {
+                currentLessonId = id;
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                const les = subj?.lessons?.find(l => l.id === id);
+                if (!les) return;
+                const prog = userProgress[id] || 0;
+                const qs = quizScores[id];
+                const bm = bookmarks.has(id);
+                const allComplete = subj.lessons.every(l => (userProgress[l.id] || 0) >= 100);
+                const chapProg = calcChapterProgress();
+                const lesProg = calcLessonProgress(selectedSubjectId);
+
+                const area = document.getElementById('contentArea');
+                area.innerHTML = `
+                    <div class="detail-view-glass">
+                        <!-- Chapter Progress -->
+                        <div class="progress-card-glass">
+                            <div class="progress-title-row">
+                                <span>📚 Chapter Progress</span>
+                                <span>${chapProg.completed} / ${chapProg.total} Chapters Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
+                        </div>
+                        <!-- Lesson Progress -->
+                        <div class="progress-card-glass" style="margin-top:6px;">
+                            <div class="progress-title-row">
+                                <span>📖 Lesson Progress — ${t(subj.names)}</span>
+                                <span>${lesProg.completed} / ${lesProg.total} Lessons Completed</span>
+                            </div>
+                            <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${lesProg.percent}%"></div></div>
+                            <div class="progress-stats"><span>${lesProg.percent}%</span><span>${lesProg.completed} of ${lesProg.total}</span></div>
+                        </div>
+
+                        <div class="back-btn-glass" id="backBtnDetail"><i class="fas fa-arrow-left"></i> Back to Lessons</div>
+                        <h2 style="font-weight:700;font-family:Outfit,sans-serif;font-size:0.95rem;">${t(les.titles)}</h2>
+                        <div class="lesson-meta-glass" style="margin:3px 0 1px;">
+                            <span><i class="far fa-clock"></i> ${les.duration || 15} min</span>
+                            <span class="badge-glass ${les.level === 'Beginner' ? 'badge-beginner-glass' : les.level === 'Intermediate' ? 'badge-intermediate-glass' : 'badge-advanced-glass'}">${les.level || 'Beginner'}</span>
+                            ${prog >= 100 ? '<span class="badge-glass badge-completed-glass">✓ Completed</span>' : ''}
+                            ${qs?.passed ? '<span class="badge-glass badge-passed-glass">Quiz Passed</span>' : qs ? '<span class="badge-glass badge-failed-glass">Quiz Failed</span>' : ''}
+                        </div>
+                        <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${prog}%"></div></div>
+                        <p style="font-size:0.55rem;color:var(--text-muted);">${prog}% complete</p>
+                        <div class="tabs-glass">
+                            <div class="tab-glass active" data-tab="summary">📝 Summary</div>
+                            <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
+                            <div class="tab-glass" data-tab="resources">📂 Resources</div>
+                        </div>
+                        <!-- TTS Controls moved to TOP -->
+                        <div class="tts-controls-top">
+                            <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
+                            <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
+                            <button class="tts-btn-glass" id="stopTTS"><i class="fas fa-stop"></i></button>
+                            <span class="speed-label-glass">Speed:</span><input type="range" class="speed-slider-glass" id="speedSlider" min="0.5" max="2" step="0.1" value="1"><span class="speed-label-glass" id="speedDisplay">1.0x</span>
+                            <button class="btn-outline-glass ${bm ? 'bookmarked' : ''}" id="bookmarkBtn"><i class="fas fa-bookmark"></i> ${bm ? 'Saved' : 'Bookmark'}</button>
+                            <button class="btn-outline-glass" id="noteBtn"><i class="fas fa-sticky-note"></i> Note</button>
+                            <button class="btn-outline-glass" id="translateBtn"><i class="fas fa-language"></i> Translate</button>
+                            <button class="btn-outline-glass" id="markCompleteBtn" style="${prog >= 100 ? 'border-color:var(--success);color:var(--success);' : ''}"><i class="fas fa-check-circle"></i> ${prog >= 100 ? '✓ Done' : 'Mark Complete'}</button>
+                        </div>
+                        <div class="tab-content-glass" id="tabContent"></div>
+                        ${allComplete ? `<div style="text-align:center;margin:6px 0;"><button class="certificate-btn-glass" id="certBtnDetail"><i class="fas fa-medal"></i> 🎓 Download Certificate</button></div>` : ''}
+                        <div style="display:flex;justify-content:space-between;margin-top:10px;gap:6px;">
+                            <button class="tts-btn-glass" id="prevLesson"><i class="fas fa-chevron-left"></i> Previous</button>
+                            <button class="tts-btn-glass" id="nextLesson">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>`;
+                const tabs = document.querySelectorAll('.tab-glass');
+                const tc = document.getElementById('tabContent');
+
+                function showTab(tn) {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    const tabEl = document.querySelector(`.tab-glass[data-tab="${tn}"]`);
+                    if (tabEl) tabEl.classList.add('active');
+                    if (tn === 'summary') tc.innerHTML = les.contents ? t(les.contents) :
+                        '<p style="color:var(--text-muted);font-size:0.75rem;">No content available.</p>';
+                    else if (tn === 'quiz') renderQuizTabGlass(tc, les, id);
+                    else tc.innerHTML =
+                        '<div style="padding:12px;background:rgba(59,130,246,0.08);border-radius:12px;border:1.5px solid rgba(59,130,246,0.2);font-size:0.75rem;">📂 Additional Resources</div>';
+                }
+                tabs.forEach(t => t.onclick = () => showTab(t.dataset.tab));
+                showTab('summary');
+                document.getElementById('bookmarkBtn').onclick = async () => { try { if (bookmarks.has(id)) { await apiFetch(
+                                '/bookmarks/' + id, { method: 'DELETE' });
+                            bookmarks.delete(id); } else { await apiFetch('/bookmarks/' + id, { method: 'POST' });
+                            bookmarks.add(id); } showLessonDetail(id); } catch (e) { showToast('⚠️ ' + e.message); } };
+                document.getElementById('noteBtn').onclick = () => openNoteModalGlass(id);
+                document.getElementById('translateBtn').onclick = () => openTranslateOptionsGlass();
+                document.getElementById('markCompleteBtn').onclick = async () => { try { await apiFetch('/progress', {
+                            method: 'PUT',
+                            body: JSON.stringify({ lessonId: id, progress: 100 })
+                        });
+                        userProgress[id] = 100;
+                        showLessonDetail(id);
+                        renderSubjectList();
+                    } catch (e) { showToast('⚠️ ' + e.message); } };
+                document.getElementById('backBtnDetail').onclick = () => { currentLessonId = null;
+                    showLessonList(); };
+                document.getElementById('speedSlider').oninput = function() { const speed = parseFloat(this.value);
+                    document.getElementById('speedDisplay').textContent = speed.toFixed(1) + 'x';
+                    window._ttsSpeed = speed; };
+                setupTTSGlass(id);
+                setupPrevNextGlass(subj, id);
+                if (allComplete && document.getElementById('certBtnDetail')) document.getElementById('certBtnDetail')
+                    .onclick = () => generateCertificate(subj);
+                selectVoiceForLanguage(currentLang);
+            }
+
+            function renderQuizTabGlass(container, lesson, lessonId) {
+                if (!lesson.quiz || lesson.quiz.length === 0) { container.innerHTML =
+                        '<div style="padding:12px;text-align:center;background:rgba(245,158,11,0.08);border-radius:12px;font-size:0.75rem;border:1px solid rgba(245,158,11,0.15);">🧠 No quiz available.</div>';
+                    return; }
+                const qs = quizScores[lessonId];
+                if (qs) {
+                    const total = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
+                    container.innerHTML = `
+                        <div class="quiz-container-glass">
+                            <h3 style="text-align:center;font-size:0.85rem;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
+                            <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
+                            <p style="text-align:center;font-size:0.75rem;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
+                            <div style="text-align:center;margin-top:6px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
+                        </div>`;
+                    document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
+                            lessonId, { method: 'POST' });
+                            delete quizScores[lessonId];
+                            showLessonDetail(lessonId);
+                            setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt)
+                                    qt.click(); }, 100); } catch (e) { showToast('⚠️ ' + e.message); } };
+                    return;
+                }
+                let answers = new Array(lesson.quiz.length).fill(null);
+                let qIdx = 0;
+
+                function renderQuestion() {
+                    const q = lesson.quiz[qIdx];
+                    container.innerHTML = `
+                        <div class="quiz-container-glass">
+                            <p style="font-size:0.6rem;color:var(--text-muted);">Question ${qIdx+1} of ${lesson.quiz.length} | Points: <strong>${q.points || 5}</strong></p>
+                            <p class="quiz-question-glass">${t(q.question)}</p>
+                            <div id="quizOptionsGlass"></div>
+                            <div style="display:flex;justify-content:space-between;margin-top:8px;gap:4px;">
+                                <button class="btn btn-outline btn-sm" id="prevQBtn" ${qIdx === 0 ? 'disabled' : ''}>← Prev</button>
+                                <button class="btn btn-primary btn-sm" id="nextQBtn" ${qIdx >= lesson.quiz.length-1 ? 'style="display:none;"' : ''}>Next →</button>
+                                <button class="btn btn-success btn-sm" id="submitQuizBtn" ${qIdx < lesson.quiz.length-1 ? 'style="display:none;"' : ''}>✅ Submit Quiz</button>
+                            </div>
+                        </div>`;
+                    const optsDiv = document.getElementById('quizOptionsGlass');
+                    q.options.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = 'quiz-option-glass' + (answers[qIdx] === opt.id ? ' selected' : '');
+                        btn.textContent = t(opt.text);
+                        btn.style.fontSize = '0.7rem';
+                        btn.onclick = () => { answers[qIdx] = opt.id;
+                            optsDiv.querySelectorAll('.quiz-option-glass').forEach(b => b.classList.remove(
+                                'selected'));
+                            btn.classList.add('selected'); };
+                        optsDiv.appendChild(btn);
+                    });
+                    document.getElementById('prevQBtn').onclick = () => { if (qIdx > 0) { qIdx--;
+                            renderQuestion(); } };
+                    document.getElementById('nextQBtn').onclick = () => { if (qIdx < lesson.quiz.length - 1) { qIdx++;
+                            renderQuestion(); } };
+                    document.getElementById('submitQuizBtn').onclick = () => submitQuizGlass(container, lesson, lessonId,
+                        answers);
+                }
+                renderQuestion();
+            }
+
+            async function submitQuizGlass(container, lesson, lessonId, answers) {
+                const unanswered = answers.findIndex(a => a === null);
+                if (unanswered !== -1) { showToast('⚠️ Please answer question ' + (unanswered + 1)); return; }
+                let earned = 0;
+                lesson.quiz.forEach((q, i) => { if (answers[i] === q.correct) earned += (q.points || 5); });
+                const passed = earned >= (lesson.quizPassScore || 80);
+                try {
+                    await apiFetch('/quiz/submit', { method: 'POST', body: JSON.stringify({ lessonId, score: earned,
+                            passed }) });
+                    quizScores[lessonId] = { score: earned, passed };
+                    showToast('📝 Score: ' + earned + ' — ' + (passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
+                    showLessonDetail(lessonId);
+                    setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
+                            .click(); }, 100);
+                } catch (e) { showToast('⚠️ ' + e.message); }
+            }
+
+            // ─── Hide loading on init ──────────────────────────────────────────
+            setTimeout(hideLoading, 3000);
 
         })();
     </script>
