@@ -11,16 +11,19 @@ router.post('/:lessonId', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'At least two options required' });
     }
 
-    // 🔍 Lesson existence check (fixes 500 error if lesson ID is invalid)
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
-    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+    const lessonId = req.params.lessonId;
+
+    // Lesson existence check (handles both array and {rows} return)
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
+    const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
+    if (rows.length === 0) {
       return res.status(404).json({ error: 'Lesson not found' });
     }
 
     const qid = id || ('q-' + Date.now());
     await query(
       'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]
+      [qid, lessonId, question, options, correct, points || 5, explanation || {}]
     );
     const r = await query('SELECT * FROM quiz_questions WHERE id=$1', [qid]);
     res.status(201).json((r.rows || r)[0]);
@@ -33,20 +36,21 @@ router.post('/:lessonId', authenticate, async (req, res) => {
 // PUT: Update question by index
 router.put('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
-    // Check lesson existence
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
-    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
+    const lessonId = req.params.lessonId;
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
+    const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
+    if (rows.length === 0) {
       return res.status(404).json({ error: 'Lesson not found' });
     }
 
     const { id, question, options, correct, points, explanation } = req.body;
     const qid = id || ('q-' + Date.now());
-    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
-    const rows = existing.rows || existing;
-    const oldId = rows[parseInt(req.params.idx)]?.id;
+    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [lessonId]);
+    const existingRows = Array.isArray(existing) ? existing : (existing.rows || []);
+    const oldId = existingRows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+      [qid, lessonId, question, options, correct, points || 5, explanation || {}]);
     res.json({ success: true });
   } catch (e) {
     console.error('❌ Quiz PUT error:', e.message);
@@ -58,7 +62,7 @@ router.put('/:lessonId/:idx', authenticate, async (req, res) => {
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
-    const rows = existing.rows || existing;
+    const rows = Array.isArray(existing) ? existing : (existing.rows || []);
     const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     res.json({ success: true });
