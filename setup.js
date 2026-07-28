@@ -912,7 +912,6 @@ const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 
 // POST: Add new question to a lesson
-// POST: Add new question to a lesson
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     const { id, question, options, correct, points, explanation } = req.body;
@@ -923,17 +922,10 @@ router.post('/:lessonId', authenticate, async (req, res) => {
 
     const lessonId = req.params.lessonId;
 
-    // 🔍 DEBUG: Check what database returns (you can remove after fix)
+    // Lesson existence check (handles both array and {rows} return)
     const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
-    console.log('DEBUG lessonCheck:', JSON.stringify(lessonCheck));
-    console.log('DEBUG type:', typeof lessonCheck, Array.isArray(lessonCheck));
-
-    // Robust lesson existence check (works with both array and {rows} formats)
     const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
-    const lessonExists = rows.length > 0;
-
-    if (!lessonExists) {
-      console.log('❌ Lesson not found. ID:', lessonId);
+    if (rows.length === 0) {
       return res.status(404).json({ error: 'Lesson not found' });
     }
 
@@ -953,8 +945,8 @@ router.post('/:lessonId', authenticate, async (req, res) => {
 // PUT: Update question by index
 router.put('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
-    // Check lesson existence (same robust check)
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
+    const lessonId = req.params.lessonId;
+    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
     const rows = Array.isArray(lessonCheck) ? lessonCheck : (lessonCheck.rows || []);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Lesson not found' });
@@ -962,36 +954,12 @@ router.put('/:lessonId/:idx', authenticate, async (req, res) => {
 
     const { id, question, options, correct, points, explanation } = req.body;
     const qid = id || ('q-' + Date.now());
-    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
+    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [lessonId]);
     const existingRows = Array.isArray(existing) ? existing : (existing.rows || []);
     const oldId = existingRows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
-    res.json({ success: true });
-  } catch (e) {
-    console.error('❌ Quiz PUT error:', e.message);
-    res.status(500).json({ error: 'Server error: ' + e.message });
-  }
-});
-
-// PUT: Update question by index
-router.put('/:lessonId/:idx', authenticate, async (req, res) => {
-  try {
-    // Check lesson existence
-    const lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [req.params.lessonId]);
-    if (!lessonCheck.rows || lessonCheck.rows.length === 0) {
-      return res.status(404).json({ error: 'Lesson not found' });
-    }
-
-    const { id, question, options, correct, points, explanation } = req.body;
-    const qid = id || ('q-' + Date.now());
-    const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
-    const rows = existing.rows || existing;
-    const oldId = rows[parseInt(req.params.idx)]?.id;
-    if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
-    await query('INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, req.params.lessonId, question, options, correct, points || 5, explanation || {}]);
+      [qid, lessonId, question, options, correct, points || 5, explanation || {}]);
     res.json({ success: true });
   } catch (e) {
     console.error('❌ Quiz PUT error:', e.message);
@@ -1003,7 +971,7 @@ router.put('/:lessonId/:idx', authenticate, async (req, res) => {
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
     const existing = await query('SELECT * FROM quiz_questions WHERE lesson_id=$1 ORDER BY id', [req.params.lessonId]);
-    const rows = existing.rows || existing;
+    const rows = Array.isArray(existing) ? existing : (existing.rows || []);
     const oldId = rows[parseInt(req.params.idx)]?.id;
     if (oldId) await query('DELETE FROM quiz_questions WHERE id=$1', [oldId]);
     res.json({ success: true });
