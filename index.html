@@ -13,7 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <style>
-        /* ─── ROOT ────────────────────────────────────────────────────────── */
         :root {
             --bg: #0a0e1a;
             --bg-secondary: #101826;
@@ -165,7 +164,6 @@
             z-index: 1;
         }
 
-        /* ─── LOADING SCREEN ──────────────────────────────────────────────── */
         #app-loading {
             position: fixed;
             top: 0;
@@ -211,7 +209,6 @@
             }
         }
 
-        /* ─── GLASSMORPHISM SIDEBAR ────────────────────────────────────── */
         .app-glass {
             display: flex;
             height: 100vh;
@@ -371,7 +368,6 @@
             color: #fff;
         }
 
-        /* ─── MAIN GLASS ───────────────────────────────────────────────────── */
         .main-glass {
             flex: 1;
             display: flex;
@@ -381,7 +377,6 @@
             min-width: 0;
         }
 
-        /* ─── HEADER — DESKTOP ───────────────────────────────────────────── */
         .top-bar-glass {
             display: flex;
             align-items: center;
@@ -600,7 +595,6 @@
             box-shadow: 0 3px 16px var(--primary-glow);
         }
 
-        /* ─── PROFILE DROPDOWN ───────────────────────────────────────────── */
         .profile-dropdown-wrap {
             position: relative;
             display: inline-block;
@@ -664,14 +658,12 @@
             text-align: center;
         }
 
-        /* ─── CONTENT ──────────────────────────────────────────────────────── */
         .content-glass {
             flex: 1;
             padding: 14px 0 10px 0;
             overflow-y: auto;
         }
 
-        /* ─── PROGRESS CARDS ──────────────────────────────────────────────── */
         .progress-card-glass {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -715,7 +707,6 @@
             color: var(--text);
         }
 
-        /* ─── LESSON LIST ──────────────────────────────────────────────────── */
         .lesson-list-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -815,7 +806,6 @@
             color: var(--primary);
         }
 
-        /* ─── DETAIL VIEW ──────────────────────────────────────────────────── */
         .detail-view-glass {
             max-width: 900px;
             margin: 0 auto;
@@ -894,7 +884,6 @@
             color: var(--text);
         }
 
-        /* ─── TTS CONTROLS (TOP) ─────────────────────────────────────────── */
         .tts-controls-top {
             display: flex;
             gap: 4px;
@@ -1057,7 +1046,6 @@
             font-weight: 600;
         }
 
-        /* ─── CUSTOM CONFIRM MODAL ────────────────────────────────────── */
         .custom-confirm-overlay {
             position: fixed;
             top: 0;
@@ -1152,7 +1140,6 @@
             }
         }
 
-        /* ─── MODAL ────────────────────────────────────────────────────────── */
         .modal {
             position: fixed;
             top: 0;
@@ -1225,7 +1212,6 @@
             flex-wrap: wrap;
         }
 
-        /* ─── BUTTONS ──────────────────────────────────────────────────────── */
         .btn {
             padding: 6px 16px;
             border-radius: var(--radius-full);
@@ -1374,7 +1360,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* ─── TOAST ────────────────────────────────────────────────────────── */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -1467,7 +1452,6 @@
             }
         }
 
-        /* ─── AUTH ──────────────────────────────────────────────────────────── */
         .auth-container {
             display: flex;
             align-items: center;
@@ -1558,7 +1542,6 @@
             margin-bottom: 6px;
         }
 
-        /* ─── TERMINAL ────────────────────────────────────────────────────── */
         .terminal-wrapper {
             background: var(--mt5-gradient-bg);
             border-radius: var(--radius-lg);
@@ -1966,7 +1949,6 @@
             background: var(--mt5-red);
         }
 
-        /* ─── MOBILE TERMINAL ────────────────────────────────────────────── */
         .mobile-terminal {
             display: flex;
             flex-direction: column;
@@ -2449,7 +2431,6 @@
             color: #fff;
         }
 
-        /* ─── DEPOSIT/WITHDRAW IN HAMBURGER ──────────────────────────────── */
         .mt5-sidebar-sheet .deposit-withdraw-section {
             margin-top: 6px;
             padding: 6px 0;
@@ -2882,7 +2863,6 @@
             transform: scale(0.9);
         }
 
-        /* ─── ADMIN ────────────────────────────────────────────────────────── */
         .admin-container {
             display: flex;
             height: calc(100vh - 44px);
@@ -3093,12 +3073,10 @@
             transform: translateY(-1px);
         }
 
-        /* ─── ENTRY LINE (clean, no label) ───────────────────────────────── */
         .entry-line-label {
             display: none;
         }
 
-        /* ─── MOBILE HEADER ────────────────────────────────────────────────── */
         .mobile-header-glass {
             display: flex;
             align-items: center;
@@ -3185,7 +3163,6 @@
             font-weight: 300;
         }
 
-        /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
         @media (max-width: 768px) {
             .sidebar-glass {
                 position: fixed;
@@ -3712,7 +3689,6 @@
             }
         }
 
-        /* ─── QUILL DARK THEME ───────────────────────────────────────────── */
         [data-theme="dark"] .ql-toolbar {
             background: #1e293b !important;
             border-color: #334155 !important;
@@ -3750,7 +3726,6 @@
             scrollbar-width: thin;
         }
 
-        /* ─── HISTORY TABLE (DESKTOP) ───────────────────────────────────── */
         .history-table-wrap {
             max-height: 260px;
             overflow-y: auto;
@@ -3817,7 +3792,6 @@
             color: var(--mt5-red);
         }
 
-        /* ─── DESKTOP HISTORY BUTTON ───────────────────────────────────── */
         .desktop-history-btn {
             font-size: 0.5rem;
             padding: 2px 10px;
@@ -3841,7 +3815,6 @@
             box-shadow: 0 3px 12px rgba(0, 200, 151, 0.15);
         }
 
-        /* ─── DRAGGABLE LINE HINT ───────────────────────────────────────── */
         .drag-hint {
             position: absolute;
             bottom: 30px;
@@ -3861,7 +3834,6 @@
             display: none;
         }
 
-        /* ─── MT5 PRICE SCALE OVERRIDE ──────────────────────────────────── */
         .tv-lightweight-charts {
             --tv-color-pane-background: transparent !important;
         }
@@ -3872,7 +3844,6 @@
             background: transparent !important;
         }
 
-        /* ─── SCROLLBAR FOR MT5 ──────────────────────────────────────────── */
         .mt5-sidebar-sheet::-webkit-scrollbar,
         .panel-content::-webkit-scrollbar,
         .terminal-dropdown-panel::-webkit-scrollbar,
@@ -3895,7 +3866,6 @@
     </style>
 </head>
 <body>
-    <!-- ─── LOADING SCREEN ──────────────────────────────────────────────── -->
     <div id="app-loading">
         <div class="loader"></div>
         <div class="loader-text">⚡ Loading ATTS Platform</div>
@@ -3906,13 +3876,11 @@
         (function() {
             'use strict';
 
-            // ─── HIDE LOADING ──────────────────────────────────────────────
             function hideLoading() {
                 const el = document.getElementById('app-loading');
                 if (el) el.classList.add('hidden');
             }
 
-            // ─── CONFIG ──────────────────────────────────────────────────────
             const API_BASE = 'https://atts-project.onrender.com/api';
             const THEME_KEY = 'theme_prod_v10';
             const LANG_KEY = 'lang_prod_v10';
@@ -3931,7 +3899,6 @@
                 'vwap': 'VWAP' };
             const TF_LABELS = Object.keys(TIMEFRAMES);
 
-            // ─── STATE ────────────────────────────────────────────────────────
             let currentModal = null;
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
             let appTheme = localStorage.getItem(THEME_KEY) || 'dark';
@@ -3948,7 +3915,6 @@
             let userNotes = {};
             let isAdmin = false;
 
-            // ─── PORTFOLIO ──────────────────────────────────────────────────
             let portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
             let pendingOrders = [];
             let lastHistoryReset = Date.now();
@@ -3957,7 +3923,6 @@
             let manualDrawnLines = [];
             let positionLineMap = {};
 
-            // ─── CHART STATE ────────────────────────────────────────────────
             let simCurrentSymbol = 'BTCUSDT';
             let simChart = null;
             let simCandleSeries = null;
@@ -4016,8 +3981,23 @@
             let wsConnected = false;
             let wsConnectedServer = false;
             let selectedVoice = null;
+            let chartInitInProgress = false;
+            let wsReconnectAttempt = 0;
+            let serverReconnectAttempt = 0;
+            const maxReconnectDelay = 30000;
 
-            // ─── INDEXEDDB ──────────────────────────────────────────────────
+            function scheduleReconnect(fn) {
+                const delay = Math.min(1000 * Math.pow(2, wsReconnectAttempt), maxReconnectDelay);
+                wsReconnectAttempt++;
+                return setTimeout(fn, delay);
+            }
+
+            function scheduleServerReconnect(fn) {
+                const delay = Math.min(1000 * Math.pow(2, serverReconnectAttempt), maxReconnectDelay);
+                serverReconnectAttempt++;
+                return setTimeout(fn, delay);
+            }
+
             const DB_NAME = 'ATTS_Cache_v2';
             const DB_VERSION = 2;
             let db = null;
@@ -4089,7 +4069,6 @@
                 });
             }
 
-            // ─── HELPERS ──────────────────────────────────────────────────────
             function t(obj) { return (obj && obj[currentLang]) ? obj[currentLang] : (obj && obj['en']) ? obj['en'] :
                 ''; }
 
@@ -4364,7 +4343,6 @@
                 try { await dbPut('drawings', { id: symbol, lines, updated: Date.now() }); } catch (e) {}
             }
 
-            // ─── BINANCE WS ──────────────────────────────────────────────────
             function connectBinanceWS() {
                 if (binanceWS && (binanceWS.readyState === WebSocket.OPEN || binanceWS.readyState === WebSocket
                         .CONNECTING)) return;
@@ -4373,7 +4351,8 @@
                 const url = 'wss://stream.binance.com:9443/ws/' + streams;
                 try {
                     binanceWS = new WebSocket(url);
-                    binanceWS.onopen = () => { wsConnected = true; };
+                    binanceWS.onopen = () => { wsConnected = true;
+                        wsReconnectAttempt = 0; };
                     binanceWS.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -4427,7 +4406,7 @@
                     binanceWS.onclose = () => {
                         wsConnected = false;
                         if (binanceReconnectTimer) clearTimeout(binanceReconnectTimer);
-                        binanceReconnectTimer = setTimeout(connectBinanceWS, 3000);
+                        binanceReconnectTimer = scheduleReconnect(connectBinanceWS);
                     };
                     binanceWS.onerror = () => { if (binanceWS) binanceWS.close(); };
                 } catch (e) {}
@@ -4438,9 +4417,9 @@
                 if (binanceReconnectTimer) { clearTimeout(binanceReconnectTimer);
                     binanceReconnectTimer = null; }
                 wsConnected = false;
+                wsReconnectAttempt = 0;
             }
 
-            // ─── SERVER WS ──────────────────────────────────────────────────
             function connectServerWS() {
                 if (serverWS && (serverWS.readyState === WebSocket.OPEN || serverWS.readyState === WebSocket
                         .CONNECTING)) return;
@@ -4448,7 +4427,8 @@
                 const host = location.hostname === 'localhost' ? 'localhost:5000' : 'atts-project.onrender.com';
                 try {
                     serverWS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + host);
-                    serverWS.onopen = () => { wsConnectedServer = true; };
+                    serverWS.onopen = () => { wsConnectedServer = true;
+                        serverReconnectAttempt = 0; };
                     serverWS.onmessage = (e) => {
                         try {
                             const d = JSON.parse(e.data);
@@ -4463,19 +4443,24 @@
                         } catch (err) {}
                     };
                     serverWS.onclose = () => { wsConnectedServer = false;
-                        setTimeout(connectServerWS, 5000); };
+                        if (serverReconnectTimer) clearTimeout(serverReconnectTimer);
+                        serverReconnectTimer = scheduleServerReconnect(connectServerWS); };
                     serverWS.onerror = () => { wsConnectedServer = false;
-                        setTimeout(connectServerWS, 5000); };
-                } catch (e) { setTimeout(connectServerWS, 5000); }
+                        if (serverReconnectTimer) clearTimeout(serverReconnectTimer);
+                        serverReconnectTimer = scheduleServerReconnect(connectServerWS); };
+                } catch (e) { if (serverReconnectTimer) clearTimeout(serverReconnectTimer);
+                    serverReconnectTimer = scheduleServerReconnect(connectServerWS); }
             }
 
             function disconnectServerWS() {
                 if (serverWS) { try { serverWS.close(); } catch(e) {}
                     serverWS = null;
                     wsConnectedServer = false; }
+                if (serverReconnectTimer) { clearTimeout(serverReconnectTimer);
+                    serverReconnectTimer = null; }
+                serverReconnectAttempt = 0;
             }
 
-            // ─── BINANCE REST ──────────────────────────────────────────────
             async function fetchBinanceCandles(symbol, interval, limit) {
                 limit = limit || 500;
                 try {
@@ -4537,31 +4522,29 @@
                 return null;
             }
 
-            // ─── EXIT TERMINAL SAFELY ──────────────────────────────────────
             function exitTerminalSafely() {
                 savePortfolioToStorage();
                 savePendingOrders();
                 syncPortfolioToServer();
             }
 
-            // ─── CHART INIT ──────────────────────────────────────────────────
             async function initChart() {
+                if (chartInitInProgress) return;
                 if (window._chartCleanup) window._chartCleanup();
                 const chartDiv = document.getElementById('simChartContainer');
                 const loadingEl = document.getElementById('chartLoading');
-                if (!chartDiv) { setTimeout(initChart, 300); return; }
+                if (!chartDiv) return;
 
-                let attempts = 0;
-                while ((chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) && attempts < 20) {
-                    await new Promise(r => setTimeout(r, 80));
-                    attempts++;
-                }
                 if (chartDiv.clientWidth === 0 || chartDiv.clientHeight === 0) {
-                    setTimeout(initChart, 300);
+                    if (!chartInitRetryTimer) {
+                        chartInitRetryTimer = setTimeout(initChart, 300);
+                    }
                     return;
                 }
+                chartInitInProgress = true;
                 if (typeof LightweightCharts === 'undefined') {
                     if (loadingEl) loadingEl.innerHTML = '<span style="color:var(--mt5-red);">⚠️ Chart library not loaded.</span>';
+                    chartInitInProgress = false;
                     return;
                 }
 
@@ -4587,7 +4570,7 @@
                 }
 
                 const binanceInterval = '1m';
-                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 5000); // Increased from 1000 to 5000
+                let rawCandles = await fetchBinanceCandles(simCurrentSymbol, binanceInterval, 5000);
                 let candles = [];
                 let sourceLabel = 'Binance REST';
 
@@ -4603,7 +4586,7 @@
                         sourceLabel = 'IndexedDB';
                     } else {
                         const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
-                            currentTimeframe); // 5x more
+                            currentTimeframe);
                         candles = sanitizeCandleData(simCandles);
                         sourceLabel = 'Simulation (Fallback)';
                         await saveCandlesToDB(simCurrentSymbol, currentTimeframe, candles);
@@ -4654,7 +4637,6 @@
                     }
                 }
 
-                // Increase visible candles by using more data
                 simAllCandles = sanitizeCandleData(candles);
                 if (simAllCandles.length === 0) {
                     const simCandles = generateSeamlessSimulatedCandles(simCurrentSymbol, 2500, realTimePrice,
@@ -4777,7 +4759,6 @@
                     if (savedState && savedState.zoom) { try { simChart.timeScale().setVisibleRange(savedState.zoom); } catch (
                         e) {} }
 
-                    // ─── Click to draw (manual lines) ──────────────────────
                     simChart.subscribeClick(param => {
                         if (!currentDrawingTool || !param.point || !simCandleSeries) return;
                         if (param.point.y > 0 && param.point.y < chartDiv.clientHeight) {
@@ -4804,7 +4785,6 @@
                         }
                     });
 
-                    // ─── Drag lines (including SL/TP) ──────────────────────
                     let dragStateLocal = null;
                     const mousedownHandler = (e) => {
                         if (!simCandleSeries) return;
@@ -4817,22 +4797,35 @@
                             const line = allPriceLines[key];
                             if (!line) continue;
                             let price = null;
-                            try { price = line.options?.price; } catch (e) {}
-                            if (price === undefined || price === null) continue;
-                            const lineY = simCandleSeries.priceToCoordinate(price);
-                            if (lineY !== null) {
-                                const dist = Math.abs(y - lineY);
-                                if (dist < threshold && dist < closestDist) {
-                                    const isSLTP = key.startsWith('sl_') || key.startsWith('tp_') || key.startsWith(
-                                        'entry_');
-                                    const posId = key.startsWith('sl_') ? key.replace('sl_', '') :
-                                        key.startsWith('tp_') ? key.replace('tp_', '') :
-                                        key.startsWith('entry_') ? key.replace('entry_', '') : null;
-                                    const pos = posId ? portfolio.positions.find(p => p.id === posId) : null;
-                                    if (isSLTP && !pos) continue;
-                                    closest = { key, price, posId, pos, isSLTP, line };
-                                    closestDist = dist;
+                            try {
+                                if (typeof line.options === 'function') {
+                                    const opts = line.options();
+                                    price = opts.price;
+                                } else {
+                                    price = line.options?.price;
                                 }
+                            } catch (ex) { continue; }
+                            if (price === undefined || price === null) continue;
+                            let lineY = simCandleSeries.priceToCoordinate(price);
+                            if (lineY === null) {
+                                const priceScale = simChart.priceScale('right');
+                                if (priceScale) {
+                                    const coord = priceScale.priceToCoordinate(price);
+                                    if (coord !== null) lineY = coord;
+                                }
+                                if (lineY === null) continue;
+                            }
+                            const dist = Math.abs(y - lineY);
+                            if (dist < threshold && dist < closestDist) {
+                                const isSLTP = key.startsWith('sl_') || key.startsWith('tp_') || key.startsWith(
+                                    'entry_');
+                                const posId = key.startsWith('sl_') ? key.replace('sl_', '') :
+                                    key.startsWith('tp_') ? key.replace('tp_', '') :
+                                    key.startsWith('entry_') ? key.replace('entry_', '') : null;
+                                const pos = posId ? portfolio.positions.find(p => p.id === posId) : null;
+                                if (isSLTP && !pos) continue;
+                                closest = { key, price, posId, pos, isSLTP, line };
+                                closestDist = dist;
                             }
                         }
                         if (closest) {
@@ -4858,7 +4851,7 @@
                                 try {
                                     const line = allPriceLines[key];
                                     line.applyOptions({ price: dragStateLocal.currentPrice });
-                                } catch (e) {}
+                                } catch (ex) {}
                             }
                         }
                     };
@@ -4911,7 +4904,6 @@
                     if (loadingEl) loadingEl.style.display = 'none';
                     redrawAllLines();
 
-                    // ─── Simulation interval ──────────────────────────────────
                     if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                     simPriceIntervalId = setInterval(() => {
                         if (wsConnected && lastBinancePrice[simCurrentSymbol]) {
@@ -4957,7 +4949,6 @@
                         checkPendingOrders();
                     }, 1000);
 
-                    // ─── Candle close interval ──────────────────────────────
                     if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
                     simCandleCloseIntervalId = setInterval(() => {
                         if (!simCurrentCandle || !simCandleSeries) return;
@@ -5044,17 +5035,21 @@
                     };
                     document.addEventListener('visibilitychange', chartVisibilityHandler);
 
+                    chartInitInProgress = false;
+                    if (chartInitRetryTimer) { clearTimeout(chartInitRetryTimer);
+                        chartInitRetryTimer = null; }
+
                 } catch (err) {
                     if (loadingEl) loadingEl.innerHTML =
                         '<span style="color:var(--mt5-red);">⚠️ Chart error: ' + err.message + '</span>';
                     if (simChart) { try { simChart.remove(); } catch (e) {}
                         simChart = null; }
                     if (chartInitRetryTimer) clearTimeout(chartInitRetryTimer);
-                    chartInitRetryTimer = setTimeout(() => { initChart(); }, 2000);
+                    chartInitRetryTimer = setTimeout(() => { chartInitInProgress = false;
+                        initChart(); }, 2000);
                 }
             }
 
-            // ─── AGGREGATE CANDLES ──────────────────────────────────────────
             function aggregateCandles(rawCandles, tfSeconds) {
                 if (!rawCandles || rawCandles.length === 0) return [];
                 const buckets = {};
@@ -5080,7 +5075,6 @@
                 return result;
             }
 
-            // ─── REDRAW ALL LINES ────────────────────────────────────────────
             function redrawAllLines() {
                 if (!simCandleSeries) return;
                 for (const key of Object.keys(allPriceLines)) {
@@ -5243,7 +5237,6 @@
                 redrawAllLines();
             }
 
-            // ─── TRADING ENGINE ─────────────────────────────────────────────
             function checkAndExecuteSLTP() {
                 if (!portfolio || !portfolio.positions) return;
                 let changed = false;
@@ -5274,12 +5267,10 @@
                     if (triggered) {
                         const pnl = isShort ? (p.entryPrice - closePrice) * p.qty : (closePrice - p.entryPrice) * p
                         .qty;
-                        const fee = Math.abs(p.qty * closePrice * 0.0005);
-                        const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                            portfolio.cash += (p.blockedMargin || (p.qty * p.entryPrice * 0.5)) + pnl;
                         } else {
-                            portfolio.cash += (p.qty * closePrice) - fee;
+                            portfolio.cash += p.qty * closePrice;
                         }
                         const tx = {
                             type: 'close',
@@ -5288,16 +5279,16 @@
                             price: closePrice,
                             time: new Date().toISOString(),
                             reason: reason,
-                            pnl: netPnl,
+                            pnl: pnl,
+                            netPnl: pnl,
                             id: p.id,
                             entryPrice: p.entryPrice,
                             typeLabel: p.type,
-                            closePrice: closePrice,
-                            netPnl: netPnl
+                            closePrice: closePrice
                         };
                         portfolio.transactions.unshift(tx);
                         sendNotification('🛑 ' + reason, p.symbol + ' @ $' + closePrice.toFixed(4) + ' | P&L: ' +
-                            netPnl.toFixed(2), netPnl >= 0 ? 'success' : 'error');
+                            pnl.toFixed(2), pnl >= 0 ? 'success' : 'error');
                         playTradeSound('sell');
                         removePositionLines(p.id);
                         toRemove.push(i);
@@ -5314,7 +5305,6 @@
                 }
             }
 
-            // ─── PENDING ORDERS ─────────────────────────────────────────────
             function checkPendingOrders() {
                 if (pendingOrders.length === 0) return;
                 const toRemove = [];
@@ -5327,16 +5317,16 @@
                     if (hit) {
                         const qty = order.qty;
                         const execPrice = order.price;
-                        const fee = qty * execPrice * 0.0005;
                         if (order.side === 'buy') {
-                            if (portfolio.cash < qty * execPrice + fee) {
+                            const cost = qty * execPrice;
+                            if (portfolio.cash < cost) {
                                 sendNotification('⚠️ Insufficient cash', 'Limit order ' + order.symbol + ' canceled',
                                     'warning');
                                 order.status = 'canceled';
                                 toRemove.push(i);
                                 continue;
                             }
-                            portfolio.cash -= qty * execPrice + fee;
+                            portfolio.cash -= cost;
                             const newPos = {
                                 id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                                 symbol: order.symbol,
@@ -5346,8 +5336,7 @@
                                 currentPrice: execPrice,
                                 slPrice: null,
                                 tpPrice: null,
-                                openTime: new Date().toISOString(),
-                                fee: fee
+                                openTime: new Date().toISOString()
                             };
                             portfolio.positions.push(newPos);
                             portfolio.transactions.unshift({
@@ -5357,8 +5346,6 @@
                                 price: execPrice,
                                 time: new Date().toISOString(),
                                 reason: 'Limit Order',
-                                id: order.id,
-                                fee: fee,
                                 entryPrice: execPrice,
                                 typeLabel: 'long'
                             });
@@ -5368,14 +5355,14 @@
                             drawEntryLine(order.symbol, execPrice, 'long');
                         } else {
                             const margin = qty * execPrice * 0.5;
-                            if (portfolio.cash < margin + fee) {
+                            if (portfolio.cash < margin) {
                                 sendNotification('⚠️ Insufficient margin', 'Short limit order ' + order.symbol +
                                     ' canceled', 'warning');
                                 order.status = 'canceled';
                                 toRemove.push(i);
                                 continue;
                             }
-                            portfolio.cash -= fee;
+                            portfolio.cash -= margin;
                             const newPos = {
                                 id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                                 symbol: order.symbol,
@@ -5386,7 +5373,7 @@
                                 slPrice: null,
                                 tpPrice: null,
                                 openTime: new Date().toISOString(),
-                                fee: fee
+                                blockedMargin: margin
                             };
                             portfolio.positions.push(newPos);
                             portfolio.transactions.unshift({
@@ -5396,10 +5383,9 @@
                                 price: execPrice,
                                 time: new Date().toISOString(),
                                 reason: 'Limit Order (Short)',
-                                id: order.id,
-                                fee: fee,
                                 entryPrice: execPrice,
-                                typeLabel: 'short'
+                                typeLabel: 'short',
+                                blockedMargin: margin
                             });
                             sendNotification('✅ Limit SHORT Executed', order.symbol + ' @ $' + execPrice.toFixed(
                                 4), 'success');
@@ -5422,7 +5408,6 @@
                 }
             }
 
-            // ─── PLACE ORDER ────────────────────────────────────────────────
             function placeSimOrder(type, orderType, limitPrice) {
                 orderType = orderType || 'market';
                 const symbol = document.getElementById('simSymbolSelect')?.value || simCurrentSymbol;
@@ -5433,6 +5418,10 @@
 
                 if (orderType === 'limit') {
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
+                    if (type === 'buy' && portfolio.cash < qty * limitPrice) return showToast(
+                        '❌ Insufficient cash for limit order');
+                    if (type === 'sell' && portfolio.cash < qty * limitPrice * 0.5) return showToast(
+                        '❌ Insufficient margin for short limit');
                     const order = {
                         id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5452,10 +5441,10 @@
                     return;
                 }
 
-                const fee = qty * price * 0.0005;
                 if (type === 'buy') {
-                    if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
-                    portfolio.cash -= qty * price + fee;
+                    const cost = qty * price;
+                    if (portfolio.cash < cost) return showToast('❌ Insufficient cash');
+                    portfolio.cash -= cost;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5465,8 +5454,7 @@
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
-                        openTime: new Date().toISOString(),
-                        fee: fee
+                        openTime: new Date().toISOString()
                     };
                     portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
@@ -5476,7 +5464,6 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order',
-                        fee: fee,
                         entryPrice: price,
                         typeLabel: 'long'
                     });
@@ -5486,8 +5473,8 @@
                     drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
-                    if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin for short');
-                    portfolio.cash -= fee;
+                    if (portfolio.cash < margin) return showToast('❌ Insufficient margin for short');
+                    portfolio.cash -= margin;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5498,7 +5485,7 @@
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee: fee
+                        blockedMargin: margin
                     };
                     portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
@@ -5508,9 +5495,9 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order (Short)',
-                        fee: fee,
                         entryPrice: price,
-                        typeLabel: 'short'
+                        typeLabel: 'short',
+                        blockedMargin: margin
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
@@ -5524,7 +5511,6 @@
                 updateHistoryUI();
             }
 
-            // ─── EXIT POSITION ──────────────────────────────────────────────
             function exitPositionById(posId) {
                 const idx = portfolio.positions.findIndex(p => p.id === posId);
                 if (idx === -1) return;
@@ -5532,12 +5518,10 @@
                 const price = simLastPrices[p.symbol] || p.currentPrice || p.entryPrice || 0;
                 const isShort = p.type === 'short';
                 const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p.qty;
-                const fee = Math.abs(p.qty * price * 0.0005);
-                const netPnl = pnl - fee;
                 if (isShort) {
-                    portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                    portfolio.cash += (p.blockedMargin || (p.qty * p.entryPrice * 0.5)) + pnl;
                 } else {
-                    portfolio.cash += (p.qty * price) - fee;
+                    portfolio.cash += p.qty * price;
                 }
                 const tx = {
                     type: 'close',
@@ -5546,12 +5530,12 @@
                     price: price,
                     time: new Date().toISOString(),
                     reason: 'Manual Exit',
-                    pnl: netPnl,
+                    pnl: pnl,
+                    netPnl: pnl,
                     id: p.id,
                     entryPrice: p.entryPrice,
                     typeLabel: p.type,
-                    closePrice: price,
-                    netPnl: netPnl
+                    closePrice: price
                 };
                 portfolio.transactions.unshift(tx);
                 removePositionLines(p.id);
@@ -5561,10 +5545,10 @@
                 redrawAllLines();
                 syncPortfolioToServer();
                 updateHistoryUI();
-                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + netPnl
-                    .toFixed(2), netPnl >= 0 ? 'success' : 'error');
+                sendNotification('🚪 Position Closed', p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + pnl
+                    .toFixed(2), pnl >= 0 ? 'success' : 'error');
                 playTradeSound('sell');
-                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + netPnl.toFixed(2));
+                showToast('🚪 Exited ' + p.symbol + ' @ $' + price.toFixed(4) + ' | P&L: ' + pnl.toFixed(2));
                 document.querySelectorAll('.modal').forEach(m => m.remove());
             }
 
@@ -5600,14 +5584,12 @@
                         const isShort = p.type === 'short';
                         const pnl = isShort ? (p.entryPrice - price) * p.qty : (price - p.entryPrice) * p
                             .qty;
-                        const fee = Math.abs(p.qty * price * 0.0005);
-                        const netPnl = pnl - fee;
                         if (isShort) {
-                            portfolio.cash += (p.qty * p.entryPrice) - fee + pnl;
+                            portfolio.cash += (p.blockedMargin || (p.qty * p.entryPrice * 0.5)) + pnl;
                         } else {
-                            portfolio.cash += (p.qty * price) - fee;
+                            portfolio.cash += p.qty * price;
                         }
-                        totalPnl += netPnl;
+                        totalPnl += pnl;
                         portfolio.transactions.unshift({
                             type: 'close',
                             symbol: p.symbol,
@@ -5615,12 +5597,12 @@
                             price: price,
                             time: new Date().toISOString(),
                             reason: 'Close All',
-                            pnl: netPnl,
+                            pnl: pnl,
+                            netPnl: pnl,
                             id: p.id,
                             entryPrice: p.entryPrice,
                             typeLabel: p.type,
-                            closePrice: price,
-                            netPnl: netPnl
+                            closePrice: price
                         });
                         removePositionLines(p.id);
                     });
@@ -5686,7 +5668,6 @@
                 });
             }
 
-            // ─── RENDER PENDING ORDERS UI ──────────────────────────────────
             function renderPendingOrdersUI() {
                 const el = document.getElementById('pendingOrdersList');
                 if (!el) return;
@@ -5712,7 +5693,6 @@
                 showToast('🗑 Limit order canceled');
             }
 
-            // ─── UPDATE WATCHLIST PRICES ────────────────────────────────────
             function updateWatchlistPrices() {
                 const items = document.querySelectorAll('.watchlist-item');
                 items.forEach(el => {
@@ -5733,7 +5713,6 @@
                 });
             }
 
-            // ─── UPDATE HISTORY UI ──────────────────────────────────────────
             function updateHistoryUI() {
                 const histEl = document.getElementById('simHistoryList');
                 if (histEl) {
@@ -5771,11 +5750,9 @@
 
                 const mobileHist = document.getElementById('historyList');
                 if (mobileHist) {
-                    // Will be updated by renderMobileHistory
                 }
             }
 
-            // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             function setMobileLot(lot) { currentMobileLot = Math.max(0.01, lot); const el = document.getElementById(
                     'mobileLotSize'); if (el) el.textContent = currentMobileLot.toFixed(2); }
 
@@ -5804,6 +5781,10 @@
 
                 if (orderType === 'limit') {
                     if (!limitPrice || limitPrice <= 0) return showToast('❌ Invalid limit price');
+                    if (side === 'buy' && portfolio.cash < qty * limitPrice) return showToast(
+                        '❌ Insufficient cash for limit order');
+                    if (side === 'sell' && portfolio.cash < qty * limitPrice * 0.5) return showToast(
+                        '❌ Insufficient margin for short limit');
                     const order = {
                         id: 'limit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5823,10 +5804,10 @@
                     return;
                 }
 
-                const fee = qty * price * 0.0005;
                 if (side === 'buy') {
-                    if (portfolio.cash < qty * price + fee) return showToast('❌ Insufficient cash');
-                    portfolio.cash -= qty * price + fee;
+                    const cost = qty * price;
+                    if (portfolio.cash < cost) return showToast('❌ Insufficient cash');
+                    portfolio.cash -= cost;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5836,8 +5817,7 @@
                         currentPrice: price,
                         slPrice: null,
                         tpPrice: null,
-                        openTime: new Date().toISOString(),
-                        fee: fee
+                        openTime: new Date().toISOString()
                     };
                     portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
@@ -5847,7 +5827,6 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order',
-                        fee: fee,
                         entryPrice: price,
                         typeLabel: 'long'
                     });
@@ -5857,8 +5836,8 @@
                     drawEntryLine(symbol, price, 'long');
                 } else {
                     const margin = qty * price * 0.5;
-                    if (portfolio.cash < margin + fee) return showToast('❌ Insufficient margin');
-                    portfolio.cash -= fee;
+                    if (portfolio.cash < margin) return showToast('❌ Insufficient margin');
+                    portfolio.cash -= margin;
                     const newPos = {
                         id: 'pos_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         symbol: symbol,
@@ -5869,7 +5848,7 @@
                         slPrice: null,
                         tpPrice: null,
                         openTime: new Date().toISOString(),
-                        fee: fee
+                        blockedMargin: margin
                     };
                     portfolio.positions.push(newPos);
                     portfolio.transactions.unshift({
@@ -5879,9 +5858,9 @@
                         price: price,
                         time: new Date().toISOString(),
                         reason: 'Market Order (Short)',
-                        fee: fee,
                         entryPrice: price,
-                        typeLabel: 'short'
+                        typeLabel: 'short',
+                        blockedMargin: margin
                     });
                     sendNotification('✅ Market SHORT', qty + ' ' + symbol + ' @ $' + price.toFixed(4), 'success');
                     playTradeSound('sell');
@@ -5897,7 +5876,6 @@
                 document.getElementById('mobileBuyBtn')?.blur();
             }
 
-            // ─── UPDATE TRADE PANEL DATA ────────────────────────────────────
             function updateTradePanelData() {
                 const totalEquity = calcEquity();
                 const totalPL = calcTotalPL();
@@ -6023,7 +6001,6 @@
                 showToast('💸 Withdrawn $' + amt.toFixed(2));
             };
 
-            // ─── MOBILE WATCHLIST ──────────────────────────────────────────
             function renderMobileWatchlist() {
                 const panel = document.getElementById('quotesPanel');
                 if (!panel) return;
@@ -6089,7 +6066,6 @@
                 showToast('📊 Switched to ' + sym);
             }
 
-            // ─── MOBILE HISTORY (MT5 STYLE) ─────────────────────────────────
             function renderMobileHistory() {
                 const panel = document.getElementById('historyPanel');
                 if (!panel) return;
@@ -6229,7 +6205,6 @@
                 }
             };
 
-            // ─── MOBILE DRAWING TOOLS ──────────────────────────────────────
             window.addLineMobile = function(label, color) {
                 const priceInput = document.getElementById('drawPriceInput');
                 if (!priceInput) return showToast('❌ Price input not found');
@@ -6247,7 +6222,6 @@
                 showToast('📐 ' + label + ' @ $' + price.toFixed(4));
             };
 
-            // ─── CLEANUP ──────────────────────────────────────────────────────
             function cleanupSimIntervals() {
                 if (simPriceIntervalId) clearInterval(simPriceIntervalId);
                 if (simCandleCloseIntervalId) clearInterval(simCandleCloseIntervalId);
@@ -6264,6 +6238,7 @@
                 simCandleCloseIntervalId = null;
                 simResizeObserver = null;
                 chartInitRetryTimer = null;
+                chartInitInProgress = false;
                 if (window._chartCleanup) window._chartCleanup();
             }
 
@@ -6286,7 +6261,6 @@
                 chartInitRetryTimer = setTimeout(initChart, 100);
             }
 
-            // ─── BACKGROUND ENGINE ──────────────────────────────────────────
             let bgEngineInterval = null;
 
             function startBackgroundEngine() {
@@ -6316,7 +6290,6 @@
                     bgEngineInterval = null; }
             }
 
-            // ─── SERVER SYNC ─────────────────────────────────────────────────
             async function syncPortfolioToServer() {
                 if (!token) return;
                 try {
@@ -6332,7 +6305,6 @@
                 } catch (e) { /* silent */ }
             }
 
-            // ─── UI UPDATES ──────────────────────────────────────────────────
             function calcEquity() {
                 let eq = portfolio.cash || 0;
                 portfolio.positions.forEach(p => {
@@ -6419,10 +6391,19 @@
                 if (el) el.textContent = new Date().toLocaleTimeString();
             }, 60000);
 
-            // ─── RENDER TRADING TERMINAL ─────────────────────────────────────
             function renderTradingTerminal() {
                 loadPortfolioFromStorage();
                 loadPendingOrders();
+                if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                    if (currentUser && currentUser.id) {
+                        const seed = currentUser.id * 73856093;
+                        const num = (seed % 900000) + 100000;
+                        userAccountNo = 'ACC-' + num;
+                    } else {
+                        userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                    }
+                    saveAccountNo();
+                }
                 const isMobile = window.innerWidth <= 768;
                 document.getElementById('app').innerHTML = `
                     <div style="height:100vh;display:flex;flex-direction:column;background:var(--mt5-bg);overflow:hidden;">
@@ -6472,7 +6453,6 @@
                 });
             }
 
-            // ─── DESKTOP TERMINAL ─────────────────────────────────────────────
             function renderDesktopTerminal(container) {
                 container.innerHTML = `
                     <div class="terminal-wrapper" id="terminalWrapper">
@@ -6704,7 +6684,6 @@
                 }, 3000);
             }
 
-            // ─── MOBILE TERMINAL ─────────────────────────────────────────────
             function renderMobileTerminal(container) {
                 if (!portfolio) portfolio = { cash: 100000, positions: [], transactions: [], drawnLines: {} };
                 cleanupSimIntervals();
@@ -6820,8 +6799,6 @@
                             </div>
                         </div>
                     </div>`;
-
-                // ─── EVENT LISTENERS ──────────────────────────────────────────
 
                 const sidebarOverlay = document.getElementById('mt5SidebarOverlay');
                 document.getElementById('mt5Hamburger').onclick = (e) => { e.stopPropagation();
@@ -7027,6 +7004,145 @@
                 chartDiv2.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, { passive: true });
                 chartDiv2.addEventListener('touchmove', () => { clearTimeout(longPressTimer); }, { passive: true });
 
+                // ----- Mobile Line Drag (SL/TP & drawn lines) -----
+                const mobileChartDiv = document.getElementById('simChartContainer');
+                if (mobileChartDiv && simChart && simCandleSeries) {
+                    let dragStateLocal = null;
+                    const threshold = 20;
+
+                    const getClosestLine = (y) => {
+                        let closest = null,
+                            minDist = Infinity;
+                        for (const key of Object.keys(allPriceLines)) {
+                            const line = allPriceLines[key];
+                            if (!line) continue;
+                            let price = null;
+                            try {
+                                if (typeof line.options === 'function') {
+                                    const opts = line.options();
+                                    price = opts.price;
+                                } else {
+                                    price = line.options?.price;
+                                }
+                            } catch (ex) { continue; }
+                            if (price === undefined || price === null) continue;
+                            let lineY = simCandleSeries.priceToCoordinate(price);
+                            if (lineY === null) {
+                                const priceScale = simChart.priceScale('right');
+                                if (priceScale) {
+                                    const coord = priceScale.priceToCoordinate(price);
+                                    if (coord !== null) lineY = coord;
+                                }
+                                if (lineY === null) continue;
+                            }
+                            const dist = Math.abs(y - lineY);
+                            if (dist < threshold && dist < minDist) {
+                                const isSLTP = key.startsWith('sl_') || key.startsWith('tp_') || key.startsWith(
+                                    'entry_');
+                                const posId = key.startsWith('sl_') ? key.replace('sl_', '') :
+                                    key.startsWith('tp_') ? key.replace('tp_', '') :
+                                    key.startsWith('entry_') ? key.replace('entry_', '') : null;
+                                const pos = posId ? portfolio.positions.find(p => p.id === posId) : null;
+                                if (isSLTP && !pos) continue;
+                                closest = { key, price, posId, pos, isSLTP, line };
+                                minDist = dist;
+                            }
+                        }
+                        return closest;
+                    };
+
+                    const onDragStart = (e) => {
+                        if (!simCandleSeries || !mobileChartDiv) return;
+                        const rect = mobileChartDiv.getBoundingClientRect();
+                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        const y = clientY - rect.top;
+                        const closest = getClosestLine(y);
+                        if (closest) {
+                            dragStateLocal = { active: true, lineKey: closest.key, startPrice: closest.price,
+                                currentPrice: closest.price, posId: closest.posId, pos: closest.pos,
+                                isSLTP: closest.isSLTP };
+                            mobileChartDiv.classList.add('dragging-line');
+                            e.preventDefault();
+                        }
+                    };
+
+                    const onDragMove = (e) => {
+                        if (!dragStateLocal || !dragStateLocal.active || !simCandleSeries) return;
+                        const rect = mobileChartDiv.getBoundingClientRect();
+                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        const y = clientY - rect.top;
+                        const newPrice = simCandleSeries.coordinateToPrice(y);
+                        if (isValidNumber(newPrice) && newPrice > 0) {
+                            dragStateLocal.currentPrice = +newPrice.toFixed(4);
+                            const line = allPriceLines[dragStateLocal.lineKey];
+                            if (line) {
+                                try { line.applyOptions({ price: dragStateLocal.currentPrice }); } catch (ex) {}
+                            }
+                        }
+                    };
+
+                    const onDragEnd = () => {
+                        if (dragStateLocal && dragStateLocal.active) {
+                            const key = dragStateLocal.lineKey;
+                            const newPrice = dragStateLocal.currentPrice;
+                            const posId = dragStateLocal.posId;
+                            if (posId && dragStateLocal.isSLTP) {
+                                const pos = portfolio.positions.find(p => p.id === posId);
+                                if (pos) {
+                                    if (key.startsWith('sl_')) {
+                                        pos.slPrice = newPrice;
+                                        showToast('🔧 SL moved to $' + newPrice.toFixed(4));
+                                    } else if (key.startsWith('tp_')) {
+                                        pos.tpPrice = newPrice;
+                                        showToast('🔧 TP moved to $' + newPrice.toFixed(4));
+                                    }
+                                    savePortfolioToStorage();
+                                    syncPortfolioToServer();
+                                    redrawAllLines();
+                                    updateSimUI();
+                                }
+                            } else if (key && !key.startsWith('sl_') && !key.startsWith('tp_') && !key.startsWith(
+                                    'entry_')) {
+                                const lines = portfolio.drawnLines[simCurrentSymbol] || [];
+                                const idx = manualDrawnLines.findIndex(m => m.key === key);
+                                if (idx >= 0 && idx < lines.length) {
+                                    lines[idx].price = newPrice;
+                                    savePortfolioToStorage();
+                                    saveDrawingsToDB(simCurrentSymbol, lines);
+                                    redrawAllLines();
+                                    showToast('📐 Line moved to $' + newPrice.toFixed(4));
+                                }
+                            }
+                            dragStateLocal = null;
+                            mobileChartDiv.classList.remove('dragging-line');
+                        }
+                    };
+
+                    mobileChartDiv.addEventListener('touchstart', onDragStart, { passive: false });
+                    mobileChartDiv.addEventListener('touchmove', onDragMove, { passive: false });
+                    mobileChartDiv.addEventListener('touchend', onDragEnd);
+                    mobileChartDiv.addEventListener('mousedown', onDragStart);
+                    document.addEventListener('mousemove', onDragMove);
+                    document.addEventListener('mouseup', onDragEnd);
+
+                    const origMobileCleanup = window._mobileCleanup || function() {};
+                    window._mobileCleanup = function() {
+                        origMobileCleanup();
+                        mobileChartDiv.removeEventListener('touchstart', onDragStart);
+                        mobileChartDiv.removeEventListener('touchmove', onDragMove);
+                        mobileChartDiv.removeEventListener('touchend', onDragEnd);
+                        mobileChartDiv.removeEventListener('mousedown', onDragStart);
+                        document.removeEventListener('mousemove', onDragMove);
+                        document.removeEventListener('mouseup', onDragEnd);
+                    };
+                }
+
+                setTimeout(() => {
+                    const hint = document.getElementById('dragHint');
+                    if (hint) hint.classList.remove('hidden');
+                    setTimeout(() => { if (hint) hint.classList.add('hidden'); }, 5000);
+                }, 3000);
+
                 window._mobileCleanup = function() {
                     if (window._mobileResizeObs) {
                         window._mobileResizeObs.disconnect();
@@ -7038,7 +7154,6 @@
                 connectServerWS();
             }
 
-            // ─── DESKTOP TRADE PANEL ─────────────────────────────────────────
             function openDesktopTradePanel() {
                 const modal = document.createElement('div');
                 modal.className = 'modal';
@@ -7117,7 +7232,6 @@
                     origRemove.call(modal); };
             }
 
-            // ─── USER INTERFACE (GLASSMORPHISM) ──────────────────────────────
             function renderUserInterface() {
                 try {
                     stopBackgroundEngine();
@@ -7220,7 +7334,6 @@
                             </div>
                         </div>`;
 
-                    // ─── Language select ──────────────────────────────────────
                     const langSelect = document.getElementById('langSelect');
                     if (langSelect) {
                         langSelect.value = currentLang;
@@ -7234,7 +7347,6 @@
                         };
                     }
 
-                    // ─── Profile dropdown language links ──────────────────────
                     document.getElementById('langDropdownDesktop')?.addEventListener('click', function(e) {
                         e.stopPropagation();
                         document.getElementById('profileMenuDesktop')?.classList.remove('show');
@@ -7325,7 +7437,6 @@
                 }
             }
 
-            // ─── VOICE SELECTION ──────────────────────────────────────────────
             function selectVoiceForLanguage(lang) {
                 if (!window.speechSynthesis) return;
                 const voices = window.speechSynthesis.getVoices();
@@ -7353,7 +7464,6 @@
                             break;
                         }
                     }
-                    // Prefer female voices
                     if (name.includes('female') || name.includes('samantha') || name.includes('victoria') ||
                         name.includes('zira') || name.includes('heather') || name.includes('sarah') ||
                         name.includes('karen') || name.includes('emma') || name.includes('allison') ||
@@ -7370,7 +7480,6 @@
                 } else if (voices.length > 0) {
                     selectedVoice = voices[0];
                 }
-                // Force update TTS voice if currently speaking
                 if (ttsUtterance && window.speechSynthesis) {
                     try {
                         window.speechSynthesis.cancel();
@@ -7379,7 +7488,6 @@
                 }
             }
 
-            // ─── TTS GLASS ──────────────────────────────────────────────────
             function setupTTSGlass(lessonId) {
                 const subj = subjects.find(s => s.id === selectedSubjectId);
                 const les = subj?.lessons?.find(l => l.id === lessonId);
@@ -7403,7 +7511,6 @@
                         utterance.rate = speed;
                         const langMap = { 'bn': 'bn-BD', 'hi': 'hi-IN', 'en': 'en-US' };
                         utterance.lang = langMap[currentLang] || 'en-US';
-                        // Use selected voice (female preferred)
                         if (selectedVoice) {
                             utterance.voice = selectedVoice;
                         } else {
@@ -7550,13 +7657,12 @@
                     a.href = uploadData.url;
                     a.download = 'Certificate_' + t(subj.names).replace(/\s+/g, '_') + '.pdf';
                     a.click();
-                    showToast('🎓 Certificate uploaded & downloaded!');
+                    showToast('🎓 Certificate downloaded!');
                     showToast('🔗 Share: ' + uploadData.url);
                 } catch (e) { showToast('⚠️ Certificate error: ' + e.message); }
                 document.body.removeChild(div);
             }
 
-            // ─── ADMIN PANEL ──────────────────────────────────────────────────
             function renderAdminPanel() {
                 document.getElementById('app').innerHTML = `
                     <div class="admin-container">
@@ -7765,58 +7871,81 @@
                     </div>`;
                 document.body.appendChild(modal);
                 modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-                if (typeof Quill === 'undefined') {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.quilljs.com/1.3.6/quill.min.js';
-                    script.onload = () => initQuillEditors();
-                    document.head.appendChild(script);
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = 'https://cdn.quilljs.com/1.3.6/quill.snow.css';
-                    document.head.appendChild(link);
-                    setTimeout(initQuillEditors, 500);
-                } else {
-                    initQuillEditors();
-                }
 
-                function initQuillEditors() {
+                let qlEn = null,
+                    qlHi = null,
+                    qlBn = null;
+                if (typeof Quill !== 'undefined') {
                     const tb = [
                         ['bold', 'italic', 'underline'],
                         [{ list: 'ordered' }, { list: 'bullet' }],
                         ['clean']
                     ];
-                    if (typeof Quill === 'undefined') return;
-                    const qlEn = new Quill(document.getElementById('qlEn'), { theme: 'snow', modules: { toolbar: tb } });
-                    const qlHi = new Quill(document.getElementById('qlHi'), { theme: 'snow', modules: { toolbar: tb } });
-                    const qlBn = new Quill(document.getElementById('qlBn'), { theme: 'snow', modules: { toolbar: tb } });
+                    qlEn = new Quill(document.getElementById('qlEn'), { theme: 'snow', modules: { toolbar: tb } });
+                    qlHi = new Quill(document.getElementById('qlHi'), { theme: 'snow', modules: { toolbar: tb } });
+                    qlBn = new Quill(document.getElementById('qlBn'), { theme: 'snow', modules: { toolbar: tb } });
                     if (ex?.contents?.en) qlEn.root.innerHTML = ex.contents.en;
                     if (ex?.contents?.hi) qlHi.root.innerHTML = ex.contents.hi;
                     if (ex?.contents?.bn) qlBn.root.innerHTML = ex.contents.bn;
-                    document.getElementById('saveLes').onclick = async () => {
-                        const titles = { en: document.getElementById('lEn').value.trim(), hi: document
-                                .getElementById('lHi').value.trim(), bn: document.getElementById('lBn')
-                                .value.trim() };
-                        if (!titles.en) return alert('⚠️ English title required');
-                        const contents = { en: qlEn.root.innerHTML, hi: qlHi.root.innerHTML, bn: qlBn.root
-                                .innerHTML };
-                        const payload = { titles, contents, duration: parseInt(document.getElementById(
-                                'lDur').value) || 15, level: document.getElementById('lLvl').value,
-                            quizPassScore: parseInt(document.getElementById('lPass').value) || 80 };
-                        try {
-                            if (ex) { await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(
-                                    payload) });
-                                Object.assign(ex, payload); } else { const res = await apiFetch('/lessons', {
-                                    method: 'POST',
-                                    body: JSON.stringify({ ...payload, subjectId: selectedSubjectId })
-                                });
-                                if (!subj.lessons) subj.lessons = [];
-                                subj.lessons.push(res); }
-                            modal.remove();
-                            showAdminLessonManager();
-                            showToast(ex ? '✅ Lesson updated!' : '✅ Lesson created!');
-                        } catch (e) { showToast('⚠️ ' + e.message); }
+                } else {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.quilljs.com/1.3.6/quill.min.js';
+                    script.onload = () => {
+                        const tb = [
+                            ['bold', 'italic', 'underline'],
+                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            ['clean']
+                        ];
+                        qlEn = new Quill(document.getElementById('qlEn'), { theme: 'snow', modules: { toolbar: tb } });
+                        qlHi = new Quill(document.getElementById('qlHi'), { theme: 'snow', modules: { toolbar: tb } });
+                        qlBn = new Quill(document.getElementById('qlBn'), { theme: 'snow', modules: { toolbar: tb } });
+                        if (ex?.contents?.en) qlEn.root.innerHTML = ex.contents.en;
+                        if (ex?.contents?.hi) qlHi.root.innerHTML = ex.contents.hi;
+                        if (ex?.contents?.bn) qlBn.root.innerHTML = ex.contents.bn;
                     };
+                    document.head.appendChild(script);
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = 'https://cdn.quilljs.com/1.3.6/quill.snow.css';
+                    document.head.appendChild(link);
                 }
+
+                document.getElementById('saveLes').onclick = async () => {
+                    const titles = { en: document.getElementById('lEn').value.trim(), hi: document
+                            .getElementById('lHi').value.trim(), bn: document.getElementById('lBn')
+                            .value.trim() };
+                    if (!titles.en) return alert('⚠️ English title required');
+                    let contents;
+                    if (qlEn && qlHi && qlBn && typeof Quill !== 'undefined') {
+                        contents = { en: qlEn.root.innerHTML, hi: qlHi.root.innerHTML, bn: qlBn.root
+                                .innerHTML };
+                    } else {
+                        const enEl = document.getElementById('qlEn');
+                        const hiEl = document.getElementById('qlHi');
+                        const bnEl = document.getElementById('qlBn');
+                        contents = {
+                            en: enEl ? enEl.value || enEl.innerHTML || '' : '',
+                            hi: hiEl ? hiEl.value || hiEl.innerHTML || '' : '',
+                            bn: bnEl ? bnEl.value || bnEl.innerHTML || '' : ''
+                        };
+                    }
+                    const payload = { titles, contents, duration: parseInt(document.getElementById('lDur')
+                            .value) || 15, level: document.getElementById('lLvl').value,
+                        quizPassScore: parseInt(document.getElementById('lPass').value) || 80 };
+                    try {
+                        if (ex) { await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(
+                                payload) });
+                            Object.assign(ex, payload); } else { const res = await apiFetch('/lessons', {
+                                method: 'POST',
+                                body: JSON.stringify({ ...payload, subjectId: selectedSubjectId })
+                            });
+                            if (!subj.lessons) subj.lessons = [];
+                            subj.lessons.push(res); }
+                        modal.remove();
+                        showAdminLessonManager();
+                        showToast(ex ? '✅ Lesson updated!' : '✅ Lesson created!');
+                    } catch (e) { showToast('⚠️ ' + e.message); }
+                };
                 setTimeout(() => {
                     if (typeof Quill === 'undefined') {
                         ['qlEn', 'qlHi', 'qlBn'].forEach(id2 => {
@@ -7832,46 +7961,45 @@
                 }, 2000);
             }
 
-function openQuizManager(lessonId) {
-    // আগের খোলা মডাল থাকলে বন্ধ করো
-    if (currentModal) {
-        currentModal.remove();
-        currentModal = null;
-    }
+            function openQuizManager(lessonId) {
+                if (currentModal) {
+                    currentModal.remove();
+                    currentModal = null;
+                }
 
-    const subj = subjects.find(s => s.id === selectedSubjectId);
-    const les = subj?.lessons?.find(l => l.id === lessonId);
-    if (!les) return;
-    if (!les.quiz) les.quiz = [];
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
-            <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
-                ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
-                les.quiz.map((q,i) => `
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
-                        <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
-                        <div style="display:flex;gap:2px;">
-                            <button class="btn-quiz-edit btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                const les = subj?.lessons?.find(l => l.id === lessonId);
+                if (!les) return;
+                if (!les.quiz) les.quiz = [];
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80}%)</span></h3>
+                        <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
+                            ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
+                            les.quiz.map((q,i) => `
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
+                                    <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
+                                    <div style="display:flex;gap:2px;">
+                                        <button class="btn-quiz-edit btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-edit"></i> Edit</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
+                                    </div>
+                                </div>`).join('')}
                         </div>
-                    </div>`).join('')}
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button>
-            <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div>
-        </div>`;
-    document.body.appendChild(modal);
-    currentModal = modal; // বর্তমান মডাল সংরক্ষণ
-    modal.addEventListener('click', e => { 
-        if (e.target === modal) { 
-            modal.remove(); 
-            currentModal = null; // মডাল বন্ধ হলে রেফারেন্স ক্লিয়ার
-            showAdminLessonManager(); 
-        } 
-    });
-}
+                        <button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button>
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div>
+                    </div>`;
+                document.body.appendChild(modal);
+                currentModal = modal;
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) {
+                        modal.remove();
+                        currentModal = null;
+                        showAdminLessonManager();
+                    }
+                });
+            }
 
             function deleteQuizQ(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
@@ -7888,92 +8016,91 @@ function openQuizManager(lessonId) {
             }
 
             window.openQuizQEdit = function(lessonId, idx) {
-    // আগের খোলা মডাল থাকলে বন্ধ করো
-    if (currentModal) {
-        currentModal.remove();
-        currentModal = null;
-    }
+                if (currentModal) {
+                    currentModal.remove();
+                    currentModal = null;
+                }
 
-    const subj = subjects.find(s => s.id === selectedSubjectId);
-    const les = subj?.lessons?.find(l => l.id === lessonId);
-    if (!les) return;
-    const ex = idx !== null ? les.quiz[idx] : null;
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.zIndex = '250';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3>
-            <label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label>
-            <label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label>
-            <label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>
-            ${['a','b','c','d'].map(o => `
-                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label>
-                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label>
-                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>
-            `).join('')}
-            <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
-            <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
-                <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
-            </div>
-        </div>`;
-    document.body.appendChild(modal);
-    currentModal = modal; // বর্তমান মডাল সংরক্ষণ
-    if (ex) document.getElementById('qCor').value = ex.correct || 'a';
-    modal.addEventListener('click', e => { 
-        if (e.target === modal) { 
-            modal.remove(); 
-            currentModal = null; // মডাল বন্ধ হলে রেফারেন্স ক্লিয়ার
-        } 
-    });
+                const subj = subjects.find(s => s.id === selectedSubjectId);
+                const les = subj?.lessons?.find(l => l.id === lessonId);
+                if (!les) return;
+                const ex = idx !== null ? les.quiz[idx] : null;
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.zIndex = '250';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3>
+                        <label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label>
+                        <label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>
+                        ${['a','b','c','d'].map(o => `
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label>
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label>
+                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>
+                        `).join('')}
+                        <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
+                        <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
+                            <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
+                        </div>
+                    </div>`;
+                document.body.appendChild(modal);
+                currentModal = modal;
+                if (ex) document.getElementById('qCor').value = ex.correct || 'a';
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) {
+                        modal.remove();
+                        currentModal = null;
+                    }
+                });
 
-    document.getElementById('saveQ').onclick = async () => {
-        const options = ['a','b','c','d'].map(o => ({
-            id: o,
-            text: {
-                en: document.getElementById('o' + o + 'En').value.trim() || 'Option ' + o,
-                hi: document.getElementById('o' + o + 'Hi').value.trim() || 'Option ' + o,
-                bn: document.getElementById('o' + o + 'Bn').value.trim() || 'Option ' + o
-            }
-        }));
-        const qData = {
-            question: {
-                en: document.getElementById('qqEn').value.trim() || 'Question text',
-                hi: document.getElementById('qqHi').value.trim() || 'प्रश्न पाठ',
-                bn: document.getElementById('qqBn').value.trim() || 'প্রশ্ন পাঠ্য'
-            },
-            options: options,
-            correct: document.getElementById('qCor').value,
-            points: parseInt(document.getElementById('qPts').value) || 5,
-            explanation: {}
-        };
-        try {
-            if (ex) {
-                await apiFetch('/quiz/' + lessonId + '/' + idx, {
-                    method: 'PUT',
-                    body: JSON.stringify(qData)
-                });
-                Object.assign(ex, qData);
-            } else {
-                const res = await apiFetch('/quiz/' + lessonId, {
-                    method: 'POST',
-                    body: JSON.stringify(qData)
-                });
-                if (!les.quiz) les.quiz = [];
-                les.quiz.push(res);
-            }
-            modal.remove();
-            currentModal = null;
-            openQuizManager(lessonId);
-            showToast(ex ? '✅ Question updated!' : '✅ Question added!');
-        } catch (e) {
-            showToast('⚠️ ' + e.message);
-            console.error('Quiz save error:', e);
-        }
-    };
-};
+                document.getElementById('saveQ').onclick = async () => {
+                    const options = ['a', 'b', 'c', 'd'].map(o => ({
+                        id: o,
+                        text: {
+                            en: document.getElementById('o' + o + 'En').value.trim() || 'Option ' + o,
+                            hi: document.getElementById('o' + o + 'Hi').value.trim() || 'Option ' + o,
+                            bn: document.getElementById('o' + o + 'Bn').value.trim() || 'Option ' + o
+                        }
+                    }));
+                    const qData = {
+                        question: {
+                            en: document.getElementById('qqEn').value.trim() || 'Question text',
+                            hi: document.getElementById('qqHi').value.trim() || 'प्रश्न पाठ',
+                            bn: document.getElementById('qqBn').value.trim() || 'প্রশ্ন পাঠ্য'
+                        },
+                        options: options,
+                        correct: document.getElementById('qCor').value,
+                        points: parseInt(document.getElementById('qPts').value) || 5,
+                        explanation: {}
+                    };
+                    try {
+                        if (ex) {
+                            await apiFetch('/quiz/' + lessonId + '/' + idx, {
+                                method: 'PUT',
+                                body: JSON.stringify(qData)
+                            });
+                            Object.assign(ex, qData);
+                        } else {
+                            const res = await apiFetch('/quiz/' + lessonId, {
+                                method: 'POST',
+                                body: JSON.stringify(qData)
+                            });
+                            if (!les.quiz) les.quiz = [];
+                            les.quiz.push(res);
+                        }
+                        modal.remove();
+                        currentModal = null;
+                        openQuizManager(lessonId);
+                        showToast(ex ? '✅ Question updated!' : '✅ Question added!');
+                    } catch (e) {
+                        showToast('⚠️ ' + e.message);
+                        console.error('Quiz save error:', e);
+                    }
+                };
+            };
 
             async function exportData() { try { const data = await apiFetch('/export'); const blob = new Blob([JSON
                         .stringify(data, null, 2)], { type: 'application/json' });
@@ -7995,7 +8122,6 @@ function openQuizManager(lessonId) {
                         showToast('📥 Data imported!'); } catch (err) { alert('❌ Invalid file format.'); } };
                 reader.readAsText(file); }
 
-            // ─── AUTH ──────────────────────────────────────────────────────────
             function renderAuthPage() {
                 const mode = new URLSearchParams(window.location.search).get('auth') || 'login';
                 document.getElementById('app').innerHTML = `
@@ -8041,8 +8167,16 @@ function openQuizManager(lessonId) {
                             currentUser = res.user;
                             localStorage.setItem(TOKEN_KEY, token);
                             localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-                            userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
-                            saveAccountNo();
+                            if (!userAccountNo || userAccountNo === 'ACC-000000') {
+                                if (currentUser && currentUser.id) {
+                                    const seed = currentUser.id * 73856093;
+                                    const num = (seed % 900000) + 100000;
+                                    userAccountNo = 'ACC-' + num;
+                                } else {
+                                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                                }
+                                saveAccountNo();
+                            }
                             showToast('🎉 Registration successful!');
                             window.history.replaceState({}, '', '?');
                             renderApp();
@@ -8056,7 +8190,13 @@ function openQuizManager(lessonId) {
                             localStorage.setItem(TOKEN_KEY, token);
                             localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
                             if (!userAccountNo || userAccountNo === 'ACC-000000') {
-                                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                                if (currentUser && currentUser.id) {
+                                    const seed = currentUser.id * 73856093;
+                                    const num = (seed % 900000) + 100000;
+                                    userAccountNo = 'ACC-' + num;
+                                } else {
+                                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                                }
                                 saveAccountNo();
                             }
                             showToast('✅ Welcome back, ' + username + '!');
@@ -8068,13 +8208,18 @@ function openQuizManager(lessonId) {
                 };
             }
 
-            // ─── BACKGROUND DATA LOAD ──────────────────────────────────────
             async function loadAllDataBackground() {
                 try {
                     loadPortfolioFromStorage();
                     loadPendingOrders();
                     if (!userAccountNo || userAccountNo === 'ACC-000000') {
-                        userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                        if (currentUser && currentUser.id) {
+                            const seed = currentUser.id * 73856093;
+                            const num = (seed % 900000) + 100000;
+                            userAccountNo = 'ACC-' + num;
+                        } else {
+                            userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                        }
                         saveAccountNo();
                     }
                     const [subjRes, progRes, bmRes, quizRes, notesRes, portRes] = await Promise.all([
@@ -8135,7 +8280,13 @@ function openQuizManager(lessonId) {
                 loadPortfolioFromStorage();
                 loadPendingOrders();
                 if (!userAccountNo || userAccountNo === 'ACC-000000') {
-                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                    if (currentUser && currentUser.id) {
+                        const seed = currentUser.id * 73856093;
+                        const num = (seed % 900000) + 100000;
+                        userAccountNo = 'ACC-' + num;
+                    } else {
+                        userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                    }
                     saveAccountNo();
                 }
                 try {
@@ -8196,7 +8347,6 @@ function openQuizManager(lessonId) {
                 renderUserInterface();
             }
 
-            // ─── INDICATOR CALCULATIONS ────────────────────────────────────
             function calculateEMA(data, period) {
                 if (data.length < period) return [];
                 const ema = [];
@@ -8576,7 +8726,6 @@ function openQuizManager(lessonId) {
                 return candles;
             }
 
-            // ─── LAZY LOADING ──────────────────────────────────────────────
             let lazyAllCandles = [];
             let lazyVisibleStart = 0;
             let lazyVisibleEnd = 0;
@@ -8584,12 +8733,11 @@ function openQuizManager(lessonId) {
             function initLazy(candles) {
                 lazyAllCandles = candles.slice();
                 const total = lazyAllCandles.length;
-                lazyVisibleEnd = Math.min(total, 5000); // Increased from 2000 to 5000 (2.5x more visible)
+                lazyVisibleEnd = Math.min(total, 5000);
                 lazyVisibleStart = Math.max(0, lazyVisibleEnd - 5000);
                 return lazyAllCandles.slice(lazyVisibleStart, lazyVisibleEnd);
             }
 
-            // ─── GLOBAL EXPOSURE ──────────────────────────────────────────────
             window.updateSimUI = updateSimUI;
             window.placeSimOrder = placeSimOrder;
             window.placeSimOrderMobile = placeSimOrderMobile;
@@ -8656,7 +8804,6 @@ function openQuizManager(lessonId) {
             window.removePositionLines = removePositionLines;
             window.updateHistoryUI = updateHistoryUI;
             window.selectVoiceForLanguage = selectVoiceForLanguage;
-            // Admin globals
             window.showAdminLessonManager = showAdminLessonManager;
             window.selectAdminSubject = selectAdminSubject;
             window.moveSubject = moveSubject;
@@ -8669,10 +8816,15 @@ function openQuizManager(lessonId) {
             window.openQuizQEdit = openQuizQEdit;
             window.deleteQuizQ = deleteQuizQ;
 
-            // ─── BOOT ──────────────────────────────────────────────────────────
             applyTheme();
             if (!userAccountNo || userAccountNo === 'ACC-000000') {
-                userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                if (currentUser && currentUser.id) {
+                    const seed = currentUser.id * 73856093;
+                    const num = (seed % 900000) + 100000;
+                    userAccountNo = 'ACC-' + num;
+                } else {
+                    userAccountNo = 'ACC-' + String(Math.floor(Math.random() * 900000) + 100000);
+                }
                 saveAccountNo();
             }
             openDB().then(() => {
@@ -8715,7 +8867,6 @@ function openQuizManager(lessonId) {
                 document.querySelectorAll('.mt5-indicator-overlay.show').forEach(el => el.classList.remove('show'));
             });
 
-            // ─── Chart auto-recovery ──────────────────────────────────────────
             (function() {
                 let nullErrorCount = 0;
                 let lastResetTime = 0;
@@ -8745,7 +8896,6 @@ function openQuizManager(lessonId) {
                 }, 30000);
             })();
 
-            // ─── Preload voices on load ──────────────────────────────────────
             if (window.speechSynthesis) {
                 window.speechSynthesis.getVoices();
                 window.speechSynthesis.onvoiceschanged = () => {
@@ -8753,7 +8903,6 @@ function openQuizManager(lessonId) {
                 };
             }
 
-            // ─── CHAPTER FUNCTIONS ──────────────────────────────────────────
             function calcChapterProgress() {
                 let total = 0,
                     completed = 0;
@@ -8832,7 +8981,6 @@ function openQuizManager(lessonId) {
                 const area = document.getElementById('contentArea');
                 area.innerHTML = `
                     <div class="lesson-list-glass">
-                        <!-- Chapter Progress -->
                         <div class="progress-card-glass">
                             <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
@@ -8841,7 +8989,6 @@ function openQuizManager(lessonId) {
                             <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
                             <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
                         </div>
-                        <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
                             <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
@@ -8897,7 +9044,6 @@ function openQuizManager(lessonId) {
                 const area = document.getElementById('contentArea');
                 area.innerHTML = `
                     <div class="detail-view-glass">
-                        <!-- Chapter Progress -->
                         <div class="progress-card-glass">
                             <div class="progress-title-row">
                                 <span>📚 Chapter Progress</span>
@@ -8906,7 +9052,6 @@ function openQuizManager(lessonId) {
                             <div class="progress-bar-glass"><div class="progress-fill-glass" style="width:${chapProg.percent}%"></div></div>
                             <div class="progress-stats"><span>${chapProg.percent}%</span><span>${chapProg.completed} of ${chapProg.total}</span></div>
                         </div>
-                        <!-- Lesson Progress -->
                         <div class="progress-card-glass" style="margin-top:6px;">
                             <div class="progress-title-row">
                                 <span>📖 Lesson Progress — ${t(subj.names)}</span>
@@ -8931,7 +9076,6 @@ function openQuizManager(lessonId) {
                             <div class="tab-glass" data-tab="quiz">❓ Quiz ${les.quiz && les.quiz.length ? '('+les.quiz.length+')' : ''}</div>
                             <div class="tab-glass" data-tab="resources">📂 Resources</div>
                         </div>
-                        <!-- TTS Controls moved to TOP -->
                         <div class="tts-controls-top">
                             <button class="tts-btn-glass" id="playTTS"><i class="fas fa-play"></i> Play</button>
                             <button class="tts-btn-glass" id="pauseTTS"><i class="fas fa-pause"></i></button>
@@ -8997,11 +9141,12 @@ function openQuizManager(lessonId) {
                 const qs = quizScores[lessonId];
                 if (qs) {
                     const total = lesson.quiz.reduce((s, q) => s + (q.points || 5), 0);
+                    const percent = total > 0 ? Math.round((qs.score / total) * 100) : 0;
                     container.innerHTML = `
                         <div class="quiz-container-glass">
                             <h3 style="text-align:center;font-size:0.85rem;">${qs.passed ? '🎉' : '📚'} Quiz Result</h3>
-                            <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total}</div>
-                            <p style="text-align:center;font-size:0.75rem;">${qs.passed ? 'PASSED' : 'FAILED'}</p>
+                            <div style="text-align:center;font-size:1.8rem;font-weight:800;color:${qs.passed ? 'var(--success)' : 'var(--danger)'};">${qs.score}/${total} (${percent}%)</div>
+                            <p style="text-align:center;font-size:0.75rem;">Pass mark: ${lesson.quizPassScore || 80}% — ${qs.passed ? 'PASSED' : 'FAILED'}</p>
                             <div style="text-align:center;margin-top:6px;"><button class="btn btn-primary" id="retryQuizBtn">🔄 Retry Quiz</button></div>
                         </div>`;
                     document.getElementById('retryQuizBtn').onclick = async () => { try { await apiFetch('/quiz/reset/' +
@@ -9054,20 +9199,26 @@ function openQuizManager(lessonId) {
                 const unanswered = answers.findIndex(a => a === null);
                 if (unanswered !== -1) { showToast('⚠️ Please answer question ' + (unanswered + 1)); return; }
                 let earned = 0;
-                lesson.quiz.forEach((q, i) => { if (answers[i] === q.correct) earned += (q.points || 5); });
-                const passed = earned >= (lesson.quizPassScore || 80);
+                let totalPoints = 0;
+                lesson.quiz.forEach((q, i) => {
+                    totalPoints += (q.points || 5);
+                    if (answers[i] === q.correct) earned += (q.points || 5);
+                });
+                const passThreshold = lesson.quizPassScore || 80;
+                const percent = totalPoints > 0 ? (earned / totalPoints) * 100 : 0;
+                const passed = percent >= passThreshold;
                 try {
                     await apiFetch('/quiz/submit', { method: 'POST', body: JSON.stringify({ lessonId, score: earned,
                             passed }) });
                     quizScores[lessonId] = { score: earned, passed };
-                    showToast('📝 Score: ' + earned + ' — ' + (passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
+                    showToast('📝 Score: ' + earned + '/' + totalPoints + ' (' + Math.round(percent) + '%) — ' + (
+                        passed ? 'Passed! 🎉' : 'Failed. Try again! 💪'));
                     showLessonDetail(lessonId);
                     setTimeout(() => { const qt = document.querySelector('.tab-glass[data-tab="quiz"]'); if (qt) qt
                             .click(); }, 100);
                 } catch (e) { showToast('⚠️ ' + e.message); }
             }
 
-            // ─── Hide loading on init ──────────────────────────────────────────
             setTimeout(hideLoading, 3000);
 
         })();
