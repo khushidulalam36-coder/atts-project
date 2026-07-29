@@ -3932,6 +3932,7 @@
             const TF_LABELS = Object.keys(TIMEFRAMES);
 
             // ─── STATE ────────────────────────────────────────────────────────
+            let currentModal = null;
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
             let appTheme = localStorage.getItem(THEME_KEY) || 'dark';
             let token = localStorage.getItem(TOKEN_KEY) || null;
@@ -7831,34 +7832,46 @@
                 }, 2000);
             }
 
-            function openQuizManager(lessonId) {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const les = subj?.lessons?.find(l => l.id === lessonId);
-                if (!les) return;
-                if (!les.quiz) les.quiz = [];
-                const modal = document.createElement('div');
-                modal.className = 'modal';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
-                        <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
-                            ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
-                            les.quiz.map((q,i) => `
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
-                                    <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
-                                    <div style="display:flex;gap:2px;">
-                                        <button class="btn-quiz-edit btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
-                                    </div>
-                                </div>`).join('')}
+function openQuizManager(lessonId) {
+    // আগের খোলা মডাল থাকলে বন্ধ করো
+    if (currentModal) {
+        currentModal.remove();
+        currentModal = null;
+    }
+
+    const subj = subjects.find(s => s.id === selectedSubjectId);
+    const les = subj?.lessons?.find(l => l.id === lessonId);
+    if (!les) return;
+    if (!les.quiz) les.quiz = [];
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3 style="font-size:0.85rem;">📝 Quiz Manager — ${t(les.titles)} <span style="font-size:0.6rem;color:var(--text-muted);">(Pass: ${les.quizPassScore || 80})</span></h3>
+            <div id="quizList" style="max-height:180px;overflow-y:auto;margin-bottom:6px;">
+                ${les.quiz.length === 0 ? '<p style="color:var(--text-muted);text-align:center;font-size:0.65rem;">No questions yet.</p>' :
+                les.quiz.map((q,i) => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;background:var(--glass-bg);border-radius:6px;margin-bottom:2px;gap:4px;backdrop-filter:blur(4px);">
+                        <span style="font-weight:500;font-size:0.65rem;flex:1;">Q${i+1}: ${(q.question?.en || '').substring(0,30)}... (${q.points || 5}pts)</span>
+                        <div style="display:flex;gap:2px;">
+                            <button class="btn-quiz-edit btn-sm" onclick="openQuizQEdit('${lessonId}',${i})" style="font-size:0.45rem;padding:3px 10px;"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteQuizQ('${lessonId}',${i})" style="font-size:0.45rem;">🗑</button>
                         </div>
-                        <button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button>
-                        <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div>
-                    </div>`;
-                document.body.appendChild(modal);
-                modal.addEventListener('click', e => { if (e.target === modal) { modal.remove();
-                        showAdminLessonManager(); } });
-            }
+                    </div>`).join('')}
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openQuizQEdit('${lessonId}',null)" style="font-size:0.55rem;"><i class="fas fa-plus"></i> Add Question</button>
+            <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove();showAdminLessonManager();" style="font-size:0.6rem;">Close</button></div>
+        </div>`;
+    document.body.appendChild(modal);
+    currentModal = modal; // বর্তমান মডাল সংরক্ষণ
+    modal.addEventListener('click', e => { 
+        if (e.target === modal) { 
+            modal.remove(); 
+            currentModal = null; // মডাল বন্ধ হলে রেফারেন্স ক্লিয়ার
+            showAdminLessonManager(); 
+        } 
+    });
+}
 
             function deleteQuizQ(lessonId, idx) {
                 if (!confirm('Delete this question?')) return;
@@ -7875,82 +7888,92 @@
             }
 
             window.openQuizQEdit = function(lessonId, idx) {
-                const subj = subjects.find(s => s.id === selectedSubjectId);
-                const les = subj?.lessons?.find(l => l.id === lessonId);
-                if (!les) return;
-                const ex = idx !== null ? les.quiz[idx] : null;
-                const modal = document.createElement('div');
-                modal.className = 'modal';
-                modal.style.zIndex = '250';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3>
-                        <label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label>
-                        <label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label>
-                        <label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>
-                        ${['a','b','c','d'].map(o => `
-                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label>
-                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label>
-                            <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>
-                        `).join('')}
-                        <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
-                        <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
-                        <div class="modal-actions">
-                            <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
-                            <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
-                        </div>
-                    </div>`;
-                document.body.appendChild(modal);
-                if (ex) document.getElementById('qCor').value = ex.correct || 'a';
-                modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    // আগের খোলা মডাল থাকলে বন্ধ করো
+    if (currentModal) {
+        currentModal.remove();
+        currentModal = null;
+    }
 
-                document.getElementById('saveQ').onclick = async () => {
-                    // Build options array with proper text objects
-                    const options = ['a', 'b', 'c', 'd'].map(o => ({
-                        id: o,
-                        text: {
-                            en: document.getElementById('o' + o + 'En').value.trim() || 'Option ' + o,
-                            hi: document.getElementById('o' + o + 'Hi').value.trim() || 'Option ' + o,
-                            bn: document.getElementById('o' + o + 'Bn').value.trim() || 'Option ' + o
-                        }
-                    }));
+    const subj = subjects.find(s => s.id === selectedSubjectId);
+    const les = subj?.lessons?.find(l => l.id === lessonId);
+    if (!les) return;
+    const ex = idx !== null ? les.quiz[idx] : null;
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.zIndex = '250';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3 style="font-size:0.85rem;">${ex ? '✏️ Edit' : '➕ Add'} Question</h3>
+            <label style="font-size:0.65rem;">Q EN<input id="qqEn" value="${ex?.question?.en || ''}" style="font-size:0.65rem;"></label>
+            <label style="font-size:0.65rem;">Q HI<input id="qqHi" value="${ex?.question?.hi || ''}" style="font-size:0.65rem;"></label>
+            <label style="font-size:0.65rem;">Q BN<input id="qqBn" value="${ex?.question?.bn || ''}" style="font-size:0.65rem;"></label>
+            ${['a','b','c','d'].map(o => `
+                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} EN<input id="o${o}En" value="${ex?.options?.find(opt=>opt.id===o)?.text?.en || ''}" style="font-size:0.65rem;"></label>
+                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} HI<input id="o${o}Hi" value="${ex?.options?.find(opt=>opt.id===o)?.text?.hi || ''}" style="font-size:0.65rem;"></label>
+                <label style="font-size:0.65rem;">Opt ${o.toUpperCase()} BN<input id="o${o}Bn" value="${ex?.options?.find(opt=>opt.id===o)?.text?.bn || ''}" style="font-size:0.65rem;"></label>
+            `).join('')}
+            <label style="font-size:0.65rem;">Correct<select id="qCor" style="font-size:0.65rem;"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></label>
+            <label style="font-size:0.65rem;">Points<input type="number" id="qPts" value="${ex?.points || 5}" style="font-size:0.65rem;"></label>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="this.closest('.modal').remove()" style="font-size:0.6rem;">Cancel</button>
+                <button class="btn btn-primary" id="saveQ" style="font-size:0.6rem;">💾 Save</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    currentModal = modal; // বর্তমান মডাল সংরক্ষণ
+    if (ex) document.getElementById('qCor').value = ex.correct || 'a';
+    modal.addEventListener('click', e => { 
+        if (e.target === modal) { 
+            modal.remove(); 
+            currentModal = null; // মডাল বন্ধ হলে রেফারেন্স ক্লিয়ার
+        } 
+    });
 
-                    const qData = {
-                        question: {
-                            en: document.getElementById('qqEn').value.trim() || 'Question text',
-                            hi: document.getElementById('qqHi').value.trim() || 'प्रश्न पाठ',
-                            bn: document.getElementById('qqBn').value.trim() || 'প্রশ্ন পাঠ্য'
-                        },
-                        options: options,
-                        correct: document.getElementById('qCor').value,
-                        points: parseInt(document.getElementById('qPts').value) || 5,
-                        explanation: {}
-                    };
-
-                    try {
-                        if (ex) {
-                            await apiFetch('/quiz/' + lessonId + '/' + idx, {
-                                method: 'PUT',
-                                body: JSON.stringify(qData)
-                            });
-                            Object.assign(ex, qData);
-                        } else {
-                            const res = await apiFetch('/quiz/' + lessonId, {
-                                method: 'POST',
-                                body: JSON.stringify(qData)
-                            });
-                            if (!les.quiz) les.quiz = [];
-                            les.quiz.push(res);
-                        }
-                        modal.remove();
-                        openQuizManager(lessonId);
-                        showToast(ex ? '✅ Question updated!' : '✅ Question added!');
-                    } catch (e) {
-                        showToast('⚠️ ' + e.message);
-                        console.error('Quiz save error:', e);
-                    }
-                };
-            };
+    document.getElementById('saveQ').onclick = async () => {
+        const options = ['a','b','c','d'].map(o => ({
+            id: o,
+            text: {
+                en: document.getElementById('o' + o + 'En').value.trim() || 'Option ' + o,
+                hi: document.getElementById('o' + o + 'Hi').value.trim() || 'Option ' + o,
+                bn: document.getElementById('o' + o + 'Bn').value.trim() || 'Option ' + o
+            }
+        }));
+        const qData = {
+            question: {
+                en: document.getElementById('qqEn').value.trim() || 'Question text',
+                hi: document.getElementById('qqHi').value.trim() || 'प्रश्न पाठ',
+                bn: document.getElementById('qqBn').value.trim() || 'প্রশ্ন পাঠ্য'
+            },
+            options: options,
+            correct: document.getElementById('qCor').value,
+            points: parseInt(document.getElementById('qPts').value) || 5,
+            explanation: {}
+        };
+        try {
+            if (ex) {
+                await apiFetch('/quiz/' + lessonId + '/' + idx, {
+                    method: 'PUT',
+                    body: JSON.stringify(qData)
+                });
+                Object.assign(ex, qData);
+            } else {
+                const res = await apiFetch('/quiz/' + lessonId, {
+                    method: 'POST',
+                    body: JSON.stringify(qData)
+                });
+                if (!les.quiz) les.quiz = [];
+                les.quiz.push(res);
+            }
+            modal.remove();
+            currentModal = null;
+            openQuizManager(lessonId);
+            showToast(ex ? '✅ Question updated!' : '✅ Question added!');
+        } catch (e) {
+            showToast('⚠️ ' + e.message);
+            console.error('Quiz save error:', e);
+        }
+    };
+};
 
             async function exportData() { try { const data = await apiFetch('/export'); const blob = new Blob([JSON
                         .stringify(data, null, 2)], { type: 'application/json' });
