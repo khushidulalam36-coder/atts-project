@@ -9363,6 +9363,47 @@
             window.openQuizQEdit = openQuizQEdit;
             window.deleteQuizQ = deleteQuizQ;
 
+            // ===== exitPosition (সিম্বল অনুযায়ী এক্সিট) =====
+window.exitPosition = function(symbol) {
+    const positions = portfolio.positions.filter(p => p.symbol === symbol);
+    if (positions.length === 0) {
+        showToast('⚠️ No position for ' + symbol);
+        return;
+    }
+    if (positions.length === 1) {
+        exitPositionById(positions[0].id);
+        return;
+    }
+    // একাধিক পজিশন থাকলে মোডাল দেখান
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3>Exit Position — ${symbol}</h3>
+            <p>Select position to exit:</p>
+            ${positions.map((p, i) => `
+                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--mt5-border);">
+                    <span style="font-size:0.7rem;">${p.type.toUpperCase()} ${Math.abs(p.qty)} qty @ $${p.entryPrice.toFixed(4)}</span>
+                    <button class="btn-exit" onclick="exitPositionById('${p.id}');this.closest('.modal').remove();">Exit</button>
+                </div>
+            `).join('')}
+            <div class="modal-actions"><button class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button></div>
+        </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+};
+
+// ===== নিশ্চিত করুন যে exitPositionById গ্লোবাল আছে =====
+window.exitPositionById = exitPositionById;
+
+// ===== অন্যান্য ফাংশন যা গ্লোবাল হতে পারে =====
+window.closeAllPositions = closeAllPositions;
+window.editSLTPById = editSLTPById;
+window.placeSimOrder = placeSimOrder;
+window.placeSimOrderMobile = placeSimOrderMobile;
+window.resetSimPortfolio = resetSimPortfolio;
+window.cancelLimitOrder = cancelLimitOrder;
+
             // ─── Bootstrap ──────────────────────────────────────────────────────
 
             applyTheme();
