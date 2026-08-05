@@ -323,7 +323,39 @@ async function fetchCandles(symbol, interval = '1m', limit = 10000) {
   }
 }
 
-module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
+// 🔥 নতুন ফাংশন: ২৫,০০০ ক্যান্ডেল পেতে পেজিনেশন ব্যবহার করছে
+async function fetchAllCandles(symbol, interval = '1m', limit = 25000) {
+  const maxLimit = 1000;
+  const calls = Math.ceil(limit / maxLimit);
+  let allCandles = [];
+  let endTime = null;
+
+  for (let i = 0; i < calls; i++) {
+    const currentLimit = Math.min(maxLimit, limit - i * maxLimit);
+    let url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${currentLimit}\`;
+    if (endTime) url += \`&endTime=\${endTime}\`;
+    
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(\`Binance API error: \${res.status}\`);
+    const data = await res.json();
+    if (data.length === 0) break;
+
+    const candles = data.map(k => ({
+      time: Math.floor(k[0] / 1000),
+      open: parseFloat(k[1]),
+      high: parseFloat(k[2]),
+      low: parseFloat(k[3]),
+      close: parseFloat(k[4]),
+      volume: parseFloat(k[5])
+    }));
+    
+    allCandles = candles.concat(allCandles);
+    endTime = data[0][0];
+  }
+  return allCandles;
+}
+
+module.exports = { fetchLatestCandle, fetchPrice, fetchCandles, fetchAllCandles };
 `,
 
   // ── lib/blob.js ─────────────────────────────────────────────────
@@ -371,33 +403,26 @@ module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
 `,
 
   // ── cron/updateCandles.js ───────────────────────────────────────
-  'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
+  'cron/updateCandles.js': `const { fetchAllCandles } = require('../lib/binance');
 const { uploadCandles } = require('../lib/blob');
 
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
-const LIMIT = 10000;
+const LIMIT = 25000; // 🔥 ৫x বাড়ানো হলো
 
 async function updateBlobCandles() {
-  console.log('🔄 Updating blob candles...');
-  let anyUpdated = false;
+  console.log('🔄 Updating blob candles (25k each)...');
   for (const symbol of SYMBOLS) {
     try {
-      const candles = await fetchCandles(symbol, '1m', LIMIT);
+      const candles = await fetchAllCandles(symbol, '1m', LIMIT);
       if (candles && candles.length > 0) {
         const url = await uploadCandles(symbol, candles, 60);
-        console.log(\`✅ Updated \${symbol} -> \${url}\`);
-        anyUpdated = true;
+        console.log(\`✅ Updated \${symbol} -> \${candles.length} candles\`);
       } else {
         console.warn(\`⚠️ No candles for \${symbol}\`);
       }
     } catch (e) {
       console.error(\`❌ Error updating \${symbol}:\`, e.message);
     }
-  }
-  if (anyUpdated) {
-    console.log('✅ Blob candles updated (at least one symbol)');
-  } else {
-    console.warn('⚠️ No candles were updated for any symbol');
   }
 }
 
