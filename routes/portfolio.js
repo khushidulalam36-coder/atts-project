@@ -133,7 +133,6 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// ✅ NEW: Deposit funds
 router.post('/deposit', authenticate, async (req, res) => {
   try {
     const { amount } = req.body;
@@ -148,7 +147,6 @@ router.post('/deposit', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// ✅ NEW: Withdraw funds
 router.post('/withdraw', authenticate, async (req, res) => {
   try {
     const { amount } = req.body;

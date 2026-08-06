@@ -17,10 +17,9 @@ const server = http.createServer(app);
 // ── Imports ────────────────────────────────────────────────────────
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
-const { fetchLatestCandle } = require('./lib/binance');
-const { get } = require('@vercel/blob');
+const { fetchLatestCandle, fetchCandles } = require('./lib/binance');
 
-// ── Trust proxy (for rate limiter behind reverse proxy) ──────────
+// ── Trust proxy ──────────────────────────────────────────────────
 app.set('trust proxy', 1);
 
 // ── WebSocket ──────────────────────────────────────────────────────
@@ -38,7 +37,7 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (fallback) – correct symbols, no XAUUSD
+// Simulated price stream (fallback)
 setInterval(() => {
   const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
@@ -86,7 +85,7 @@ app.use('/api/upload',     require('./routes/upload'));
 app.use('/api/export',     require('./routes/export'));
 app.use('/api/import',     require('./routes/import'));
 
-// ── New endpoints ──────────────────────────────────────────────────
+// ── Endpoints ──────────────────────────────────────────────────
 app.get('/api/candle/latest/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -98,19 +97,48 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 Proxy endpoint to serve candles from public Blob store
+// 🔥 FIXED: Get candles – first try Blob (if available), fallback to Binance direct
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
+    let candles = null;
+
+    // 1. Try Blob (if token exists and store is active)
     const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
-    if (!TOKEN) throw new Error('Blob token missing');
-    
-    const key = `candles_${symbol}_60.json`;
-    const blob = await get(key, { token: TOKEN });
-    if (!blob) return res.status(404).json({ error: 'Candles not found' });
-    
-    const data = await blob.json();
-    res.json(data);
+    if (TOKEN) {
+      try {
+        const { get } = require('@vercel/blob');
+        const key = `candles_${symbol}_60.json`;
+        const blob = await get(key, { token: TOKEN });
+        if (blob) {
+          const data = await blob.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            candles = data;
+            console.log(`✅ Blob candles for ${symbol}: ${candles.length} items`);
+          }
+        }
+      } catch (blobErr) {
+        console.warn(`⚠️ Blob fetch failed for ${symbol}:`, blobErr.message);
+        // continue to fallback
+      }
+    }
+
+    // 2. Fallback: Binance direct (limit=1000)
+    if (!candles) {
+      const raw = await fetchCandles(symbol, '1m', 1000);
+      if (raw && raw.length > 0) {
+        candles = raw;
+        console.log(`✅ Binance direct candles for ${symbol}: ${candles.length} items`);
+      }
+    }
+
+    // 3. Ultimate fallback: empty array
+    if (!candles) {
+      candles = [];
+      console.warn(`⚠️ No candles available for ${symbol}`);
+    }
+
+    res.json(candles);
   } catch (e) {
     console.error('Proxy error:', e.message);
     res.status(500).json({ error: e.message });
@@ -135,13 +163,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ── Cron Job: Update Blob every minute ──────────────────────────
+// ── Cron Job: Update Blob if possible (ignores errors) ──────────
 cron.schedule('* * * * *', async () => {
   console.log('⏰ Running candle update cron...');
   try {
     await updateBlobCandles();
     global._cronLastRun = new Date().toISOString();
-    console.log('✅ Blob candles updated');
+    console.log('✅ Blob candles update attempt finished');
   } catch (e) {
     console.error('❌ Cron error:', e.message);
   }
@@ -153,12 +181,13 @@ startTradeEngine();
 // ── Start Server ──────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(`╔══════════════════════════════════════════╗`);
-  console.log(`║  🚀 Alamquant Backend  v2.0.0          ║`);
+  console.log(`║  🚀 Alamquant Backend  v2.1.0          ║`);
   console.log(`║  📡 API:  http://localhost:${PORT}/api     ║`);
   console.log(`║  🔌 WS:   ws://localhost:${PORT}          ║`);
   console.log(`║  ❤️  Health: /api/health               ║`);
-  console.log(`║  🕐 Cron:  Every minute (Blob update)  ║`);
+  console.log(`║  🕐 Cron:  Every minute (Blob attempt) ║`);
   console.log(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
+  console.log(`║  🔄 Candle fallback: Binance direct     ║`);
   console.log(`╚══════════════════════════════════════════╝`);
 });
 
