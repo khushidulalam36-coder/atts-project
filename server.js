@@ -17,7 +17,7 @@ const server = http.createServer(app);
 // ── Imports ────────────────────────────────────────────────────────
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
-const { fetchLatestCandle, fetchManyCandles } = require('./lib/binance');
+const { fetchLatestCandle } = require('./lib/binance');
 const { get } = require('@vercel/blob');
 
 // ── Trust proxy (for rate limiter behind reverse proxy) ──────────
@@ -98,41 +98,21 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 UPDATED: Proxy endpoint with limit support (50,000 candles)
+// 🔥 Proxy endpoint to serve candles from public Blob store
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
-    const limit = parseInt(req.query.limit) || 1000;
-    const interval = req.query.interval || '1m';
-
-    // Try Blob first if limit <= 10000 (Blob stores ~10k candles)
-    if (limit <= 10000) {
-      const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
-      if (TOKEN) {
-        const key = `candles_${symbol}_60.json`;
-        try {
-          const blob = await get(key, { token: TOKEN });
-          if (blob) {
-            const data = await blob.json();
-            if (data && data.length > 0) {
-              const sliced = data.slice(-limit);
-              return res.json({ candles: sliced, source: 'blob' });
-            }
-          }
-        } catch (blobErr) {
-          // ignore and fallback to Binance
-        }
-      }
-    }
-
-    // Fallback: fetch directly from Binance with pagination
-    const candles = await fetchManyCandles(symbol, interval, limit);
-    if (!candles || candles.length === 0) {
-      return res.status(404).json({ error: 'No candles found' });
-    }
-    res.json({ candles, source: 'binance' });
+    const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+    if (!TOKEN) throw new Error('Blob token missing');
+    
+    const key = `candles_${symbol}_60.json`;
+    const blob = await get(key, { token: TOKEN });
+    if (!blob) return res.status(404).json({ error: 'Candles not found' });
+    
+    const data = await blob.json();
+    res.json(data);
   } catch (e) {
-    console.error('Candles API error:', e.message);
+    console.error('Proxy error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -179,7 +159,6 @@ server.listen(PORT, () => {
   console.log(`║  ❤️  Health: /api/health               ║`);
   console.log(`║  🕐 Cron:  Every minute (Blob update)  ║`);
   console.log(`║  ⚙️  Trade Engine: Active (SL/TP)       ║`);
-  console.log(`║  📊 Candles: /api/candles/:symbol?limit=50000 ║`);
   console.log(`╚══════════════════════════════════════════╝`);
 });
 

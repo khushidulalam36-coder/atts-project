@@ -1,8 +1,9 @@
 // ================================================================
 // SETUP.JS – FINAL PRODUCTION-READY (Render + Neon DB + Vercel Blob Public)
-// 🔥 Updated to support 50,000 candles via Binance pagination
-// 🔥 /api/candles/:symbol now accepts ?limit=50000
-// 🔥 index.html will be empty – fill manually.
+// All files created directly in current folder.
+// index.html will be empty – fill manually.
+// 🔥 Quiz 500 error FIXED: JSON.stringify for JSONB columns
+// 🔍 Debug enhanced: detailed error logging in quiz routes
 // ================================================================
 
 const fs = require('fs');
@@ -114,7 +115,7 @@ const server = http.createServer(app);
 // ── Imports ────────────────────────────────────────────────────────
 const { updateBlobCandles } = require('./cron/updateCandles');
 const { startTradeEngine } = require('./lib/tradeEngine');
-const { fetchLatestCandle, fetchManyCandles } = require('./lib/binance');
+const { fetchLatestCandle } = require('./lib/binance');
 const { get } = require('@vercel/blob');
 
 // ── Trust proxy (for rate limiter behind reverse proxy) ──────────
@@ -195,41 +196,21 @@ app.get('/api/candle/latest/:symbol', async (req, res) => {
   }
 });
 
-// 🔥 UPDATED: Proxy endpoint with limit support (50,000 candles)
+// 🔥 Proxy endpoint to serve candles from public Blob store
 app.get('/api/candles/:symbol', async (req, res) => {
   try {
     const { symbol } = req.params;
-    const limit = parseInt(req.query.limit) || 1000;
-    const interval = req.query.interval || '1m';
-
-    // Try Blob first if limit <= 10000 (Blob stores ~10k candles)
-    if (limit <= 10000) {
-      const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
-      if (TOKEN) {
-        const key = \`candles_\${symbol}_60.json\`;
-        try {
-          const blob = await get(key, { token: TOKEN });
-          if (blob) {
-            const data = await blob.json();
-            if (data && data.length > 0) {
-              const sliced = data.slice(-limit);
-              return res.json({ candles: sliced, source: 'blob' });
-            }
-          }
-        } catch (blobErr) {
-          // ignore and fallback to Binance
-        }
-      }
-    }
-
-    // Fallback: fetch directly from Binance with pagination
-    const candles = await fetchManyCandles(symbol, interval, limit);
-    if (!candles || candles.length === 0) {
-      return res.status(404).json({ error: 'No candles found' });
-    }
-    res.json({ candles, source: 'binance' });
+    const TOKEN = process.env.VERCEL_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+    if (!TOKEN) throw new Error('Blob token missing');
+    
+    const key = \`candles_\${symbol}_60.json\`;
+    const blob = await get(key, { token: TOKEN });
+    if (!blob) return res.status(404).json({ error: 'Candles not found' });
+    
+    const data = await blob.json();
+    res.json(data);
   } catch (e) {
-    console.error('Candles API error:', e.message);
+    console.error('Proxy error:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -276,7 +257,6 @@ server.listen(PORT, () => {
   console.log(\`║  ❤️  Health: /api/health               ║\`);
   console.log(\`║  🕐 Cron:  Every minute (Blob update)  ║\`);
   console.log(\`║  ⚙️  Trade Engine: Active (SL/TP)       ║\`);
-  console.log(\`║  📊 Candles: /api/candles/:symbol?limit=50000 ║\`);
   console.log(\`╚══════════════════════════════════════════╝\`);
 });
 
@@ -323,10 +303,9 @@ async function fetchPrice(symbol) {
   }
 }
 
-// Original fetchCandles (limited to 1000 per request)
 async function fetchCandles(symbol, interval = '1m', limit = 10000) {
   try {
-    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${Math.min(limit, 1000)}\`;
+    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${limit}\`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Binance API error');
     const data = await res.json();
@@ -344,44 +323,7 @@ async function fetchCandles(symbol, interval = '1m', limit = 10000) {
   }
 }
 
-// NEW: Fetch many candles using pagination (up to 50,000)
-async function fetchManyCandles(symbol, interval = '1m', limit = 50000) {
-  const maxPerRequest = 1000;
-  let endTime = Date.now(); // current time in ms
-  let totalFetched = 0;
-  const candles = [];
-
-  while (totalFetched < limit) {
-    const remaining = limit - totalFetched;
-    const count = Math.min(remaining, maxPerRequest);
-    const url = \`\${BASE_URL}/klines?symbol=\${symbol}&interval=\${interval}&limit=\${count}&endTime=\${endTime}\`;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) break;
-      const data = await res.json();
-      if (!data || data.length === 0) break;
-      const parsed = data.map(k => ({
-        time: Math.floor(k[0] / 1000),
-        open: parseFloat(k[1]),
-        high: parseFloat(k[2]),
-        low: parseFloat(k[3]),
-        close: parseFloat(k[4]),
-        volume: parseFloat(k[5])
-      }));
-      candles.unshift(...parsed);
-      totalFetched += parsed.length;
-      if (parsed.length > 0) {
-        endTime = parsed[0].time * 1000 - 1; // go further back in time
-      } else break;
-    } catch (e) {
-      console.error('fetchManyCandles error:', e.message);
-      break;
-    }
-  }
-  return candles;
-}
-
-module.exports = { fetchLatestCandle, fetchPrice, fetchCandles, fetchManyCandles };
+module.exports = { fetchLatestCandle, fetchPrice, fetchCandles };
 `,
 
   // ── lib/blob.js ─────────────────────────────────────────────────
@@ -810,9 +752,7 @@ function optionalAuth(req, res, next) {
 module.exports = { authenticate, optionalAuth };
 `,
 
-  // ── ROUTES ─────────────────────────────────────────────────────────
-
-  // routes/auth.js
+  // ── ROUTES (auth, subjects, lessons, progress, bookmarks, notes, portfolio, upload, export, import) same as before ─
   'routes/auth.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const {
@@ -866,7 +806,6 @@ router.get('/me', async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/subjects.js
   'routes/subjects.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -923,7 +862,6 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/lessons.js
   'routes/lessons.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -969,11 +907,12 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/quiz.js (with JSON.stringify fix)
+  // ── routes/quiz.js (🔥 FIXED with JSON.stringify & debug) ──────
   'routes/quiz.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
 
+// 🛠️ Helper to safely stringify JSONB fields
 function safeJsonb(value) {
   try {
     return JSON.stringify(value);
@@ -983,11 +922,108 @@ function safeJsonb(value) {
   }
 }
 
+// 📌 POST /api/quiz/:lessonId – add a new question
 router.post('/:lessonId', authenticate, async (req, res) => {
   try {
     const lessonId = req.params.lessonId;
     const { id, question, options, correct, points, explanation } = req.body;
 
+    console.log('🔍 [QUIZ POST] lessonId:', lessonId);
+    console.log('🔍 [QUIZ POST] body:', JSON.stringify(req.body, null, 2));
+
+    // ── Validate required fields ──────────────────────────────
+    if (!question?.en) {
+      console.warn('⚠️ Missing question.en');
+      return res.status(400).json({ error: 'Question text (EN) required' });
+    }
+    if (!Array.isArray(options) || options.length < 2) {
+      console.warn('⚠️ Invalid options array – not array or too short');
+      return res.status(400).json({ error: 'At least two options required' });
+    }
+    // Ensure each option has an id and text
+    for (const opt of options) {
+      if (!opt.id || !opt.text?.en) {
+        console.warn('⚠️ Option missing id or text.en:', opt);
+        return res.status(400).json({ error: 'Each option must have id and text.en' });
+      }
+    }
+
+    // ── Check lesson existence ────────────────────────────────
+    console.log('🔍 [QUIZ POST] Checking lesson existence...');
+    let lessonCheck;
+    try {
+      lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
+    } catch (dbErr) {
+      console.error('❌ DB error while checking lesson:', dbErr.message);
+      return res.status(500).json({ error: 'Database error checking lesson' });
+    }
+    const lessonRows = lessonCheck.rows || lessonCheck;
+    if (!lessonRows || lessonRows.length === 0) {
+      console.warn('⚠️ Lesson not found:', lessonId);
+      return res.status(404).json({ error: 'Lesson not found. Please create the lesson first.' });
+    }
+    console.log('✅ Lesson found:', lessonId);
+
+    // ── Build question ID ──────────────────────────────────────
+    const qid = id || ('q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6));
+    console.log('🔑 Generated question ID:', qid);
+
+    // ── Prepare JSONB values ──────────────────────────────────
+    const questionJson = safeJsonb(question);
+    const optionsJson = safeJsonb(options);
+    const explanationJson = safeJsonb(explanation || {});
+    const correctStr = (correct || '').trim();
+    if (!correctStr) {
+      console.warn('⚠️ Correct answer not provided');
+      return res.status(400).json({ error: 'Correct answer required' });
+    }
+    const pointsNum = parseInt(points) || 5;
+    if (pointsNum < 1) {
+      console.warn('⚠️ Points must be >= 1, using 5');
+    }
+    console.log('📦 Inserting quiz question with:', { qid, lessonId, questionJson, optionsJson, correctStr, pointsNum,
+      explanationJson });
+
+    // ── Insert into DB ─────────────────────────────────────────
+    try {
+      await query(
+        'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+        [qid, lessonId, questionJson, optionsJson, correctStr, pointsNum, explanationJson]
+      );
+      console.log('✅ Quiz question inserted successfully, id:', qid);
+    } catch (insertErr) {
+      console.error('❌ Insert error:', insertErr.message, insertErr.stack);
+      return res.status(500).json({ error: 'Failed to insert question: ' + insertErr.message });
+    }
+
+    // ── Return the created question ──────────────────────────
+    let result;
+    try {
+      result = await query('SELECT * FROM quiz_questions WHERE id = $1', [qid]);
+    } catch (selectErr) {
+      console.error('❌ Error fetching inserted question:', selectErr.message);
+      return res.status(500).json({ error: 'Question created but failed to retrieve it' });
+    }
+    const row = (result.rows || result)[0];
+    res.status(201).json(row);
+
+  } catch (e) {
+    console.error('❌ [QUIZ POST] Unhandled error:', e.message, e.stack);
+    res.status(500).json({ error: 'Server error: ' + e.message });
+  }
+});
+
+// 📌 PUT /api/quiz/:lessonId/:idx – update a question by index
+router.put('/:lessonId/:idx', authenticate, async (req, res) => {
+  try {
+    const lessonId = req.params.lessonId;
+    const idx = parseInt(req.params.idx);
+    const { id, question, options, correct, points, explanation } = req.body;
+
+    console.log('🔍 [QUIZ PUT] lessonId:', lessonId, 'idx:', idx);
+    console.log('🔍 [QUIZ PUT] body:', JSON.stringify(req.body, null, 2));
+
+    // ── Validate ──────────────────────────────────────────────
     if (!question?.en) {
       return res.status(400).json({ error: 'Question text (EN) required' });
     }
@@ -1000,83 +1036,79 @@ router.post('/:lessonId', authenticate, async (req, res) => {
       }
     }
 
-    let lessonCheck = await query('SELECT id FROM lessons WHERE id = $1', [lessonId]);
-    const lessonRows = lessonCheck.rows || lessonCheck;
-    if (!lessonRows || lessonRows.length === 0) {
-      return res.status(404).json({ error: 'Lesson not found. Please create the lesson first.' });
+    // ── Get existing questions ────────────────────────────────
+    let existing;
+    try {
+      existing = await query('SELECT * FROM quiz_questions WHERE lesson_id = $1 ORDER BY id', [lessonId]);
+    } catch (err) {
+      console.error('❌ Error fetching existing questions:', err.message);
+      return res.status(500).json({ error: 'Database error' });
     }
-
-    const qid = id || ('q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6));
-    const questionJson = safeJsonb(question);
-    const optionsJson = safeJsonb(options);
-    const explanationJson = safeJsonb(explanation || {});
-    const correctStr = (correct || '').trim();
-    if (!correctStr) return res.status(400).json({ error: 'Correct answer required' });
-    const pointsNum = parseInt(points) || 5;
-
-    await query(
-      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, lessonId, questionJson, optionsJson, correctStr, pointsNum, explanationJson]
-    );
-
-    let result = await query('SELECT * FROM quiz_questions WHERE id = $1', [qid]);
-    const row = (result.rows || result)[0];
-    res.status(201).json(row);
-  } catch (e) {
-    console.error('❌ [QUIZ POST] error:', e.message);
-    res.status(500).json({ error: 'Server error: ' + e.message });
-  }
-});
-
-router.put('/:lessonId/:idx', authenticate, async (req, res) => {
-  try {
-    const lessonId = req.params.lessonId;
-    const idx = parseInt(req.params.idx);
-    const { id, question, options, correct, points, explanation } = req.body;
-
-    if (!question?.en) return res.status(400).json({ error: 'Question text (EN) required' });
-    if (!Array.isArray(options) || options.length < 2) return res.status(400).json({ error: 'At least two options required' });
-    for (const opt of options) {
-      if (!opt.id || !opt.text?.en) return res.status(400).json({ error: 'Each option must have id and text.en' });
-    }
-
-    let existing = await query('SELECT * FROM quiz_questions WHERE lesson_id = $1 ORDER BY id', [lessonId]);
     const rows = existing.rows || existing;
-    if (idx < 0 || idx >= rows.length) return res.status(404).json({ error: 'Question index out of range' });
+    if (idx < 0 || idx >= rows.length) {
+      return res.status(404).json({ error: 'Question index out of range' });
+    }
     const oldId = rows[idx].id;
 
+    // ── Delete old, insert updated ────────────────────────────
     const qid = id || ('q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6));
-    await query('DELETE FROM quiz_questions WHERE id = $1', [oldId]);
-    await query(
-      'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-      [qid, lessonId, safeJsonb(question), safeJsonb(options), correct, parseInt(points) || 5, safeJsonb(explanation || {})]
-    );
+    try {
+      await query('DELETE FROM quiz_questions WHERE id = $1', [oldId]);
+      await query(
+        'INSERT INTO quiz_questions (id, lesson_id, question, options, correct, points, explanation) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+        [qid, lessonId, safeJsonb(question), safeJsonb(options), correct, parseInt(points) || 5, safeJsonb(explanation || {})]
+      );
+      console.log('✅ Quiz question updated, new id:', qid);
+    } catch (err) {
+      console.error('❌ Error updating question:', err.message);
+      return res.status(500).json({ error: 'Failed to update question: ' + err.message });
+    }
+
     res.json({ success: true, id: qid });
   } catch (e) {
-    console.error('❌ [QUIZ PUT] error:', e.message);
+    console.error('❌ [QUIZ PUT] error:', e.message, e.stack);
     res.status(500).json({ error: 'Server error: ' + e.message });
   }
 });
 
+// 📌 DELETE /api/quiz/:lessonId/:idx – delete a question by index
 router.delete('/:lessonId/:idx', authenticate, async (req, res) => {
   try {
     const lessonId = req.params.lessonId;
     const idx = parseInt(req.params.idx);
-    let existing = await query('SELECT * FROM quiz_questions WHERE lesson_id = $1 ORDER BY id', [lessonId]);
+    console.log('🔍 [QUIZ DELETE] lessonId:', lessonId, 'idx:', idx);
+
+    let existing;
+    try {
+      existing = await query('SELECT * FROM quiz_questions WHERE lesson_id = $1 ORDER BY id', [lessonId]);
+    } catch (err) {
+      console.error('❌ Error fetching existing questions:', err.message);
+      return res.status(500).json({ error: 'Database error' });
+    }
     const rows = existing.rows || existing;
-    if (idx < 0 || idx >= rows.length) return res.status(404).json({ error: 'Question index out of range' });
+    if (idx < 0 || idx >= rows.length) {
+      return res.status(404).json({ error: 'Question index out of range' });
+    }
     const oldId = rows[idx].id;
-    await query('DELETE FROM quiz_questions WHERE id = $1', [oldId]);
+    try {
+      await query('DELETE FROM quiz_questions WHERE id = $1', [oldId]);
+      console.log('✅ Quiz question deleted:', oldId);
+    } catch (err) {
+      console.error('❌ Error deleting question:', err.message);
+      return res.status(500).json({ error: 'Failed to delete question: ' + err.message });
+    }
     res.json({ success: true });
   } catch (e) {
-    console.error('❌ [QUIZ DELETE] error:', e.message);
-    res.status(500).json({ error: 'Server error' });
+    console.error('❌ [QUIZ DELETE] error:', e.message, e.stack);
+    res.status(500).json({ error: 'Server error: ' + e.message });
   }
 });
 
+// ── Submit quiz score ─────────────────────────────────────────────
 router.post('/submit', authenticate, async (req, res) => {
   try {
     const { lessonId, score, passed } = req.body;
+    console.log('🔍 [QUIZ SUBMIT] lessonId:', lessonId, 'score:', score, 'passed:', passed);
     await query(
       'INSERT INTO quiz_scores (user_id, lesson_id, score, passed) VALUES ($1,$2,$3,$4) ON CONFLICT (user_id, lesson_id) DO UPDATE SET score=$3, passed=$4, attempted_at=NOW()',
       [req.user.userId, lessonId, score, passed]
@@ -1088,6 +1120,7 @@ router.post('/submit', authenticate, async (req, res) => {
   }
 });
 
+// ── Reset quiz for a lesson ──────────────────────────────────────
 router.post('/reset/:lessonId', authenticate, async (req, res) => {
   try {
     await query('DELETE FROM quiz_scores WHERE user_id=$1 AND lesson_id=$2', [req.user.userId, req.params.lessonId]);
@@ -1098,6 +1131,7 @@ router.post('/reset/:lessonId', authenticate, async (req, res) => {
   }
 });
 
+// ── Get all scores for logged-in user ───────────────────────────
 router.get('/scores', authenticate, async (req, res) => {
   try {
     const r = await query('SELECT lesson_id, score, passed FROM quiz_scores WHERE user_id=$1', [req.user.userId]);
@@ -1113,7 +1147,7 @@ router.get('/scores', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/progress.js
+  // ── other routes (progress, bookmarks, notes, portfolio, upload, export, import) keep unchanged ──
   'routes/progress.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1141,7 +1175,6 @@ router.put('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/bookmarks.js
   'routes/bookmarks.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1173,7 +1206,6 @@ router.delete('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/notes.js
   'routes/notes.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1207,7 +1239,7 @@ router.put('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/portfolio.js
+  // ── routes/portfolio.js (same as before, no change needed) ─────
   'routes/portfolio.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1346,7 +1378,6 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/upload.js
   'routes/upload.js': `const router = require('express').Router();
 const multer = require('multer');
 const { uploadFile, deleteFile } = require('../lib/blob');
@@ -1373,7 +1404,6 @@ router.delete('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/export.js
   'routes/export.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1399,7 +1429,6 @@ router.get('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/import.js
   'routes/import.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1464,8 +1493,7 @@ function createProject() {
   console.log('\n📌 Default Admin:  admin / admin123');
   console.log('📌 index.html is empty – paste your frontend code manually.');
   console.log('📌 Cron job will update Blob every minute (public store with token).');
-  console.log('📌 Trade engine (SL/TP) runs in background every 5s.');
-  console.log('📌 New: /api/candles/:symbol?limit=50000 supports 50k candles via pagination.\n');
+  console.log('📌 Trade engine (SL/TP) runs in background every 5s.\n');
 }
 
 // ─── EXECUTE ─────────────────────────────────────────────────────────
