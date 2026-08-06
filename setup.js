@@ -4,7 +4,9 @@
 // index.html will be empty – fill manually.
 // 🔥 Quiz 500 error FIXED: JSON.stringify for JSONB columns
 // 🔍 Debug enhanced: detailed error logging in quiz routes
-// 🔧 FIXED: Binance API limit 1000, deposit/withdraw endpoints added
+// ✅ Binance limit fixed to 1000 (API limit)
+// ✅ Added deposit/withdraw endpoints in portfolio routes
+// ✅ Symbols verified – no XAUUSD
 // ================================================================
 
 const fs = require('fs');
@@ -137,7 +139,7 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (fallback)
+// Simulated price stream (fallback) – correct symbols, no XAUUSD
 setInterval(() => {
   const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
@@ -265,7 +267,7 @@ module.exports = { app, server, wss, broadcast };
 `,
 
   // ── lib/binance.js ──────────────────────────────────────────────
-  // ✅ FIX: limit = 1000 (Binance max)
+  // ✅ FIX: limit changed from 10000 to 1000 (Binance API max)
   'lib/binance.js': `const BASE_URL = 'https://api.binance.com/api/v3';
 
 async function fetchLatestCandle(symbol) {
@@ -373,12 +375,12 @@ module.exports = { uploadFile, deleteFile, listFiles, uploadCandles };
 `,
 
   // ── cron/updateCandles.js ───────────────────────────────────────
-  // ✅ FIX: LIMIT = 1000
+  // ✅ Symbols already correct, no XAUUSD
   'cron/updateCandles.js': `const { fetchCandles } = require('../lib/binance');
 const { uploadCandles } = require('../lib/blob');
 
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
-const LIMIT = 1000;
+const LIMIT = 1000; // Binance API max
 
 async function updateBlobCandles() {
   console.log('🔄 Updating blob candles...');
@@ -755,9 +757,7 @@ function optionalAuth(req, res, next) {
 module.exports = { authenticate, optionalAuth };
 `,
 
-  // ── ROUTES ──────────────────────────────────────────────────────
-
-  // routes/auth.js (অপরিবর্তিত)
+  // ── ROUTES (auth, subjects, lessons, progress, bookmarks, notes, portfolio, upload, export, import) ─
   'routes/auth.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const {
@@ -811,7 +811,6 @@ router.get('/me', async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/subjects.js (অপরিবর্তিত)
   'routes/subjects.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -868,7 +867,6 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/lessons.js (অপরিবর্তিত)
   'routes/lessons.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -914,7 +912,7 @@ router.post('/reorder', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/quiz.js (অপরিবর্তিত – ইতিমধ্যে FIXED)
+  // ── routes/quiz.js (🔥 FIXED with JSON.stringify & debug) ──────
   'routes/quiz.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1154,7 +1152,7 @@ router.get('/scores', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/progress.js (অপরিবর্তিত)
+  // ── routes/progress.js ──────────────────────────────────────────
   'routes/progress.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1182,7 +1180,7 @@ router.put('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/bookmarks.js (অপরিবর্তিত)
+  // ── routes/bookmarks.js ──────────────────────────────────────────
   'routes/bookmarks.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1214,7 +1212,7 @@ router.delete('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/notes.js (অপরিবর্তিত)
+  // ── routes/notes.js ──────────────────────────────────────────────
   'routes/notes.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1248,8 +1246,7 @@ router.put('/:lessonId', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // ── routes/portfolio.js ──────────────────────────────────────────
-  // ✅ NEW: Deposit & Withdraw endpoints added
+  // ── routes/portfolio.js (✅ added deposit/withdraw) ─────────────
   'routes/portfolio.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1385,71 +1382,41 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// ✅ DEPOSIT ENDPOINT
+// ✅ NEW: Deposit funds
 router.post('/deposit', authenticate, async (req, res) => {
   try {
     const { amount } = req.body;
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Valid amount required' });
-    }
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
     const p = await getOrCreatePortfolio(req.user.userId);
     let cash = parseFloat(p.cash) || 0;
     cash += amount;
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
-    transactions.unshift({
-      type: 'deposit',
-      qty: amount,
-      price: 1,
-      symbol: 'USD',
-      time: new Date().toISOString()
-    });
-    await query(
-      'UPDATE portfolios SET cash = $1, transactions = $2 WHERE user_id = $3',
-      [cash, JSON.stringify(transactions), req.user.userId]
-    );
+    transactions.unshift({ type: 'deposit', qty: amount, price: 1, symbol: 'USD', time: new Date().toISOString() });
+    await query('UPDATE portfolios SET cash=$1, transactions=$2 WHERE user_id=$3', [cash, JSON.stringify(transactions), req.user.userId]);
     res.json({ success: true, cash });
-  } catch (e) {
-    console.error('Deposit error:', e.message);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
-// ✅ WITHDRAW ENDPOINT
+// ✅ NEW: Withdraw funds
 router.post('/withdraw', authenticate, async (req, res) => {
   try {
     const { amount } = req.body;
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Valid amount required' });
-    }
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
     const p = await getOrCreatePortfolio(req.user.userId);
     let cash = parseFloat(p.cash) || 0;
-    if (cash < amount) {
-      return res.status(400).json({ error: 'Insufficient balance' });
-    }
+    if (cash < amount) return res.status(400).json({ error: 'Insufficient balance' });
     cash -= amount;
     let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
-    transactions.unshift({
-      type: 'withdraw',
-      qty: amount,
-      price: 1,
-      symbol: 'USD',
-      time: new Date().toISOString()
-    });
-    await query(
-      'UPDATE portfolios SET cash = $1, transactions = $2 WHERE user_id = $3',
-      [cash, JSON.stringify(transactions), req.user.userId]
-    );
+    transactions.unshift({ type: 'withdraw', qty: amount, price: 1, symbol: 'USD', time: new Date().toISOString() });
+    await query('UPDATE portfolios SET cash=$1, transactions=$2 WHERE user_id=$3', [cash, JSON.stringify(transactions), req.user.userId]);
     res.json({ success: true, cash });
-  } catch (e) {
-    console.error('Withdraw error:', e.message);
-    res.status(500).json({ error: 'Server error' });
-  }
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;
 `,
 
-  // routes/upload.js (অপরিবর্তিত)
+  // ── routes/upload.js ─────────────────────────────────────────────
   'routes/upload.js': `const router = require('express').Router();
 const multer = require('multer');
 const { uploadFile, deleteFile } = require('../lib/blob');
@@ -1476,7 +1443,7 @@ router.delete('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/export.js (অপরিবর্তিত)
+  // ── routes/export.js ─────────────────────────────────────────────
   'routes/export.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1502,7 +1469,7 @@ router.get('/', authenticate, async (req, res) => {
 module.exports = router;
 `,
 
-  // routes/import.js (অপরিবর্তিত)
+  // ── routes/import.js ─────────────────────────────────────────────
   'routes/import.js': `const router = require('express').Router();
 const { query } = require('../lib/db');
 const { authenticate } = require('../middleware/auth');
@@ -1567,7 +1534,8 @@ function createProject() {
   console.log('\n📌 Default Admin:  admin / admin123');
   console.log('📌 index.html is empty – paste your frontend code manually.');
   console.log('📌 Cron job will update Blob every minute (public store with token).');
-  console.log('📌 Trade engine (SL/TP) runs in background every 5s.\n');
+  console.log('📌 Trade engine (SL/TP) runs in background every 5s.');
+  console.log('📌 Deposit/Withdraw endpoints added at /api/portfolio/deposit and /withdraw\n');
 }
 
 // ─── EXECUTE ─────────────────────────────────────────────────────────

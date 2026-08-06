@@ -38,7 +38,7 @@ function broadcast(data) {
   wsClients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-// Simulated price stream (fallback)
+// Simulated price stream (fallback) – correct symbols, no XAUUSD
 setInterval(() => {
   const syms = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','DOTUSDT'];
   const prices = {};
