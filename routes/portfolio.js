@@ -133,4 +133,65 @@ router.delete('/holding/:symbol', authenticate, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
 });
 
+// ✅ DEPOSIT ENDPOINT
+router.post('/deposit', authenticate, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Valid amount required' });
+    }
+    const p = await getOrCreatePortfolio(req.user.userId);
+    let cash = parseFloat(p.cash) || 0;
+    cash += amount;
+    let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
+    transactions.unshift({
+      type: 'deposit',
+      qty: amount,
+      price: 1,
+      symbol: 'USD',
+      time: new Date().toISOString()
+    });
+    await query(
+      'UPDATE portfolios SET cash = $1, transactions = $2 WHERE user_id = $3',
+      [cash, JSON.stringify(transactions), req.user.userId]
+    );
+    res.json({ success: true, cash });
+  } catch (e) {
+    console.error('Deposit error:', e.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ✅ WITHDRAW ENDPOINT
+router.post('/withdraw', authenticate, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Valid amount required' });
+    }
+    const p = await getOrCreatePortfolio(req.user.userId);
+    let cash = parseFloat(p.cash) || 0;
+    if (cash < amount) {
+      return res.status(400).json({ error: 'Insufficient balance' });
+    }
+    cash -= amount;
+    let transactions = typeof p.transactions === 'string' ? JSON.parse(p.transactions) : (p.transactions || []);
+    transactions.unshift({
+      type: 'withdraw',
+      qty: amount,
+      price: 1,
+      symbol: 'USD',
+      time: new Date().toISOString()
+    });
+    await query(
+      'UPDATE portfolios SET cash = $1, transactions = $2 WHERE user_id = $3',
+      [cash, JSON.stringify(transactions), req.user.userId]
+    );
+    res.json({ success: true, cash });
+  } catch (e) {
+    console.error('Withdraw error:', e.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

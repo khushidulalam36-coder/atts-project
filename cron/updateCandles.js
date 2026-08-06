@@ -2,7 +2,7 @@ const { fetchCandles } = require('../lib/binance');
 const { uploadCandles } = require('../lib/blob');
 
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT', 'DOGEUSDT', 'ADAUSDT', 'LINKUSDT', 'AVAXUSDT', 'DOTUSDT'];
-const LIMIT = 10000;
+const LIMIT = 1000;
 
 async function updateBlobCandles() {
   console.log('🔄 Updating blob candles...');
